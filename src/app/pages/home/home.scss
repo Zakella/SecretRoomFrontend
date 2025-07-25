@@ -1,0 +1,159 @@
+.home {
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 64px 24px;
+    background: #fdf9f6;
+
+    .hero-content {
+      max-width: 600px;
+
+      h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        margin-bottom: 16px;
+
+        /*
+        color: #222;
+        */
+      }
+
+      p {
+        font-size: 18px;
+        margin-bottom: 32px;
+        color: #555;
+      }
+
+      .btn-primary {
+        padding: 14px 28px;
+        background-color: #222;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+
+        &:hover {
+          background-color: #444;
+        }
+      }
+    }
+
+    .hero-image {
+      max-width: 500px;
+      img {
+        width: 100%;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+    }
+  }
+
+}
+
+
+@media (max-width: 992px) {
+  .home .hero {
+    flex-direction: column;
+    text-align: center;
+
+    .hero-content {
+      max-width: 100%;
+      margin-bottom: 32px;
+    }
+
+    .hero-image {
+      max-width: 100%;
+    }
+  }
+}
+
+
+.beauty-goals {
+  text-align: center;
+  padding: 2rem 1rem;
+
+  h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .goals-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .goal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #333;
+
+    img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #d1e3f1;
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      max-width: 80px;
+      text-align: center;
+    }
+  }
+}
+
+
+
+
+
+.brand-block {
+  padding: 2rem 1rem;
+  text-align: center;
+
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .brand-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #111;
+    transition: transform 0.2s ease;
+
+    img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 0.5rem;
+    }
+
+    span {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}

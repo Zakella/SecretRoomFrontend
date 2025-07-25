@@ -1,0 +1,22 @@
+<div class="product-card">
+  <button class="wishlist">&#9825;</button>
+
+  <img class="product-image" [src]="imageUrl" alt="{{ title }}" />
+  @if (isBestSeller){
+    <div class="badge">Best Seller</div>
+  }
+
+  <div class="rating">
+    @for (star of [].constructor(rating) ; track star) {
+      <span>&#9733;</span>
+    }
+  </div>
+
+  <div class="brand">{{ brand }}</div>
+  <div class="price">{{ price }} MDL</div>
+  <div class="title">{{ title }}</div>
+
+  <button class="action-btn">
+    {{ showOptions ? 'SHOW OPTIONS' : 'ADD TO CART' }}
+  </button>
+</div>

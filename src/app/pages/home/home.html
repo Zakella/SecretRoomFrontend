@@ -1,0 +1,71 @@
+<main class="home">
+  <div
+    style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*
+    height: 100vh;
+    */
+    padding: 0 100px 0 50px;
+
+    /*
+    padding: 150px;
+    */
+    /*
+    gap: 20px;
+    */
+  "
+  >
+    <app-image-slider
+      [indicatorsVisible]="false"
+      [animationSpeed]="100"
+      [slides]="slides"
+      [autoPlay]="false"
+      [autoPlaySpeed]="4000"
+    ></app-image-slider>
+  </div>
+
+  <section class="hero">
+    <div class="hero-content container">
+      <h1>Откройте мир премиального ухода</h1>
+      <p>Эксклюзивные бренды, натуральные формулы и безупречное качество.</p>
+      <a routerLink="/shop" class="btn-primary">Перейти в магазин</a>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.pexels.com/photos/5205669/pexels-photo-5205669.jpeg" alt="Премиальная косметика" />
+
+    </div>
+  </section>
+
+  <app-best-sellers></app-best-sellers>
+
+
+  <div class="beauty-goals">
+    <h3>What are your beauty goals?</h3>
+    <div class="goals-list">
+      @for (goal of goals; track goal) {
+        <div class="goal">
+          <img [src]="goal.image" [alt]="goal.label" />
+          <span>{{ goal.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+
+  <div class="brand-block">
+    <h3>Shop by Brand</h3>
+
+    <div class="brand-list">
+      @for (brand of brands; track brand) {
+        <a [routerLink]="brand.link" class="brand">
+          <img [src]="brand.logo" [alt]="brand.name" />
+          <span>{{ brand.name }}</span>
+        </a>
+      }
+    </div>
+  </div>
+
+</main>
+

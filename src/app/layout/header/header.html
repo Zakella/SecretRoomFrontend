@@ -1,0 +1,51 @@
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <a routerLink="/">secret room</a>
+    </div>
+
+    <nav class="nav">
+      <a routerLink="" routerLinkActive="active">Магазин</a>
+      <a routerLink="/brands" routerLinkActive="active">Бренды</a>
+      <a routerLink="/new" routerLinkActive="active">Новинки</a>
+      <a routerLink="/blog" routerLinkActive="active">Блог</a>
+    </nav>
+
+    <div class="icons">
+      <button aria-label="Поиск"><i class="ri-search-line"></i></button>
+      <button aria-label="Избранное"><i class="ri-heart-line"></i></button>
+      <button aria-label="Профиль"><i class="ri-user-line"></i></button>
+      <button aria-label="Корзина"><i class="ri-shopping-bag-line"></i></button>
+    </div>
+  </div>
+</header>
+
+<!--
+<header class="site-header">
+  <div class="logo">
+    <a routerLink="/">YourLogo</a>
+  </div>
+
+  <nav class="menu">
+    <ul>
+      <li *ngFor="let item of menuItems" class="menu-item"
+          (mouseenter)="item.hover = true" (mouseleave)="item.hover = false">
+        <a>{{ item.label }}</a>
+        <div class="submenu" *ngIf="item.submenu?.length && item.hover">
+          <ul>
+            <li *ngFor="let sub of item.submenu">
+              <a>{{ sub }}</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="actions">
+    <button class="icon-btn search">🔍</button>
+    <button class="icon-btn user">👤</button>
+    <button class="icon-btn cart">🛒</button>
+  </div>
+</header>
+-->
