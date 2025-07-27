@@ -1,29 +1,11 @@
 <main class="home">
-  <div
-    style="
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /*
-    height: 100vh;
-    */
-    padding: 0 100px 0 50px;
-
-    /*
-    padding: 150px;
-    */
-    /*
-    gap: 20px;
-    */
-  "
-  >
+  <div class="image-wrapper">
     <app-image-slider
       [indicatorsVisible]="false"
       [animationSpeed]="100"
       [slides]="slides"
-      [autoPlay]="false"
-      [autoPlaySpeed]="4000"
-    ></app-image-slider>
+      [autoPlay]="true"
+      [autoPlaySpeed]="4000"></app-image-slider>
   </div>
 
   <section class="hero">
@@ -66,6 +48,5 @@
       }
     </div>
   </div>
-
 </main>
 

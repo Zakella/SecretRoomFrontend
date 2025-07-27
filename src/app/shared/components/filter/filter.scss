@@ -1,0 +1,26 @@
+.filter-group {
+  margin-bottom: 1.5rem;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.filter-body {
+  padding-left: 10px;
+}
+
+.checkbox-item {
+  margin: 5px 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+}

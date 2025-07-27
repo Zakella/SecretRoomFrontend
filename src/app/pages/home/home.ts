@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
-import {ProductCard} from '../../shared/components/product-card/product-card';
 import {BestSellers} from '../../shared/components/best-sellers/best-sellers';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, ProductCard, BestSellers],
+  imports: [RouterLink, ImageSlider, BestSellers],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,13 +29,14 @@ export class Home {
     }
   ];
   goals = [
-    { label: 'Dry Skin', image: '/assets/goals/dry-skin.jpg' },
-    { label: 'Reduce Wrinkles', image: '/assets/goals/wrinkles.jpg' },
-    { label: 'Acne and Blemishes', image: '/assets/goals/acne.jpg' },
-    { label: 'Color Care', image: '/assets/goals/color-care.jpg' },
-    { label: 'Damaged Hair', image: '/assets/goals/damaged-hair.jpg' },
-    { label: 'Clean Makeup', image: '/assets/goals/clean-makeup.jpg' },
+    { label: 'Dry Skin', image: 'https://d2fwbsa91kuigh.cloudfront.net/media/catalog/category/1026966_Vitamin_E_Day_Cream_50ml_GOLDINAEHPS443_CT13.jpg' },
+    { label: 'Reduce Wrinkles', image: 'https://www.sknclinics.co.uk/wp-content/uploads/2021/05/shutterstock_252456673-scaled.jpg' },
+    { label: 'Color Care', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkl43WOEN95b9APYvPHQtCWHioivOuSrxW_w&s' },
+    { label: 'Damaged Hair', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEscOddsVaU_uOqLYygW1W0MeaLieBdvA9Xw&s' },
+    { label: 'Clean Makeup', image: 'https://kirobeauty.com/cdn/shop/files/apex_brown_quad_prod_launch_banner_on_03-02-25_mob.png?v=4765907173123040996' },
+/*
     { label: 'Overall Wellness', image: '/assets/goals/wellness.jpg' }
+*/
   ];
 
   brands = [

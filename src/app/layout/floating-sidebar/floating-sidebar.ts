@@ -8,5 +8,6 @@ import { Component } from '@angular/core';
 })
 export class FloatingSidebar {
   cartCount = 1;
+  hasGift = true; // или подставляй реальное значение из сервиса
 
 }

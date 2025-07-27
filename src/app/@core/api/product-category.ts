@@ -14,7 +14,6 @@ export class ProductCategory {
     const timestamp = new Date().getTime();
     const url = `${this.baseUrL}/brand/${brandId}?nocache=${timestamp}`;
     // const url = `${this.baseUrL}/brand/${brandId}`;
-    console.log('Request URL:', url);
 
     return this.httpClient.get<ProductCategory[]>(url);
   }
@@ -22,7 +21,6 @@ export class ProductCategory {
   getCurrentProductCategory(categoryId: string): Observable<ProductCategory> {
     const timestamp = new Date().getTime();
     const url = `${this.baseUrL}/${categoryId}?nocache=${timestamp}`;
-    console.log('Request URL:', url);
 
     return this.httpClient.get<ProductCategory>(url);
   }

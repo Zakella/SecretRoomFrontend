@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReturnPolicy } from './return-policy';
+import { Wishlist } from './wishlist';
 
-describe('ReturnPolicy', () => {
-  let component: ReturnPolicy;
-  let fixture: ComponentFixture<ReturnPolicy>;
+describe('Wishlist', () => {
+  let component: Wishlist;
+  let fixture: ComponentFixture<Wishlist>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReturnPolicy]
+      imports: [Wishlist]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReturnPolicy);
+    fixture = TestBed.createComponent(Wishlist);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

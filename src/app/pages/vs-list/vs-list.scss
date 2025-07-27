@@ -1,6 +1,27 @@
+/*
 .product-list-wrapper {
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+*/
+.product-list-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 1rem 2rem;
+}
+
+/* Левая колонка с фильтрами */
+.filters-panel {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 1px solid #eee;
+  padding-right: 1rem;
+}
+
+/* Правая часть с товарами */
+.product-list-panel {
+  flex: 1;
 }

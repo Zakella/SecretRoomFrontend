@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import {ProductCard} from '../product-card/product-card';
+import {BtnShowMore} from '../btn-show-more/btn-show-more';
 
 @Component({
   selector: 'app-best-sellers',
   imports: [
-    ProductCard
+    ProductCard,
+    BtnShowMore
   ],
   templateUrl: './best-sellers.html',
   styleUrl: './best-sellers.scss'
@@ -17,15 +19,15 @@ export class BestSellers {
       brand: 'Innersense',
       price: 630,
       category: 'HAIR',
-      imageUrl: '/assets/products/mask.jpg',
+      imageUrl: 'https://images.pexels.com/photos/2834934/pexels-photo-2834934.jpeg',
       isNew: true
     },
     {
-      title: 'Soft Focus Blurring Blush',
+      title: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
       brand: 'ILIA',
       price: 667,
       category: 'MAKEUP',
-      imageUrl: '/assets/products/blush.jpg',
+      imageUrl: 'https://images.pexels.com/photos/2834934/pexels-photo-2834934.jpeg',
       isNew: true
     },
     {
@@ -33,7 +35,7 @@ export class BestSellers {
       brand: 'La Bonne Brosse',
       price: 3111,
       category: 'HAIR',
-      imageUrl: '/assets/products/brush.jpg',
+      imageUrl: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
       isNew: true
     },
     {
@@ -41,7 +43,7 @@ export class BestSellers {
       brand: 'Goop',
       price: 704,
       category: 'MAKEUP',
-      imageUrl: '/assets/products/highlighter.jpg',
+      imageUrl: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
       isNew: true
     },
   ];

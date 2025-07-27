@@ -1,5 +1,41 @@
-<!--
 <div class="product-list-wrapper">
-  <app-product-list [products]="mockProducts"></app-product-list>
+  <!-- Sidebar filters -->
+  <div class="filters-panel">
+    <app-filter
+      [filters]="[
+    {
+      title: 'Product Category',
+      type: 'checkbox',
+      values: [
+        { label: 'Body', value: 'body', count: 16 },
+        { label: 'Skincare', value: 'skincare', count: 21 },
+        { label: 'Wellness', value: 'wellness', count: 2 }
+      ]
+    },
+    {
+      title: 'Product Type',
+      type: 'checkbox',
+      values: [
+        { label: 'Aromatherapy', value: 'aroma', count: 2 },
+        { label: 'Bath', value: 'bath', count: 1 },
+        { label: 'Moisturizer', value: 'moisturizer', count: 12 }
+      ]
+    },
+    {
+      title: 'Brand',
+      type: 'search',
+      values: [
+        { label: 'Sol de Janeiro', value: 'sol' },
+        { label: 'Bath & Body Works', value: 'bbw' }
+      ]
+    }
+  ]"
+      (filterChanged)="onFilterChange($event)">
+    </app-filter>
+  </div>
+
+  <!-- Product list -->
+  <div class="product-list-panel">
+    <app-product-list [products]="mockProducts"></app-product-list>
+  </div>
 </div>
--->

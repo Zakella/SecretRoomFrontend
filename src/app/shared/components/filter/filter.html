@@ -1,0 +1,43 @@
+@for (group of filters; track group) {
+  <div class="filter-group">
+    <div class="filter-header" (click)="toggleGroup(group)">
+      <span>{{ group.title }}</span>
+      <span>{{ group.collapsed ? '+' : '−' }}</span>
+    </div>
+    @if (!group.collapsed){
+      <div class="filter-body">
+        @if (group.type === 'search') {
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              placeholder="Search brand"
+              class="search-input" />
+
+          @for (item of group.values; track item) {
+            <div class="checkbox-item">
+              <label>
+                <input type="checkbox" />
+                {{ item.label }}
+              </label>
+            </div>
+          }
+        }
+        @if (group.type === 'checkbox') {
+          @for (item of group.values; track item) {
+            <div class="checkbox-item">
+              <label>
+                <input type="checkbox"
+                />
+                {{ item.label }} ({{ item.count ?? 0 }})
+              </label>
+            </div>
+
+          }
+        }
+      </div>
+
+    }
+  </div>
+
+
+}

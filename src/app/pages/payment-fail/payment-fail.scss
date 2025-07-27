@@ -1,0 +1,122 @@
+.container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.card {
+  background: radial-gradient(circle, white 0%, #d5d5d5 100%);
+  width: 300px;
+  height: 200px;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 3px 3px 17px rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.remove {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.remove:hover {
+  color: #f06b5d;
+}
+
+.number {
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+  font-size: 1.2rem;
+  letter-spacing: 4px;
+  color: #000;
+  opacity: 0.9;
+}
+
+.owner {
+  position: absolute;
+  bottom: 35px;
+  left: 20px;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #000;
+  opacity: 0.9;
+}
+
+.error-icon {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  color: #e53935;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.retry-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: #e53935;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+  background-color: #d32f2f;
+}
+
+.card.error {
+  border: 2px solid #e53935;
+  animation: pulseError 1.5s ease-in-out infinite;
+}
+
+/* Пульсирующая анимация */
+@keyframes pulseError {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(229, 57, 53, 0.5);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(229, 57, 53, 0.7);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(229, 57, 53, 0.5);
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    width: 90vw;
+    height: 180px;
+  }
+
+  .number,
+  .owner,
+  .error-icon {
+    left: 16px;
+  }
+
+  .retry-button {
+    right: 16px;
+  }
+}
