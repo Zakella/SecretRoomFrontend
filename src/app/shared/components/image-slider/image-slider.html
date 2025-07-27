@@ -10,7 +10,7 @@
 
   @if (indicatorsVisible) {
     <div id="indicators">
-      @for(slide of slides; track $index; ){
+      @for(slide of slides; track slide.id; ){
         <div
           (click)="jumpToSlide($index)"
           class="indicator"

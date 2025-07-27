@@ -8,16 +8,18 @@
 
 .paginator button {
   padding: 5px 10px;
-  border: 1px solid #ccc;
-  background-color: white;
+  border: none;
+  background: none;
+  color: pink;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .paginator button.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  border-radius: 5px;
+  background-color: pink;
+  color: brown;
+  border: none;
 }
 
 .paginator button:disabled {

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-payment-fail',
@@ -7,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrl: './payment-fail.scss'
 })
 export class PaymentFail {
+  constructor(public  router: Router) {
+  }
 
+  goBack() {
+    this.router.navigate([`/checkout`]);
+  }
 }

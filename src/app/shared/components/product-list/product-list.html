@@ -1,5 +1,5 @@
 <div class="product-list">
-  @for (product of products; track product.id) {
+  @for (product of products; track product) {
     <app-product-card
       [imageUrl]="product.image"
       [title]="product.title"

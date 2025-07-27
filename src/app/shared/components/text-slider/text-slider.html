@@ -1,9 +1,11 @@
-<!--
-<div class="slider-container">
-  <div class="slider-track">
-    <ng-container *ngFor="let _ of [1, 2]">
-      <span *ngFor="let t of text" class="slider-text">{{ t }}</span>
-    </ng-container>
+<div class="marquee">
+  <div class="marquee__track">
+    @for (_ of [1, 2]; track $index) {
+      <div class="marquee__group">
+        @for (t of text; track $index) {
+          <span class="marquee__text">{{ t }}</span>
+        }
+      </div>
+    }
   </div>
 </div>
--->

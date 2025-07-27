@@ -5,10 +5,11 @@ import {FloatingSidebar} from './layout/floating-sidebar/floating-sidebar';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {TranslocoService} from '@ngneat/transloco';
 import {distinctUntilChanged, filter, map} from 'rxjs';
+import {Loader} from './shared/components/loader/loader';
 
 @Component({
   selector: 'app-root',
-  imports: [Header, Footer, FloatingSidebar, RouterOutlet],
+  imports: [Header, Footer, FloatingSidebar, RouterOutlet, Loader],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

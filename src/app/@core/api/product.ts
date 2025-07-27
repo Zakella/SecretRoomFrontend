@@ -1,35 +1,61 @@
 import { Injectable } from '@angular/core';
+import {environment} from '../../../environments/environment';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {GetResponse} from '../entities/get-response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Product {
-/*  constructor(private api: ProductApiService) {}
+  private baseUrL = environment.apiUrl + "products";
 
-  getFeatured(): Observable<Product[]> {
-    return this.api.getAll().pipe(
-      map((products) => products.filter(p => p.featured))
-    );
+  constructor(private httpClient: HttpClient) {}
+
+  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number): Observable<GetResponse> {
+    let params = new HttpParams()
+      .set('page', thePage.toString())
+      .set('size', thePageSize.toString());
+
+    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${categoryId}`, { params: params })
+      .pipe(catchError(this.handleError));
   }
 
-  getAll(): Observable<Product[]> {
-    return this.api.getAll();
+  getAllProductsByBrand(brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
+    let params = new HttpParams()
+      .set('page', thePage.toString())
+      .set('size', thePageSize.toString());
+
+    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${brand}`,  { params: params })
+      .pipe(catchError(this.handleError));
   }
 
-  getById(id: string): Observable<Product> {
-    return this.api.getById(id);
+  search(query: string, brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
+    let params = new HttpParams()
+      .set('name', query)
+      .set('page', thePage.toString())
+      .set('size', thePageSize.toString());
+
+    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${brand}/searchByNameContaining`, { params: params })
+      .pipe(catchError(this.handleError));
   }
 
-  create(product: Omit<Product, 'id'>) {
-    return this.api.create(product);
+  getAllProducts(): Observable<Product[]> {
+    return this.httpClient.get<Product[]>(this.baseUrL + '/all')
+      .pipe(catchError(this.handleError));
+
+
   }
 
-  update(id: string, product: Partial<Product>) {
-    return this.api.update(id, product);
+  private handleError(error: any) {
+    console.error('Something has gone wrong', error);
+    return throwError(error.message || error);
   }
 
-  delete(id: string) {
-    return this.api.delete(id);
+  getProductById(id: string | null): Observable<Product> {
+    return this.httpClient.get<Product>(`${this.baseUrL}/findProduct/${id}`)
+      .pipe(catchError(this.handleError));
   }
-  */
 }
+

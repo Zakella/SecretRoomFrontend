@@ -10,11 +10,14 @@
   font-size: 14px;
   padding-right: 15px;
   text-transform: uppercase;
+  color: pink;
 }
 
 .cta svg {
   transform: translateX(-8px);
   transition: all 0.3s ease;
+  fill: pink;
+
 }
 
 .cta:hover svg {
@@ -39,7 +42,10 @@
   height: 2px;
   bottom: 0;
   left: 0;
+  background-color: pink;
+  /*
   background-color: #000000;
+  */
   transform-origin: bottom right;
   transition: transform 0.25s ease-out;
 }

@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import {ProductList} from '../../shared/components/product-list/product-list';
 import {Filter} from '../../shared/components/filter/filter';
+import {Paginator} from '../../shared/components/paginator/paginator';
 
 @Component({
   selector: 'app-vs-list',
   imports: [
     ProductList,
-    Filter
+    Filter,
+    Paginator
   ],
   templateUrl: './vs-list.html',
   styleUrl: './vs-list.scss'

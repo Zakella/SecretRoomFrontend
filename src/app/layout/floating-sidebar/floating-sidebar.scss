@@ -3,9 +3,9 @@
   top: 30%;
   right: 0;
   z-index: 1000;
-  background: white;
+  background: black;
   border-radius: 10px 0 0 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); /* ярко-розовый */
   overflow: hidden;
   padding: 10px 0;
 
@@ -15,7 +15,7 @@
     align-items: center;
     padding: 12px;
     position: relative;
-    color: #000;
+    color: white;
     cursor: pointer;
     transition: background 0.2s;
 
@@ -33,7 +33,8 @@
     }
 
     &:hover {
-      background: #f4f4f4;
+      background: rgba(255, 105, 180, 0.3); /* ярко-розовый */
+
     }
 
     &.cart {

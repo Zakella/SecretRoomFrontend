@@ -23,7 +23,7 @@ export class BestSellers {
       isNew: true
     },
     {
-      title: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
+      title: 'Repair Mask',
       brand: 'ILIA',
       price: 667,
       category: 'MAKEUP',

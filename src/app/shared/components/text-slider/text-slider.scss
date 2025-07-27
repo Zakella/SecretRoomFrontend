@@ -1,33 +1,39 @@
-.slider-container {
+.marquee {
   overflow: hidden;
-  white-space: nowrap;
-  width: 100%;
-  background: #111;
-  color: #fff;
+  color: pink;
   padding: 1rem 0;
-}
-
-.slider-track {
-  display: inline-block;
   white-space: nowrap;
-  animation: scroll-left 15s linear infinite;
+  width: 70%;
+  margin: 0 auto;
 }
 
-.slider-container:hover .slider-track {
-  animation-play-state: paused; // пауза при наведении
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: scroll-marquee 20s linear infinite;
 }
 
-.slider-text {
-  display: inline-block;
+.marquee__group {
+  display: flex;
+}
+
+.marquee__text {
   padding: 0 2rem;
   font-size: 1.25rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-@keyframes scroll-left {
+.marquee:hover .marquee__track {
+  cursor: pointer;
+  animation-play-state: paused;
+}
+
+@keyframes scroll-marquee {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }

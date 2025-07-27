@@ -1,25 +1,32 @@
-<h2 class="section-title">Clean Beauty Best Sellers</h2>
+<div style="background-color: #000000">
+  <h2 class="section-title">Clean Beauty Best Sellers</h2>
 
-<div class="category-tabs">
-  @for (cat of categories ; track cat) {
-    <button
-      (click)="selectCategory(cat)"
-      [class.active]="cat === selectedCategory"
-    >
-      {{ cat }}
+  <div class="category-tabs">
+    @for (cat of categories; track cat) {
+      <button
+        (click)="selectCategory(cat)"
+        [class.active]="cat === selectedCategory"
+      >
+        {{ cat }}
+      </button>
+    }
+  </div>
 
-    </button>
-  }
-</div>
+  <div class="product-grid-wrapper">
+    <div class="product-grid">
+      @for (product of filteredProducts; track product) {
+        <app-product-card
+          [title]="product.title"
+          [brand]="product.brand"
+          [price]="product.price"
+          [imageUrl]="product.imageUrl"
+        ></app-product-card>
+      }
+    </div>
 
-<div class="product-grid">
-  @for (product of filteredProducts; track product) {
-    <app-product-card
-      [title]="product.title"
-      [brand]="product.brand"
-      [price]="product.price"
-      [imageUrl]="product.imageUrl"
-    ></app-product-card>
-  }
-  <app-btn-show-more></app-btn-show-more>
+    <div class="btn-more-wrapper">
+      <app-btn-show-more></app-btn-show-more>
+    </div>
+  </div>
+
 </div>

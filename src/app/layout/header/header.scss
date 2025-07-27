@@ -2,7 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: white;
+  background: black;
+  border-bottom: 1px solid #ffdbdd;
 
   .container {
     max-width: 1440px;
@@ -19,7 +20,7 @@
     font-weight: 600;
     letter-spacing: 1px;
     text-decoration: none;
-    color: #111;
+    color: #ffdbdd;
     /*
     font-family: 'Playfair Display', serif;
     */
@@ -33,16 +34,18 @@
       text-decoration: none;
       color: #555;
       font-size: 14px;
+      /*
       text-transform: uppercase;
+      */
       letter-spacing: 0.5px;
 
       &.active {
-        color: black;
+        color: #ffdbdd;
         font-weight: 500;
       }
 
       &:hover {
-        color: black;
+        color: white;
       }
     }
   }

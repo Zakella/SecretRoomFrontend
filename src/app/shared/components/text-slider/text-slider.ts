@@ -6,7 +6,7 @@ import {Component, Input} from '@angular/core';
   templateUrl: './text-slider.html',
   styleUrl: './text-slider.scss'
 })
-export class TextSlider {
+export class TextSlider  {
   @Input() text: string[] = ['🔥 Распродажа!', '🚚 Доставка за 24ч', '🎁 Подарки каждому', '💄 Косметика топ брендов'];
 
 }
