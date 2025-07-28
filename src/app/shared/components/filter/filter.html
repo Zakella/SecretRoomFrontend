@@ -1,4 +1,4 @@
-@for (group of filters; track group) {
+@for (group of filters; track $index) {
   <div class="filter-group">
     <div class="filter-header" (click)="toggleGroup(group)">
       <span>{{ group.title }}</span>
@@ -13,7 +13,7 @@
               placeholder="Search brand"
               class="search-input" />
 
-          @for (item of group.values; track item) {
+          @for (item of group.values; track $index) {
             <div class="checkbox-item">
               <label>
                 <input type="checkbox" />
@@ -23,7 +23,7 @@
           }
         }
         @if (group.type === 'checkbox') {
-          @for (item of group.values; track item) {
+          @for (item of group.values; track $index) {
             <div class="checkbox-item">
               <label>
                 <input type="checkbox"

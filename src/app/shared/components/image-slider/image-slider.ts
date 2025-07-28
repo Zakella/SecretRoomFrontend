@@ -14,6 +14,8 @@ export class ImageSlider implements OnInit {
   @Input() autoPlay = false;
   @Input() autoPlaySpeed = 3000;
   currentSlide = 0;
+/*  faArrowRight = faArrowRight;
+  faArrowLeft = faArrowLeft;*/
   hidden = false;
 
   next() {

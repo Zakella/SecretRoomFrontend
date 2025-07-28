@@ -1,8 +1,9 @@
-<div style="background-color: #000000">
+<!--
+<div>
   <h2 class="section-title">Clean Beauty Best Sellers</h2>
 
   <div class="category-tabs">
-    @for (cat of categories; track cat) {
+    @for (cat of categories; track $index) {
       <button
         (click)="selectCategory(cat)"
         [class.active]="cat === selectedCategory"
@@ -14,7 +15,7 @@
 
   <div class="product-grid-wrapper">
     <div class="product-grid">
-      @for (product of filteredProducts; track product) {
+      @for (product of filteredProducts; track product.title) {
         <app-product-card
           [title]="product.title"
           [brand]="product.brand"
@@ -30,3 +31,4 @@
   </div>
 
 </div>
+-->

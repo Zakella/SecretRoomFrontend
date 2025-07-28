@@ -13,11 +13,9 @@ export class HttpInterceptor {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log(`Request intercepted: ${req.urlWithParams}`);
 
-    // Check if the request is for the API
     if (req.url.includes('/api/')) {
-      if (isPlatformBrowser(this.platformId)) {  // Проверяем, выполняется ли в браузере
+      if (isPlatformBrowser(this.platformId)) {
         const storedUser = localStorage.getItem("user");
 
         if (storedUser && storedUser !== "null") {

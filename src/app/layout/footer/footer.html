@@ -15,12 +15,9 @@
     <div class="footer-links">
       <div class="column">
         <h4>Помощь</h4>
-<!--
-        <a routerLink="/faq">FAQ</a>
--->
         <a routerLink="/contact">Контакты</a>
         <a routerLink="/shipping">Доставка</a>
-        <a routerLink="/returns">Возврат</a>
+        <a (click)="showPolicy()">Политика возврата</a>
       </div>
       <div class="column">
         <h4>О нас</h4>
@@ -37,7 +34,6 @@
     </div>
   </div>
 
-  <!-- Нижняя полоса -->
   <div class="footer-bottom">
     <div class="container">
       <span>© 2025 Secret Room. Все права защищены.</span>
@@ -55,3 +51,8 @@
     </div>
   </div>
 </footer>
+
+<app-return-policy
+  [open]="isReturnPolicyVisible"
+  (closed)="isReturnPolicyVisible = false"
+/>

@@ -1,7 +1,7 @@
 <div class="paginator">
   <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
 
-  @for(page of pages; track page){
+  @for(page of pages; track $index){
     <button
       [class.active]="page === currentPage"
       (click)="goToPage(page)">

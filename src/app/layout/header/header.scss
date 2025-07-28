@@ -21,9 +21,6 @@
     letter-spacing: 1px;
     text-decoration: none;
     color: #ffdbdd;
-    /*
-    font-family: 'Playfair Display', serif;
-    */
   }
 
   .nav {
@@ -34,9 +31,7 @@
       text-decoration: none;
       color: #555;
       font-size: 14px;
-      /*
-      text-transform: uppercase;
-      */
+
       letter-spacing: 0.5px;
 
       &.active {
@@ -145,6 +140,32 @@
       transition: color 0.2s;
 
       &:hover { color: #888; }
+    }
+  }
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+
+  button {
+    background: none;
+    border: none;
+    color: #ffdbdd;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &.active {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    &:hover {
+      opacity: 1;
     }
   }
 }

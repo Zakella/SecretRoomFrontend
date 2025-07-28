@@ -10,7 +10,16 @@
       <a routerLink="/new" routerLinkActive="active">Новинки</a>
       <a routerLink="/blog" routerLinkActive="active">Блог</a>
     </nav>
-
+    <div class="lang-switcher">
+      @for (lang of languages; track $index) {
+        <button
+          (click)="setActiveLang(lang)"
+          [class.active]="lang === activeLang()"
+        >
+          {{ lang.toUpperCase() }}
+        </button>
+      }
+    </div>
     <div class="icons">
       <button aria-label="Поиск"><i class="ri-search-line"></i></button>
       <button aria-label="Избранное" routerLink="/wishlist"><i class="ri-heart-line"></i></button>
@@ -18,5 +27,6 @@
       <button aria-label="Корзина" routerLink="/brands"><i class="ri-shopping-bag-line"></i></button>
     </div>
   </div>
+
 </header>
 

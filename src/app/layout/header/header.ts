@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
+import {TranslocoService} from '@ngneat/transloco';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-header',
@@ -11,16 +13,11 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
   styleUrl: './header.scss'
 })
 export class Header {
+  public languages = ['ru', 'ro'];
+  langService = inject(Language);
+  public  activeLang = this.langService.currentLanguage
 
-  menuItems = [
-    { label: 'Jewelry', submenu: ['Rings', 'Necklaces'], hover: false },
-    { label: 'Watches', submenu: ['Men', 'Women'], hover: false },
-    { label: 'Accessories', submenu: [], hover: false }
-  ];
-
-
-  setHover(index: number, value: boolean) {
-    this.menuItems[index].hover = value;
+  setActiveLang(lang: string) {
+    this.langService.setLanguage(lang);
   }
-
 }
