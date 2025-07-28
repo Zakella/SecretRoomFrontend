@@ -1,11 +1,11 @@
-<div class="modal-backdrop" *ngIf="open">
-  <div class="modal">
-    <button class="close-btn" (click)="close()">×</button>
-    <h2>Политика возврата</h2>
-    <p>
-      Вы можете вернуть товар в течение 14 дней после получения заказа.
-      Товар должен быть в оригинальной упаковке и без следов использования.
-      Возврат денежных средств производится в течение 3 рабочих дней с момента получения возврата.
-    </p>
+@if (open) {
+  <div class="modal-backdrop"(click)="close()">
+    <div class="modal">
+      <button class="close-btn" (click)="close()">×</button>
+      <h2>{{'Return policy'| transloco}}</h2>
+      <p>
+        {{'ReturnTermsText'| transloco}}
+      </p>
+    </div>
   </div>
-</div>
+}

@@ -1,11 +1,9 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgIf} from '@angular/common';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-return-policy',
-  imports: [
-    NgIf
-  ],
+  imports: [TranslocoPipe],
   templateUrl: './return-policy.html',
   styleUrl: './return-policy.scss'
 })

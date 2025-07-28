@@ -82,6 +82,22 @@
       justify-content: space-between;
       align-items: center;
 
+      .payment-icons {
+        display: flex;
+        gap: 12px;
+
+        img {
+          height: 24px;
+          opacity: 0.9;
+          transition: opacity 0.2s ease;
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+
+
       span {
         /*
         color: #777;
