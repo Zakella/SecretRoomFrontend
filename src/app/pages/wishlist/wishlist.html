@@ -1,1 +1,19 @@
-<p>wishlist works!</p>
+<section class="wishlist-page">
+  <h1>Мой список желаемого</h1>
+
+  <div *ngIf="wishlist.length === 0" class="empty">
+    <p>Ваш список пуст. Добавьте любимые продукты ❤️</p>
+  </div>
+
+  <div class="wishlist-grid" *ngIf="wishlist.length > 0">
+    <div class="wishlist-card" *ngFor="let item of wishlist">
+      <button class="btn-remove" (click)="removeItem(item.id)">×</button>
+      <img [src]="item.image" alt="{{ item.title }}" />
+      <div class="info">
+        <h3>{{ item.title }}</h3>
+        <p class="price">L {{ item.price }}</p>
+        <button class="btn-cart" (click)="addToCart(item)">ADD TO CART</button>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,250 @@
+.cart-drawer {
+
+
+  width: 90vw;
+  max-width: 800px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease forwards;
+  display: flex;
+  max-height: 100vh;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+
+  .cart-suggestions {
+    width: 30%;
+    background: #f2f2f2;
+    padding: 1rem;
+    h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .suggested-item {
+      margin-bottom: 2rem;
+      text-align: center;
+
+      img {
+        width: 60px;
+        height: auto;
+        margin: 0 auto 0.5rem;
+      }
+
+      .title {
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .price {
+        font-size: 0.9rem;
+        margin: 0.25rem 0;
+      }
+
+      .btn-add {
+        background: #000;
+        color: #fff;
+        padding: 0.4rem 0.8rem;
+        border: none;
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .cart-content {
+    width: 70%;
+    background: #fff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+    }
+
+    .cart-welcome {
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+
+    .free-shipping-bar {
+      font-size: 0.85rem;
+      background: #e8f6ff;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+
+      .progress-bar {
+        height: 6px;
+        background: #ccc;
+        margin-top: 0.5rem;
+        border-radius: 3px;
+
+        .progress {
+          height: 6px;
+          background: #000;
+          width: 0%;
+          border-radius: 3px;
+        }
+      }
+    }
+
+    .cart-items {
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+      margin-bottom: 1rem;
+
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+
+        img {
+          width: 50px;
+          height: 70px;
+          object-fit: contain;
+        }
+
+        .item-info {
+          flex: 1;
+          .title {
+            font-size: 0.9rem;
+            font-weight: 500;
+          }
+
+          .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+
+            button {
+              width: 24px;
+              height: 24px;
+              border: 1px solid #ccc;
+              background: none;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .price {
+          font-size: 0.95rem;
+          font-weight: bold;
+        }
+
+        .btn-remove {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+          position: absolute;
+          top: 0;
+          right: 0;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .gift-wrap {
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      input {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .cart-footer {
+      margin-top: auto;
+      .subtotal {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .btn-checkout {
+        width: 100%;
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .installments {
+        font-size: 0.75rem;
+        text-align: center;
+        margin-top: 0.5rem;
+        color: #777;
+      }
+    }
+  }
+}
+.drawer-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+/*.cart-drawer {
+  width: 90vw;
+  max-width: 800px;
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  animation: slideIn 0.3s ease forwards;
+
+  !* остальной код из предыдущего SCSS *!
+}*/
+
+/* Анимация появления */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .cart-drawer {
+    flex-direction: column;
+    .cart-suggestions {
+      order: 2;
+      width: 100%;
+    }
+    .cart-content {
+      order: 1;
+      width: 100%;
+    }
+  }
+}

@@ -6,20 +6,29 @@ import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/rout
 import {TranslocoService} from '@ngneat/transloco';
 import {distinctUntilChanged, filter, map} from 'rxjs';
 import {Loader} from './shared/components/loader/loader';
+import {Cart} from './shared/components/cart/cart';
+import {NgIf} from '@angular/common';
+import {Notify} from './@core/services/notify';
+import {Notification} from './shared/components/notification/notification';
+import {ScrollTop} from './shared/components/scroll-top/scroll-top';
 
 @Component({
   selector: 'app-root',
-  imports: [Header, Footer, FloatingSidebar, RouterOutlet, Loader],
+  imports: [Header, Footer, FloatingSidebar, RouterOutlet, Loader, Cart, NgIf, Notification, ScrollTop],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
+  showCart = false;
 
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private translateService = inject(TranslocoService);
+  notify = inject(Notify)
 constructor() {
   this.initializeMetaTags();
+  this.notify.success('Language changed to ');
+
 }
 
   public initializeMetaTags() {
@@ -32,7 +41,6 @@ constructor() {
       .subscribe(lang => {
         const currentLang = (lang && ['ru', 'ro'].includes(lang)) ? lang : 'en';
         this.translateService.setActiveLang(currentLang);
-
 /*        const meta = META_INFO[currentLang];
         if (meta) {
           this.updateMetaTags(currentLang, meta.title, meta.description, meta.keywords);

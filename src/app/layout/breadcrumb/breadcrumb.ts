@@ -7,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './breadcrumb.scss'
 })
 export class Breadcrumb {
+/*  breadcrumbs$!: Observable<Breadcrumbs[]>;
 
+  constructor(
+    private breadcrumbsService: BreadcrumbService
+  ) {
+    this.breadcrumbs$ = this.breadcrumbsService.breadcrumbs$;
+}*/
 }

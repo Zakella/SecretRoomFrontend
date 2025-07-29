@@ -1,0 +1,64 @@
+<div class="drawer-backdrop" (click)="closeDrawer()">
+<div class="cart-drawer">
+  <!-- Левая колонка с рекомендациями -->
+  <aside class="cart-suggestions">
+    <h3>YOU MAY ALSO LIKE</h3>
+
+    <div class="suggested-item" *ngFor="let item of suggestions">
+      <img [src]="item.image" alt="" />
+      <p class="title">{{ item.title }}</p>
+      <p class="price">L {{ item.price }}</p>
+      <button class="btn-add">ADD TO CART</button>
+    </div>
+  </aside>
+
+  <!-- Правая колонка — корзина -->
+  <div class="cart-content">
+    <div class="cart-header">
+      <h2>YOUR CART</h2>
+      <button class="btn-close">✕</button>
+    </div>
+
+    <div class="cart-welcome">
+      Welcome to The Detox Market
+    </div>
+
+    <div class="free-shipping-bar">
+      <p>You are <strong>L {{ freeShippingRemaining }}</strong> away from <strong>FREE SHIPPING!</strong></p>
+      <div class="progress-bar">
+        <div class="progress" [style.width.%]="shippingProgress"></div>
+      </div>
+    </div>
+
+    <div class="cart-items">
+      <div class="cart-item">
+        <img [src]="cartItem.image" alt="" />
+        <div class="item-info">
+          <p class="title">{{ cartItem.title }}</p>
+          <div class="qty-controls">
+            <button (click)="decreaseQty()">−</button>
+            <span>{{ cartItem.quantity }}</span>
+            <button (click)="increaseQty()">+</button>
+          </div>
+        </div>
+        <div class="price">L {{ cartItem.price * cartItem.quantity }}</div>
+        <button class="btn-remove">×</button>
+      </div>
+    </div>
+
+    <label class="gift-wrap">
+      <input type="checkbox" [(ngModel)]="giftWrap" />
+      ADD GIFT WRAPPING
+    </label>
+
+    <div class="cart-footer">
+      <div class="subtotal">
+        <span>SUBTOTAL</span>
+        <span>L {{ subtotal }}</span>
+      </div>
+      <button class="btn-checkout">CHECKOUT →</button>
+      <p class="installments">or 4 interest-free installments of L {{ (subtotal / 4) | number:'1.0-2' }} by Afterpay & Klarna</p>
+    </div>
+  </div>
+</div>
+</div>

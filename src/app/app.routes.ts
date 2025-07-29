@@ -9,6 +9,7 @@ import {AboutUs} from './pages/about-us/about-us';
 import {Wishlist} from './pages/wishlist/wishlist';
 import {PaymentFail} from './pages/payment-fail/payment-fail';
 import {Login} from './pages/login/login';
+import {Cabinet} from './pages/cabinet/cabinet';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,7 @@ export const routes: Routes = [
       {path: 'payment-fail', component: PaymentFail},
       {path: 'delivery-terms', component: AboutUs},
       {path: 'profile', component: Login},
+      {path: 'cabinet', component: Cabinet},
       {path: '**', component: Notfound}
     ]
   },

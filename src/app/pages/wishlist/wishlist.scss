@@ -1,0 +1,87 @@
+.wishlist-page {
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #333;
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty {
+    text-align: center;
+    color: #777;
+    font-size: 1rem;
+  }
+
+  .wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+  }
+
+  .wishlist-card {
+    position: relative;
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+    }
+
+    .info {
+      h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .price {
+        font-size: 0.95rem;
+        color: #e86ea8;
+        margin-bottom: 0.75rem;
+      }
+
+      .btn-cart {
+        background: #000;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 20px;
+        cursor: pointer;
+
+        &:hover {
+          background: #222;
+        }
+      }
+    }
+
+    .btn-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #999;
+      cursor: pointer;
+
+      &:hover {
+        color: #e86ea8;
+      }
+    }
+  }
+}

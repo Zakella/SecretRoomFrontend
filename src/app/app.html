@@ -1,6 +1,9 @@
 <app-header/>
-<router-outlet></router-outlet>
 
+<router-outlet></router-outlet>
+<button (click)="showCart = true">🛒 Open Cart</button>
+
+<app-cart *ngIf="showCart" (close)="showCart = false"></app-cart>
 <app-floating-sidebar></app-floating-sidebar>
 <app-footer/>
 <app-loader></app-loader>
@@ -10,3 +13,5 @@
   </feColorMatrix>
   </filter>
 </svg>
+<app-notification></app-notification>
+<app-scroll-top></app-scroll-top>
