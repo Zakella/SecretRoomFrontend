@@ -9,7 +9,10 @@ import {FormsModule} from '@angular/forms';
 })
 export class Filter {
   @Input() filters: FilterGroup[] = [];
-  @Output() filterChanged = new EventEmitter<{ group: string; value: string; checked: boolean }>();
+  @Input() selected: any = { category: [], type: [], brand: null };
+  @Output() filterChanged = new EventEmitter<any>();
+/*  @Input() filters: FilterGroup[] = [];
+  @Output() filterChanged = new EventEmitter<{ group: string; value: string; checked: boolean }>();*/
 
   searchQuery = '';
 

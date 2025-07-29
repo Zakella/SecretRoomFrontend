@@ -1,5 +1,12 @@
 <app-header/>
 <router-outlet></router-outlet>
+
 <app-floating-sidebar></app-floating-sidebar>
 <app-footer/>
 <app-loader></app-loader>
+<svg class="pointer-events-none absolute cursor-none">
+  <filter id="grainy"><feTurbulence type="turbulence" baseFrequency="0.5">
+  </feTurbulence><feColorMatrix type="saturate" values="0">
+  </feColorMatrix>
+  </filter>
+</svg>

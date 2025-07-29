@@ -1,3 +1,4 @@
+/*
 .header {
   position: sticky;
   top: 0;
@@ -162,6 +163,271 @@
     &.active {
       opacity: 1;
       text-decoration: underline;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+*/
+
+
+
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-top {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.nav-item:hover {
+  color: #007bff;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-decoration: none;
+  justify-content: center;
+  color: #ffdbdd;
+}
+
+.icons {
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 18px;
+  color: #333;
+  text-decoration: none;
+}
+
+
+
+.cart:hover {
+  color: #007bff;
+}
+
+.nav-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border-top: 1px solid #e5e5e5;
+  position: relative;
+}
+
+.nav-main .nav-item {
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+
+.detox-notes {
+  position: static;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-width: 1200px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 20px;
+}
+
+.nav-main:hover .dropdown {
+  display: block;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.dropdown-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.dropdown-section h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.dropdown-section p {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.dropdown-columns {
+  display: flex;
+  gap: 20px;
+  flex: 2;
+}
+
+.dropdown-column {
+  flex: 1;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 5px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.dropdown-item:hover {
+  color: #007bff;
+}
+
+.dropdown-image {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.dropdown-image img {
+  max-width: 150px;
+  margin-bottom: 10px;
+}
+
+.dropdown-image p {
+  font-size: 12px;
+  text-align: center;
+  color: #666;
+}
+
+.search-bar {
+  position: relative;
+  margin-left: auto;
+  max-width: 360px;
+  input{
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 1em;
+    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+    transition: 300ms ease-in-out;
+  }
+  input:focus{
+      background-color: white;
+      transform: scale(1.05);
+      box-shadow: 13px 13px 100px #969696,
+      -13px -13px 100px #ffffff;
+  }
+
+  i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #8a8a8a;
+    pointer-events: none; /* чтобы клик попадал в инпут */
+  }
+}
+
+.search-bar input {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #e5e5e5;
+}
+
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-left, .nav-right {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-main {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dropdown {
+    position: static;
+    width: 100%;
+  }
+
+  .dropdown-content {
+    flex-direction: column;
+  }
+
+  .dropdown-image {
+    margin-top: 20px;
+  }
+}
+
+
+
+.lang-switcher {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+
+  button {
+    background: none;
+    border: none;
+    color: #ffdbdd;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &.active {
+      opacity: 1;
+      color: #fff;
+      text-shadow: 0 0 6px #ffdbdd, 0 0 12px #ffdbdd;
     }
 
     &:hover {

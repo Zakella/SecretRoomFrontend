@@ -1,1 +1,93 @@
-<p>product-detail works!</p>
+<section class="product-page">
+  <div class="product-grid">
+    <!-- Изображения -->
+    <div class="product-images">
+      <div class="main-image">
+        <img src="assets/images/demo/slider1.jpeg" alt="Product Image" />
+      </div>
+      <div class="thumbnails">
+        <img src="assets/images/demo/slider1.jpeg" alt="Product Image" />
+        <img src="assets/images/demo/slider1.jpeg" alt="Product Image" />
+      </div>
+    </div>
+
+    <!-- Инфо -->
+    <div class="product-info">
+      <h1>Glow Nectar Face Oil</h1>
+      <p class="brand">by Secret Room</p>
+      <p class="price">$39.00</p>
+      <p class="description">
+        Питательное масло для лица с легким сиянием, созданное из 100% натуральных ингредиентов.
+      </p>
+
+      <!-- Цвета -->
+      <div class="color-picker">
+        <span>Цвет:</span>
+        <div class="color-options">
+          <div
+            *ngFor="let color of colors"
+            class="color-circle"
+            [ngStyle]="{ 'background-color': color.hex }"
+            [class.selected]="color.name === selectedColor"
+            (click)="selectedColor = color.name"
+            [title]="color.label"
+          ></div>
+        </div>
+      </div>
+
+      <ul class="features">
+        <li>✓ Веган и cruelty-free</li>
+        <li>✓ Без силиконов и парабенов</li>
+        <li>✓ Подходит для беременных</li>
+      </ul>
+
+      <div class="actions">
+        <button class="btn-primary">Добавить в корзину</button>
+        <button class="btn-secondary">♡ В избранное</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Табы -->
+  <div class="product-tabs">
+    <div class="tabs">
+      <button
+        *ngFor="let tab of tabs"
+        [class.active]="tab.key === selectedTab"
+        (click)="selectedTab = tab.key"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <ng-container *ngIf="selectedTab === 'description'">
+        <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
+      </ng-container>
+
+      <ng-container *ngIf="selectedTab === 'ingredients'">
+        <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
+      </ng-container>
+
+      <ng-container *ngIf="selectedTab === 'reviews'">
+        <p>★ ★ ★ ★ ☆ – 4.5 / 5<br>Анна: "Очень приятный запах и быстро впитывается!"</p>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="related-products">
+    <h2>Похожие товары</h2>
+    <div class="related-grid">
+      <div class="product-card">
+        <img src="assets/images/demo/slider1.jpeg" alt="Product Image" />
+        <h3>Hydra Mist</h3>
+        <p>$25.00</p>
+      </div>
+      <div class="product-card">
+        <img src="assets/images/demo/slider1.jpeg" alt="Product Image" />
+        <h3>Rose Toner</h3>
+        <p>$18.00</p>
+      </div>
+    </div>
+  </div>
+</section>

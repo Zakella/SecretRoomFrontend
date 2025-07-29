@@ -8,6 +8,7 @@ import {Contacts} from './pages/contacts/contacts';
 import {AboutUs} from './pages/about-us/about-us';
 import {Wishlist} from './pages/wishlist/wishlist';
 import {PaymentFail} from './pages/payment-fail/payment-fail';
+import {Login} from './pages/login/login';
 
 export const routes: Routes = [
   {
@@ -16,14 +17,13 @@ export const routes: Routes = [
       {path: '', component: Home},
       {path: 'bb', component: BbList},
       {path: 'vs', component: VsList},
-/*
-      {path: ':id', component: ProductDetail},
-*/
+      {path: 'pd', component: ProductDetail},
       {path: 'contacts', component: Contacts},
       {path: 'about-us', component: AboutUs},
       {path: 'wishlist', component: Wishlist},
       {path: 'payment-fail', component: PaymentFail},
       {path: 'delivery-terms', component: AboutUs},
+      {path: 'profile', component: Login},
       {path: '**', component: Notfound}
     ]
   },

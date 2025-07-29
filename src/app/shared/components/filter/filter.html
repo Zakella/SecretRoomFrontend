@@ -23,7 +23,7 @@
           }
         }
         @if (group.type === 'checkbox') {
-          @for (item of group.values; track $index) {
+          @for (item of group.values; track item) {
             <div class="checkbox-item">
               <label>
                 <input type="checkbox"
