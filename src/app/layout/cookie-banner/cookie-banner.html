@@ -1,1 +1,8 @@
-<p>cookie-banner works!</p>
+@if (!accepted()) {
+  <div class="cookie-banner">
+    <p>
+      Мы используем cookies для улучшения вашего опыта. Продолжая использовать сайт, вы соглашаетесь с этим.
+    </p>
+    <button (click)="accept()">Ок</button>
+  </div>
+}

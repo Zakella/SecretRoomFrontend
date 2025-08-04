@@ -1,6 +1,7 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DecimalPipe, NgForOf} from '@angular/common';
+import {CartUi} from './services/cart'
 
 @Component({
   selector: 'app-cart',
@@ -14,10 +15,13 @@ import {DecimalPipe, NgForOf} from '@angular/common';
 })
 export class Cart {
   @Output() close = new EventEmitter<void>();
+  private cartService = inject(CartUi);
 
   closeDrawer() {
+    this.cartService.close();
     this.close.emit();
   }
+
   cartItem = {
     title: 'REPAIR MASK',
     quantity: 1,

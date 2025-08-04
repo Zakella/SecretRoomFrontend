@@ -10,30 +10,46 @@ import {Wishlist} from './pages/wishlist/wishlist';
 import {PaymentFail} from './pages/payment-fail/payment-fail';
 import {Login} from './pages/login/login';
 import {Cabinet} from './pages/cabinet/cabinet';
+import {ResetPassword} from './pages/reset-password/reset-password';
+import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
+import {MainLayout} from './layout/main-layout/main-layout';
+import {BlankLayout} from './layout/blank-layout/blank-layout';
 
 export const routes: Routes = [
-  {
-    path: ':lang',
-    children: [
-      {path: '', component: Home},
-      {path: 'bb', component: BbList},
-      {path: 'vs', component: VsList},
-      {path: 'pd', component: ProductDetail},
-      {path: 'contacts', component: Contacts},
-      {path: 'about-us', component: AboutUs},
-      {path: 'wishlist', component: Wishlist},
-      {path: 'payment-fail', component: PaymentFail},
-      {path: 'delivery-terms', component: AboutUs},
-      {path: 'profile', component: Login},
-      {path: 'cabinet', component: Cabinet},
-      {path: '**', component: Notfound}
-    ]
-  },
   {
     path: '',
     redirectTo: 'ru',
     pathMatch: 'full',
+  },
+  {
+    path: ':lang',
+    children: [
+      {
+        path: '',
+        component: MainLayout,
+        children: [
+          {path: '', component: Home},
+          {path: 'bb', component: BbList},
+          {path: 'vs', component: VsList},
+          {path: 'pd', component: ProductDetail},
+          {path: 'contacts', component: Contacts},
+          {path: 'about-us', component: AboutUs},
+          {path: 'wishlist', component: Wishlist},
+          {path: 'payment-fail', component: PaymentFail},
+          {path: 'delivery-terms', component: AboutUs},
+          {path: 'rules', component: DeliveryTerms},
+          {path: 'cabinet', component: Cabinet},
+        ],
+      },
+      {
+        path: '',
+        component: BlankLayout,
+        children: [
+          {path: 'profile', component: Login},
+          {path: 'reset', component: ResetPassword},
+          {path: '**', component: Notfound}
+        ]
+      }
+    ]
   }
-
-
 ];

@@ -9,12 +9,10 @@ import { Notify } from '../../@core/services/notify';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, Reels, NgOptimizedImage],
+  imports: [RouterLink, ImageSlider, BestSellers, TextSlider],
   templateUrl: './home.html',
   styleUrl: './home.scss',
-/*
   changeDetection: ChangeDetectionStrategy.OnPush
-*/
 })
 export class Home implements OnInit{
   notify = inject(Notify)

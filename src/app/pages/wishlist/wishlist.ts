@@ -1,12 +1,8 @@
 import { Component } from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-wishlist',
-  imports: [
-    NgIf,
-    NgForOf
-  ],
+  imports: [],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss'
 })

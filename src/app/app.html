@@ -1,17 +1,1 @@
-<app-header/>
-
 <router-outlet></router-outlet>
-<button (click)="showCart = true">🛒 Open Cart</button>
-
-<app-cart *ngIf="showCart" (close)="showCart = false"></app-cart>
-<app-floating-sidebar></app-floating-sidebar>
-<app-footer/>
-<app-loader></app-loader>
-<svg class="pointer-events-none absolute cursor-none">
-  <filter id="grainy"><feTurbulence type="turbulence" baseFrequency="0.5">
-  </feTurbulence><feColorMatrix type="saturate" values="0">
-  </feColorMatrix>
-  </filter>
-</svg>
-<app-notification></app-notification>
-<app-scroll-top></app-scroll-top>

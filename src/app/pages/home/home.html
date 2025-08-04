@@ -20,19 +20,21 @@
 
     </div>
   </section>
-  <app-text-slider></app-text-slider>
-  <app-best-sellers></app-best-sellers>
-  <div class="beauty-goals">
-    <h3>What are your beauty goals?</h3>
-    <div class="goals-list">
-      @for (goal of goals; track goal.label;) {
-        <div class="goal">
-          <img [src]="goal.image" [alt]="goal.label" />
-          <span>{{ goal.label }}</span>
-        </div>
-      }
+  <ng-container>
+    <app-text-slider></app-text-slider>
+    <app-best-sellers></app-best-sellers>
+    <div class="beauty-goals">
+      <h3>What are your beauty goals?</h3>
+      <div class="goals-list">
+        @for (goal of goals; track goal.label;) {
+          <div class="goal">
+            <img [src]="goal.image" [alt]="goal.label" />
+            <span>{{ goal.label }}</span>
+          </div>
+        }
+      </div>
     </div>
-  </div>
+  </ng-container>
 </main>
 
 -->

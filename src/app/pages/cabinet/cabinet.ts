@@ -2,12 +2,11 @@ import {Component, inject, OnInit} from '@angular/core';
 import {UserDetails} from '../../@core/entities/user-details';
 import {Router} from '@angular/router';
 import {Authentication} from '../../@core/auth/authentication';
-import {CurrencyPipe, DatePipe, NgForOf} from '@angular/common';
+import {CurrencyPipe, DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-cabinet',
   imports: [
-    NgForOf,
     DatePipe,
     CurrencyPipe
   ],

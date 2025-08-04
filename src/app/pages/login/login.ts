@@ -1,16 +1,24 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, Validators} from '@angular/forms';
 import { Authentication } from '../../@core/auth/authentication';
 import { TranslocoService } from '@ngneat/transloco';
 import {Router} from '@angular/router';
+import {ResetPassword} from '../reset-password/reset-password';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  imports: [
+    ResetPassword,
+    FormsModule,
+    NgIf
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login {
+  showReset = false;
+
   badCredentials: boolean = false
   visible: boolean = false;
 
@@ -102,5 +110,14 @@ export class Login {
 
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
+  }
+  email: string = '';
+  password: string = '';
+
+  onSubmit() {
+    if (this.email && this.password) {
+      // Здесь будет логика входа, например вызов сервиса аутентификации
+      alert(`Вход для ${this.email} выполнен!`);
+    }
   }
 }
