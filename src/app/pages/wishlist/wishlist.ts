@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-wishlist',
-  imports: [],
+  imports: [
+    FadeUp
+  ],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss'
 })
@@ -12,13 +15,13 @@ export class Wishlist {
       id: 1,
       title: 'Glow Nectar Face Oil',
       price: 39,
-      image: 'https://images.unsplash.com/photo-1600185365522-5b7b6a9ff09c'
+      image: '/assets/images/demo/main.jpeg'
     },
     {
       id: 2,
       title: 'Rose Lip Balm',
       price: 20,
-      image: 'https://images.unsplash.com/photo-1589987634394-791f4ab6f0a4'
+      image: '/assets/images/demo/main.jpeg'
     }
   ];
 

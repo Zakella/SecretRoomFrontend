@@ -1,11 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  font-family: 'poppins', sans-serif;
-}
-
 section {
   display: flex;
   justify-content: center;
@@ -32,7 +24,7 @@ section:before {
   align-items: center;
   position: relative;
   width: 400px;
-  height: 450px;
+  height: 495px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
@@ -53,7 +45,7 @@ h2 {
   width: 310px;
 }
 
-.inputbox label {
+.input-box label {
   transform: translateY(-50%);
   color: #fff;
   font-size: 1em;
@@ -69,7 +61,7 @@ input:valid~label {
   top: -5px;
 }
 
-.inputbox input {
+.input-box input {
   background: transparent;
   border: none;
   outline: none;
@@ -80,7 +72,7 @@ input:valid~label {
   height: 50px;
 }
 
-.inputbox i {
+.input-box i {
   font-size: 1.2em;
   position: absolute;
   right: 8px;

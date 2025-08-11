@@ -11,6 +11,7 @@ import {Notify} from '../../@core/services/notify';
 import {distinctUntilChanged, filter, map} from 'rxjs';
 import {FloatingSidebar} from '../floating-sidebar/floating-sidebar';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
+import {ModalCertificate} from '../../shared/components/modal-certificate/modal-certificate';
 
 @Component({
   selector: 'app-main-layout',
@@ -19,31 +20,24 @@ import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
     Footer,
     RouterOutlet,
     Cart,
-    CookieBanner,
     Loader,
     FloatingSidebar,
-    ScrollTop
-  ],
+    ScrollTop],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
 export class MainLayout {
   private cartService = inject(CartUi);
-  visible = computed(() => this.cartService.visible());
-
-  onClose() {
-    this.cartService.close();
-  }
-
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private translateService = inject(TranslocoService);
-  notify = inject(Notify)
+
+
+  public readonly visible = computed(() => this.cartService.visible());
+
 
   constructor() {
     this.initializeMetaTags();
-    this.notify.success('Language changed to ');
-
   }
 
   public initializeMetaTags() {
@@ -54,7 +48,7 @@ export class MainLayout {
         distinctUntilChanged()
       )
       .subscribe(lang => {
-        const currentLang = (lang && ['ru', 'ro'].includes(lang)) ? lang : 'en';
+        const currentLang = (lang && ['ru', 'ro'].includes(lang)) ? lang : 'ru';
         this.translateService.setActiveLang(currentLang);
         /*        const meta = META_INFO[currentLang];
                 if (meta) {
@@ -63,4 +57,7 @@ export class MainLayout {
       });
   }
 
+  public onClose() {
+    this.cartService.close();
+  }
 }

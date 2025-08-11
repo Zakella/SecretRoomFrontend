@@ -1,11 +1,9 @@
 import {Component, HostListener} from '@angular/core';
-import {NgForOf} from '@angular/common';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-delivery-terms',
-  imports: [
-    NgForOf
-  ],
+  imports: [FadeUp],
   templateUrl: './delivery-terms.html',
   styleUrl: './delivery-terms.scss'
 })
@@ -72,7 +70,6 @@ export class DeliveryTerms {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    // Обновим активный пункт меню при скролле
     const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     for (let i = this.sections.length - 1; i >= 0; i--) {

@@ -3,11 +3,12 @@ import {RouterLink} from '@angular/router';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {BestSellers} from '../../shared/components/best-sellers/best-sellers';
 import {TextSlider} from '../../shared/components/text-slider/text-slider';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, BestSellers, TextSlider],
+  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

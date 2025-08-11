@@ -1,6 +1,4 @@
 .cart-drawer {
-
-
   width: 90vw;
   max-width: 800px;
   height: 100%;
@@ -211,20 +209,7 @@
   display: flex;
   justify-content: flex-end;
 }
-/*.cart-drawer {
-  width: 90vw;
-  max-width: 800px;
-  height: 100%;
-  background-color: #fff;
-  display: flex;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  animation: slideIn 0.3s ease forwards;
 
-  !* остальной код из предыдущего SCSS *!
-}*/
-
-/* Анимация появления */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -234,7 +219,6 @@
   }
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .cart-drawer {
     flex-direction: column;

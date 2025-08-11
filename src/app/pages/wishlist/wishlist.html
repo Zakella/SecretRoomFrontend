@@ -1,4 +1,4 @@
-<section class="wishlist-page">
+<section class="wishlist-page" appFadeUp>
   <h1>Мой список желаемого</h1>
     @if(wishlist.length === 0){
       <div class="empty">
@@ -6,7 +6,7 @@
       </div>
     } @else {
       <div class="wishlist-grid">
-        @for (item of wishlist; track $index) {
+        @for (item of wishlist; track item.id) {
           <div class="wishlist-card">
             <button class="btn-remove" (click)="removeItem(item.id)">×</button>
             <img [src]="item.image" alt="{{ item.title }}" />

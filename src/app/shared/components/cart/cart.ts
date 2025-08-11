@@ -8,7 +8,6 @@ import {CartUi} from './services/cart'
   imports: [
     FormsModule,
     DecimalPipe,
-    NgForOf
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss'

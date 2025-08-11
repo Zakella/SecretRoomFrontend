@@ -6,6 +6,7 @@ import {Router, RouterLink} from '@angular/router';
 import {ResetPassword} from '../reset-password/reset-password';
 import {NgIf} from '@angular/common';
 import {Language} from '../../@core/services/language';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,8 @@ import {Language} from '../../@core/services/language';
     FormsModule,
     NgIf,
     TranslocoPipe,
-    RouterLink
+    RouterLink,
+    FadeUp
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss'

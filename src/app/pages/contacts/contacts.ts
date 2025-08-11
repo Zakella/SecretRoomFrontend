@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslocoService} from '@ngneat/transloco';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-contacts',
-  imports: [],
+  imports: [
+    FadeUp
+  ],
   templateUrl: './contacts.html',
   styleUrl: './contacts.scss'
 })

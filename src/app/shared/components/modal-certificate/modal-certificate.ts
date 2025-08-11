@@ -30,11 +30,11 @@ export class ModalCertificate implements OnInit {
     if (!this.isBrowser || this.hasShown) return;
 
     const scrolled = window.scrollY;
-    if (scrolled > 50) {
+    if (scrolled > 1550) {
       this.isVisible = true;
       this.hasShown = true;
       localStorage.setItem('certificateShown', 'true');
-      window.removeEventListener('scroll', this.onScroll); // убираем после показа
+      window.removeEventListener('scroll', this.onScroll);
     }
   };
 

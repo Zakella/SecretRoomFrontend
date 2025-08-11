@@ -18,11 +18,14 @@
         <a></a>
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
         <a (click)="showPolicy()">Политика возврата</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">Правила и условия</a>
       </div>
       <div class="column">
         <h4>О нас</h4>
-        <a routerLink="/about">О компании</a>
+        <a [routerLink]="['/', activeLang(), 'about-us']">О компании</a>
+<!--
         <a routerLink="/careers">Карьера</a>
+-->
       </div>
       <div class="column">
         <h4>Каталог</h4>

@@ -5,10 +5,7 @@ import {CartUi} from '../../shared/components/cart/services/cart';
 
 @Component({
   selector: 'app-header',
-  imports: [
-    RouterLink,
-    RouterLinkActive
-  ],
+  imports: [RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })

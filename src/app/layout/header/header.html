@@ -5,20 +5,18 @@
       <a class="nav-item">Our Standards</a>
       <a class="nav-item">Our Stores & Services</a>
     </nav>
-    <a class="logo">secret room</a>
+    <a [routerLink]="['/', activeLang()]" class="logo">secret room</a>
     <div class="nav-right">
       <div class="lang-switcher">
         @for (lang of languages; track lang) {
-          <button
-            (click)="setActiveLang(lang)"
-            [class.active]="lang === activeLang()">
+          <button (click)="setActiveLang(lang)" [class.active]="lang === activeLang()">
             {{ lang.toUpperCase() }}
           </button>
         }
       </div>
       <div class="icons">
         <a class="icon">
-          <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line" ></i>
+          <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
         </a>
         <a class="icon">
           <i [routerLink]="['/', activeLang(), 'profile']" class="ri-user-line"></i>
@@ -31,20 +29,16 @@
   </div>
   <nav class="nav-main">
     @for (item of Object.keys(dropdownContent); track item) {
-      <a
-        class="nav-item"
-        (mouseenter)="showDropdown(item)"
-        (mouseleave)="hideDropdown()"
-      >{{ item }}
+      <a class="nav-item" (mouseenter)="showDropdown(item)">
+        {{ item }}
       </a>
     }
-    <a href="#" class="nav-item">WELLNESS</a>
-    <a href="#" class="nav-item">DETOX BOX</a>
-    <a href="#" class="nav-item">BRANDS</a>
+    <a class="nav-item">WELLNESS</a>
+    <a class="nav-item">DETOX BOX</a>
+    <a class="nav-item">BRANDS</a>
+    <a class="nav-item">BRANDS</a>
 
-    <div class="nav-item detox-notes">
-      DETOX NOTES
-    </div>
+
 
     <div class="search-bar">
       <i class="ri-search-line" aria-hidden="true"></i>
@@ -67,25 +61,16 @@
               }
             </div>
           </div>
-
-   <!--       <div class="dropdown-image">
-            <img
-              [src]="dropdownContent[activeMenu].image.url"
-              [alt]="dropdownContent[activeMenu].title"
-            />
-            <p>{{ dropdownContent[activeMenu].image.caption }}</p>
-          </div>-->
-
           <div class="dropdown-section">
             <h4>HELP</h4>
-            <a href="#" class="dropdown-item">Contact Us</a>
-            <a href="#" class="dropdown-item">FAQ</a>
+            <a class="dropdown-item">Contact Us</a>
+            <a class="dropdown-item">FAQ</a>
           </div>
 
           <div class="dropdown-section">
             <h4>ABOUT US</h4>
-            <a href="#" class="dropdown-item">Our Story</a>
-            <a href="#" class="dropdown-item">Careers</a>
+            <a class="dropdown-item">Our Story</a>
+            <a class="dropdown-item">Careers</a>
           </div>
         </div>
       </div>

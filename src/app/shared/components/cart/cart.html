@@ -4,12 +4,14 @@
   <aside class="cart-suggestions">
     <h3>YOU MAY ALSO LIKE</h3>
 
-    <div class="suggested-item" *ngFor="let item of suggestions">
-      <img [src]="item.image" alt="" />
-      <p class="title">{{ item.title }}</p>
-      <p class="price">L {{ item.price }}</p>
-      <button class="btn-add">ADD TO CART</button>
-    </div>
+    @for (item of suggestions; track $index){
+      <div class="suggested-item">
+        <img [src]="item.image" alt="" />
+        <p class="title">{{ item.title }}</p>
+        <p class="price">L {{ item.price }}</p>
+        <button class="btn-add">ADD TO CART</button>
+      </div>
+    }
   </aside>
 
   <!-- Правая колонка — корзина -->
