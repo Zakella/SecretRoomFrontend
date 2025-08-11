@@ -15,6 +15,7 @@ import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
 import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
 import {Registration} from './pages/registration/registration';
+import {Checkout} from './pages/checkout/checkout';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,8 @@ export const routes: Routes = [
           {path: 'payment-fail', component: PaymentFail},
           {path: 'delivery-terms', component: DeliveryTerms},
           {path: 'cabinet', component: Cabinet},
+          {path: 'checkout', component: Checkout},
+
         ],
       },
       {

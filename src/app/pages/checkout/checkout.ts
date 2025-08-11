@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import {FadeUp} from '../../@core/directives/fade-up';
 
 
 @Component({
   selector: 'app-checkout',
-  imports: [],
+  imports: [
+    FadeUp
+  ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss'
 })

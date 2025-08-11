@@ -1,1 +1,76 @@
-<p>checkout works!</p>
+<section class="checkout" appFadeUp>
+  <h1>Оформление заказа</h1>
+
+  <form class="checkout-form">
+    <div class="form-section">
+      <h2>Данные покупателя</h2>
+      <label>
+        Имя и Фамилия
+        <input type="text" name="fullname" placeholder="Иван Иванов" required />
+      </label>
+      <label>
+        Email
+        <input type="email" name="email" placeholder="example@mail.com" required />
+      </label>
+      <label>
+        Телефон
+        <input type="tel" name="phone" placeholder="+7 (999) 123-45-67" required />
+      </label>
+    </div>
+
+    <div class="form-section">
+      <h2>Адрес доставки</h2>
+      <label>
+        Страна
+        <select name="country" required>
+          <option value="" disabled selected>Выберите страну</option>
+          <option value="ru">Россия</option>
+          <option value="ua">Украина</option>
+          <option value="by">Беларусь</option>
+          <!-- добавьте свои страны -->
+        </select>
+      </label>
+      <label>
+        Город
+        <input type="text" name="city" placeholder="Москва" required />
+      </label>
+      <label>
+        Улица и дом
+        <input type="text" name="address" placeholder="ул. Ленина, д. 10, кв. 5" required />
+      </label>
+      <label>
+        Почтовый индекс
+        <input type="text" name="zip" placeholder="123456" required />
+      </label>
+    </div>
+
+    <div class="form-section">
+      <h2>Способ оплаты</h2>
+      <label class="radio-label">
+        <input type="radio" name="payment" value="card" checked />
+        Банковская карта
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="payment" value="paypal" />
+        PayPal
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="payment" value="cash" />
+        Наличные при получении
+      </label>
+    </div>
+
+    <div class="form-section order-summary">
+      <h2>Ваш заказ</h2>
+      <ul>
+        <li>Крем для лица — 2 шт. <span>1500 ₽</span></li>
+        <li>Шампунь — 1 шт. <span>700 ₽</span></li>
+      </ul>
+      <div class="total">
+        Итого: <strong>3700 ₽</strong>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Подтвердить заказ</button>
+  </form>
+</section>

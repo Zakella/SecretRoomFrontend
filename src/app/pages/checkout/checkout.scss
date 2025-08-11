@@ -1,0 +1,122 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f8f8;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+.checkout {
+  max-width: 700px;
+  margin: 140px auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px 40px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.checkout h1 {
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 28px;
+  text-align: center;
+  color: #222;
+}
+
+.checkout-form .form-section {
+  margin-bottom: 30px;
+}
+
+.checkout-form h2 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #555;
+  border-bottom: 2px solid #f06292;
+  padding-bottom: 6px;
+}
+
+label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1.8px solid #ddd;
+  border-radius: 6px;
+  margin-top: 6px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus {
+  border-color: #f06292;
+  outline: none;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.order-summary ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+
+.order-summary ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.order-summary .total {
+  font-weight: 700;
+  font-size: 18px;
+  text-align: right;
+  color: #f06292;
+  margin-top: 10px;
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  background: #f06292;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  border: none;
+  padding: 14px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #d81b60;
+}
+
+@media (max-width: 600px) {
+  .checkout {
+    padding: 20px;
+  }
+}
