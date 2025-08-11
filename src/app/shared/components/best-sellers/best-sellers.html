@@ -1,12 +1,9 @@
 <div>
   <h2 class="section-title">Clean Beauty Best Sellers</h2>
-
   <div class="category-tabs">
     @for (cat of categories; track $index) {
-      <button
-        (click)="selectCategory(cat)"
-        [class.active]="cat === selectedCategory"
-      >
+      <button (click)="selectCategory(cat)"
+              [class.active]="cat === selectedCategory">
         {{ cat }}
       </button>
     }

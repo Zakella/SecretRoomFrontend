@@ -14,7 +14,7 @@
           <label>{{'Password' |transloco}}</label>
         </div>
         <div class="forget">
-          <a>{{'Forgot Password' |transloco}}</a>
+          <a (click)="showDialog()">{{'Forgot Password' |transloco}}</a>
         </div>
         <button>{{'Sing in' |transloco}} </button>
         <div class="register">
@@ -27,3 +27,8 @@
   </div>
 </section>
 
+<app-reset-password
+  *ngIf="showResetPassword"
+  (close)="showResetPassword = false"
+  (submitted)="onResetPasswordSubmitted($event)">
+</app-reset-password>

@@ -16,6 +16,8 @@ import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
 import {Registration} from './pages/registration/registration';
 import {Checkout} from './pages/checkout/checkout';
+import {AccountNotFound} from './pages/account-not-found/account-not-found';
+import {OrderSummary} from './pages/order-summary/order-summary';
 
 export const routes: Routes = [
   {
@@ -51,6 +53,11 @@ export const routes: Routes = [
           {path: 'profile', component: Login},
           {path: 'registration', component: Registration},
           {path: 'reset', component: ResetPassword},
+          {path: 'account-not-found', component: AccountNotFound},
+          {
+            path: 'order-success',
+            component: OrderSummary
+          },
           {path: '**', component: Notfound}
         ]
       }

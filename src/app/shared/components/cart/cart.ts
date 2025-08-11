@@ -25,24 +25,24 @@ export class Cart {
     title: 'REPAIR MASK',
     quantity: 1,
     price: 627,
-    image: 'https://via.placeholder.com/50x70?text=Mask'
+    image: '/assets/images/demo/slider1.jpeg'
   };
 
   suggestions = [
     {
       title: 'ESSENTIAL FACE WIPES - 5 PACK',
       price: 120,
-      image: 'https://via.placeholder.com/60?text=Wipes'
+      image: '/assets/images/demo/slider1.jpeg'
     },
     {
       title: 'ACTIVE GLOW BLUEBERRY',
       price: 351,
-      image: 'https://via.placeholder.com/60?text=Glow'
+      image: '/assets/images/demo/slider1.jpeg'
     },
     {
       title: 'BUFF MASSAGING SCALP BRUSH',
       price: 296,
-      image: 'https://via.placeholder.com/60?text=Brush'
+      image: '/assets/images/demo/slider1.jpeg'
     }
   ];
 
