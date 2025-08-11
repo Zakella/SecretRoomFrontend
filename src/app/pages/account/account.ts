@@ -1,6 +1,4 @@
 import {Component} from '@angular/core';
-import {Order} from '../../@core/entities/order';
-import {Subject} from 'rxjs';
 
 @Component({
   selector: 'app-account',

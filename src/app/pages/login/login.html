@@ -2,24 +2,25 @@
   <div class="form-box">
     <div class="form-value">
       <form action="">
-        <h2>Student Login</h2>
+        <h2>{{'Sign into your account' |transloco}}</h2>
         <div class="inputbox">
           <i class="ri-mail-line"></i>
           <input type="text" required>
-          <label for="">Username</label>
+          <label for="">{{'Email' |transloco}}</label>
         </div>
         <div class="inputbox">
           <i class="ri-lock-line"></i>
           <input type="password" required>
-          <label for="">Password</label>
+          <label for="">{{'Password' |transloco}}</label>
         </div>
         <div class="forget">
-          <label><input type="checkbox">Remember Me</label>
-          <a href="#">Forgot password?</a>
+          <a href="#">{{'Forgot Password' |transloco}}</a>
         </div>
-        <button>Log in</button>
+        <button>{{'Sing in' |transloco}} </button>
         <div class="register">
-          <p>Don't have a account <a href="#">Register</a></p>
+          <p>{{'No account' |transloco}}
+            <a [routerLink]="['/', activeLang(), 'profile']">{{'Register here' |transloco}}</a>
+          </p>
         </div>
       </form>
     </div>

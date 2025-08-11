@@ -8,21 +8,20 @@
     <a class="logo">secret room</a>
     <div class="nav-right">
       <div class="lang-switcher">
-        @for (lang of languages; track $index) {
+        @for (lang of languages; track lang) {
           <button
             (click)="setActiveLang(lang)"
-            [class.active]="lang === activeLang()"
-          >
+            [class.active]="lang === activeLang()">
             {{ lang.toUpperCase() }}
           </button>
         }
       </div>
       <div class="icons">
         <a class="icon">
-          <i class="ri-heart-line"></i>
+          <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line" ></i>
         </a>
         <a class="icon">
-          <i class="ri-user-line"></i>
+          <i [routerLink]="['/', activeLang(), 'profile']" class="ri-user-line"></i>
         </a>
         <a class="icon" (click)="openCart()">
           <i class="ri-shopping-bag-line"></i>
@@ -36,8 +35,7 @@
         class="nav-item"
         (mouseenter)="showDropdown(item)"
         (mouseleave)="hideDropdown()"
-      >
-        {{ item }}
+      >{{ item }}
       </a>
     }
     <a href="#" class="nav-item">WELLNESS</a>
@@ -54,7 +52,6 @@
     </div>
 
     @if (activeMenu && dropdownContent[activeMenu]) {
-<!--
       <div class="dropdown" (mouseleave)="hideDropdown()">
         <div class="dropdown-content">
           <div class="dropdown-section">
@@ -71,13 +68,13 @@
             </div>
           </div>
 
-   &lt;!&ndash;       <div class="dropdown-image">
+   <!--       <div class="dropdown-image">
             <img
               [src]="dropdownContent[activeMenu].image.url"
               [alt]="dropdownContent[activeMenu].title"
             />
             <p>{{ dropdownContent[activeMenu].image.caption }}</p>
-          </div>&ndash;&gt;
+          </div>-->
 
           <div class="dropdown-section">
             <h4>HELP</h4>
@@ -92,7 +89,6 @@
           </div>
         </div>
       </div>
--->
     }
   </nav>
 </header>

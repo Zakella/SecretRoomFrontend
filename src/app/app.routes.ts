@@ -14,6 +14,7 @@ import {ResetPassword} from './pages/reset-password/reset-password';
 import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
 import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
+import {Registration} from './pages/registration/registration';
 
 export const routes: Routes = [
   {
@@ -46,6 +47,7 @@ export const routes: Routes = [
         component: BlankLayout,
         children: [
           {path: 'profile', component: Login},
+          {path: 'registration', component: Registration},
           {path: 'reset', component: ResetPassword},
           {path: '**', component: Notfound}
         ]

@@ -3,9 +3,11 @@
   top: 30%;
   right: 0;
   z-index: 1000;
-  background: black;
+  background: white;
   border-radius: 10px 0 0 10px;
-  box-shadow: 0 0 10px rgba(255, 105, 180, 0.3); /* ярко-розовый */
+  /*
+  box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+  */
   overflow: hidden;
   padding: 10px 0;
 
@@ -15,7 +17,7 @@
     align-items: center;
     padding: 12px;
     position: relative;
-    color: white;
+    color: black;
     cursor: pointer;
     transition: background 0.2s;
 

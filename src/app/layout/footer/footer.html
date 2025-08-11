@@ -14,9 +14,9 @@
 
     <div class="footer-links">
       <div class="column">
-        <h4>Помощь</h4>
-        <a routerLink="/contact">Контакты</a>
-        <a routerLink="/shipping">Доставка</a>
+        <h4>{{ 'About us' | transloco }}</h4>
+        <a></a>
+        <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
         <a (click)="showPolicy()">Политика возврата</a>
       </div>
       <div class="column">

@@ -1,3 +1,4 @@
+<!--
 <div class="slides">
   <div
     class="slide"
@@ -10,12 +11,10 @@
 
   @if (indicatorsVisible) {
     <div id="indicators">
-      @for(slide of slides; track $index; ){
-        <div
-          (click)="jumpToSlide($index)"
-          class="indicator"
-          [ngClass]="{ active: $index == currentSlide }"
-        ></div>
+      @for(slide of slides; track slide.id; ){
+        <div (click)="jumpToSlide($index)" class="indicator" [ngClass]="{ active: $index == currentSlide }">
+
+        </div>
       }
     </div>
   }
@@ -27,3 +26,4 @@
     <i class="ri-arrow-left-line"></i>
   </button>
 </div>
+-->

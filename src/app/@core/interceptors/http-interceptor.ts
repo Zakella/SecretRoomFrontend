@@ -2,8 +2,9 @@ import {HttpEvent, HttpHandler, HttpHeaders, HttpRequest} from '@angular/common/
 import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs';
 import {isPlatformBrowser} from '@angular/common';
-import {UserDetails} from '../entities/user-details';
-import {ProtectedEndpoints} from '../entities/protected-endpoints';
+import {UserDetails} from '../../entities/user-details';
+import {ProtectedEndpoints} from '../../entities/protected-endpoints';
+
 
 @Injectable({
   providedIn: 'root'

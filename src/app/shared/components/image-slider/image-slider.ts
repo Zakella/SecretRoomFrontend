@@ -1,20 +1,25 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgClass, NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-image-slider',
-  imports: [CommonModule],
+  imports: [
+    NgStyle,
+    NgClass
+  ],
   templateUrl: './image-slider.html',
   styleUrl: './image-slider.scss'
 })
-export class ImageSlider implements OnInit {
-  @Input() slides: any[] = [];
+export class ImageSlider {
+ /* @Input() slides: any[] = [];
   @Input() indicatorsVisible = true;
   @Input() animationSpeed = 500;
   @Input() autoPlay = false;
   @Input() autoPlaySpeed = 3000;
   currentSlide = 0;
   hidden = false;
+  intervalId: any;
+
 
   next() {
     let currentSlide = (this.currentSlide + 1) % this.slides.length;
@@ -35,11 +40,19 @@ export class ImageSlider implements OnInit {
     }, this.animationSpeed);
   }
 
+
   ngOnInit() {
     if (this.autoPlay) {
-      setInterval(() => {
+      this.intervalId = setInterval(() => {
         this.next();
-     }, this.autoPlaySpeed);
+      }, this.autoPlaySpeed);
     }
   }
+
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }*/
 }

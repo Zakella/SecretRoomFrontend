@@ -7,7 +7,7 @@
       <div class="cart-badge">{{ cartCount }}</div>
     }
   </div>
-  <div class="sidebar-item">
+  <div class="sidebar-item" [routerLink]="['/', activeLang(), 'profile']">
     <i class="ri-user-line"></i>
     <span>Аккаунт</span>
   </div>

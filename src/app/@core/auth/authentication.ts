@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {BehaviorSubject, Observable, Subscriber, tap} from 'rxjs';
-import {UserDetails} from '../entities/user-details';
-import {User} from '../entities/user';
+
 import {HttpClient} from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import {UserDetails} from '../../entities/user-details';
+import {User} from '../api/user';
 
 @Injectable({
   providedIn: 'root'

@@ -27,6 +27,6 @@ export const appConfig: ApplicationConfig = {
       loader: TranslocoHttpLoader
     }),
     provideHttpClient(withFetch()),
-    provideClientHydration(withEventReplay())
+    provideClientHydration()
   ]
 };

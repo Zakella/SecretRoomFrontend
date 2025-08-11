@@ -1,8 +1,8 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {UserDetails} from '../../@core/entities/user-details';
 import {Router} from '@angular/router';
 import {Authentication} from '../../@core/auth/authentication';
 import {CurrencyPipe, DatePipe} from '@angular/common';
+import {UserDetails} from '../../entities/user-details';
 
 @Component({
   selector: 'app-cabinet',

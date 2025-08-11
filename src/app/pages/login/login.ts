@@ -1,17 +1,20 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, Validators} from '@angular/forms';
 import { Authentication } from '../../@core/auth/authentication';
-import { TranslocoService } from '@ngneat/transloco';
-import {Router} from '@angular/router';
+import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
+import {Router, RouterLink} from '@angular/router';
 import {ResetPassword} from '../reset-password/reset-password';
 import {NgIf} from '@angular/common';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-login',
   imports: [
     ResetPassword,
     FormsModule,
-    NgIf
+    NgIf,
+    TranslocoPipe,
+    RouterLink
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
@@ -27,8 +30,9 @@ export class Login {
   loading: boolean = false;
 
   passwordVisible: boolean = false;
-
   isSuccess: boolean = false;
+  private langService = inject(Language);
+  public activeLang = this.langService.currentLanguage
   form!: FormGroup;
   restoreForm!: FormGroup;
   processing:boolean = false;
