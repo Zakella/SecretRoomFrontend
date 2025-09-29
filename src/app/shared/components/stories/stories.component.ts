@@ -4,7 +4,7 @@ import {takeUntil} from 'rxjs/operators';
 import {StoryModel} from "./story.model";
 import {StoriesService} from "./stories.service";
 import {STORIES} from "./stories";
-import {NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 import {StoryViewComponent} from './story-view/story-view.component';
 
 
@@ -12,10 +12,8 @@ import {StoryViewComponent} from './story-view/story-view.component';
   selector: 'app-stories',
   templateUrl: './stories.component.html',
   imports: [
-    NgIf,
     NgOptimizedImage,
     StoryViewComponent,
-    NgForOf
   ],
   styleUrls: ['./stories.component.scss'],
   providers: [StoriesService]

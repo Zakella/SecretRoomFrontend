@@ -28,8 +28,7 @@ export class StoryVideoComponent implements OnInit, OnDestroy {
     trackWidthValue = 0;
     activeStoryIndex: number = 0;
 
-    constructor(private storiesService: StoriesService) {
-    }
+    constructor(private storiesService: StoriesService) {}
 
     ngOnInit(): void {
         this.initActiveStoryIndexSub();

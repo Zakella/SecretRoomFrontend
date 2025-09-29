@@ -1,18 +1,24 @@
-<div class="stories-wrapper" *ngIf="stories && stories.data.length > 0">
-    <div class="story" *ngFor="let story of stories.data; index as i">
+@if (stories && stories.data.length > 0) {
+  <div class="stories-wrapper">
+    @for (story of stories.data; track story.name; let i = $index) {
+      <div class="story">
         <div class="story-img-block" (click)="openStory(i)">
-            <div class="story-avatar">
-                <img [ngSrc]="story.thumbnail" width="64" height="64" [alt]="story.name">
-            </div>
+          <div class="story-avatar">
+            <img [ngSrc]="story.thumbnail" width="64" height="64" [alt]="story.name">
+          </div>
         </div>
-
         <div class="story-author">
-            <p>
-                {{story.name}}
-            </p>
+          <p>
+            {{ story.name }}
+          </p>
         </div>
-    </div>
-</div>
-<ng-container *ngIf="stories && stories.data.length > 0">
-    <story-view [storyIsOpen]="storyIsOpen" [stories]="stories.data" (closeStoryViewEmitter)="closeStory()"></story-view>
-</ng-container>
+      </div>
+    }
+  </div>
+
+}
+
+@if (stories && stories.data.length > 0) {
+  <story-view [storyIsOpen]="storyIsOpen" [stories]="stories.data" (closeStoryViewEmitter)="closeStory()"></story-view>
+}
+

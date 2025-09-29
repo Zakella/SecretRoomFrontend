@@ -3,7 +3,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {IStoryData} from "../story.model";
 import {StoriesService} from "../stories.service";
-import {NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {StoryItemComponent} from './story-item/story-item.component';
 import {storyViewOpenAnimation} from './animations/story-view-open-animation';
@@ -16,8 +16,6 @@ import {storyViewOpenAnimation} from './animations/story-view-open-animation';
     NgTemplateOutlet,
     FormsModule,
     StoryItemComponent,
-    NgForOf,
-    NgIf
   ],
       animations: [storyViewOpenAnimation]
 })

@@ -3,7 +3,7 @@ import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {IStory} from "../../story.model";
 import {StoriesService} from "../../stories.service";
-import {AsyncPipe, NgForOf, NgIf, NgStyle, NgTemplateOutlet} from '@angular/common';
+import {AsyncPipe, NgStyle, NgTemplateOutlet} from '@angular/common';
 import {StoryVideoComponent} from './story-video/story-video.component';
 
 @Component({
@@ -14,9 +14,7 @@ import {StoryVideoComponent} from './story-video/story-video.component';
     NgStyle,
     NgTemplateOutlet,
     StoryVideoComponent,
-    AsyncPipe,
-    NgIf,
-    NgForOf
+    AsyncPipe
   ]
 })
 export class StoryItemComponent implements OnInit, OnDestroy {
