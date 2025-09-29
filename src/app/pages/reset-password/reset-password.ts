@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, inject, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, inject, Output} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ResetPasswordService} from './services/reset-password';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -11,7 +11,8 @@ import {NgIf} from '@angular/common';
     NgIf
   ],
   templateUrl: './reset-password.html',
-  styleUrl: './reset-password.scss'
+  styleUrl: './reset-password.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPassword {
   @Output() close = new EventEmitter<void>();

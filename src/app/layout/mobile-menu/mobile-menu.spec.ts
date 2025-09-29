@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OrderSummary } from './order-summary';
+import { MobileMenu } from './mobile-menu';
 
-describe('OrderSummary', () => {
-  let component: OrderSummary;
-  let fixture: ComponentFixture<OrderSummary>;
+describe('MobileMenu', () => {
+  let component: MobileMenu;
+  let fixture: ComponentFixture<MobileMenu>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrderSummary]
+      imports: [MobileMenu]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OrderSummary);
+    fixture = TestBed.createComponent(MobileMenu);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

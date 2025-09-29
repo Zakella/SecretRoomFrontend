@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, inject, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DecimalPipe, NgForOf} from '@angular/common';
 import {CartUi} from './services/cart'
@@ -10,7 +10,8 @@ import {CartUi} from './services/cart'
     DecimalPipe,
   ],
   templateUrl: './cart.html',
-  styleUrl: './cart.scss'
+  styleUrl: './cart.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cart {
   @Output() close = new EventEmitter<void>();

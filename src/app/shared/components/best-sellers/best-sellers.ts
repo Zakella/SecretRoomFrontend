@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProductCard} from '../product-card/product-card';
 import {BtnShowMore} from '../btn-show-more/btn-show-more';
 
@@ -9,7 +9,8 @@ import {BtnShowMore} from '../btn-show-more/btn-show-more';
     BtnShowMore
   ],
   templateUrl: './best-sellers.html',
-  styleUrl: './best-sellers.scss'
+  styleUrl: './best-sellers.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BestSellers {
   categories = ['SKINCARE', 'MAKEUP', 'HAIR', 'BODY', 'WELLNESS', 'NEW'];

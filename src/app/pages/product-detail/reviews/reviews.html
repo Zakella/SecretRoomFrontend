@@ -1,0 +1,24 @@
+<div class="reviews">
+
+  @if (reviews() && reviews().length) {
+    @for ( review of reviews(); track $index) {
+      <div class="review">
+        <div class="review-header">
+          <strong>{{ review.author }}</strong>
+          <span class="rating">⭐ {{ review.rating }}/5</span>
+          <span class="date">{{ review.date | date:'shortDate' }}</span>
+        </div>
+        <p>{{ review.comment }}</p>
+      </div>
+    }
+  }
+
+  <div class="new-review">
+    <textarea
+      rows="3"
+      [(ngModel)]="newComment"
+      placeholder="Введите ваш отзыв..."
+    ></textarea>
+    <button (click)="addReview()">Добавить отзыв</button>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Authentication} from '../../@core/auth/authentication';
 import {CurrencyPipe, DatePipe} from '@angular/common';
@@ -11,7 +11,8 @@ import {UserDetails} from '../../entities/user-details';
     CurrencyPipe
   ],
   templateUrl: './cabinet.html',
-  styleUrl: './cabinet.scss'
+  styleUrl: './cabinet.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cabinet  implements OnInit{
   visible: boolean = false;

@@ -1,5 +1,5 @@
 <section class="product-page">
-  <div class="product-grid">
+  <div class="product-grid" appFadeUp>
     <div class="product-images">
       <div class="main-image">
         <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
@@ -62,7 +62,7 @@
         } @else if (selectedTab === 'ingredients'){
           <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
         }@else if (selectedTab === 'reviews'){
-          <p>★ ★ ★ ★ ☆ – 4.5 / 5<br>Анна: "Очень приятный запах и быстро впитывается!"</p>
+         <app-reviews></app-reviews>
         }
     </div>
   </div>

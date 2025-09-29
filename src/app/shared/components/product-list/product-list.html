@@ -1,11 +1,9 @@
 <div class="product-list">
-  @for (product of products; track product.id) {
+  @for (product of products(); track product.id) {
     <app-product-card
-      [imageUrl]="product.image"
-      [title]="product.title"
-      [price]="product.price"
-      [rating]="product.rating"
-      [isBestSeller]="product.isFavorite"
+      [imageUrl]="product.imageURL"
+      [title]="product.name"
+      [price]="product.id"
       [brand]="'Victoria Sercret'">
     </app-product-card>
   }

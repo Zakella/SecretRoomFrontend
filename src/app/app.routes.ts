@@ -18,6 +18,8 @@ import {Registration} from './pages/registration/registration';
 import {Checkout} from './pages/checkout/checkout';
 import {AccountNotFound} from './pages/account-not-found/account-not-found';
 import {OrderSummary} from './pages/order-summary/order-summary';
+import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
+import {List} from './pages/promotion/list/list';
 
 export const routes: Routes = [
   {
@@ -43,7 +45,8 @@ export const routes: Routes = [
           {path: 'delivery-terms', component: DeliveryTerms},
           {path: 'cabinet', component: Cabinet},
           {path: 'checkout', component: Checkout},
-
+          {path: 'promotion', component: PromotionCard},
+          {path: 'promotion-list', component: List},
         ],
       },
       {

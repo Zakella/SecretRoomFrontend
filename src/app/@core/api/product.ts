@@ -4,11 +4,12 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {GetResponse} from '../../entities/get-response';
+import {Product} from '../../entities/product';
 
 @Injectable({
   providedIn: 'root'
 })
-export class Product {
+export class ProductService {
   private baseUrL = environment.apiUrl + "products";
 
   constructor(private httpClient: HttpClient) {}
@@ -44,7 +45,6 @@ export class Product {
   getAllProducts(): Observable<Product[]> {
     return this.httpClient.get<Product[]>(this.baseUrL + '/all')
       .pipe(catchError(this.handleError));
-
 
   }
 

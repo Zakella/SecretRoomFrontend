@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslocoService} from '@ngneat/transloco';
 import {FadeUp} from '../../@core/directives/fade-up';
@@ -9,7 +9,8 @@ import {FadeUp} from '../../@core/directives/fade-up';
     FadeUp
   ],
   templateUrl: './contacts.html',
-  styleUrl: './contacts.scss'
+  styleUrl: './contacts.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Contacts {
   selectedCity: string = 'Все';

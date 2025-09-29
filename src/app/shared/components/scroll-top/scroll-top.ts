@@ -1,20 +1,17 @@
-import {Component, HostListener} from '@angular/core';
-import {NgIf} from '@angular/common';
+import {Component, HostListener, signal} from '@angular/core';
 
 @Component({
   selector: 'app-scroll-top',
-  imports: [
-    NgIf
-  ],
+  imports: [],
   templateUrl: './scroll-top.html',
   styleUrl: './scroll-top.scss'
 })
 export class ScrollTop {
-  showButton = false;
+  showButton = signal(false);
 
   @HostListener('window:scroll')
   onScroll() {
-    this.showButton = window.scrollY > 300;
+    this.showButton.set(window.scrollY > 300)
   }
 
   scrollToTop() {

@@ -1,0 +1,49 @@
+.reviews {
+  max-width: 600px;
+}
+
+.review {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f8f8f8;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.new-review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.new-review textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.new-review button {
+  background-color: #e86ea8;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.new-review button:hover {
+  background-color: #d15b95;
+}

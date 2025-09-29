@@ -80,6 +80,8 @@
   max-width: 1200px;
   background-color: #fff;
   border: 1px solid #e5e5e5;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   z-index: 1000;
   padding: 20px;
@@ -92,12 +94,14 @@
 
 .dropdown-content {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
+  flex-wrap: nowrap; /* или wrap, если нужно на маленьких экранах */
+  gap: 40px; /* расстояние между секциями */
 }
 
-.dropdown-section {
-  min-width: 200px;
+.dropdown-section, .dropdown-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px; /* или 200px, как у тебя */
 }
 
 .dropdown-section h4 {
@@ -112,9 +116,6 @@
   margin-bottom: 10px;
 }
 
-.dropdown-columns {}
-
-.dropdown-column {}
 
 .dropdown-item {
   cursor: pointer;
@@ -130,6 +131,7 @@
 }
 
 
+/*
 .search-bar {
   position: relative;
   margin-left: auto;
@@ -157,6 +159,45 @@
     font-size: 18px;
     color: #8a8a8a;
     pointer-events: none;
+  }
+}
+*/
+
+.search-bar {
+  position: relative;
+  margin-left: auto;
+  max-width: 360px;
+  transition: all 0.3s ease;
+
+  input {
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 1em 2.5em 1em 1em; // место под иконку справа
+    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
+  }
+
+  input:focus {
+    background-color: #fff;
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  i {
+    position: absolute;
+    left: 225px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #aaa;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  input:focus + i {
+    color: #b34773; // подсветка иконки при фокусе
   }
 }
 

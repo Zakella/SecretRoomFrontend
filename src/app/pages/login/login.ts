@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, Validators} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {RouterLink} from '@angular/router';
@@ -18,7 +18,8 @@ import {FadeUp} from '../../@core/directives/fade-up';
     FadeUp
   ],
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrl: './login.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Login {
   showResetPassword = false;

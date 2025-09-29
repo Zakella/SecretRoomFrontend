@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-account-not-found',
-  imports: [
-    RouterLink
-  ],
+  imports: [RouterLink],
   templateUrl: './account-not-found.html',
-  styleUrl: './account-not-found.scss'
+  styleUrl: './account-not-found.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AccountNotFound {
 

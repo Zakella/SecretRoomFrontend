@@ -16,3 +16,18 @@
   flex: 1;
 }
 
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 150px 0 20px;
+}
+
+.title h1 {
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+}

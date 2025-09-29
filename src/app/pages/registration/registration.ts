@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ValidatorFn, Validators} from "@angular/forms";
 import {TranslocoPipe, TranslocoService} from "@ngneat/transloco";
 import {Language} from '../../@core/services/language';
@@ -17,7 +17,8 @@ import {FadeUp} from '../../@core/directives/fade-up';
     FadeUp
   ],
   templateUrl: './registration.html',
-  styleUrl: './registration.scss'
+  styleUrl: './registration.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Registration {
  private registrationService = inject(RegistrationService);

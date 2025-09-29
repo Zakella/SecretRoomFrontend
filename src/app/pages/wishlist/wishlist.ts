@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
@@ -7,7 +7,8 @@ import {FadeUp} from '../../@core/directives/fade-up';
     FadeUp
   ],
   templateUrl: './wishlist.html',
-  styleUrl: './wishlist.scss'
+  styleUrl: './wishlist.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Wishlist {
   wishlist = [

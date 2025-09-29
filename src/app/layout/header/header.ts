@@ -1,11 +1,12 @@
 import {Component, inject} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })

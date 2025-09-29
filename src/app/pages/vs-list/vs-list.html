@@ -1,3 +1,7 @@
+<section class="title">
+  <h1>BEST-SELLERS</h1>
+  <app-stories></app-stories>
+</section>
 <div class="product-list-wrapper">
   <div class="filters-panel">
     <app-filter
@@ -8,7 +12,7 @@
 
 
   <div class="product-list-panel">
-    <app-product-list [products]="mockProducts"></app-product-list>
+    <app-product-list [products]="products()"></app-product-list>
     <app-paginator></app-paginator>
   </div>
 

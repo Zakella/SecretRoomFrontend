@@ -11,12 +11,16 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {provideTransloco} from '@ngneat/transloco';
 import {TranslocoHttpLoader} from './@core/configs/transloco-config';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {provideAnimations} from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    provideAnimationsAsync(),
+    provideAnimations(),
     provideTransloco({
       config: {
         availableLangs: ['ro', 'ru'],

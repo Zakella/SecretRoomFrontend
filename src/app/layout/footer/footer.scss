@@ -1,6 +1,7 @@
 .footer {
   font-size: 14px;
   padding-top: 48px;
+  background-color: #000000;
 
   .container {
     max-width: 1440px;
@@ -20,6 +21,8 @@
       font-weight: 600;
       font-family: 'Playfair Display', serif;
       margin-bottom: 12px;
+      color: pink;
+      text-decoration: none;
     }
 
     .description {

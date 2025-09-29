@@ -1,5 +1,7 @@
 <app-header/>
-<router-outlet></router-outlet>
+<div style="padding: 100px">
+  <router-outlet></router-outlet>
+</div>
 @if (visible()) {
   <app-cart (close)="onClose()"></app-cart>
 }
@@ -7,3 +9,4 @@
 <app-footer/>
 <app-loader></app-loader>
 <app-scroll-top></app-scroll-top>
+<app-mobile-menu></app-mobile-menu>

@@ -1,8 +1,5 @@
-<button
-  class="scroll-top"
-  *ngIf="showButton"
-  (click)="scrollToTop()"
-  aria-label="Back to top"
->
-  ↑
-</button>
+@if (showButton()) {
+  <button class="scroll-top" (click)="scrollToTop()" aria-label="Back to top">
+    <i class="ri-arrow-up-line"></i>
+  </button>
+}

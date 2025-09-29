@@ -1,14 +1,8 @@
 <main class="home" appFadeUp>
   <div class="image-wrapper">
-<!--    @defer{
-      <app-image-slider
-        [indicatorsVisible]="false"
-        [animationSpeed]="100"
-        [slides]="slides"
-        [autoPlay]="true"
-        [autoPlaySpeed]="4000"></app-image-slider>
-    }-->
+    <app-image-slider [images]="images" [autoSlide]="true" [controls]="true"/>
   </div>
+
 
   <section class="hero">
     <div class="hero-content container">
@@ -17,7 +11,7 @@
       <a routerLink="/shop" class="btn-primary">Перейти в магазин</a>
     </div>
     <div class="hero-image">
-      <img src="assets/images/demo/main.jpeg"  alt="Премиальная косметика" />
+      <img src="assets/images/demo/main.jpeg" alt="Премиальная косметика"/>
 
     </div>
   </section>
@@ -27,14 +21,18 @@
     <div class="beauty-goals">
       <h3>What are your beauty goals?</h3>
       <div class="goals-list">
-        @for (goal of goals; track goal.label;) {
+        @for (goal of goals; track goal.label; ) {
           <div class="goal">
-            <img [src]="goal.image" [alt]="goal.label" />
+            <img [src]="goal.image" [alt]="goal.label"/>
             <span>{{ goal.label }}</span>
           </div>
         }
       </div>
     </div>
   </ng-container>
+
+  <app-reels></app-reels>
+  <app-mobile-menu></app-mobile-menu>
 </main>
+
 

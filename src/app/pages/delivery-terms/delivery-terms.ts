@@ -1,11 +1,12 @@
-import {Component, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-delivery-terms',
   imports: [FadeUp],
   templateUrl: './delivery-terms.html',
-  styleUrl: './delivery-terms.scss'
+  styleUrl: './delivery-terms.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeliveryTerms {
   sections: Section[] = [

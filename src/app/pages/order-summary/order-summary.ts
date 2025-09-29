@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 
 @Component({
@@ -7,7 +7,8 @@ import {RouterLink} from '@angular/router';
     RouterLink
   ],
   templateUrl: './order-summary.html',
-  styleUrl: './order-summary.scss'
+  styleUrl: './order-summary.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderSummary {
 

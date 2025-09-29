@@ -1,29 +1,33 @@
-<!--
-<div class="slides">
-  <div
-    class="slide"
-    [ngStyle]="{
-      'background-image': 'url(' + slides[currentSlide].url + ')',
-      opacity: hidden ? 0 : 1,
-      transition: 'opacity ' + animationSpeed + 'ms ease-in-out'
-    }"
-  ></div>
+@if (images() && images().length > 0) {
+  <div class="carousel-container">
+    @for (image of images(); track image; let i = $index) {
+      <img
+        [src]="image.imageSrc"
+        [alt]="image.imageAlt"
+        class="fade"
+        [ngClass]="{ 'image-active': selectedIndex() === i }"
+      >
+    }
 
-  @if (indicatorsVisible) {
-    <div id="indicators">
-      @for(slide of slides; track slide.id; ){
-        <div (click)="jumpToSlide($index)" class="indicator" [ngClass]="{ active: $index == currentSlide }">
+    @if (indicators()) {
+      <div class="carousel-dot-container">
+        @for (dot of images(); track $index; let i = $index) {
+          <span
+            class="dot"
+            [ngClass]="{ 'active': selectedIndex() === i }"
+            (click)="selectImage(i)"
+          ></span>
+        }
+      </div>
+    }
 
-        </div>
-      }
-    </div>
-  }
-
-  <button (click)="next()" class="nextButton">
-    <i class="ri-arrow-right-line"></i>
-  </button>
-  <button (click)="previous()" class="previousButton">
-    <i class="ri-arrow-left-line"></i>
-  </button>
-</div>
--->
+    @if (controls()) {
+      <button class="btn-carousel btn-prev" (click)="onPrevClick()">
+        <i class="ri-arrow-left-line icon-carousel icon-prev"></i>
+      </button>
+      <button class="btn-carousel btn-next" (click)="onNextClick()">
+        <i class="ri-arrow-right-line icon-carousel icon-next"></i>
+      </button>
+    }
+  </div>
+}

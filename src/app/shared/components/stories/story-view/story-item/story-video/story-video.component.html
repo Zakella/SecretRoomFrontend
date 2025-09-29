@@ -1,0 +1,9 @@
+<video class="story-video" autoplay #storyVideo *ngIf="isVideo; else image" [volume]="videoVolume$ | async">
+    <source [src]="contentUrl"
+            type="video/mp4">
+</video>
+<ng-template #image>
+    <img class="story-video" [src]="contentUrl">
+</ng-template>
+
+

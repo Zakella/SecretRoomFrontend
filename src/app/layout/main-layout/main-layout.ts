@@ -12,6 +12,7 @@ import {distinctUntilChanged, filter, map} from 'rxjs';
 import {FloatingSidebar} from '../floating-sidebar/floating-sidebar';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
 import {ModalCertificate} from '../../shared/components/modal-certificate/modal-certificate';
+import {MobileMenu} from '../mobile-menu/mobile-menu';
 
 @Component({
   selector: 'app-main-layout',
@@ -22,7 +23,9 @@ import {ModalCertificate} from '../../shared/components/modal-certificate/modal-
     Cart,
     Loader,
     FloatingSidebar,
-    ScrollTop],
+    ScrollTop,
+    MobileMenu
+  ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })

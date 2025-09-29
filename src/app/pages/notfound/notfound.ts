@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
 
@@ -9,7 +9,8 @@ import {TranslocoPipe} from '@ngneat/transloco';
     TranslocoPipe
   ],
   templateUrl: './notfound.html',
-  styleUrl: './notfound.scss'
+  styleUrl: './notfound.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Notfound {
 
