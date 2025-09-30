@@ -1,6 +1,6 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {Authentication} from '../../../@core/auth/authentication';
-import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {passwordValidator} from '../../../@core/validators/validators';
 
 @Injectable({
@@ -11,10 +11,6 @@ export class ResetPasswordService {
   public fb = inject(FormBuilder);
   form = computed(() => this.resetPasswordForm);
   error = signal<string | null>(null);
-
-
-
-
   resetPasswordForm = this.fb.group({
     password: ["", passwordValidator],
     passwordConfirmation: ["", Validators.required],

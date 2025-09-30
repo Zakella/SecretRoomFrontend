@@ -21,5 +21,4 @@ export class Breadcrumb implements OnInit{
   ngOnInit() {
     this.breadcrumbs$ = this.breadcrumbsService.breadcrumbs$;
   }
-
 }

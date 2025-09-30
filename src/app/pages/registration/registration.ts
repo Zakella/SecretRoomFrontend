@@ -1,10 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ValidatorFn, Validators} from "@angular/forms";
-import {TranslocoPipe, TranslocoService} from "@ngneat/transloco";
-import {Language} from '../../@core/services/language';
-import {Authentication} from '../../@core/auth/authentication';
-import {Router, RouterLink} from '@angular/router';
-import {User} from '../../@core/api/user';
+import {FormsModule} from "@angular/forms";
+import {TranslocoPipe} from "@ngneat/transloco";
 import {RegistrationService} from './services/registration';
 import {FadeUp} from '../../@core/directives/fade-up';
 
@@ -13,7 +9,6 @@ import {FadeUp} from '../../@core/directives/fade-up';
   imports: [
     FormsModule,
     TranslocoPipe,
-    RouterLink,
     FadeUp
   ],
   templateUrl: './registration.html',
@@ -21,10 +16,9 @@ import {FadeUp} from '../../@core/directives/fade-up';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Registration {
- private registrationService = inject(RegistrationService);
- public registrationForm = this.registrationService.registrationForm;
+  private registrationService = inject(RegistrationService);
+  public registrationForm = this.registrationService.registrationForm;
 
- public onSubmit(){
-
+  public onSubmit() {
   }
 }

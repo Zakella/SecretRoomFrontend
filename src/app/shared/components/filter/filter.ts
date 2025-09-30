@@ -11,8 +11,7 @@ export class Filter {
   @Input() filters: FilterGroup[] = [];
   @Input() selected: any = { category: [], type: [], brand: null };
   @Output() filterChanged = new EventEmitter<any>();
-/*  @Input() filters: FilterGroup[] = [];
-  @Output() filterChanged = new EventEmitter<{ group: string; value: string; checked: boolean }>();*/
+
 
   searchQuery = '';
 

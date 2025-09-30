@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
+import {Component, Inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 @Component({
@@ -8,37 +8,37 @@ import {isPlatformBrowser} from '@angular/common';
   styleUrl: './modal-certificate.scss'
 })
 export class ModalCertificate implements OnInit {
-  isVisible = true;
-  hasShown = false;
-  isBrowser: boolean;
+  isVisible = signal<boolean>(true);
+  hasShown = signal<boolean>(false);
+  isBrowser = signal<boolean>(false);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
+    this.isBrowser.set(isPlatformBrowser(this.platformId))
   }
 
   ngOnInit(): void {
-    if (this.isBrowser) {
+    if (this.isBrowser()) {
       const shown = localStorage.getItem('certificateShown');
       if (shown === 'true') {
-        this.hasShown = true;
+        this.hasShown.set(true);
       }
       window.addEventListener('scroll', this.onScroll, { passive: true });
     }
   }
 
   onScroll = (): void => {
-    if (!this.isBrowser || this.hasShown) return;
+    if (!this.isBrowser || this.hasShown()) return;
 
     const scrolled = window.scrollY;
     if (scrolled > 1550) {
-      this.isVisible = true;
-      this.hasShown = true;
+      this.isVisible.set(true)
+      this.hasShown.set(true);
       localStorage.setItem('certificateShown', 'true');
       window.removeEventListener('scroll', this.onScroll);
     }
   };
 
   close(): void {
-    this.isVisible = false;
+    this.isVisible.set(false)
   }
 }

@@ -4,11 +4,7 @@ import {Review} from '../../../@core/services/reviews';
 
 @Component({
   selector: 'app-promotion-card',
-  imports: [
-    NgForOf,
-    CurrencyPipe,
-    NgIf
-  ],
+  imports: [],
   templateUrl: './promotion-card.html',
   styleUrl: './promotion-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -7,14 +7,14 @@ import {Component, HostListener, signal} from '@angular/core';
   styleUrl: './scroll-top.scss'
 })
 export class ScrollTop {
-  showButton = signal(false);
+  protected showButton = signal<boolean>(false);
 
   @HostListener('window:scroll')
-  onScroll() {
+  protected onScroll(): void {
     this.showButton.set(window.scrollY > 300)
   }
 
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  protected scrollToTop(): void {
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 }

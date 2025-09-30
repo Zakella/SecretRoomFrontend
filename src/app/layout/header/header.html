@@ -3,7 +3,7 @@
     <nav class="nav-left">
       <a class="nav-item">Our Story</a>
       <a class="nav-item">Our Standards</a>
-      <a class="nav-item">Our Stores & Services</a>
+      <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
     </nav>
     <a [routerLink]="['/', activeLang()]" class="logo">secret room</a>
     <div class="nav-right">
@@ -29,8 +29,7 @@
   </div>
   <nav class="nav-main">
     @for (item of Object.keys(dropdownContent); track item) {
-      <a
-        class="nav-item"
+      <a class="nav-item"
         (mouseenter)="showDropdown(item)"
         (mouseleave)="hideDropdown()"
       >
@@ -75,13 +74,11 @@
 
     <div class="search-bar">
       <input type="text"
+             maxlength="60"
              [placeholder]="'Search'| transloco"
              aria-label="Поиск по продуктам">
       <i class="ri-search-line" aria-hidden="true"></i>
     </div>
-
-
-
     @if (activeMenu && dropdownContent[activeMenu]) {
       <div class="dropdown" (mouseleave)="hideDropdown()">
         <div class="dropdown-content">

@@ -13,7 +13,7 @@ import {BtnShowMore} from '../btn-show-more/btn-show-more';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BestSellers {
-  categories = ['SKINCARE', 'MAKEUP', 'HAIR', 'BODY', 'WELLNESS', 'NEW'];
+  protected readonly categories: string[] = ['SKINCARE', 'MAKEUP', 'HAIR', 'BODY', 'WELLNESS', 'NEW'];
   allProducts = [
     {
       title: 'Repair Mask',
@@ -48,7 +48,7 @@ export class BestSellers {
       isNew: true
     },
   ];
-  selectedCategory = 'NEW';
+  protected selectedCategory: string = 'NEW';
 
 
   get filteredProducts() {
@@ -58,7 +58,7 @@ export class BestSellers {
     return this.allProducts.filter(p => p.category === this.selectedCategory);
   }
 
-  selectCategory(cat: string) {
+  protected selectCategory(cat: string): void {
     this.selectedCategory = cat;
   }
 }

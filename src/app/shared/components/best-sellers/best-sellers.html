@@ -3,7 +3,8 @@
   <div class="category-tabs">
     @for (cat of categories; track $index) {
       <button (click)="selectCategory(cat)"
-              [class.active]="cat === selectedCategory">
+              [class.active]="cat === selectedCategory"
+      >
         {{ cat }}
       </button>
     }

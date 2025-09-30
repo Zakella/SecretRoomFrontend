@@ -1,6 +1,4 @@
 <div class="page">
-
-  <!-- Шапка -->
   <header class="header">
     <h1>Косметический магазин</h1>
     <nav>
@@ -23,25 +21,27 @@
             <button class="add-cart">В корзину</button>
           </div>
 
-          <div class="end-date" *ngIf="promotion.endDate">
-            Акция действует до {{ promotion.endDate }}
-          </div>
+          @if (promotion.endDate) {
+            <div class="end-date">
+              Акция действует до {{ promotion.endDate }}
+            </div>
+          }
         </div>
       </section>
-
     </div>
-
   </div>
 
   <section class="reviews">
     <h3>Отзывы покупателей</h3>
-    <div *ngFor="let review of reviews" class="review">
-      <strong>{{ review.author }}</strong>
-      <span class="rating">⭐ {{ review.rating }}/5</span>
-      <p>{{ review.comment }}</p>
-    </div>
-  </section>
+    @for (review of reviews; track review.id) {
+      <div class="review">
+        <strong>{{ review.author }}</strong>
+        <span class="rating">⭐ {{ review.rating }}/5</span>
+        <p>{{ review.comment }}</p>
+      </div>
 
+    }
+  </section>
 </div>
 
 

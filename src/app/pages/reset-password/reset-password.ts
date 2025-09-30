@@ -1,22 +1,17 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Inject, inject, Output} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {ResetPasswordService} from './services/reset-password';
+import {ChangeDetectionStrategy, Component, EventEmitter, output, Output} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [
-    ReactiveFormsModule,
-    NgIf
-  ],
+  imports: [ReactiveFormsModule],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPassword {
-  @Output() close = new EventEmitter<void>();
-  @Output() submitted = new EventEmitter<string>();
+  close = output<void>();
+  submitted = output<string>();
 
   form: FormGroup;
   submitting = false;
@@ -43,7 +38,6 @@ export class ResetPassword {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Имитация отправки запроса (замени на реальный вызов API)
     setTimeout(() => {
       this.submitting = false;
       this.successMessage = 'Если адрес электронной почты существует, на него отправлено письмо для сброса пароля.';
@@ -52,7 +46,7 @@ export class ResetPassword {
     }, 1500);
   }
 
-  reset() {
+  private reset(): void {
     this.form.reset();
     this.submitting = false;
     this.successMessage = '';

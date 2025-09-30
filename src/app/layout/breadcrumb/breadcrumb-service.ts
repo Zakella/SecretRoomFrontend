@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Breadcrumbs} from '../../entities/breadcrumb';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
@@ -9,8 +9,10 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 export class BreadcrumbService {
   private breadcrumbsSubject = new BehaviorSubject<Breadcrumbs[]>([]);
   breadcrumbs$ = this.breadcrumbsSubject.asObservable();
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor() {
     this.initBreadcrumbs();
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

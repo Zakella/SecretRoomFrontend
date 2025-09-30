@@ -1,30 +1,9 @@
-/*
 .carousel-container {
   position: relative;
   margin: auto;
   text-align: center;
-  width: 700px;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px #dce1e1;
-
-  img {
-    display: none;
-    border-radius: 15px;
-  }
-
-  img.image-active {
-    display: block;
-    width: 100%;
-    height: 400px;
-  }
-}
-*/
-.carousel-container {
-  position: relative;
-  margin: auto;
-  text-align: center;
-  width: 100%;      // занимает почти всю ширину контейнера
-  max-width: 1400px; // ограничение на больших экранах
+  width: 100%;
+  max-width: 1600px;
   border-radius: 15px;
   box-shadow: 0 6px 12px #dce1e1;
 
@@ -74,17 +53,14 @@
 
 .fade {
   animation-name: fade;
-  animation-duration: 1.5s;
+  animation: fade 2s ease-in-out;
 }
 
 @keyframes fade {
-  from {
-    opacity: 0.4
-  }
-  to {
-    opacity: 1
-  }
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
 }
+
 
 .btn-carousel {
   position: absolute;

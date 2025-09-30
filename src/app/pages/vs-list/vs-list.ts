@@ -5,6 +5,7 @@ import {Paginator} from '../../shared/components/paginator/paginator';
 import {ProductService} from '../../@core/api/product';
 import {Product} from '../../entities/product';
 import {StoriesComponent} from '../../shared/components/stories/stories.component';
+import {CustomTitle} from '../../shared/components/custom-title/custom-title';
 
 @Component({
   selector: 'app-vs-list',
@@ -12,7 +13,8 @@ import {StoriesComponent} from '../../shared/components/stories/stories.componen
     ProductList,
     Filter,
     Paginator,
-    StoriesComponent
+    StoriesComponent,
+    CustomTitle
   ],
   templateUrl: './vs-list.html',
   styleUrl: './vs-list.scss',

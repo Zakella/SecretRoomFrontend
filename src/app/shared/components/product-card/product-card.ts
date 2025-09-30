@@ -11,7 +11,7 @@ export class ProductCard {
   readonly title = input<string>();
   readonly brand = input<string>();
   readonly price = input<number | string>();
-  readonly rating = input<number>();
-  readonly isBestSeller = input<boolean>();
+  readonly rating = input<number>(3);
+  readonly isBestSeller = input<boolean>(true);
   readonly showOptions = input<boolean>();
 }

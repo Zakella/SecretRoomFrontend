@@ -1,12 +1,11 @@
 <div class="product-card">
-  <button class="wishlist">&#9825;</button>
+  <button class="wishlist">
+    <i class="ri-heart-line"></i>
+  </button>
   @if(imageUrl() != null){
     <img class="product-image" [src]="imageUrl()" alt="{{ title() }}" />
 
   }
-<!--
-  <img class="product-image" [src]="imageUrl()" alt="{{ title() }}" />
--->
   @if (isBestSeller()){
     <div class="badge">Best Seller</div>
   }
