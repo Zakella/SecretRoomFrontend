@@ -33,6 +33,7 @@
     "@auth0/angular-jwt": "^5.2.0",
     "@ngneat/transloco": "^6.0.4",
     "express": "^5.1.0",
+    "ngx-infinite-scroll": "^20.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

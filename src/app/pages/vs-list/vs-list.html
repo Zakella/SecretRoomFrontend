@@ -1,17 +1,14 @@
+<div appFadeUp>
+  <custom-title [title]="'BEST-SELLERS'"></custom-title>
 
-<custom-title [title]="'BEST-SELLERS'"/>
-<div class="product-list-wrapper">
-<!--  <div class="filters-panel">
-    <app-filter
-      [filters]="filters"
-      (filterChanged)="onFilterChange($event)">
-    </app-filter>
-  </div>-->
-
-
-  <div class="product-list-panel">
-    <app-product-list [products]="products()"></app-product-list>
-    <app-paginator></app-paginator>
+  <div class="stories-wrapper">
+    <app-stories></app-stories>
   </div>
 
+  <div class="product-list-wrapper">
+    <div class="product-list-panel">
+      <app-product-list [products]="products()"/>
+    </div>
+  </div>
 </div>
+

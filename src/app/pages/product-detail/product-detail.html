@@ -1,8 +1,10 @@
-<section class="product-page">
-  <div class="product-grid" appFadeUp>
+@if (product()){
+<section class="product-page" appFadeUp>
+  <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button" alt="Назад" />
+  <div class="product-grid">
     <div class="product-images">
       <div class="main-image">
-        <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
+        <img [src]="product()?.imageURL" alt="Product Image"/>
       </div>
       <div class="thumbnails">
         <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
@@ -11,11 +13,11 @@
     </div>
 
     <div class="product-info">
-      <h1>Glow Nectar Face Oil</h1>
-      <p class="brand">by Secret Room</p>
-      <p class="price">$39.00</p>
+      <h1>{{product()?.name}}</h1>
+      <p class="brand">{{product()?.brandAlias}}</p>
+      <p class="price">{{product()?.price}} L</p>
       <p class="description">
-        Питательное масло для лица с легким сиянием, созданное из 100% натуральных ингредиентов.
+        {{product()?.description}}
       </p>
 
       <div class="color-picker">
@@ -28,7 +30,6 @@
                  (click)="selectedColor = color.name"
                  [title]="color.label"
             ></div>
-
           }
         </div>
       </div>
@@ -42,6 +43,9 @@
       <div class="actions">
         <button class="btn-primary">Добавить в корзину</button>
         <button class="btn-secondary">♡ В избранное</button>
+        <button class="btn-secondary" (click)="shareProduct()">
+          <i class="ri-share-line"></i>Поделиться
+        </button>
       </div>
     </div>
   </div>
@@ -56,7 +60,6 @@
     </div>
 
     <div class="tab-content">
-
         @if (selectedTab === 'description'){
           <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
         } @else if (selectedTab === 'ingredients'){
@@ -83,3 +86,4 @@
     </div>
   </div>
 </section>
+}

@@ -23,7 +23,7 @@ export class Header {
       description: 'Свежие поступления, которых вы ждали.',
       categories: ['Just In', 'Editor\'s Picks', 'Trending'],
       image: {
-        url: 'https://images.unsplash.com/photo-1612197529596-77059a16b911',
+        url: 'https://plus.unsplash.com/premium_photo-1683120952553-af3ec9cd60c0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         caption: 'Новинки на каждый день'
       }
     },
@@ -32,7 +32,7 @@ export class Header {
       description: 'Лучшие товары для солнечных дней.',
       categories: ['Sunscreens', 'Glow Kits', 'Cooling Mists'],
       image: {
-        url: 'https://images.unsplash.com/photo-1504198453319-5ce911bafcde',
+        url: '/assets/images/demo/slider1.jpeg',
         caption: 'Летняя коллекция'
       }
     },
@@ -41,7 +41,7 @@ export class Header {
       description: 'Очищение, увлажнение и сияние кожи.',
       categories: ['Cleansers', 'Toners', 'Serums', 'Moisturizers'],
       image: {
-        url: 'https://images.unsplash.com/photo-1625513362437-5b82a3e0a4e3',
+        url: 'assets/images/demo/slider1.jpeg',
         caption: 'Уход за кожей'
       }
     },

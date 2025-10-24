@@ -23,14 +23,10 @@ export class HttpInterceptor {
           const userDetails: UserDetails = JSON.parse(storedUser);
           const token = userDetails.accessToken;
 
-          console.log(`Is protected endpoint: ${this.isProtectedEndpoint(req.url)}`);
-
           if (token && this.isProtectedEndpoint(req.url)) {
             const autReq = req.clone({
               headers: new HttpHeaders({ Authorization: "Bearer " + token })
             });
-
-            console.log('Modified request:', autReq);
             return next.handle(autReq);
           }
         }

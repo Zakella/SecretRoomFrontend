@@ -1,6 +1,6 @@
 <section class="wishlist-page" appFadeUp>
-  <h1>Мой список желаемого</h1>
-    @if(wishlist.length === 0){
+  <custom-title [title]="'Wishlist'"/>
+  @if(wishlist.length === 0){
       <div class="empty">
         <p>Ваш список пуст. Добавьте любимые продукты ❤️</p>
       </div>
@@ -16,7 +16,6 @@
               <button class="btn-cart" (click)="addToCart(item)">ADD TO CART</button>
             </div>
           </div>
-
         }
       </div>
     }

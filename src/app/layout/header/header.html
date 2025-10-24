@@ -62,15 +62,16 @@
             <a class="dropdown-item">Our Story</a>
             <a class="dropdown-item">Careers</a>
           </div>
+          <div class="dropdown-section">
+            <img [src]="dropdownContent[activeMenu].image" alt="Logo">
+          </div>
+
         </div>
       </div>
     }
 
-    <a class="nav-item">WELLNESS</a>
-    <a class="nav-item">DETOX BOX</a>
-    <a class="nav-item">BRANDS</a>
-    <a class="nav-item">BRANDS</a>
-
+    <a class="nav-item" [routerLink]="['/', activeLang(), 'vs']" >VICTORIA`S SECRET</a>
+    <a class="nav-item">Bath & Body Works</a>
 
     <div class="search-bar">
       <input type="text"

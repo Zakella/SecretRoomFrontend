@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
 
@@ -10,26 +9,21 @@ import {Product} from '../../entities/product';
   providedIn: 'root'
 })
 export class ProductService {
+  private http = inject(HttpClient);
   private baseUrL = environment.apiUrl + "products";
-
-  constructor(private httpClient: HttpClient) {}
 
   getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());
-
-    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${categoryId}`, { params: params })
-      .pipe(catchError(this.handleError));
+    return this.http.get<GetResponse>(`${this.baseUrL}/${categoryId}`, {params: params})
   }
 
   getAllProductsByBrand(brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());
-
-    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${brand}`,  { params: params })
-      .pipe(catchError(this.handleError));
+    return this.http.get<GetResponse>(`${this.baseUrL}/${brand}`, {params: params});
   }
 
   search(query: string, brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
@@ -38,24 +32,16 @@ export class ProductService {
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());
 
-    return this.httpClient.get<GetResponse>(`${this.baseUrL}/${brand}/searchByNameContaining`, { params: params })
-      .pipe(catchError(this.handleError));
+    return this.http.get<GetResponse>(`${this.baseUrL}/${brand}/searchByNameContaining`, {params: params})
   }
 
   getAllProducts(): Observable<Product[]> {
-    return this.httpClient.get<Product[]>(this.baseUrL + '/all')
-      .pipe(catchError(this.handleError));
-
+    return this.http.get<Product[]>(this.baseUrL + '/all')
   }
 
-  private handleError(error: any) {
-    console.error('Something has gone wrong', error);
-    return throwError(error.message || error);
-  }
 
   getProductById(id: string | null): Observable<Product> {
-    return this.httpClient.get<Product>(`${this.baseUrL}/findProduct/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
   }
 }
 

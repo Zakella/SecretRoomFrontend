@@ -7,11 +7,9 @@ import {CookieBanner} from '../cookie-banner/cookie-banner';
 import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoService} from '@ngneat/transloco';
-import {Notify} from '../../@core/services/notify';
 import {distinctUntilChanged, filter, map} from 'rxjs';
 import {FloatingSidebar} from '../floating-sidebar/floating-sidebar';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
-import {ModalCertificate} from '../../shared/components/modal-certificate/modal-certificate';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
 
 @Component({

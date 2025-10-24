@@ -5,9 +5,6 @@
   z-index: 1000;
   background: white;
   border-radius: 10px 0 0 10px;
-  /*
-  box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
-  */
   overflow: hidden;
   padding: 10px 0;
 
@@ -35,7 +32,7 @@
     }
 
     &:hover {
-      background: rgba(255, 105, 180, 0.3); /* ярко-розовый */
+      background: rgba(255, 105, 180, 0.3);
 
     }
 

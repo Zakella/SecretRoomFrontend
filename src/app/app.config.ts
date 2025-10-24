@@ -4,21 +4,27 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import {provideHttpClient, withFetch} from '@angular/common/http';
+import {provideRouter, withInMemoryScrolling} from '@angular/router';
+import {routes} from './app.routes';
+import {provideClientHydration} from '@angular/platform-browser';
+import {HTTP_INTERCEPTORS, provideHttpClient, withFetch} from '@angular/common/http';
 import {provideTransloco} from '@ngneat/transloco';
-import {TranslocoHttpLoader} from './@core/configs/transloco-config';
+import {TranslocateHttpLoader} from './@core/configs/transloco-config';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {provideAnimations} from '@angular/platform-browser/animations';
+import {LoaderInterceptor} from './@core/interceptors/loader-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideZoneChangeDetection({eventCoalescing: true}),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'top',
+        anchorScrolling: 'enabled'
+      })
+    ),
     provideAnimationsAsync(),
     provideAnimations(),
     provideTransloco({
@@ -28,9 +34,10 @@ export const appConfig: ApplicationConfig = {
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },
-      loader: TranslocoHttpLoader
+      loader: TranslocateHttpLoader
     }),
     provideHttpClient(withFetch()),
-    provideClientHydration()
+    provideClientHydration(),
+    {provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
   ]
 };

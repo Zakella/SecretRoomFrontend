@@ -87,7 +87,9 @@
     flex-direction: column;
     align-items: center;
     font-size: 0.9rem;
+    /*
     color: white;
+    */
 
     img {
       width: 70px;
@@ -111,4 +113,132 @@
   align-items: center;
   justify-content: center;
   margin-top: 60px;
+}
+
+
+
+
+
+
+.cards {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  flex-direction: ROW;
+  align-items: center;
+  gap: 15px;
+}
+
+.cards .red {
+  background-color: #f43f5e;
+}
+
+.cards .white {
+  background-color: #f8f8f8;
+  color: black;
+  border: 1px solid #ccc;
+}
+
+.cards .blue {
+  background-color: #3b22c5;
+}
+
+.cards .card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  height: 200px;
+  width: 300px;
+  border-radius: 10px;
+  color: rgb(1, 1, 1);
+  cursor: pointer;
+  transition: 400ms;
+}
+
+.cards .card p.tip {
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.cards .card p.second-text {
+  font-size: .7em;
+}
+
+.cards .card:hover {
+  transform: scale(1.1, 1.1);
+}
+
+.cards:hover > .card:not(:hover) {
+  filter: blur(10px);
+  transform: scale(0.9, 0.9);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.promo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  width: 240px;
+  padding: 1rem;
+  margin: 0.5rem;
+
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0.5rem 0;
+    color: #333;
+  }
+
+  app-countdown {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #ff3d00; // красный для таймера
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Контейнер списка акций */
+.promo-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
 }

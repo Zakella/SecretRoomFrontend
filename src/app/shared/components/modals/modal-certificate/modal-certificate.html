@@ -1,0 +1,55 @@
+@if (isVisible()) {
+  <div class="vs-modal-overlay">
+    <div class="vs-modal">
+      <div class="vs-modal__image">
+        <img src="../../../../../assets/images/demo/cert.png" alt="Model"/>
+      </div>
+
+      <div class="vs-modal__content">
+        <button class="vs-modal__close" aria-label="Close"  (click)="close()">×</button>
+
+        <h2 class="vs-modal__brand">SECRET ROOM</h2>
+        <h3 class="vs-modal__title">Get 25% Off</h3>
+        <p class="vs-modal__subtitle">an item when you join our email list.</p>
+
+        <form class="vs-modal__form">
+          <input
+            type="email"
+            placeholder="Email Address *"
+            required
+            class="vs-input"
+          />
+
+          <p class="vs-modal__text">
+            By selecting GET OFFER CODE, I agree to receive information, special
+            offers and promotions from Secret Room, including its affiliated
+            brands, like Victoria’s Secret PINK, via email. I understand that I can
+            unsubscribe at any time by following the instructions in each email.
+            For more information, view the
+            <a href="#" class="vs-link">Privacy Policy</a>.
+          </p>
+
+          <button type="submit" class="vs-button">GET OFFER CODE</button>
+        </form>
+
+        <button class="vs-modal__no-thanks">No thanks</button>
+      </div>
+    </div>
+  </div>
+
+<!--
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal">
+      <img class="certificate-img" src="assets/images/demo/cert.png" alt="Подарочный сертификат"/>
+      <button class="animated-btn">
+        <span class="btn-bg"></span>
+        <span class="btn-text">
+        <span class="text-wrapper" data-hover="Получить подарок">
+      <span class="text-slide">Получить подарок</span>
+    </span>
+  </span>
+      </button>
+    </div>
+  </div>
+-->
+}

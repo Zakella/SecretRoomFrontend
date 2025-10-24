@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import {Translation, TranslocoLoader} from '@ngneat/transloco';
 
 @Injectable({ providedIn: 'root' })
-export class TranslocoHttpLoader implements TranslocoLoader {
+export class TranslocateHttpLoader implements TranslocoLoader {
   private http = inject(HttpClient);
 
   getTranslation(lang: string) {

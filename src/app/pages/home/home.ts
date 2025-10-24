@@ -1,23 +1,34 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {BestSellers} from '../../shared/components/best-sellers/best-sellers';
 import {TextSlider} from '../../shared/components/text-slider/text-slider';
 import {FadeUp} from '../../@core/directives/fade-up';
-import {Reels} from '../../shared/components/reels/reels';
 import {MobileMenu} from '../../layout/mobile-menu/mobile-menu';
 import {imageSliderMock} from '../../mock/image-skider-mock';
-import {GOALS} from '../../mock/goals';
+import {GOALS, PROMOS_MOCK} from '../../mock/goals';
+import {Socials} from '../socials/socials';
+import {ProductCategoryService} from '../../@core/api/product-category';
+import {ModalCertificate} from '../../shared/components/modals/modal-certificate/modal-certificate';
 
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, Reels, MobileMenu],
+  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, MobileMenu, Socials, ModalCertificate],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Home {
+export class Home implements OnInit{
   images = imageSliderMock;
   goals = GOALS;
+  promos = PROMOS_MOCK;
+  productCategoryService = inject(ProductCategoryService);
+
+  ngOnInit() {
+    this.productCategoryService.getCategoriesByBrand('vs').subscribe(res => {
+      console.log(res);
+    })
+  }
+
 }

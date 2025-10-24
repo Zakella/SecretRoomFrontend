@@ -1,7 +1,4 @@
 .section-title {
-  /*
-  background: black;
-  */
   text-align: center;
   font-size: 1.8rem;
   font-weight: 600;
@@ -40,9 +37,6 @@
 }
 
 .product-grid-wrapper {
-  /*
-  background: black;
-  */
   position: relative;
   padding-bottom: 4rem;
 }
@@ -57,9 +51,4 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
-
-  // если хочешь, можно сделать прижатой к низу grid-wrapper:
-  // position: absolute;
-  // right: 0;
-  // bottom: 0;
 }

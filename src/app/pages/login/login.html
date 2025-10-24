@@ -27,8 +27,7 @@
   </div>
 </section>
 
-<app-reset-password
-  *ngIf="showResetPassword"
-  (close)="showResetPassword = false"
-  (submitted)="onResetPasswordSubmitted($event)">
-</app-reset-password>
+@if(showResetPassword()){
+  <app-reset-password (close)="showResetPassword.set(false)" (submitted)="onResetPasswordSubmitted($event)"/>
+}
+

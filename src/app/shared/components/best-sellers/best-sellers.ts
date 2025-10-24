@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProductCard} from '../product-card/product-card';
-import {BtnShowMore} from '../btn-show-more/btn-show-more';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {ProductCard} from '../product/product-card/product-card';
+import {BtnShowMore} from '../buttons/btn-show-more/btn-show-more';
+import {BEST_SELLERS} from '../../../mock/best-sellers';
 
 @Component({
   selector: 'app-best-sellers',
@@ -14,51 +15,18 @@ import {BtnShowMore} from '../btn-show-more/btn-show-more';
 })
 export class BestSellers {
   protected readonly categories: string[] = ['SKINCARE', 'MAKEUP', 'HAIR', 'BODY', 'WELLNESS', 'NEW'];
-  allProducts = [
-    {
-      title: 'Repair Mask',
-      brand: 'Innersense',
-      price: 630,
-      category: 'HAIR',
-      imageUrl: 'https://images.pexels.com/photos/2834934/pexels-photo-2834934.jpeg',
-      isNew: true
-    },
-    {
-      title: 'Repair Mask',
-      brand: 'ILIA',
-      price: 667,
-      category: 'MAKEUP',
-      imageUrl: 'https://images.pexels.com/photos/2834934/pexels-photo-2834934.jpeg',
-      isNew: true
-    },
-    {
-      title: 'N.01 Brush - Orange Seventies',
-      brand: 'La Bonne Brosse',
-      price: 3111,
-      category: 'HAIR',
-      imageUrl: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
-      isNew: true
-    },
-    {
-      title: 'Glow Skin Highlighter Stick',
-      brand: 'Goop',
-      price: 704,
-      category: 'MAKEUP',
-      imageUrl: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
-      isNew: true
-    },
-  ];
-  protected selectedCategory: string = 'NEW';
+  allProducts = BEST_SELLERS;
+  protected selectedCategory= signal<string>('NEW');
 
 
   get filteredProducts() {
-    if (this.selectedCategory === 'NEW') {
+    if (this.selectedCategory() === 'NEW') {
       return this.allProducts.filter(p => p.isNew);
     }
-    return this.allProducts.filter(p => p.category === this.selectedCategory);
+    return this.allProducts.filter(p => p.category === this.selectedCategory());
   }
 
   protected selectCategory(cat: string): void {
-    this.selectedCategory = cat;
+    this.selectedCategory.set(cat)
   }
 }

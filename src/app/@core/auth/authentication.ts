@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {BehaviorSubject, Observable, Subscriber, tap} from 'rxjs';
 
@@ -13,16 +13,13 @@ import {User} from '../api/user';
 export class Authentication {
   private jwtHelper = new JwtHelperService();
   loggedIn = new BehaviorSubject<boolean>(this.hasValidTokenInLocalStorage());
-
-  constructor(private http: HttpClient) { }
+   private  http = inject(HttpClient);
 
   isLoggedIn(): Observable<boolean> {
     return new Observable<boolean>(subscriber => {
       if (this.hasValidTokenInLocalStorage()) {
         this.notifyLoggedInStatus(true, subscriber);
-        console.log("Its ok!" + new Date());
       } else {
-        console.log("Auto logout" + new Date());
         this.notifyLoggedInStatus(false, subscriber);
         localStorage.removeItem('user');
       }

@@ -2,20 +2,21 @@
   <div class="container">
     <div class="footer-brand">
       <div class="logo">Secret Room</div>
-      <p class="description">
-        Кураторская косметика. Только проверенные бренды и чистые формулы.
-      </p>
+      <p class="description">Кураторская косметика. Только проверенные бренды и чистые формулы.</p>
       <div class="socials">
-        <a href="#"><i class="pi pi-instagram"></i></a>
-        <a href="#"><i class="pi pi-facebook"></i></a>
-        <a href="#"><i class="pi pi-youtube"></i></a>
+        <a href="https://www.instagram.com/secret_room.moldova?igsh=MWRxcmhrenpjZXFrbQ=="
+           target="_blank"
+           rel="noopener noreferrer">
+          <i class="ri-instagram-line"></i>
+        </a>
+        <a href="#"><i class="ri-facebook-line"></i></a>
+        <a href="#"><i class="ri-tiktok-line"></i></a>
       </div>
     </div>
 
     <div class="footer-links">
       <div class="column">
         <h4>{{ 'About us' | transloco }}</h4>
-        <a></a>
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
         <a (click)="showPolicy()">Политика возврата</a>
         <a [routerLink]="['/', activeLang(), 'delivery-terms']">Правила и условия</a>
@@ -23,9 +24,6 @@
       <div class="column">
         <h4>О нас</h4>
         <a [routerLink]="['/', activeLang(), 'about-us']">О компании</a>
-<!--
-        <a routerLink="/careers">Карьера</a>
--->
       </div>
       <div class="column">
         <h4>Каталог</h4>
@@ -54,5 +52,4 @@
     </div>
   </div>
 </footer>
-
 <app-return-policy [open]="isReturnPolicyVisible" (closed)="isReturnPolicyVisible = false"/>

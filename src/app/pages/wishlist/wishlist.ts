@@ -1,10 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
+import {CustomTitle} from '../../shared/components/custom-title/custom-title';
 
 @Component({
   selector: 'app-wishlist',
   imports: [
-    FadeUp
+    FadeUp,
+    CustomTitle
   ],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss',
@@ -27,11 +29,12 @@ export class Wishlist {
   ];
 
   removeItem(id: number) {
+/*
     this.wishlist = this.wishlist.filter(item => item.id !== id);
+*/
   }
 
   addToCart(product: any) {
     console.log('Добавлено в корзину:', product);
-    // Можно реализовать добавление в корзину
   }
 }

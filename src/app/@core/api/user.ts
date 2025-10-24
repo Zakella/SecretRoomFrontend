@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
@@ -8,12 +8,11 @@ import {UserAccountInfo} from '../../entities/user-account-info';
   providedIn: 'root'
 })
 export class User {
-  private readonly API_URL = environment.apiUrl +'v1/users/accountInfo';
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl +'v1/users/accountInfo';
 
-  constructor(private http: HttpClient) {
-  }
 
   getCustomerOrders(userEmail: string): Observable<UserAccountInfo> {
-    return this.http.post<UserAccountInfo>(this.API_URL, {email: userEmail});
+    return this.http.post<UserAccountInfo>(this.apiUrl, {email: userEmail});
   }
 }

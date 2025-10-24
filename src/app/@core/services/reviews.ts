@@ -4,7 +4,7 @@ import {BehaviorSubject} from 'rxjs';
 export interface Review {
   id: number;
   author: string;
-  rating: number; // от 1 до 5
+  rating: number;
   comment: string;
   date: Date;
 }

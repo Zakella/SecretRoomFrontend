@@ -1,4 +1,5 @@
-import {Component, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
+import {LoaderService} from './loader-service';
 
 @Component({
   selector: 'app-loader',
@@ -7,5 +8,6 @@ import {Component, signal} from '@angular/core';
   styleUrl: './loader.scss'
 })
 export class Loader {
- isLoad = signal(false)
+  loader = inject(LoaderService);
+  isLoad =  this.loader.isLoading;
 }

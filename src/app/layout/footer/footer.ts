@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {ReturnPolicy} from '../../shared/components/return-policy/return-policy';
+import {ReturnPolicy} from '../../shared/components/modals/return-policy/return-policy';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
 
@@ -22,5 +22,4 @@ export class Footer {
   showPolicy() {
     this.isReturnPolicyVisible = true;
   }
-
 }
