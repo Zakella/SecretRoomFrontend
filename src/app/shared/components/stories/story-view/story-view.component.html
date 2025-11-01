@@ -61,7 +61,7 @@
   @for (story of stories; track story.id; let i = $index) {
     <story-item
       [stories]="story.stories"
-      [author]="story.name + ' ' + story.surname"
+      [author]="story.name"
       [userIndex]="i"
       [avatar]="story.thumbnail"
     ></story-item>

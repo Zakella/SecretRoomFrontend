@@ -1,9 +1,12 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
+import {MessageService} from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShareLinkService {
+
+  private notification = inject(MessageService);
 
   public createShareableLink(): string {
     return window.location.href;
@@ -24,6 +27,10 @@ export class ShareLinkService {
     window.open(`https://t.me/share/url?url=${link}`, '_blank');
   }
 
+  public shareToWhatsApp(): void {
+    const link = encodeURIComponent(this.createShareableLink());
+    window.open(`https://wa.me/?text=${link}`, '_blank');
+  }
 
 
   private isClipboardApiAvailable(): boolean {
@@ -32,8 +39,8 @@ export class ShareLinkService {
 
   private copyUsingClipboardApi(link: string): void {
     navigator.clipboard.writeText(link)
-      .then(() => console.log('Ссылка скопирована через Clipboard API!'))
-      .catch(err => console.error('Ошибка копирования через Clipboard API: ', err));
+      .then(() => this.onSuccess())
+      .catch(() => this.showError());
   }
 
 
@@ -45,11 +52,26 @@ export class ShareLinkService {
 
     try {
       document.execCommand('copy');
-      console.log('Ссылка скопирована через fallback!');
+      this.onSuccess();
     } catch (err) {
-      console.error('Ошибка копирования через fallback: ', err);
+      this.showError();
     }
-
     document.body.removeChild(textArea);
+  }
+
+  private onSuccess(summary?:string) {
+    this.notification.add({
+      severity: 'secondary',
+      summary: 'Скопировано',
+      detail: 'Операция выполнена успешно!',
+    })
+  }
+
+  private showError() {
+    this.notification.add({
+      severity: 'error',
+      summary: 'Ошибка',
+      detail: 'Что-то пошло не так.',
+    });
   }
 }

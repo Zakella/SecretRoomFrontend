@@ -14,7 +14,8 @@
     flex-direction: column;
     justify-content: center;
     .story-img-block {
-      background: linear-gradient(86.54deg, #E31E24 1.02%, rgba(255, 0, 8, 0.7) 100.31%), #FFFFFF;
+      background: linear-gradient(90deg, rgba(227, 30, 36, 0.85) 0%, rgba(255, 77, 77, 0.5) 100%);
+      backdrop-filter: blur(8px);
       border-radius: 50%;
       width: 76px;
       height: 76px;

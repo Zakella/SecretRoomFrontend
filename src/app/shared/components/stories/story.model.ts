@@ -6,7 +6,9 @@ export interface IStoryData {
     id: number;
     thumbnail: string;
     name: string;
+/*
     surname: string;
+*/
     stories: IStory[];
 }
 export interface IStory {

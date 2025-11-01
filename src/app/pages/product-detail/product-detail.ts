@@ -57,6 +57,6 @@ export class ProductDetail implements OnInit{
   }
 
   shareProduct(){
-    this.sharedService.shareToTelegram()
+    this.sharedService.copyLinkToClipboard();
   }
 }

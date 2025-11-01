@@ -5,6 +5,7 @@ import {RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ResetPassword} from '../../shared/components/modals/reset-password/reset-password';
+import {InputText} from 'primeng/inputtext';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,8 @@ import {ResetPassword} from '../../shared/components/modals/reset-password/reset
     FormsModule,
     TranslocoPipe,
     RouterLink,
-    FadeUp
+    FadeUp,
+    InputText
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

@@ -3,27 +3,19 @@ import {StoryModel} from "./story.model";
 export const STORIES: StoryModel = {
   data: [
     {
-      id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      id: 1,
+      name: 'Новинки',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
-          id: 0,
+          id:1,
           image:'https://www.victoriassecret.com/p/1000x1333/png/zz/25/05/15/01/1126465354A2_OM_F.jpg',
           video: '',
           views: 45,
           hours_has_passed: 9
         },
         {
-          id: 0,
-          image: '',
-          video: 'https://assets.mixkit.co/videos/preview/mixkit-man-holding-neon-light-1238-large.mp4',
-          views: 45,
-          hours_has_passed: 9
-        },
-        {
-          id: 0,
+          id: 2,
           image: 'https://www.victoriassecret.com/p/1520x2026/png/zz/25/07/14/02/112508117CM1_OM_B.jpg',
           video: '',
           views: 45,
@@ -32,27 +24,19 @@ export const STORIES: StoryModel = {
       ]
     },
     {
-      id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      id: 2,
+      name: 'Зима',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {
-          id: 0,
-          image: '',
-          video: 'https://www.youtube.com/watch?v=S2dRcipMCpw',
-          views: 45,
-          hours_has_passed: 9
-        },
-        {
-          id: 0,
+          id: 3,
           image: 'https://wallpapercave.com/wp/wp2245802.jpg',
           video: '',
           views: 45,
           hours_has_passed: 9
         },
         {
-          id: 0,
+          id: 4,
           image:'https://www.victoriassecret.com/p/1000x1333/png/zz/25/05/15/01/1126465354A2_OM_F.jpg',
           video: '',
           views: 45,
@@ -61,9 +45,8 @@ export const STORIES: StoryModel = {
       ]
     },
     {
-      id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      id: 33,
+      name: 'Весна',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
@@ -80,19 +63,11 @@ export const STORIES: StoryModel = {
           views: 45,
           hours_has_passed: 9
         },
-        {
-          id: 0,
-          image: '',
-          video: 'https://assets.mixkit.co/video-templates/593/mixkit-593-360.mp4',
-          views: 45,
-          hours_has_passed: 9
-        }
       ]
     },
     {
       id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      name: 'Лето',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {
@@ -120,8 +95,7 @@ export const STORIES: StoryModel = {
     },
     {
       id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      name: 'Осень',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
@@ -142,8 +116,7 @@ export const STORIES: StoryModel = {
     },
     {
       id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      name: 'Лицо',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {
@@ -164,8 +137,7 @@ export const STORIES: StoryModel = {
     },
     {
       id: 0,
-      name: 'Имя',
-      surname: 'Фамилия',
+      name: 'Руки',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
@@ -194,7 +166,6 @@ export const STORIES: StoryModel = {
     {
       id: 0,
       name: 'Имя',
-      surname: 'Фамилия',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {
@@ -223,7 +194,6 @@ export const STORIES: StoryModel = {
     {
       id: 0,
       name: 'Имя',
-      surname: 'Фамилия',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
@@ -252,7 +222,6 @@ export const STORIES: StoryModel = {
     {
       id: 0,
       name: 'Имя',
-      surname: 'Фамилия',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {
@@ -281,7 +250,6 @@ export const STORIES: StoryModel = {
     {
       id: 0,
       name: 'Имя',
-      surname: 'Фамилия',
       thumbnail: '/assets/images/demo/goal1.jpg',
       stories: [
         {
@@ -310,7 +278,6 @@ export const STORIES: StoryModel = {
     {
       id: 0,
       name: 'Имя',
-      surname: 'Фамилия',
       thumbnail: '/assets/images/demo/goal2.jpg',
       stories: [
         {

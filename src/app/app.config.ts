@@ -13,6 +13,9 @@ import {TranslocateHttpLoader} from './@core/configs/transloco-config';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {LoaderInterceptor} from './@core/interceptors/loader-interceptor';
+import {providePrimeNG} from "primeng/config";
+import Aura from '@primeuix/themes/aura';
+import {MessageService} from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +30,12 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimationsAsync(),
     provideAnimations(),
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    }),
+    MessageService,
     provideTransloco({
       config: {
         availableLangs: ['ro', 'ru'],

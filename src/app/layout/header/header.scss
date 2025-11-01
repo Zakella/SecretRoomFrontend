@@ -94,14 +94,14 @@
 
 .dropdown-content {
   display: flex;
-  flex-wrap: nowrap; /* или wrap, если нужно на маленьких экранах */
-  gap: 40px; /* расстояние между секциями */
+  flex-wrap: nowrap;
+  gap: 40px;
 }
 
 .dropdown-section, .dropdown-column {
   display: flex;
   flex-direction: column;
-  min-width: 150px; /* или 200px, как у тебя */
+  min-width: 150px;
 }
 
 .dropdown-section h4 {
@@ -130,39 +130,6 @@
   color: pink;
 }
 
-
-/*
-.search-bar {
-  position: relative;
-  margin-left: auto;
-  max-width: 360px;
-  input{
-    border: none;
-    outline: none;
-    border-radius: 10px;
-    padding: 1em;
-    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
-    transition: 300ms ease-in-out;
-  }
-  input:focus{
-      background-color: white;
-      transform: scale(1.05);
-      box-shadow: 13px 13px 100px #969696,
-      -13px -13px 100px #ffffff;
-  }
-
-  i {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    color: #8a8a8a;
-    pointer-events: none;
-  }
-}
-*/
-
 .search-bar {
   position: relative;
   margin-left: auto;
@@ -174,7 +141,7 @@
     border: none;
     outline: none;
     border-radius: 10px;
-    padding: 1em 2.5em 1em 1em; // место под иконку справа
+    padding: 1em 2.5em 1em 1em;
     box-shadow: inset 2px 5px 10px rgba(0,0,0,0.1);
     transition: all 0.3s ease-in-out;
   }
@@ -197,7 +164,7 @@
   }
 
   input:focus + i {
-    color: #b34773; // подсветка иконки при фокусе
+    color: #b34773;
   }
 }
 

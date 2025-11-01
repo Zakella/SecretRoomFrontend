@@ -11,8 +11,6 @@
   font-feature-settings: normal;
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent;
-
-
 }
 
 
@@ -39,34 +37,7 @@ body:after, body:before {
   z-index: 9999;
   pointer-events: none;
   opacity: 20%;
-  font-family: OptimaDisplayLight,Helvetica,Arial,sans-serif;
 }
-
-
-/*
-.fade-in {
-  opacity: 0;
-  transform: translateY(25px);
-  animation: fadeInUp 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-}
-
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(25px);
-    filter: blur(6px);
-  }
-  50% {
-    opacity: 0.5;
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}*/
-
 
 
 /*
@@ -93,3 +64,6 @@ body:after, body:before {
   }
 }
 */
+
+
+

@@ -3,10 +3,11 @@ import {RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {Select} from 'primeng/select';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe],
+  imports: [RouterLink, TranslocoPipe, Select],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
