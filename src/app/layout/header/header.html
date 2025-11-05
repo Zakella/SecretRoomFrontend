@@ -5,7 +5,9 @@
       <a class="nav-item">Our Standards</a>
       <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
     </nav>
-    <a [routerLink]="['/', activeLang()]" class="logo">secret room</a>
+    <a [routerLink]="['/', activeLang()]" class="logo">
+      <img src="assets/secret-room-logo.svg" alt="logo">
+    </a>
     <div class="nav-right">
       <div class="lang-switcher">
         @for (lang of languages; track lang) {
