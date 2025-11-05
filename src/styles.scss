@@ -11,6 +11,7 @@
   font-feature-settings: normal;
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 
@@ -20,7 +21,7 @@ body{
   background-color: #FAF5F8;
   padding: 0;
   margin: 0;
-
+  overflow-x: hidden;
 }
 
 body:before {
