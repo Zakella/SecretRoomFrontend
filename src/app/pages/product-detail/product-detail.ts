@@ -6,11 +6,11 @@ import {ProductService} from '../../@core/api/product';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Product} from '../../entities/product';
 import {Language} from '../../@core/services/language';
-import {ShareLinkService} from '../../@core/services/share-link-service';
+import {ShareModal} from '../../shared/components/modals/share-modal/share-modal';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [NgStyle, Reviews, FadeUp],
+  imports: [NgStyle, Reviews, FadeUp, ShareModal],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,7 +20,6 @@ export class ProductDetail implements OnInit{
   private router = inject(Router);
   private productService = inject(ProductService);
   private langService = inject(Language);
-  private sharedService = inject(ShareLinkService);
 
   selectedTab: string = 'description';
   selectedColor: string = 'rose';
@@ -54,9 +53,5 @@ export class ProductDetail implements OnInit{
 
   navigateToList(){
   this.router.navigate([this.activeLang(),'vs']);
-  }
-
-  shareProduct(){
-    this.sharedService.copyLinkToClipboard();
   }
 }

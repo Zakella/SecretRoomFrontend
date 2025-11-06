@@ -1,11 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {MessageService} from 'primeng/api';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ShareLinkService {
-
   private notification = inject(MessageService);
 
   public createShareableLink(): string {
@@ -14,7 +11,6 @@ export class ShareLinkService {
 
   public copyLinkToClipboard(): void {
     const link = this.createShareableLink();
-
     if (this.isClipboardApiAvailable()) {
       this.copyUsingClipboardApi(link);
     } else {
@@ -24,11 +20,13 @@ export class ShareLinkService {
 
   public shareToTelegram(): void {
     const link = encodeURIComponent(this.createShareableLink());
+    console.log(link)
     window.open(`https://t.me/share/url?url=${link}`, '_blank');
   }
 
   public shareToWhatsApp(): void {
     const link = encodeURIComponent(this.createShareableLink());
+    console.log(link)
     window.open(`https://wa.me/?text=${link}`, '_blank');
   }
 

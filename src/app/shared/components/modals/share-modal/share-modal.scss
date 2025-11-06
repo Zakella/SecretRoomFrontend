@@ -1,0 +1,47 @@
+.share-icons {
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+
+    &.telegram {
+      background-color: #1D98DC;
+      color: #fff;
+      i{
+        font-size: 1.5rem;
+      }
+    }
+
+    &.whatsapp {
+      background-color: #25D366;
+      color: #fff;
+      i{
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+.copy-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  input {
+    flex: 1;
+  }
+}
+
+.copy-btn{
+  cursor: pointer;
+}
+
+.p-dialog{
+  background: #FFFFFF!important;
+  color: #000000!important;
+}

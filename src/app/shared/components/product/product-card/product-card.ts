@@ -1,10 +1,13 @@
 import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
+import {ShareModal} from '../../modals/share-modal/share-modal';
 
 @Component({
   selector: 'product-card',
-  imports: [],
+  imports: [
+    ShareModal
+  ],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

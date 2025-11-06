@@ -43,7 +43,7 @@
       <div class="actions">
         <button class="btn-primary">Добавить в корзину</button>
         <button class="btn-secondary">♡ В избранное</button>
-        <button class="btn-secondary" (click)="shareProduct()">
+        <button class="btn-secondary" (click)="shareModal.open()">
           <i class="ri-share-line"></i>Поделиться
         </button>
       </div>
@@ -65,7 +65,7 @@
         } @else if (selectedTab === 'ingredients'){
           <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
         }@else if (selectedTab === 'reviews'){
-         <app-reviews></app-reviews>
+         <app-reviews/>
         }
     </div>
   </div>
@@ -87,3 +87,4 @@
   </div>
 </section>
 }
+<app-share-modal #shareModal />
