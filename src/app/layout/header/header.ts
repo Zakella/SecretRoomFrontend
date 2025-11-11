@@ -4,10 +4,11 @@ import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Select} from 'primeng/select';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, Select],
+  imports: [RouterLink, TranslocoPipe, Select, NgIf],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -56,6 +57,24 @@ export class Header {
       }
     },
     BODY: {
+      title: 'Body Care',
+      description: 'Забота о теле с головы до пят.',
+      categories: ['Scrubs', 'Body Oils', 'Lotions', 'Deodorants'],
+      image: {
+        url: 'https://images.unsplash.com/photo-1588776814546-1c5292b1806d',
+        caption: 'Мягкость и свежесть'
+      }
+    },
+    BRANDS: {
+      title: 'Body Care',
+      description: 'Забота о теле с головы до пят.',
+      categories: ['Scrubs', 'Body Oils', 'Lotions', 'Deodorants'],
+      image: {
+        url: 'https://images.unsplash.com/photo-1588776814546-1c5292b1806d',
+        caption: 'Мягкость и свежесть'
+      }
+    },
+    SHOES: {
       title: 'Body Care',
       description: 'Забота о теле с головы до пят.',
       categories: ['Scrubs', 'Body Oils', 'Lotions', 'Deodorants'],

@@ -31,18 +31,12 @@
   </div>
   <nav class="nav-main">
     @for (item of Object.keys(dropdownContent); track item) {
-      <a class="nav-item"
-        (mouseenter)="showDropdown(item)"
-        (mouseleave)="hideDropdown()"
-      >
+      <a class="nav-item" (mouseenter)="showDropdown(item)">
         {{ item }}
       </a>
     }
-
-    @if (activeMenu && dropdownContent[activeMenu]) {
-      <div class="dropdown"
-           (mouseenter)="showDropdown(activeMenu)"
-           (mouseleave)="hideDropdown()">
+    @if (activeMenu) {
+      <div class="dropdown" (mouseleave)="hideDropdown()">
         <div class="dropdown-content">
           <div class="dropdown-section">
             <h4>{{ dropdownContent[activeMenu].title }}</h4>
@@ -71,9 +65,8 @@
         </div>
       </div>
     }
-
-    <a class="nav-item" [routerLink]="['/', activeLang(), 'vs']" >VICTORIA`S SECRET</a>
-    <a class="nav-item">Bath & Body Works</a>
+<!--    <a class="nav-item" [routerLink]="['/', activeLang(), 'vs']" >VICTORIA`S SECRET</a>
+    <a class="nav-item">Bath & Body Works</a>-->
 
     <div class="search-bar">
       <input type="text"
