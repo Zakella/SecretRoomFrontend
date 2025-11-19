@@ -9,11 +9,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {isPlatformBrowser, NgClass,} from '@angular/common';
-
-interface carouselImage {
-  imageSrc: string,
-  imageAlt: string,
-}
+import {CarouselImage} from '../../../entities/carousel-image';
 
 @Component({
   selector: 'app-image-slider',
@@ -23,7 +19,7 @@ interface carouselImage {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
-  public images = input<carouselImage[]>([]);
+  public images = input<CarouselImage[]>([]);
   public indicator = input<boolean>(true);
   public controls = input<boolean>(true);
   public autoSlide = input<boolean>(true);
@@ -32,6 +28,8 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
   public selectedIndex = signal(0);
   private intervalId = signal<number | null>(null);
   private readonly isBrowser = signal<boolean>(false);
+  startX = 0;
+  endX = 0;
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser.set(isPlatformBrowser(platformId));
@@ -81,5 +79,28 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
   protected onNextClick(): void {
     if (!this.images().length) return;
     this.selectedIndex.update(i => (i + 1) % this.images().length);
+  }
+
+  protected onDragStart(event: MouseEvent | TouchEvent) {
+    if (event instanceof MouseEvent) {
+      this.startX = event.clientX;
+    } else if (event instanceof TouchEvent) {
+      this.startX = event.touches[0].clientX;
+    }
+  }
+
+  protected onDragEnd(event: MouseEvent | TouchEvent) {
+    if (event instanceof MouseEvent) {
+      this.endX = event.clientX;
+    } else if (event instanceof TouchEvent) {
+      this.endX = event.changedTouches[0].clientX;
+    }
+
+    const delta = this.endX - this.startX;
+    if (delta > 50) {
+      this.onPrevClick();
+    } else if (delta < -50) {
+      this.onNextClick();
+    }
   }
 }

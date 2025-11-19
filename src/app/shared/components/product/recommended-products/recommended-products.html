@@ -1,1 +1,26 @@
-<p>recommended-products works!</p>
+<p-carousel [value]="products!" [numVisible]="3" [numScroll]="1" [circular]="true"
+            [responsiveOptions]="responsiveOptions" autoplayInterval="3000">
+  <ng-template let-product #item>
+    <div class="m-2 p-4">
+      <div class="mb-4">
+        <div class="relative mx-auto">
+          <img [src]="product.imageURL" [alt]="product.name" class="w-full rounded-border rounded-3xl"/>
+        </div>
+      </div>
+      <div class="mb-4 font-medium">{{ product.name }}</div>
+      <div class="flex justify-between items-center">
+        <div class="mt-0 font-semibold text-xl">{{ product.price + ' L' }}</div>
+        <span>
+      <button class="vs-btn">
+  <i class="pi pi-heart"></i>
+</button>
+
+<button class="vs-btn ml-2">
+  <i class="pi pi-shopping-cart"></i>
+</button>
+
+        </span>
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>

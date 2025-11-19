@@ -1,90 +1,85 @@
-@if (product()){
-<section class="product-page" appFadeUp>
-  <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button" alt="Назад" />
-  <div class="product-grid">
-    <div class="product-images">
-      <div class="main-image">
-        <img [src]="product()?.imageURL" alt="Product Image"/>
+@if (product()) {
+  <section class="product-page" appFadeUp>
+    <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button" alt="Назад"/>
+    <div class="product-grid">
+      <div class="product-images">
+        <div class="main-image">
+          <img [src]="product()?.imageURL" alt="Product Image"/>
+        </div>
+        @defer {
+          <div class="thumbnails">
+          <img src="assets/images/demo/slider1.jpeg" alt="Product Image" loading="lazy"/>
+          <img src="assets/images/demo/slider1.jpeg" alt="Product Image" loading="lazy"/>
+        </div>
+        }
       </div>
-      <div class="thumbnails">
-        <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
-        <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
-      </div>
-    </div>
 
-    <div class="product-info">
-      <h1>{{product()?.name}}</h1>
-      <p class="brand">{{product()?.brandAlias}}</p>
-      <p class="price">{{product()?.price}} L</p>
-      <p class="description">
-        {{product()?.description}}
-      </p>
+      <div class="product-info">
+        <h1>{{ product()?.name }}</h1>
+        <p class="brand">{{ product()?.brandAlias }}</p>
+        <p class="price">{{ product()?.price }} MDL</p>
+        <p class="description">
+          {{ product()?.description }}
+        </p>
 
-      <div class="color-picker">
-        <span>Цвет:</span>
-        <div class="color-options">
-          @for (color of colors; track $index; ) {
-            <div class="color-circle"
-                 [ngStyle]="{ 'background-color': color.hex }"
-                 [class.selected]="color.name === selectedColor"
-                 (click)="selectedColor = color.name"
-                 [title]="color.label"
-            ></div>
-          }
+        <div class="color-picker">
+          <span>Цвет:</span>
+          <div class="color-options">
+            @for (color of colors; track $index; ) {
+              <div class="color-circle"
+                   [ngStyle]="{ 'background-color': color.hex }"
+                   [class.selected]="color.name === selectedColor"
+                   (click)="selectedColor = color.name"
+                   [title]="color.label"
+              ></div>
+            }
+          </div>
+        </div>
+
+        <ul class="features">
+          <li>✓ Веган и cruelty-free</li>
+          <li>✓ Без силиконов и парабенов</li>
+          <li>✓ Подходит для беременных</li>
+        </ul>
+
+        <div class="actions">
+          <button class="btn-primary">Добавить в корзину</button>
+          <button class="btn-secondary">
+            <i class="pi pi-heart"></i>
+            В избранное
+          </button>
+          <button class="btn-secondary" (click)="shareModal.open()">
+            <i class="pi pi-share-alt"></i>
+            Поделиться
+          </button>
         </div>
       </div>
-
-      <ul class="features">
-        <li>✓ Веган и cruelty-free</li>
-        <li>✓ Без силиконов и парабенов</li>
-        <li>✓ Подходит для беременных</li>
-      </ul>
-
-      <div class="actions">
-        <button class="btn-primary">Добавить в корзину</button>
-        <button class="btn-secondary">♡ В избранное</button>
-        <button class="btn-secondary" (click)="shareModal.open()">
-          <i class="ri-share-line"></i>Поделиться
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="product-tabs">
-    <div class="tabs">
-      @for (tab of tabs; track $index){
-        <button [class.active]="tab.key === selectedTab" (click)="selectedTab = tab.key">
-          {{ tab.label }}
-        </button>
-      }
     </div>
 
-    <div class="tab-content">
-        @if (selectedTab === 'description'){
-          <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
-        } @else if (selectedTab === 'ingredients'){
-          <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
-        }@else if (selectedTab === 'reviews'){
-         <app-reviews/>
+    <div class="product-tabs">
+      <div class="tabs">
+        @for (tab of tabs; track $index) {
+          <button [class.active]="tab.key === selectedTab" (click)="selectedTab = tab.key">
+            {{ tab.label }}
+          </button>
         }
-    </div>
-  </div>
+      </div>
 
-  <div class="related-products">
-    <h2>Похожие товары</h2>
-    <div class="related-grid">
-      <div class="product-card">
-        <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
-        <h3>Hydra Mist</h3>
-        <p>$25.00</p>
-      </div>
-      <div class="product-card">
-        <img src="assets/images/demo/slider1.jpeg" alt="Product Image"/>
-        <h3>Rose Toner</h3>
-        <p>$18.00</p>
+      <div class="tab-content">
+        @if (selectedTab === 'description') {
+          <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
+        } @else if (selectedTab === 'ingredients') {
+          <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
+        } @else if (selectedTab === 'reviews') {
+          <app-reviews/>
+        }
       </div>
     </div>
-  </div>
-</section>
+    <div class="related-products">
+      <h2>Похожие товары</h2>
+      <recommended-products/>
+    </div>
+  </section>
 }
-<app-share-modal #shareModal />
+<app-share-modal #shareModal/>
+

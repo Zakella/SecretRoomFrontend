@@ -3,7 +3,6 @@
   margin: auto;
   text-align: center;
   width: 100%;
-  max-width: 1600px;
   border-radius: 15px;
   box-shadow: 0 6px 12px #dce1e1;
 
@@ -11,17 +10,17 @@
     display: none;
     width: 100%;
     height: auto;
+    object-fit: fill;
     border-radius: 15px;
   }
 
   img.image-active {
     display: block;
     width: 100%;
-    height: auto;  // подстраивается под ширину
-    max-height: 600px; // ограничение по высоте
+    height: auto;
+    max-height: 600px;
   }
 }
-
 
 
 .carousel-dot-container {
@@ -57,8 +56,12 @@
 }
 
 @keyframes fade {
-  from { opacity: 0.7; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 
@@ -82,9 +85,11 @@
 .btn-prev {
   left: 0;
 }
+
 .btn-next {
   right: 0;
 }
+
 .icon-carousel {
   color: #fff;
   opacity: 0.5;
@@ -100,6 +105,6 @@
 }
 
 .icon-next,
-.icon-prev{
+.icon-prev {
   font-size: 35px;
 }

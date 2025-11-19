@@ -1,0 +1,34 @@
+.vs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  border: 2px solid #f7cfe3; // нежный розовый
+  color: #e86ea8;            // розовое золото
+  border-radius: 14px;
+  padding: 0.55rem 1rem;
+
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(233, 140, 175, 0.18);
+  transition: all .25s ease;
+}
+
+.vs-btn:hover {
+  background: #ffe9f2;
+  border-color: #e86ea8;
+  color: #d9589a;
+  box-shadow: 0 6px 16px rgba(233, 140, 175, 0.3);
+}
+
+.vs-btn:active {
+  transform: scale(0.95);
+}
+
+
+:host ::ng-deep .p-carousel-indicator-active .p-carousel-indicator-button{
+  background-color: #e86ea8;
+}

@@ -15,7 +15,7 @@ import {MobileRedirectBanner} from '../../layout/mobile-redirect-banner/mobile-r
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, MobileMenu, Socials, ModalCertificate, MobileRedirectBanner],
+  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, Socials],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -27,9 +27,6 @@ export class Home implements OnInit{
   productCategoryService = inject(ProductCategoryService);
 
   ngOnInit() {
-    this.productCategoryService.getCategoriesByBrand('vs').subscribe(res => {
-      console.log(res);
-    })
+    this.productCategoryService.getCategoriesByBrand('vs').subscribe(res => {})
   }
-
 }

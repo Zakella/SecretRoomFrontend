@@ -1,22 +1,23 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {Select} from 'primeng/select';
-import {NgIf} from '@angular/common';
+
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, Select, NgIf],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrl: './header.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header {
   private cartService = inject(CartUi);
   private langService = inject(Language);
   protected readonly Object = Object;
   public activeLang = this.langService.currentLanguage
+  public cartCount =  this.cartService.cartCount;
   public activeMenu: string | null = null;
   public languages = ['ru', 'ro'];
   dropdownContent: Record<string, any> = {

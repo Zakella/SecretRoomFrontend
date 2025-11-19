@@ -18,6 +18,8 @@ import {AccountNotFound} from './pages/account-not-found/account-not-found';
 import {OrderSummary} from './pages/order-summary/order-summary';
 import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
 import {List} from './pages/promotion/list/list';
+import {ProductResolver} from './pages/product-detail/product.resolver';
+import {TestPage} from './pages/test-page/test-page';
 
 export const routes: Routes = [
   {
@@ -34,7 +36,13 @@ export const routes: Routes = [
         children: [
           {path: '', component: Home},
           {path: 'vs', component: VsList},
-          {path: 'product-detail/:id', component: ProductDetail},
+          {
+            path: 'product-detail/:id',
+            component: ProductDetail,
+            resolve: {
+              product: ProductResolver
+            }
+          },
           {path: 'contacts', component: Contacts},
           {path: 'about-us', component: AboutUs},
           {path: 'wishlist', component: Wishlist},
@@ -44,6 +52,7 @@ export const routes: Routes = [
           {path: 'checkout', component: Checkout},
           {path: 'promotion', component: PromotionCard},
           {path: 'promotion-list', component: List},
+          {path: 'test', component: TestPage}
         ],
       },
       {
