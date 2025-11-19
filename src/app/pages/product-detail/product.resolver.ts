@@ -16,7 +16,7 @@ export class ProductResolver implements Resolve<Product | null> {
     return this.productService.getProductById(id).pipe(
       catchError(err => {
         console.error('Product fetch error', err);
-        this.router.navigate(['/404']); // редирект если продукта нет
+        this.router.navigate(['/404']);
         return of(null);
       })
     );

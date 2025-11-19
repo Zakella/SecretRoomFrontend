@@ -30,14 +30,13 @@ export class ProductCard {
   currentSize: string | undefined;
   quantity: number = 1;
 
-  protected navToProduct(id: string): void {
-    this.route.navigate([this.activeLang(), 'product-detail', id]);
+  protected navToProduct(): void {
+     this.route.navigate([this.activeLang(), 'product-detail', this.product()!.id]);
   }
 
   addProductInCart() {
     let cartItem: CartItem;
-    // @ts-ignore
-    if (this.product()!.productSizes && this.product()!.productSizes.length > 0) {
+    if (this.product()!.productSizes && this.product()!.productSizes!.length > 0) {
       if (!this.currentSize || this.currentSize === '') {
         return;
       }

@@ -3,7 +3,7 @@
     <i class="ri-heart-line"></i>
   </button>
   @if(imageUrl() != null){
-    <img class="product-image" [src]="imageUrl()" alt="{{ title() }}" />
+    <img class="product-image cursor-pointer" [src]="imageUrl()" alt="{{ title() }}" (click)="navToProduct()"/>
   }
   @if (isBestSeller()){
     <div class="badge">Best Seller</div>

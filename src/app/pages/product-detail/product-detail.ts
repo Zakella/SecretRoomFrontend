@@ -8,6 +8,8 @@ import {Language} from '../../@core/services/language';
 import {ShareModal} from '../../shared/components/modals/share-modal/share-modal';
 import {RecommendedProducts} from '../../shared/components/product/recommended-products/recommended-products';
 import {CartUi} from '../../shared/components/cart/services/cart';
+import {CartItem} from '../../entities/cart-item';
+import {Size} from '../../entities/size';
 
 @Component({
   selector: 'app-product-detail',
@@ -21,7 +23,6 @@ export class ProductDetail {
   private router = inject(Router);
   private langService = inject(Language);
   private cartService = inject(CartUi)
-
   protected selectedTab: string = 'description';
   protected selectedColor: string = 'rose';
   protected tabs = [
@@ -36,6 +37,8 @@ export class ProductDetail {
   ];
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
+  quantity: number = 1;
+  currentSize: string | undefined;
 
   constructor() {
     const resolvedProduct = this.route.snapshot.data['product'] as Product | null;
@@ -43,16 +46,32 @@ export class ProductDetail {
   }
 
 
-  protected addToCart(): void {
-/*
-    this.cartService.addToCart()
-*/
+  addProductInCart() {
+    let cartItem: CartItem;
+    if (this.product()!.productSizes && this.product()!.productSizes!.length > 0) {
+      if (!this.currentSize || this.currentSize === '') {
+        return;
+      }
+      const size: Size = {
+        sizeType: this.currentSize,
+        available: true
+      };
+      cartItem = new CartItem(this.product()!, this.quantity, size);
+    } else {
+      cartItem = new CartItem(this.product()!, this.quantity);
+    }
+    this.cartService.addToCart(cartItem);
+    this.cartService.visible();
+    /*    this.analyticsService.sendEvent('add_to_cart', {
+          product_name: this.product.name
+        });*/
   }
 
-  protected addToWishlist(): void {}
+  protected addToWishlist(): void {
+  }
 
   protected navigateToList() {
-    this.router.navigate([this.activeLang(), 'vs']);
+    return this.router.navigate([this.activeLang(), 'vs']);
   }
 }
 
