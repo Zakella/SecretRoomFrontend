@@ -5,10 +5,13 @@ import {CartUi} from '../../cart/services/cart';
 import {Product} from '../../../../entities/product';
 import {CartItem} from '../../../../entities/cart-item';
 import {Size} from '../../../../entities/size';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'product-card',
-  imports: [],
+  imports: [
+    TranslocoPipe
+  ],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,7 +22,6 @@ export class ProductCard {
   private cartService = inject(CartUi);
   public activeLang = this.langService.currentLanguage
   product = input<Product>();
-
   readonly imageUrl = input<string>('');
   readonly title = input<string>();
   readonly brand = input<string>();
