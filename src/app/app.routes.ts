@@ -20,6 +20,7 @@ import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
 import {List} from './pages/promotion/list/list';
 import {ProductResolver} from './pages/product-detail/product.resolver';
 import {TestPage} from './pages/test-page/test-page';
+import {SearchResult} from './pages/search-result/search-result';
 
 export const routes: Routes = [
   {
@@ -52,7 +53,7 @@ export const routes: Routes = [
           {path: 'checkout', component: Checkout},
           {path: 'promotion', component: PromotionCard},
           {path: 'promotion-list', component: List},
-          {path: 'test', component: TestPage}
+          {path: 'test', component: SearchResult}
         ],
       },
       {

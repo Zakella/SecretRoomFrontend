@@ -10,10 +10,11 @@ import {RecommendedProducts} from '../../shared/components/product/recommended-p
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
 import {Size} from '../../entities/size';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [NgStyle, Reviews, FadeUp, ShareModal, RecommendedProducts],
+  imports: [NgStyle, Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

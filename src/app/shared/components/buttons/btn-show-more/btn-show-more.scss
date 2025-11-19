@@ -1,37 +1,37 @@
 .cta {
-  border: none;
-  background: none;
-  cursor: pointer;
+  border: none!important;
+  background: none!important;
+  cursor: pointer!important;
 }
 
 .cta span {
-  padding-bottom: 7px;
-  letter-spacing: 4px;
-  font-size: 14px;
-  padding-right: 15px;
-  text-transform: uppercase;
-  color: pink;
+  padding-bottom: 7px!important;
+  letter-spacing: 4px!important;
+  font-size: 14px!important;
+  padding-right: 15px!important;
+  text-transform: uppercase!important;
+  color: pink!important;
 }
 
 .cta svg {
-  transform: translateX(-8px);
-  transition: all 0.3s ease;
-  fill: pink;
+  transform: translateX(-8px)!important;
+  transition: all 0.3s ease!important;
+  fill: pink!important;
 
 }
 
 .cta:hover svg {
-  transform: translateX(0);
+  transform: translateX(0)!important;
 }
 
 .cta:active svg {
-  transform: scale(0.9);
+  transform: scale(0.9) !important;
 }
 
 .hover-underline-animation {
-  position: relative;
-  color: black;
-  padding-bottom: 20px;
+  position: relative!important;
+  color: black!important;
+  padding-bottom: 20px!important;
 }
 
 .hover-underline-animation:after {

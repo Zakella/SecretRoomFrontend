@@ -2,15 +2,17 @@
   <button class="wishlist">
     <i class="ri-heart-line"></i>
   </button>
-  @if(imageUrl() != null){
-    <img class="product-image cursor-pointer" [src]="imageUrl()" alt="{{ title() }}" (click)="navToProduct()"/>
-  }
-  @if (isBestSeller()){
+<!--
+  @if (imageUrl() != null) {
+-->
+    <img class="product-image cursor-pointer" [src]="imageUrl() | noImage" alt="{{ title() }}" (click)="navToProduct()"/>
+<!--  }-->
+  @if (isBestSeller()) {
     <div class="badge">Best Seller</div>
   }
 
   <div class="rating">
-    @for (star of [].constructor(rating()) ; track star) {
+    @for (star of [].constructor(rating()); track star) {
       <span>&#9733;</span>
     }
   </div>

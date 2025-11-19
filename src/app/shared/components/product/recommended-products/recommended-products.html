@@ -9,16 +9,14 @@
       </div>
       <div class="mb-4 font-medium">{{ product.name }}</div>
       <div class="flex justify-between items-center">
-        <div class="mt-0 font-semibold text-xl">{{ product.price + ' L' }}</div>
+        <div class="mt-0 font-semibold text-xl">{{ product.price + ' MDL' }}</div>
         <span>
-      <button class="vs-btn">
-  <i class="pi pi-heart"></i>
-</button>
-
-<button class="vs-btn ml-2">
-  <i class="pi pi-shopping-cart"></i>
-</button>
-
+        <button class="vs-btn" (click)="addToWishlistHandler()">
+          <i class="pi pi-heart"></i>
+        </button>
+          <button class="vs-btn ml-2" (click)="addToCart()">
+            <i class="pi pi-shopping-cart"></i>
+          </button>
         </span>
       </div>
     </div>

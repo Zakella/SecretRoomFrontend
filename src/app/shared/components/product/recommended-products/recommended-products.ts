@@ -40,6 +40,9 @@ export class RecommendedProducts implements OnInit {
       }
     ];
   }
+
+  protected addToCart() {}
+  protected addToWishlistHandler() {}
 }
 
 export const MOCK_PRODUCTS: Product[] = [

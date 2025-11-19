@@ -4,7 +4,7 @@ export const BEST_SELLERS = [
       brand: 'Innersense',
       price: '630',
       category: 'HAIR',
-      imageUrl: 'https://images.pexels.com/photos/2834934/pexels-photo-2834934.jpeg',
+      imageUrl: null,
       isNew: true
     },
     {

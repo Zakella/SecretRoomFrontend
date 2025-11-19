@@ -5,9 +5,7 @@ import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-floating-sidebar',
-  imports: [
-    RouterLink
-  ],
+  imports: [],
   templateUrl: './floating-sidebar.html',
   styleUrl: './floating-sidebar.scss'
 })

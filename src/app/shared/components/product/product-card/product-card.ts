@@ -6,11 +6,13 @@ import {Product} from '../../../../entities/product';
 import {CartItem} from '../../../../entities/cart-item';
 import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {NoImagePipe} from '../../../pipes/no-image-pipe';
 
 @Component({
   selector: 'product-card',
   imports: [
-    TranslocoPipe
+    TranslocoPipe,
+    NoImagePipe
   ],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
