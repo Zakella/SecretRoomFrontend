@@ -3,14 +3,12 @@ import {Header} from '../header/header';
 import {Footer} from '../footer/footer';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {Cart} from '../../shared/components/cart/cart';
-import {CookieBanner} from '../cookie-banner/cookie-banner';
 import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoService} from '@ngneat/transloco';
 import {distinctUntilChanged, filter, map} from 'rxjs';
 import {FloatingSidebar} from '../floating-sidebar/floating-sidebar';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
-import {MobileMenu} from '../mobile-menu/mobile-menu';
 
 @Component({
   selector: 'app-main-layout',
@@ -22,7 +20,6 @@ import {MobileMenu} from '../mobile-menu/mobile-menu';
     Loader,
     FloatingSidebar,
     ScrollTop,
-    MobileMenu
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'

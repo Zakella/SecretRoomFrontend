@@ -15,6 +15,7 @@ import {CartItem} from '../../../entities/cart-item';
 import {Subject} from 'rxjs';
 import {Router} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-cart',
@@ -22,12 +23,13 @@ import {takeUntil} from 'rxjs/operators';
     FormsModule,
     DecimalPipe,
     NgTemplateOutlet,
+    TranslocoPipe,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Cart  implements OnInit, OnDestroy{
+export class Cart implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
   cartItems: CartItem[] = [];
@@ -35,14 +37,13 @@ export class Cart  implements OnInit, OnDestroy{
   totalQuantity: number = 0;
   private ngUnsubscribe = new Subject<void>();
   @Input() shippingCost: number = 0;
-  isLoading: boolean = false;
   private router = inject(Router);
-  cartItem = {
-    title: 'REPAIR MASK',
-    quantity: 1,
-    price: 627,
-    image: '/assets/images/demo/slider1.jpeg'
-  };
+  /*  cartItem = {
+      title: 'REPAIR MASK',
+      quantity: 1,
+      price: 627,
+      image: '/assets/images/demo/slider1.jpeg'
+    };*/
   suggestions = [
     {
       title: 'ESSENTIAL FACE WIPES - 5 PACK',
@@ -119,21 +120,30 @@ export class Cart  implements OnInit, OnDestroy{
 
   closeDrawer() {
     this.cartService.close();
-/*
-    this.close.emit();
-*/
+    /*
+        this.close.emit();
+    */
   }
 
-
-  get subtotal() {
-    return this.cartItem.quantity * this.cartItem.price;
-  }
 
   get freeShippingRemaining() {
-    return Math.max(this.freeShippingThreshold - this.subtotal, 0).toFixed(2);
+    return null
+    /*
+        return Math.max(this.freeShippingThreshold - this.subtotal, 0).toFixed(2);
+    */
   }
 
   get shippingProgress() {
-    return Math.min((this.subtotal / this.freeShippingThreshold) * 100, 100);
+    return null
+    /*
+        return Math.min((this.subtotal / this.freeShippingThreshold) * 100, 100);
+    */
+  }
+
+  decreaseQty() {
+
+  }
+
+  increaseQty() {
   }
 }

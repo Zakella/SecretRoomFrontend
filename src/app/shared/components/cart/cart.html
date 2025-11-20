@@ -11,13 +11,11 @@
         </div>
       }
     </aside>
-
     <div class="cart-content">
       <div class="cart-header">
-        <h2>YOUR CART</h2>
+        <h2>{{ 'Your Order' | transloco }}  ({{ totalQuantity }})</h2>
         <button class="btn-close" (click)="closeDrawer()">✕</button>
       </div>
-
       <div class="cart-welcome">
         Welcome to Secret Room!
       </div>
@@ -28,7 +26,6 @@
             <div class="progress" [style.width.%]="shippingProgress"></div>
           </div>
         </div>
-
         <div class="cart-items">
           @for (cartItem of cartItems; track cartItem.id; let i = $index) {
             <div class="cart-item">
@@ -36,31 +33,24 @@
               <div class="item-info">
                 <p class="title">{{ cartItem.product.name }}</p>
                 <div class="qty-controls">
-                  <!--             <button (click)="decreaseQty()">−</button>
-                               <span>{{ cartItem.quantity }}</span>
-                               <button (click)="increaseQty()">+</button>-->
+                  <button (click)="decreaseQty()">−</button>
+                  <span>{{ cartItem.quantity }}</span>
+                  <button (click)="increaseQty()">+</button>
                 </div>
               </div>
               <div class="price">{{ cartItem.amount * cartItem.quantity }} MDL</div>
               <button class="btn-remove" (click)="deleteItemFromCart(i);
-                                         $event.stopPropagation()">×</button>
+                                         $event.stopPropagation()">×
+              </button>
             </div>
           }
         </div>
-
-        <label class="gift-wrap">
-          <input type="checkbox" [(ngModel)]="giftWrap"/>
-          ADD GIFT WRAPPING
-        </label>
-
         <div class="cart-footer">
           <div class="subtotal">
-            <span>SUBTOTAL</span>
-            <span>{{ subtotal }} MDL</span>
+            <span>{{ 'Total' | transloco }}</span>
+            <span>{{ totalAmount + shippingCost }}  MDL</span>
           </div>
-          <button class="btn-checkout">CHECKOUT →</button>
-          <p class="installments">or 4 interest-free installments of L {{ (subtotal / 4) | number:'1.0-2' }} by Afterpay
-            & Klarna</p>
+          <button class="btn-checkout">{{'Check out' | transloco}} →</button>
         </div>
       } @else {
         <ng-container *ngTemplateOutlet="emptyCart"></ng-container>
