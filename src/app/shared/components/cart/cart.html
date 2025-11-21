@@ -33,12 +33,22 @@
               <div class="item-info">
                 <p class="title">{{ cartItem.product.name }}</p>
                 <div class="qty-controls">
-                  <button (click)="decreaseQty()">−</button>
-                  <span>{{ cartItem.quantity }}</span>
-                  <button (click)="increaseQty()">+</button>
+                  <p-inputNumber [showButtons]="true"
+                                 buttonLayout="horizontal"
+                                 pinnerMode="horizontal"
+                                 [min]="1"
+                                 [max]="100"
+                                 [(ngModel)]="cartItem.quantity"
+                                 (ngModelChange)="recalculateCartItem(cartItem, i)"
+                                 inputStyleClass="text-center w-20 !bg-transparent !text-black"
+                                 decrementButtonClass="p-button-text py-1 px-1"
+                                 incrementButtonClass="p-button-text py-1 px-1"
+                                 incrementButtonIcon="pi pi-plus"
+                                 decrementButtonIcon="pi pi-minus">
+                  </p-inputNumber>
                 </div>
               </div>
-              <div class="price">{{ cartItem.amount * cartItem.quantity }} MDL</div>
+              <div class="price">{{ cartItem.amount }} MDL</div>
               <button class="btn-remove" (click)="deleteItemFromCart(i);
                                          $event.stopPropagation()">×
               </button>
@@ -47,10 +57,18 @@
         </div>
         <div class="cart-footer">
           <div class="subtotal">
+            <span>{{ 'Subtotal' | transloco }}</span>
+            <span>{{ totalAmount + shippingCost }}  MDL</span>
+          </div>
+          <div class="subtotal">
+            <span>{{ 'Delivery' | transloco }}</span>
+            <span>{{ shippingCost }}  MDL</span>
+          </div>
+          <div class="subtotal">
             <span>{{ 'Total' | transloco }}</span>
             <span>{{ totalAmount + shippingCost }}  MDL</span>
           </div>
-          <button class="btn-checkout">{{'Check out' | transloco}} →</button>
+          <button class="btn-checkout">{{ 'Check out' | transloco }} →</button>
         </div>
       } @else {
         <ng-container *ngTemplateOutlet="emptyCart"></ng-container>

@@ -8,35 +8,17 @@ import {BehaviorSubject, Subject} from 'rxjs';
 export class CartUi {
   private _visible = signal<boolean>(false);
   public cartCount = signal<number>(0);
-
   visible = this._visible.asReadonly();
-
-  open() {
-    this._visible.set(true);
-  }
-
-  close() {
-    this._visible.set(false);
-  }
-
-
   public cartItems: BehaviorSubject<CartItem[]> = new BehaviorSubject<CartItem[]>([]);
-
   public totalAmount: Subject<number> = new Subject<number>();
   public totalQuantity: Subject<number> = new Subject<number>();
-
   public cartModified: Subject<boolean> = new Subject<boolean>();
-
   private readonly storageKey = 'cartItems';
-  public sidebarVisible: Subject<boolean> = new Subject<boolean>();
 
   constructor() {
     this.cartItems.next(this.loadCartItemsFromStorage());
   }
 
-  getCartItems(): CartItem[] {
-    return [...this.cartItems.value];
-  }
 
   addToCart(theCartItem: CartItem) {
     const currentItems = [...this.cartItems.value];
@@ -147,5 +129,13 @@ export class CartUi {
 
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
+  open() {
+    this._visible.set(true);
+  }
+
+  close() {
+    this._visible.set(false);
   }
 }

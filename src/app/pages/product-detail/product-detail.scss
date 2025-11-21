@@ -1,7 +1,7 @@
 .product-page {
   border-radius: 15px;
+  margin: 160px 100px 100px 100px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  margin-top: 60px;
   padding: 150px;
   font-family: 'Didot', serif;
   color: #333;
@@ -195,3 +195,121 @@
 }
 
 
+/* ============================
+   📱 MOBILE (до 768px)
+===============================*/
+@media (max-width: 768px) {
+  .product-page {
+    padding: 20px;
+    margin: 150px 5px 5px 5px;
+  }
+
+  .back-button {
+    width: 28px;
+  }
+
+  .product-grid {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .product-images {
+    flex: 1 1 100%;
+  }
+
+  .main-image img {
+    max-height: 320px;
+    border-radius: 12px;
+  }
+
+  .thumbnails {
+    justify-content: center;
+  }
+
+  .thumbnails img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .product-info {
+    flex: 1 1 100%;
+    gap: 0.7rem;
+  }
+
+  .product-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .price {
+    font-size: 1.3rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .tabs {
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .tabs button {
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .product-tabs {
+    margin-top: 2rem;
+  }
+
+  .related-products h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* ============================
+   📱 VERY SMALL (до 480px)
+===============================*/
+@media (max-width: 480px) {
+  .product-page {
+    margin: 150px 5px 5px 5px;
+    padding: 15px;
+  }
+
+  .main-image img {
+    max-height: 260px;
+  }
+
+  .product-info h1 {
+    font-size: 1.3rem;
+  }
+
+  .price {
+    font-size: 1.1rem;
+  }
+
+  .thumbnails img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .color-circle {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tabs button {
+    font-size: 0.85rem;
+  }
+}

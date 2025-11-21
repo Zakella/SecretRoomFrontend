@@ -1,7 +1,8 @@
+<!--
 <p-carousel [value]="products!" [numVisible]="3" [numScroll]="1" [circular]="true"
             [responsiveOptions]="responsiveOptions" autoplayInterval="3000">
   <ng-template let-product #item>
-    <div class="m-2 p-4">
+    <div class="carousel-item m-2 p-4">
       <div class="mb-4">
         <div class="relative mx-auto">
           <img [src]="product.imageURL" [alt]="product.name" class="w-full rounded-border rounded-3xl"/>
@@ -18,6 +19,28 @@
             <i class="pi pi-shopping-cart"></i>
           </button>
         </span>
+      </div>
+    </div>
+  </ng-template>
+</p-carousel>
+-->
+<p-carousel [value]="products!" [numVisible]="3" [numScroll]="1" [circular]="true" [autoplayInterval]="3000">
+  <ng-template let-product #item>
+    <div class="carousel-item">
+      <div class="image-container">
+        <img [src]="product.imageURL" [alt]="product.name"/>
+      </div>
+      <div class="product-name">{{ product.name }}</div>
+      <div class="product-footer">
+        <div class="product-price">{{ product.price + ' MDL' }}</div>
+        <div class="buttons">
+          <button class="vs-btn" (click)="addToWishlistHandler()">
+            <i class="pi pi-heart"></i>
+          </button>
+          <button class="vs-btn" (click)="addToCart()">
+            <i class="pi pi-shopping-cart"></i>
+          </button>
+        </div>
       </div>
     </div>
   </ng-template>

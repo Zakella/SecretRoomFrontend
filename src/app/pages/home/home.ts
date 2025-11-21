@@ -11,22 +11,17 @@ import {Socials} from '../socials/socials';
 import {ProductCategoryService} from '../../@core/api/product-category';
 import {ModalCertificate} from '../../shared/components/modals/modal-certificate/modal-certificate';
 import {MobileRedirectBanner} from '../../layout/mobile-redirect-banner/mobile-redirect-banner';
+import {PromoSection} from './promo-section/promo-section';
 
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, Socials],
+  imports: [RouterLink, ImageSlider, BestSellers, TextSlider, FadeUp, Socials, PromoSection],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Home implements OnInit{
   images = imageSliderMock;
-  goals = GOALS;
-  promos = PROMOS_MOCK;
-  productCategoryService = inject(ProductCategoryService);
-
-  ngOnInit() {
-    this.productCategoryService.getCategoriesByBrand('vs').subscribe(res => {})
-  }
+  ngOnInit() {}
 }

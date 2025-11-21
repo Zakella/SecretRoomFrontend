@@ -16,14 +16,15 @@ import {Subject} from 'rxjs';
 import {Router} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {InputNumber} from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-cart',
   imports: [
     FormsModule,
-    DecimalPipe,
     NgTemplateOutlet,
     TranslocoPipe,
+    InputNumber,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
@@ -38,12 +39,6 @@ export class Cart implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   @Input() shippingCost: number = 0;
   private router = inject(Router);
-  /*  cartItem = {
-      title: 'REPAIR MASK',
-      quantity: 1,
-      price: 627,
-      image: '/assets/images/demo/slider1.jpeg'
-    };*/
   suggestions = [
     {
       title: 'ESSENTIAL FACE WIPES - 5 PACK',
@@ -109,20 +104,18 @@ export class Cart implements OnInit, OnDestroy {
     )
   }
 
-  deleteItemFromCart(index: number) {
+  protected deleteItemFromCart(index: number): void {
     this.cartService.deleteItemFromCart(index);
   }
 
-  recalculateCartItem(cartItem: CartItem, index: number) {
+  protected recalculateCartItem(cartItem: CartItem, index: number): void {
     this.cartService.recalculateCartItem(cartItem, index);
+    console.log(cartItem.quantity);
   }
 
 
-  closeDrawer() {
+  protected closeDrawer(): void {
     this.cartService.close();
-    /*
-        this.close.emit();
-    */
   }
 
 
@@ -138,12 +131,5 @@ export class Cart implements OnInit, OnDestroy {
     /*
         return Math.min((this.subtotal / this.freeShippingThreshold) * 100, 100);
     */
-  }
-
-  decreaseQty() {
-
-  }
-
-  increaseQty() {
   }
 }
