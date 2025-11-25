@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CartUi} from '../../cart/services/cart';
@@ -7,12 +7,16 @@ import {CartItem} from '../../../../entities/cart-item';
 import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {NoImagePipe} from '../../../pipes/no-image-pipe';
+import {NgIf} from '@angular/common';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'product-card',
   imports: [
+    SkeletonModule,
     TranslocoPipe,
-    NoImagePipe
+    NoImagePipe,
+    NgIf
   ],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
@@ -33,6 +37,7 @@ export class ProductCard {
   readonly showOptions = input<boolean>();
   currentSize: string | undefined;
   quantity: number = 1;
+  loading  = signal<boolean>(false);
 
   protected navToProduct(): void {
      this.route.navigate([this.activeLang(), 'product-detail', this.product()!.id]);

@@ -93,6 +93,7 @@ export const STORIES: StoryModel = {
         }
       ]
     },
+/*
     {
       id: 0,
       name: 'Осень',
@@ -114,6 +115,7 @@ export const STORIES: StoryModel = {
         },
       ]
     },
+*/
     {
       id: 0,
       name: 'Лицо',

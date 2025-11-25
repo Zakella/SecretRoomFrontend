@@ -193,7 +193,7 @@
   margin-left: 16px;
   padding: 4px 8px;
   border-radius: 15px;
-  border: 1.5px solid #d3a3b6;
+  border: 1.5px solid #d5c6e0;
   background: #fff;
 
   button {
@@ -210,8 +210,8 @@
 
     &.active {
       opacity: 1;
-      color: #b34773;
-      background-color: #f7e4eb;
+      color: #4f4a4d;
+      background-color: #faeef2;
       font-weight: 600;
     }
 
@@ -252,6 +252,7 @@
 
   .nav-main .search-bar {
     display: flex;
+    justify-content: center;
     width: 100%;
     margin: 10px 0;
   }

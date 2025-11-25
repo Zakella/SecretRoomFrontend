@@ -7,6 +7,4 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   styleUrl: './product-not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductNotFound {
-
-}
+export class ProductNotFound {}

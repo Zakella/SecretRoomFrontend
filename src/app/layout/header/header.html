@@ -72,6 +72,8 @@
     <div class="search-bar">
       <input type="text"
              maxlength="60"
+             (keyup.enter)="onSearch()"
+             [(ngModel)]="query"
              [placeholder]="'Search'| transloco"
              aria-label="Поиск по продуктам">
       <i class="ri-search-line" aria-hidden="true"></i>

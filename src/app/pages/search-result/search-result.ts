@@ -1,6 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, effect, OnInit, signal} from '@angular/core';
 import {Product} from '../../entities/product';
-import {ProductService} from '../../@core/api/product';
 import {ButtonModule} from 'primeng/button';
 import {TagModule} from 'primeng/tag';
 import {OrderListModule} from 'primeng/orderlist';
@@ -9,6 +8,9 @@ import {SelectButtonModule} from 'primeng/selectbutton';
 import {FormsModule} from '@angular/forms';
 import {DataViewModule} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import {SearchService} from '../../@core/services/search';
+import {ProductService} from '../../@core/api/product';
 
 @Component({
   selector: 'app-search-result',
@@ -17,19 +19,35 @@ import {CommonModule} from '@angular/common';
   styleUrl: './search-result.scss'
 })
 export class SearchResult implements OnInit{
+  private route = inject(ActivatedRoute);
+  private api = inject(ProductService);
+
+  results = signal<any[]>([]);
+  loading = signal(false);
+
+  constructor() {
+    effect(() => {
+      const q = this.route.snapshot.queryParamMap.get('q');
+      if (!q) return;
+
+      this.loading.set(true);
+
+/*      this.api.search(q)
+        .subscribe(res => {
+          this.results.set(res);
+          this.loading.set(false);
+        });*/
+    });
+  }
+
   layout: 'list' | 'grid' = 'list';
 
   options = ['list', 'grid'];
 
   products: Product[] = [];
 
-  sourceCities: any[] = [];
 
-  targetCities: any[] = [];
 
-  orderCities: any[] = [];
-
-  constructor(private productService: ProductService) {}
 
   ngOnInit() {
     this.products = [

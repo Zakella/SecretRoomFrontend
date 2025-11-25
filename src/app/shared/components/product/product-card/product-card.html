@@ -1,12 +1,13 @@
+<!--
 <div class="product-card">
   <button class="wishlist">
     <i class="ri-heart-line"></i>
   </button>
-<!--
+&lt;!&ndash;
   @if (imageUrl() != null) {
--->
+&ndash;&gt;
     <img class="product-image cursor-pointer" [src]="imageUrl() | noImage" alt="{{ title() }}" (click)="navToProduct()"/>
-<!--  }-->
+&lt;!&ndash;  }&ndash;&gt;
   @if (isBestSeller()) {
     <div class="badge">Best Seller</div>
   }
@@ -27,3 +28,32 @@
 </div>
 
 
+-->
+<div class="product-card">
+  @if (loading()) {
+    <p-skeleton width="100%" height="250px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="60%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="40%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="30%" height="20px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="50%" height="30px"></p-skeleton>
+  } @else {
+    <div class="limited-badge" *ngIf="isBestSeller()">
+      <span>LIMITED EDITION</span>
+    </div>
+
+    <div class="product-image-container">
+      <img [src]="imageUrl()" [alt]="product()?.name" class="product-image"/>
+    </div>
+
+
+    <div class="product-info">
+      <h3 class="product-name">Lunar New Year Body Mist Pomegranate Rose</h3>
+      <p class="product-description">Lorem ipsum dolor sit amet, consectetur adipisicing</p>
+      <p class="product-price">{{ price() }} MDL </p>
+
+      <button class="add-to-bag-btn" (click)="addProductInCart()">
+        {{ 'Add to Cart' | transloco }}
+      </button>
+    </div>
+  }
+</div>

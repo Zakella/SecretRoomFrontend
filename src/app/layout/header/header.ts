@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {RouterLink} from '@angular/router';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {FormsModule} from '@angular/forms';
 
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe],
+  imports: [RouterLink, TranslocoPipe, FormsModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -85,7 +86,8 @@ export class Header {
       }
     },
   };
-
+  query = signal('');
+  private router = inject(Router);
 
   public openCart() {
     this.cartService.open();
@@ -101,5 +103,14 @@ export class Header {
 
   public setActiveLang(lang: string) {
     this.langService.setLanguage(lang);
+  }
+
+  onSearch() {
+    const q = this.query().trim();
+    if (!q) return;
+
+    this.router.navigate(['/search'], {
+      queryParams: { q }
+    });
   }
 }
