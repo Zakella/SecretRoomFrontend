@@ -8,7 +8,7 @@
         </div>
         @defer {
           <div class="thumbnails">
-            @for (image of product()!.productImagesWebStore; let i = $index; track image){
+            @for (image of product()!.productImagesWebStore; let i = $index; track image) {
               <img src="{{image.imageUrl}}"
                    alt="Product Image"
                    loading="lazy"
@@ -16,7 +16,7 @@
                    (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
               />
             }
-        </div>
+          </div>
         }
       </div>
 
@@ -83,7 +83,7 @@
     </div>
     <div class="related-products">
       <h2>{{ 'Recommendation' | transloco }}</h2>
-      <recommended-products/>
+      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="addToWishlist()"/>
     </div>
   </section>
 }

@@ -298,3 +298,6 @@
   background: #333;
 }
 
+:host ::ng-deep .p-inputtext:enabled:focus {
+  border-color: pink!important;
+}

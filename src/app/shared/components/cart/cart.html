@@ -29,7 +29,11 @@
         <div class="cart-items">
           @for (cartItem of cartItems; track cartItem.id; let i = $index) {
             <div class="cart-item">
-              <img [src]="cartItem.product.imageURL ?? 'assets/images/unavailable.jpg'" alt=""/>
+              <img [src]="cartItem.product.imageURL ?? 'assets/images/unavailable.jpg'"
+                   alt=""
+                   class="cursor-pointer"
+                   (click)="navToProduct(cartItem.product.id);
+                     $event.stopPropagation()"/>
               <div class="item-info">
                 <p class="title">{{ cartItem.product.name }}</p>
                 <div class="qty-controls">

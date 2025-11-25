@@ -17,6 +17,7 @@ import {Router} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
+import {Language} from '../../../@core/services/language';
 
 @Component({
   selector: 'app-cart',
@@ -56,8 +57,9 @@ export class Cart implements OnInit, OnDestroy {
       image: '/assets/images/demo/slider1.jpeg'
     }
   ];
-  giftWrap = false;
   freeShippingThreshold = 861;
+  private langService = inject(Language);
+  public activeLang = this.langService.currentLanguage
 
 
   ngOnInit(): void {
@@ -110,7 +112,6 @@ export class Cart implements OnInit, OnDestroy {
 
   protected recalculateCartItem(cartItem: CartItem, index: number): void {
     this.cartService.recalculateCartItem(cartItem, index);
-    console.log(cartItem.quantity);
   }
 
 
@@ -131,5 +132,15 @@ export class Cart implements OnInit, OnDestroy {
     /*
         return Math.min((this.subtotal / this.freeShippingThreshold) * 100, 100);
     */
+  }
+
+  protected navToProduct(id: string| undefined): void {
+    if (!id)return
+
+    this.router.navigate([this.activeLang(), 'product-detail', id]).then(
+      () => {
+        this.closeDrawer();
+      }
+    );
   }
 }

@@ -76,23 +76,6 @@ export class ProductDetail {
   protected navigateToList() {
     return this.router.navigate([this.activeLang(), 'vs']);
   }
-
-
-  zoomPosition = { x: 0, y: 0 };
-  isZooming = false;
-
-  onMouseMove(event: MouseEvent) {
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    this.zoomPosition = { x, y };
-    this.isZooming = true;
-  }
-
-  onMouseLeave() {
-    this.isZooming = false;
-  }
 }
 
 
