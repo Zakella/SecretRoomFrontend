@@ -7,17 +7,11 @@ import {CartItem} from '../../../../entities/cart-item';
 import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {NoImagePipe} from '../../../pipes/no-image-pipe';
-import {NgIf} from '@angular/common';
 import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'product-card',
-  imports: [
-    SkeletonModule,
-    TranslocoPipe,
-    NoImagePipe,
-    NgIf
-  ],
+  imports: [SkeletonModule, TranslocoPipe, NoImagePipe],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

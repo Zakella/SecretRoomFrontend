@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {NgStyle} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 import {Reviews} from './reviews/reviews';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -14,7 +14,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [NgStyle, Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe],
+  imports: [NgStyle, Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -40,10 +40,12 @@ export class ProductDetail {
   protected product = signal<Product | null>(null);
   quantity: number = 1;
   currentSize: string | undefined;
+  mainImage: string | null = null;
 
   constructor() {
     const resolvedProduct = this.route.snapshot.data['product'] as Product | null;
     this.product.set(resolvedProduct);
+    this.mainImage = this.product()!.imageURL;
   }
 
 
@@ -73,6 +75,23 @@ export class ProductDetail {
 
   protected navigateToList() {
     return this.router.navigate([this.activeLang(), 'vs']);
+  }
+
+
+  zoomPosition = { x: 0, y: 0 };
+  isZooming = false;
+
+  onMouseMove(event: MouseEvent) {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    this.zoomPosition = { x, y };
+    this.isZooming = true;
+  }
+
+  onMouseLeave() {
+    this.isZooming = false;
   }
 }
 

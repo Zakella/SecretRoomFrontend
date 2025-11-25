@@ -1,15 +1,21 @@
 @if (product()) {
   <section class="product-page" appFadeUp>
-    <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button" alt="Назад"/>
+    <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button cursor-pointer" alt="Назад"/>
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
-          <img [src]="product()?.imageURL" alt="Product Image"/>
+          <img [src]="mainImage" alt="Product Image"/>
         </div>
         @defer {
           <div class="thumbnails">
-          <img src="assets/images/demo/slider1.jpeg" alt="Product Image" loading="lazy"/>
-          <img src="assets/images/demo/slider1.jpeg" alt="Product Image" loading="lazy"/>
+            @for (image of product()!.productImagesWebStore; let i = $index; track image){
+              <img src="{{image.imageUrl}}"
+                   alt="Product Image"
+                   loading="lazy"
+                   [ngClass]="{'border-pink': mainImage === image.imageUrl}"
+                   (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
+              />
+            }
         </div>
         }
       </div>
@@ -43,7 +49,7 @@
         </ul>
 
         <div class="actions">
-          <button class="btn-primary" (click)="addProductInCart()">Добавить в корзину</button>
+          <button class="btn-primary" (click)="addProductInCart()">{{ 'Add to Cart' | transloco }}</button>
           <button class="btn-secondary" (click)="addToWishlist()">
             <i class="pi pi-heart"></i>
             В избранное
