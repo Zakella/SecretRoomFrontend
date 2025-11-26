@@ -5,10 +5,11 @@ import {Product} from '../../entities/product';
 import {CustomTitle} from '../../shared/components/custom-title/custom-title';
 import {StoriesComponent} from '../../shared/components/stories/stories.component';
 import {FadeUp} from '../../@core/directives/fade-up';
+import {FilterConfig, ProductFilter} from '../../shared/components/product/product-filter/product-filter';
 
 @Component({
   selector: 'app-vs-list',
-  imports: [ProductList, CustomTitle, StoriesComponent, FadeUp],
+  imports: [ProductList, CustomTitle, StoriesComponent, FadeUp, ProductFilter],
   templateUrl: './vs-list.html',
   styleUrl: './vs-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -63,4 +64,13 @@ export class VsList implements OnInit {
       this.fetchProducts(true);
     }
   }
+
+  filters = [
+    { type: 'text', field: 'name', label: 'Название' },
+    { type: 'select', field: 'status', label: 'Статус', options: [
+        { label: 'Активен', value: 'active' },
+        { label: 'Неактивен', value: 'inactive' }
+      ]},
+    { type: 'date', field: 'createdAt', label: 'Дата создания' }
+  ] as const satisfies FilterConfig[];
 }

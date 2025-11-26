@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {NgClass, NgStyle} from '@angular/common';
 import {Reviews} from './reviews/reviews';
 import {FadeUp} from '../../@core/directives/fade-up';
@@ -65,9 +65,6 @@ export class ProductDetail {
     }
     this.cartService.addToCart(cartItem);
     this.cartService.visible();
-    /*    this.analyticsService.sendEvent('add_to_cart', {
-          product_name: this.product.name
-        });*/
   }
 
   protected addToWishlist(): void {

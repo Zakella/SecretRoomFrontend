@@ -93,12 +93,12 @@ export class Authentication {
   }
 
   restorePassword(email: string, lang: string): Observable<any> {
-    const url = environment.apiUrl +'v1/users/restore-password'; // Replace with your restore password API endpoint from UserController
+    const url = environment.apiUrl +'v1/users/restore-password';
     return this.http.get(url, { params: { email, lang } });
   }
 
   resetPassword(token: string, newPassword: string): Observable<void> {
-    const url = environment.apiUrl +'v1/users/reset-password'; // Replace with your reset password API endpoint from UserController
+    const url = environment.apiUrl +'v1/users/reset-password';
     return this.http.post<void>(url, { token, newPassword });
   }
 

@@ -21,6 +21,7 @@ import {List} from './pages/promotion/list/list';
 import {ProductResolver} from './pages/product-detail/product.resolver';
 import {TestPage} from './pages/test-page/test-page';
 import {SearchResult} from './pages/search-result/search-result';
+import {AccessGuard} from './@core/guards/acces-guard';
 
 export const routes: Routes = [
   {
@@ -49,8 +50,15 @@ export const routes: Routes = [
           {path: 'wishlist', component: Wishlist},
           {path: 'payment-fail', component: PaymentFail},
           {path: 'delivery-terms', component: DeliveryTerms},
-          {path: 'cabinet', component: Cabinet},
-          {path: 'checkout', component: Checkout},
+          {
+            path: 'cabinet',
+            canActivate: [AccessGuard],
+            component: Cabinet
+          },
+          {
+            path: 'checkout',
+            canActivate: [AccessGuard],
+            component: Checkout},
           {path: 'promotion', component: PromotionCard},
           {path: 'promotion-list', component: List},
           {path: 'test', component: SearchResult}

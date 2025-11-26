@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ResetPassword} from '../../shared/components/modals/reset-password/reset-password';
-import {InputText} from 'primeng/inputtext';
+import {LoginService} from './services/login';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ import {InputText} from 'primeng/inputtext';
     TranslocoPipe,
     RouterLink,
     FadeUp,
-    InputText
+    ReactiveFormsModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -24,10 +24,21 @@ import {InputText} from 'primeng/inputtext';
 export class Login {
   protected showResetPassword = signal<boolean>(false)
   private langService = inject(Language);
+  private loginService = inject(LoginService);
   public activeLang = this.langService.currentLanguage
+  protected loginForm = new FormGroup({
+    email: new FormControl(''),
+    password: new FormControl('')
+  });
+
+  submit() {
+    if (!this.loginForm.valid) return;
+    this.loginService.login(this.loginForm.value);
+  }
 
 
-  onResetPasswordSubmitted(event: any) {}
+  onResetPasswordSubmitted(event: any) {
+  }
 
 
   showDialog() {
