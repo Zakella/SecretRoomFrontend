@@ -22,7 +22,7 @@
       <p class="product-description">Lorem ipsum dolor sit.</p>
       <p class="product-price">{{ price() }} MDL </p>
 
-      <button class="add-to-bag-btn" (click)="addProductInCart()">
+      <button class="add-to-bag-btn" (click)="addProductInCart()" analyticEvent="buy_click">
         {{ 'Add to Cart' | transloco }}
       </button>
     </div>

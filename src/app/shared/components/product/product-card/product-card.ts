@@ -8,10 +8,11 @@ import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {NoImagePipe} from '../../../pipes/no-image-pipe';
 import { SkeletonModule } from 'primeng/skeleton';
+import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
 
 @Component({
   selector: 'product-card',
-  imports: [SkeletonModule, TranslocoPipe, NoImagePipe],
+  imports: [SkeletonModule, TranslocoPipe, NoImagePipe, AnalyticEvent],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -19,7 +19,6 @@ import {OrderSummary} from './pages/order-summary/order-summary';
 import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
 import {List} from './pages/promotion/list/list';
 import {ProductResolver} from './pages/product-detail/product.resolver';
-import {TestPage} from './pages/test-page/test-page';
 import {SearchResult} from './pages/search-result/search-result';
 import {AccessGuard} from './@core/guards/acces-guard';
 

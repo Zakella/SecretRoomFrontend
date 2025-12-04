@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, InjectionToken, Signal} from '@angular/core';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {BestSellers} from '../../shared/components/best-sellers/best-sellers';
 import {TextSlider} from '../../shared/components/text-slider/text-slider';
@@ -17,5 +17,4 @@ import {PromoSection} from './promo-section/promo-section';
 })
 export class Home {
   images = imageSliderMock;
-
 }
