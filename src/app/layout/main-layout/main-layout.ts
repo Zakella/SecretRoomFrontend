@@ -7,8 +7,8 @@ import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoService} from '@ngneat/transloco';
 import {distinctUntilChanged, filter, map} from 'rxjs';
-import {FloatingSidebar} from '../floating-sidebar/floating-sidebar';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
+import {MobileMenu} from '../mobile-menu/mobile-menu';
 
 @Component({
   selector: 'app-main-layout',
@@ -18,8 +18,8 @@ import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
     RouterOutlet,
     Cart,
     Loader,
-    FloatingSidebar,
     ScrollTop,
+    MobileMenu,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'

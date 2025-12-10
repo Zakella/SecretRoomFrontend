@@ -1,88 +1,34 @@
-/*
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  background: #fff;
-  border-top: 1px solid #ddd;
+.button-container {
   display: flex;
-  justify-content: space-around;
+  background-color: rgba(245, 73, 144);
+  width: 250px;
+  height: 40px;
   align-items: center;
-  z-index: 1000;
+  justify-content: space-around;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
+  rgba(245, 73, 144, 0.5) 5px 10px 15px;
 }
 
-.nav-icon {
-  flex: 1;
-  text-align: center;
-  color: #bbb;
-  font-size: 24px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-input[type="radio"] {
-  display: none;
-}
-
-input:checked + .nav-icon {
-  color: #8a2be2; !* фиолетовый (как на скрине) *!
-}
-
-.nav-icon:hover {
-  color: #666;
-}
-
-!* показывать только на мобильных *!
-@media (min-width: 769px) {
-  .bottom-nav {
-    display: none;
-  }
-}
-*/
-.bottom-nav {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 0); /* безопасная зона на iOS */
-  left: 0;
-  width: 100%;
-  max-width: 480px;       /* ограничение по ширине для телефонов */
-  margin: 0 auto;         /* центрирование */
-  height: 60px;
-  background: #fff;
-  border-top: 1px solid #ddd;
+.button {
+  outline: 0 !important;
+  border: 0 !important;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom, 0); /* отступ снизу */
-  box-sizing: border-box;
-}
-
-.nav-icon {
-  flex: 1;
-  text-align: center;
-  color: #bbb;
-  font-size: 24px;
+  justify-content: center;
+  color: #fff;
+  transition: all ease-in-out 0.3s;
   cursor: pointer;
-  transition: color 0.2s ease;
 }
 
-input[type="radio"] {
-  display: none;
+.button:hover {
+  transform: translateY(-3px);
 }
 
-input:checked + .nav-icon {
-  color: #8a2be2; /* активный фиолетовый */
-}
-
-.nav-icon:hover {
-  color: #666;
-}
-
-/* показывать только на мобильных */
-@media (min-width: 769px) {
-  .bottom-nav {
-    display: none;
-  }
+.icon {
+  font-size: 20px;
 }

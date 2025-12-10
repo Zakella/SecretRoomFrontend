@@ -1,13 +1,79 @@
-<div class="reviews">
+<div class="w-full bg-white p-4 rounded-lg shadow-md mt-8 mb-8">
 
+  <div class="flex items-center mb-4">
+    <div class="text-center mr-4 border border-gray-200 p-4 rounded-lg ">
+      <div class="text-4xl font-bold">4.8</div>
+      <div class="text-gray-500 text-sm">of 125 reviews</div>
+      <div class="flex justify-center mt-1">
+        <span class="text-yellow-400">★</span>
+        <span class="text-yellow-400">★</span>
+        <span class="text-yellow-400">★</span>
+        <span class="text-yellow-400">★</span>
+        <span class="text-yellow-300">★</span>
+      </div>
+    </div>
+
+    <!-- Список оценок -->
+    <div class="flex-1">
+      <div class="flex items-center mb-1">
+        <span class="w-24 text-sm">Excellent</span>
+        <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
+          <div class="h-2 bg-black rounded" style="width: 100%"></div>
+        </div>
+        <span class="w-6 text-sm text-gray-700 text-right">100</span>
+      </div>
+
+      <div class="flex items-center mb-1">
+        <span class="w-24 text-sm">Good</span>
+        <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
+          <div class="h-2 bg-black rounded" style="width: 11%"></div>
+        </div>
+        <span class="w-6 text-sm text-gray-700 text-right">11</span>
+      </div>
+
+      <div class="flex items-center mb-1">
+        <span class="w-24 text-sm">Average</span>
+        <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
+          <div class="h-2 bg-black rounded" style="width: 24%"></div>
+        </div>
+        <span class="w-6 text-sm text-gray-700 text-right">3</span>
+      </div>
+
+      <div class="flex items-center mb-1">
+        <span class="w-24 text-sm">Below Avg</span>
+        <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
+          <div class="h-2 bg-black rounded" style="width: 40%"></div>
+        </div>
+        <span class="w-6 text-sm text-gray-700 text-right">8</span>
+      </div>
+
+      <div class="flex items-center">
+        <span class="w-24 text-sm">Poor</span>
+        <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
+          <div class="h-2 bg-black rounded" style="width: 5%"></div>
+        </div>
+        <span class="w-6 text-sm text-gray-700 text-right">1</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="reviews">
   @if (reviews() && reviews().length) {
     @for ( review of reviews(); track $index) {
       <div class="review">
         <div class="review-header">
-          <strong>{{ review.author }}</strong>
-          <span class="rating">⭐ {{ review.rating }}/5</span>
-          <span class="date">{{ review.date | date:'shortDate' }}</span>
+          <div class="author-block flex items-start gap-2">
+            <img class="avatar" src="https://img.freepik.com/free-photo/portrait-beautiful-redhead-woman_23-2148339229.jpg?semt=ais_hybrid&w=740&q=80" />
+
+            <div class="author-info flex flex-col">
+              <strong class="author">{{ review.author }}</strong>
+              <span class="rating">⭐⭐⭐⭐⭐</span>
+            </div>
+          </div>
+
+          <span class="date">{{ review.date | date:'d MMMM y'}}</span>
         </div>
+
         <p>{{ review.comment }}</p>
       </div>
     }
