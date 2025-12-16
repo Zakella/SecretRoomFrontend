@@ -77,3 +77,23 @@
     display: block;
   }
 }
+
+@media (max-width: 768px) {
+  .stories-list {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
+  }
+
+  .story-card {
+    flex: 0 0 160px; /* ширина сторис */
+    scroll-snap-align: start;
+  }
+
+  /* скрыть скроллбар (опционально) */
+  .stories-list::-webkit-scrollbar {
+    display: none;
+  }
+}

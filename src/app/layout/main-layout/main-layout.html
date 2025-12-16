@@ -5,9 +5,11 @@
 @if (visible()) {
   <app-cart (close)="onClose()"/>
 }
-<div class="d-flex justify-content-center align-items-center fixed bottom-0 left-0 w-full md:hidden z-50">
-  <mobile-menu/>
+<div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 md:hidden z-50">
+  <mobile-menu />
 </div>
 <app-footer/>
 <app-loader/>
+<!--
 <app-scroll-top/>
+-->
