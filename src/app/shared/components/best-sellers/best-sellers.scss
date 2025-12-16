@@ -3,7 +3,7 @@
   font-size: 1.8rem;
   font-weight: 600;
   margin: 2rem 0;
-  color: pink;
+  color: black;
 }
 
 .category-tabs {
@@ -17,28 +17,38 @@
 
   button {
     padding: 0.75rem 1.5rem;
-    background: none;
-    border: 1px solid pink;
-    color: pink;
+    background: linear-gradient(135deg, #fff5f8, #f3f0ff); // мягкий пастельный фон
+    border: 1px dashed rgba(0,0,0,0.1);
+    color: #333;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-
-    &.active {
-      background: pink;
-      color: black;
-    }
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
 
     &:hover {
-      background: pink;
-      color: black;
+      background: linear-gradient(135deg, #f3f0ff, #fff5f8); // лёгкая смена градиента
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #fcdce6, #e8d4f8); // активное состояние
+      color: #333;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
   }
 }
 
 .product-grid-wrapper {
+  padding: {
+    left: 250px;
+    right: 250px;
+    bottom: 4rem;
+  };
   position: relative;
-  padding-bottom: 4rem;
 }
 
 .product-grid {
@@ -47,8 +57,3 @@
   gap: 2rem;
 }
 
-.btn-more-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
