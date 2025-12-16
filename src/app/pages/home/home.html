@@ -6,4 +6,9 @@
   <app-promo-section/>
   <app-best-sellers/>
   <app-socials/>
+  <p-select
+    [options]="themes"
+    (onChange)="themeService.setTheme($event.value)">
+  </p-select>
+  <button>Test</button>
 </main>

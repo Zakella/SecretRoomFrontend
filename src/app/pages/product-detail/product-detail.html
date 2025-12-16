@@ -28,6 +28,7 @@
           {{ product()?.description }}
         </p>
 
+<!--
         <div class="color-picker">
           <span>Цвет:</span>
           <div class="color-options">
@@ -41,6 +42,7 @@
             }
           </div>
         </div>
+-->
 
         <ul class="features">
           <li>✓ Веган и cruelty-free</li>
@@ -49,7 +51,7 @@
         </ul>
 
         <div class="actions">
-          <button class="btn-primary" (click)="addProductInCart()">{{ 'Add to Cart' | transloco }}</button>
+          <button class="add-to-bag-btn" (click)="addProductInCart()">{{ 'Add to Cart' | transloco }}</button>
           <button class="btn-secondary" (click)="addToWishlist()">
             <i class="pi pi-heart"></i>
             В избранное

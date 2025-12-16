@@ -48,8 +48,7 @@
                                  decrementButtonClass="p-button-text py-1 px-1"
                                  incrementButtonClass="p-button-text py-1 px-1"
                                  incrementButtonIcon="pi pi-plus"
-                                 decrementButtonIcon="pi pi-minus">
-                  </p-inputNumber>
+                                 decrementButtonIcon="pi pi-minus"/>
                 </div>
               </div>
               <div class="price">{{ cartItem.amount }} MDL</div>
@@ -75,7 +74,7 @@
           <button class="btn-checkout">{{ 'Check out' | transloco }} →</button>
         </div>
       } @else {
-        <ng-container *ngTemplateOutlet="emptyCart"></ng-container>
+        <ng-container *ngTemplateOutlet="emptyCart"/>
       }
     </div>
   </div>
