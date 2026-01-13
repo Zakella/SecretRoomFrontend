@@ -1,8 +1,23 @@
 @if (product()) {
   <section class="product-page" appFadeUp>
-<!--
-    <img (click)="navigateToList()" src="assets/images/back.svg" class="back-button cursor-pointer" alt="Назад"/>
--->
+    <button
+      class="back-btn-mobile"
+      (click)="navigateToList()"
+      aria-label="Назад"
+    >
+      <img src="assets/images/back.svg" alt="Назад" />
+    </button>
+    <div class="product-title-mobile">
+      {{ product()?.name }}
+    </div>
+    <button
+      class="add-to-cart-mobile"
+      (click)="addProductInCart()"
+      aria-label="Add to cart"
+    >
+      <i class="pi pi-shopping-bag"></i>
+    </button>
+
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
@@ -29,23 +44,6 @@
         <p class="description">
           {{ product()?.description }}
         </p>
-
-<!--
-        <div class="color-picker">
-          <span>Цвет:</span>
-          <div class="color-options">
-            @for (color of colors; track $index; ) {
-              <div class="color-circle"
-                   [ngStyle]="{ 'background-color': color.hex }"
-                   [class.selected]="color.name === selectedColor"
-                   (click)="selectedColor = color.name"
-                   [title]="color.label"
-              ></div>
-            }
-          </div>
-        </div>
--->
-
         <ul class="features">
           <li>✓ Веган и cruelty-free</li>
           <li>✓ Без силиконов и парабенов</li>
@@ -53,16 +51,36 @@
         </ul>
 
         <div class="actions">
-          <button class="add-to-bag-btn" (click)="addProductInCart()">{{ 'Add to Cart' | transloco }}</button>
-          <button class="btn-secondary" (click)="addToWishlist()">
-            <i class="pi pi-heart"></i>
-            В избранное
+          <button class="add-to-bag-btn" (click)="addProductInCart()">
+            {{ 'Add to Cart' | transloco }}
           </button>
-          <button class="btn-secondary" (click)="shareModal.open()">
-            <i class="pi pi-share-alt"></i>
-            Поделиться
-          </button>
+
+          <div class="secondary-actions">
+            <button class="btn-secondary" (click)="addToWishlist()">
+              <i class="pi pi-heart"></i>
+              В избранное
+            </button>
+
+            <button class="btn-secondary" (click)="shareModal.open()">
+              <i class="pi pi-share-alt"></i>
+              Поделиться
+            </button>
+          </div>
         </div>
+
+        <!--
+                <div class="actions">
+                  <button class="add-to-bag-btn" (click)="addProductInCart()">{{ 'Add to Cart' | transloco }}</button>
+                  <button class="btn-secondary" (click)="addToWishlist()">
+                    <i class="pi pi-heart"></i>
+                    В избранное
+                  </button>
+                  <button class="btn-secondary" (click)="shareModal.open()">
+                    <i class="pi pi-share-alt"></i>
+                    Поделиться
+                  </button>
+                </div>
+        -->
       </div>
     </div>
 
@@ -92,4 +110,5 @@
   </section>
 }
 <app-share-modal #shareModal/>
+
 
