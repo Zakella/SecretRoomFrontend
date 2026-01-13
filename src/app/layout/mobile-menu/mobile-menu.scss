@@ -1,14 +1,14 @@
 .button-container {
   display: flex;
-  width: 300px;
+  width: 380px;
   height: 48px;
   align-items: center;
   justify-content: space-around;
-  background: rgba(245, 73, 144, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.2);
 }
 
 
@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: black;
   transition: all ease-in-out 0.3s;
   cursor: pointer;
 }
