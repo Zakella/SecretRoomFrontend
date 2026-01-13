@@ -1,14 +1,10 @@
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {ProductCard} from '../product/product-card/product-card';
-import {BtnShowMore} from '../buttons/btn-show-more/btn-show-more';
 import {BEST_SELLERS} from '../../../mock/best-sellers';
 
 @Component({
   selector: 'app-best-sellers',
-  imports: [
-    ProductCard,
-    BtnShowMore
-  ],
+  imports: [ProductCard],
   templateUrl: './best-sellers.html',
   styleUrl: './best-sellers.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

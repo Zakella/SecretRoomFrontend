@@ -5,11 +5,11 @@ import {Product} from '../../entities/product';
 import {CustomTitle} from '../../shared/components/custom-title/custom-title';
 import {StoriesComponent} from '../../shared/components/stories/stories.component';
 import {FadeUp} from '../../@core/directives/fade-up';
-import {FilterConfig, ProductFilter} from '../../shared/components/product/product-filter/product-filter';
+import {FilterConfig} from '../../shared/components/product/product-filter/product-filter';
 
 @Component({
   selector: 'app-vs-list',
-  imports: [ProductList, CustomTitle, StoriesComponent, FadeUp, ProductFilter],
+  imports: [ProductList, CustomTitle, StoriesComponent, FadeUp],
   templateUrl: './vs-list.html',
   styleUrl: './vs-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

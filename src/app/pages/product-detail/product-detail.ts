@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {NgClass, NgStyle} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Reviews} from './reviews/reviews';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -14,7 +14,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [NgStyle, Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
+  imports: [Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

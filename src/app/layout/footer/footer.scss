@@ -1,7 +1,6 @@
 .footer {
   font-size: 14px;
   padding-top: 48px;
-
   .container {
     max-width: 1440px;
     margin: auto;
@@ -9,6 +8,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 48px;
+    color: black;
     justify-content: space-between;
   }
 
@@ -19,7 +19,7 @@
       font-size: 28px;
       font-weight: 600;
       margin-bottom: 12px;
-      color: pink;
+      color: black;
       text-decoration: none;
     }
 
@@ -35,12 +35,8 @@
 
       a {
         font-size: 18px;
-        color: pink;
+        color: black;
         text-decoration: none;
-
-        &:hover {
-          color: black;
-        }
       }
     }
   }
@@ -56,7 +52,8 @@
       color: black;
 
       h4 {
-        font-size: 14px;
+        font-size: 16px;
+        font-weight: 500;
         text-transform: uppercase;
         margin-bottom: 12px;
       }
@@ -64,12 +61,8 @@
       a {
         display: block;
         margin-bottom: 8px;
-        color: pink;
+        color: #1f1f1f;
         text-decoration: none;
-
-        &:hover {
-          color: black;
-        }
       }
     }
   }
@@ -106,12 +99,8 @@
         gap: 16px;
 
         a {
-          color: pink;
+          color: black;
           text-decoration: none;
-
-          &:hover {
-            color: black;
-          }
         }
       }
     }

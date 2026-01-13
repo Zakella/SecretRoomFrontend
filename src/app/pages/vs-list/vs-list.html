@@ -1,17 +1,12 @@
 <div appFadeUp>
-  <custom-title [title]="'BEST-SELLERS'"/>
+  <custom-title [title]="'BEST-SELLERS'" class="mt-[100px]"/>
 
   <div class="stories-wrapper">
     <app-stories/>
   </div>
-<!--
-  <product-filter [filters]="filters"/>
--->
 
-  <div class="product-list-wrapper">
-    <div class="product-list-panel">
-      <app-product-list [products]="products()"/>
-    </div>
+  <div class="product-list-panel">
+    <app-product-list [products]="products()"/>
   </div>
 </div>
 

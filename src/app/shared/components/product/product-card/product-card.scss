@@ -1,3 +1,4 @@
+/*
 .product-card {
   max-width: 28rem;
   margin: 0 auto;
@@ -85,4 +86,179 @@
   background-color: #e5e7eb !important;
   border-radius: 8px;
   animation: p-skeleton-animation 1.5s infinite;
+}
+*/
+
+
+.product-card {
+  max-width: 28rem;
+  margin: 0 auto;
+  background: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 95%;
+  }
+}
+
+.limited-badge {
+  text-align: center;
+  padding: 1rem 0;
+  background: #f3f4f6;
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #1f2937;
+
+    @media (max-width: 480px) {
+      font-size: 0.65rem;
+    }
+  }
+}
+
+.product-image-container {
+  position: relative;
+  padding: 3rem 2rem;
+  background: linear-gradient(to bottom, #f9fafb, white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+    min-height: 220px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 0.5rem;
+    min-height: 180px;
+  }
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    max-height: 300px;
+  }
+
+  @media (max-width: 480px) {
+    max-height: 200px;
+  }
+}
+
+.product-info {
+  padding: 1.5rem 2rem;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 1rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+.product-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.65rem;
+  }
+}
+
+.product-description {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #111827;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+.add-to-bag-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #fff5f8, #f3f0ff);
+  color: #333;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+
+  &:hover {
+    background: linear-gradient(135deg, #f3f0ff, #fff5f8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #fcdce6, #e8d4f8);
+    color: #333;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.7rem;
+  }
+}
+
+.p-skeleton {
+  background-color: #e5e7eb !important;
+  border-radius: 8px;
+  animation: p-skeleton-animation 1.5s infinite;
+
+  @media (max-width: 480px) {
+    border-radius: 6px;
+  }
 }

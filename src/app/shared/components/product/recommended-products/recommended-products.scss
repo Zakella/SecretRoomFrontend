@@ -4,17 +4,14 @@
   justify-content: center;
 
   background: #ffffff;
-  border: 2px solid #f7cfe3; // нежный розовый
-  color: #e86ea8;            // розовое золото
+  border: 1px solid #f7cfe3;
+  color: #e86ea8;
   border-radius: 14px;
   padding: 0.55rem 1rem;
 
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-
-  box-shadow: 0 4px 12px rgba(233, 140, 175, 0.18);
-  transition: all .25s ease;
 }
 
 .vs-btn:hover {
