@@ -1,11 +1,9 @@
-<main class="home" appFadeUp>
+<main appFadeUp>
   <div class="image-wrapper">
     <app-image-slider [images]="images" [autoSlide]="true" [controls]="false"/>
   </div>
   <app-text-slider/>
-  <section class="categories">
     <h3 class="categories-title">Shop by Categories</h3>
-
     <div class="categories-list">
       <div class="category-item">
         <div class="category-icon">
@@ -43,9 +41,7 @@
         <span>Пижамы</span>
       </div>
     </div>
-  </section>
-
-  <app-promo-section/>
-  <app-best-sellers/>
-  <app-socials/>
+  <promo-section/>
+  <best-sellers/>
+  <socials/>
 </main>

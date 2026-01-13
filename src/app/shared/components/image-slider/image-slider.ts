@@ -50,7 +50,7 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private restartAuto(): void {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser()) return;
     this.stopAuto();
 
     if (!this.autoSlide() || this.images().length < 2) return;

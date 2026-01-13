@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-socials',
+  selector: 'socials',
   imports: [],
   templateUrl: './socials.html',
   styleUrl: './socials.scss'

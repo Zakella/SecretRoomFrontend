@@ -18,9 +18,9 @@
 
 .categories-list {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   overflow-x: auto;
-  padding: 0 16px 8px;
+  padding: 0 20px 20px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }

@@ -3,7 +3,7 @@ import {ProductCard} from '../product/product-card/product-card';
 import {BEST_SELLERS} from '../../../mock/best-sellers';
 
 @Component({
-  selector: 'app-best-sellers',
+  selector: 'best-sellers',
   imports: [ProductCard],
   templateUrl: './best-sellers.html',
   styleUrl: './best-sellers.scss',
