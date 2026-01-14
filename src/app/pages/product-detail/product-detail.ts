@@ -25,16 +25,10 @@ export class ProductDetail {
   private langService = inject(Language);
   private cartService = inject(CartUi)
   protected selectedTab: string = 'description';
-  protected selectedColor: string = 'rose';
   protected tabs = [
     {key: 'description', label: 'Описание'},
     {key: 'ingredients', label: 'Состав'},
     {key: 'reviews', label: 'Отзывы (12)'}
-  ];
-  protected colors = [
-    {name: 'rose', label: 'Розовый', hex: '#e86ea8'},
-    {name: 'amber', label: 'Янтарный', hex: '#f9c86a'},
-    {name: 'mint', label: 'Мятный', hex: '#6ad1b8'}
   ];
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
