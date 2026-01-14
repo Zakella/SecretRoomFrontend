@@ -3,9 +3,6 @@
   margin: 160px 100px 100px 100px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   padding: 120px;
-  /*
-  font-family: 'Didot', serif;
-  */
   color: #333;
   background: #fff;
 }
@@ -19,12 +16,6 @@
 .product-images {
   flex: 1 1 45%;
 }
-
-
-/*.product-images img {
-  width: 100%;
-  border-radius: 10px;
-}*/
 
 .main-image img {
   width: 100%;
@@ -66,8 +57,13 @@
 }
 
 .product-info .brand {
-  color: #e86ea8;
-  font-weight: 500;
+  background: linear-gradient(90deg, #e86ea8, #ff9cac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .price {
@@ -134,7 +130,6 @@
   text-align: center;
 }
 
-/* контейнер для 2 кнопок */
 .secondary-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -270,20 +265,6 @@
     font-size: 1.3rem;
   }
 
-/*  .actions {
-    flex-direction: column;
-    gap: 0.8rem;
-    width: 100%;
-  }
-
-  .add-to-bag-btn,
-  .btn-secondary {
-    width: 100%;
-    padding: 0.9rem;
-    font-size: 1rem;
-    text-align: center;
-  }*/
-
   .tabs {
     gap: 1rem;
     overflow-x: auto;
@@ -307,29 +288,32 @@
 @media (max-width: 480px) {
   .product-page {
     margin: 45px 5px 5px 5px;
-    padding: 15px;
+    padding: 1px;
+    background: transparent;
+    box-shadow: none;
   }
 
   .main-image img {
+    width: 100%;
+    background: #FFFFFF;
     max-height: 260px;
   }
-
+  .brand {
+    text-align: center;
+  }
   .product-info h1 {
-    font-size: 1.3rem;
+    text-align: center;
+    font-size: 1rem;
   }
 
   .price {
-    font-size: 1.1rem;
+    text-align: center;
+    font-size: 1rem;
   }
 
   .thumbnails img {
     width: 50px;
     height: 50px;
-  }
-
-  .color-circle {
-    width: 20px;
-    height: 20px;
   }
 
   .tabs button {

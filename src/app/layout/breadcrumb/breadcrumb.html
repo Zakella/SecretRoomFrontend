@@ -1,9 +1,14 @@
-<div class="breadcrumb-menu din-pro-light">
-  <ul>
-    @for ( breadcrumb of breadcrumbs$ |async; track breadcrumb){
-      <li>
-        <a class="text-dinPro" [routerLink]="breadcrumb.url">{{ breadcrumb.label }} </a>
-      </li>
-    }
-  </ul>
-</div>
+<!--
+<nav class="breadcrumbs" *ngIf="breadcrumbs().length">
+  <ng-container *ngFor="let bc of breadcrumbs(); let last = last">
+    <a
+      [routerLink]="!last ? bc.url : null"
+      [class.active]="last"
+    >
+      {{ bc.label }}
+    </a>
+
+    <span class="separator" *ngIf="!last">/</span>
+  </ng-container>
+</nav>
+-->

@@ -2,13 +2,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  background: #ffffff;
   border: 1px solid #f7cfe3;
   color: #e86ea8;
   border-radius: 14px;
   padding: 0.55rem 1rem;
-
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -70,3 +67,8 @@
   margin-left: 0.5rem;
 }
 
+@media (max-width: 768px) {
+  .carousel-item {
+    background: transparent;
+  }
+}

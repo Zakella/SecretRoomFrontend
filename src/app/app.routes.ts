@@ -36,7 +36,11 @@ export const routes: Routes = [
         component: MainLayout,
         children: [
           {path: '', component: Home},
-          {path: 'vs', component: VsList},
+          {
+            path: 'vs',
+            component: VsList,
+            data: { breadcrumb: 'Редактирование' }
+          },
           {
             path: 'product-detail/:id',
             component: ProductDetail,

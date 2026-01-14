@@ -1,24 +1,20 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {AsyncPipe} from '@angular/common';
-import {Observable} from 'rxjs';
-import {Breadcrumbs} from '../../entities/breadcrumb';
-import {BreadcrumbService} from './breadcrumb-service';
+import {NgForOf, NgIf} from '@angular/common';
+import {BreadcrumbsService} from '../../@core/services/breadcrumb';
 
 @Component({
-  selector: 'app-breadcrumb',
+  selector: 'breadcrumb',
   imports: [
     RouterLink,
-    AsyncPipe
+    NgIf,
+    NgForOf
   ],
   templateUrl: './breadcrumb.html',
   styleUrl: './breadcrumb.scss'
 })
-export class Breadcrumb implements OnInit{
-  breadcrumbs$!: Observable<Breadcrumbs[]>;
-  private breadcrumbsService = inject(BreadcrumbService);
+export class Breadcrumb{
+  private readonly service = inject(BreadcrumbsService);
+  readonly breadcrumbs = this.service.breadcrumbs;
 
-  ngOnInit() {
-    this.breadcrumbs$ = this.breadcrumbsService.breadcrumbs$;
-  }
 }

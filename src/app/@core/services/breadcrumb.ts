@@ -1,65 +1,59 @@
-import { Injectable } from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs';
+
+export interface BreadcrumbItem {
+  label: string;
+  url: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class Breadcrumb {
-/*  private breadcrumbsSubject = new BehaviorSubject<Breadcrumbs[]>([]);
-  breadcrumbs$ = this.breadcrumbsSubject.asObservable();
+export class BreadcrumbsService {
+  private readonly _breadcrumbs = signal<BreadcrumbItem[]>([]);
+  readonly breadcrumbs = computed(() => this._breadcrumbs());
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
-    this.initBreadcrumbs();
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.initBreadcrumbs();
-      }
-    });
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        const breadcrumbs = this.build(this.route.root);
+        this._breadcrumbs.set(breadcrumbs);
+      });
   }
 
-  private initBreadcrumbs(): void {
-    const breadcrumbs = this.createBreadcrumbs(this.activatedRoute.root);
-    this.breadcrumbsSubject.next(breadcrumbs);
-  }
-
-  private createBreadcrumbs(
+  private build(
     route: ActivatedRoute,
-    url: string = '',
-    breadcrumbs: Breadcrumbs[] = [],
-    productName?: string
-  ): Breadcrumbs[] {
-    const label = route.routeConfig
-      ? route.snapshot.data['breadcrumb']
-      : 'Главная';
-    const path = route.routeConfig
-      ? route.routeConfig.path
-      : '';
-    const nextUrl = `${url}${path}/`;
-
-    const breadcrumbLabel = (label === 'Product' && productName)
-      ? productName
-      : label;
-
-    const breadcrumb = {
-      label: breadcrumbLabel,
-      url: nextUrl,
-    };
-
-    let newBreadcrumbs: Breadcrumbs[] = [...breadcrumbs];
-
-    if (breadcrumbLabel !== 'Главная' || breadcrumbs.length > 0) {
-      newBreadcrumbs = [...breadcrumbs, breadcrumb];
+    url = '',
+    acc: BreadcrumbItem[] = []
+  ): BreadcrumbItem[] {
+    let child = route.firstChild;
+    if (!child) return acc;
+    while (
+      child &&
+      child.snapshot.url.length === 0 &&
+      !child.snapshot.data['breadcrumb']
+      ) {
+      child = child.firstChild!;
     }
 
-    if (route.firstChild && route.firstChild.routeConfig?.path) {
-      return this.createBreadcrumbs(route.firstChild, nextUrl, newBreadcrumbs, productName);
+    if (!child) return acc;
+
+    const part = child.snapshot.url.map(s => s.path).join('/');
+    if (part) {
+      url += `/${part}`;
     }
 
-    return newBreadcrumbs;
+    const label = child.snapshot.data['breadcrumb'];
+    if (label) {
+      acc.push({ label, url });
+    }
+
+    return this.build(child, url, acc);
   }
-  setBreadcrumbs(breadcrumbs: Breadcrumbs[]): void {
-    this.breadcrumbsSubject.next(breadcrumbs);
-  }
-  getBreadcrumbs(): Breadcrumbs[] {
-    return this.breadcrumbsSubject.getValue();
-  }*/
+
 }
