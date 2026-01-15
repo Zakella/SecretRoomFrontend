@@ -121,3 +121,32 @@
     opacity: .4;
   }
 }
+
+.cart-btn {
+  position: relative;
+
+  .cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+
+    background: #e11d48; // красный
+    color: #fff;
+
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.35);
+  }
+}
+

@@ -4,7 +4,6 @@ import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {DrawerModule} from 'primeng/drawer';
 import {ButtonModule} from 'primeng/button';
-import {NgForOf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 
@@ -14,7 +13,6 @@ import {TranslocoPipe} from '@ngneat/transloco';
     RouterLink,
     DrawerModule,
     ButtonModule,
-    NgForOf,
     FormsModule,
     TranslocoPipe
   ],
