@@ -31,20 +31,21 @@
             styleClass="catalog-drawer">
     <div class="drawer-header">
       <div class="search">
-        <input type="text" placeholder="Search" />
+        <input type="text" [placeholder]="'Search'| transloco"/>
         <i class="pi pi-search"></i>
       </div>
     </div>
 
-    <!-- Categories -->
     <div class="categories">
-      <div class="category" *ngFor="let item of categories">
-        <div class="left">
-          <img [src]="item.icon" alt="" />
-          <span>{{ item.label }}</span>
+      @for (item of categories; track item.label){
+        <div class="category">
+          <div class="left">
+            <img [src]="item.icon" alt="" />
+            <span>{{ item.label }}</span>
+          </div>
+          <i class="pi pi-chevron-right"></i>
         </div>
-        <i class="pi pi-chevron-right"></i>
-      </div>
+      }
     </div>
   </p-drawer>
 </div>

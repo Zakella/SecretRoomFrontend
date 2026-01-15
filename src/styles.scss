@@ -21,6 +21,8 @@
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
+  --p-drawer-background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
+  --p-drawer-color: #000!important;
 }
 
 body{
@@ -69,4 +71,9 @@ body:after, body:before {
   }
 }*/
 
+:host ::ng-deep p-drawer {
+  background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
+  padding: 16px!important;
+  color: #000!important;
+}
 
