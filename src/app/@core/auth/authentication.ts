@@ -1,4 +1,4 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {BehaviorSubject, Observable, Subscriber, tap} from 'rxjs';
 
@@ -6,6 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import {UserDetails} from '../../entities/user-details';
 import {User} from '../api/user';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ import {User} from '../api/user';
 export class Authentication {
   private jwtHelper = new JwtHelperService();
   loggedIn = new BehaviorSubject<boolean>(this.hasValidTokenInLocalStorage());
-   private  http = inject(HttpClient);
+  logged = toSignal(this.loggedIn, { initialValue: false });
+  private  http = inject(HttpClient);
 
   isLoggedIn(): Observable<boolean> {
     return new Observable<boolean>(subscriber => {
