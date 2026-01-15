@@ -10,6 +10,7 @@ import {distinctUntilChanged, filter, map} from 'rxjs';
 import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
+import {MobileHeader} from '../mobile-header/mobile-header';
 
 @Component({
   selector: 'app-main-layout',
@@ -22,6 +23,7 @@ import {Breadcrumb} from '../breadcrumb/breadcrumb';
     ScrollTop,
     MobileMenu,
     Breadcrumb,
+    MobileHeader,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
