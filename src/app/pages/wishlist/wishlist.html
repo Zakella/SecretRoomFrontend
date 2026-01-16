@@ -1,30 +1,4 @@
-<!--
-<section class="wishlist-page" appFadeUp>
-  <custom-title [title]="'Wishlist'"/>
-  @if(wishlist.length === 0){
-      <div class="empty">
-        <p>Ваш список пуст. Добавьте любимые продукты ❤️</p>
-      </div>
-    } @else {
-      <div class="wishlist-grid">
-        @for (item of wishlist; track item.id) {
-          <div class="wishlist-card">
-            <button class="btn-remove" (click)="removeItem(item.id)">×</button>
-            <img [src]="item.image" alt="{{ item.title }}" />
-            <div class="info">
-              <h3>{{ item.title }}</h3>
-              <p class="price">L {{ item.price }}</p>
-              <button class="btn-cart" (click)="addToCart(item)">ADD TO CART</button>
-            </div>
-          </div>
-        }
-      </div>
-    }
-</section>
--->
 <div class="wishlist">
-
-  <!-- iOS-like title -->
   <header class="nav-title">
     <div>
       <h1>Wishlist</h1>
