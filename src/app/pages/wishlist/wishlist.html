@@ -1,3 +1,4 @@
+<!--
 <section class="wishlist-page" appFadeUp>
   <custom-title [title]="'Wishlist'"/>
   @if(wishlist.length === 0){
@@ -20,3 +21,41 @@
       </div>
     }
 </section>
+-->
+<div class="wishlist">
+
+  <!-- iOS-like title -->
+  <header class="nav-title">
+    <div>
+      <h1>Wishlist</h1>
+      <span>{{ items().length }} saved</span>
+    </div>
+
+    <button class="share-btn" (click)="shareWishlist()">
+      <i class="pi pi-share-alt"></i>
+    </button>
+  </header>
+
+  <section class="list">
+    <article class="item" *ngFor="let item of items()">
+
+      <div class="preview">
+        <img [src]="item.image" />
+      </div>
+
+      <div class="content">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.subtitle }}</p>
+
+        <div class="bottom">
+          <span class="price">${{ item.price }}</span>
+          <button class="primary">Add to bag</button>
+        </div>
+      </div>
+
+      <button class="more" (click)="remove(item.id)">•••</button>
+
+    </article>
+  </section>
+
+</div>
