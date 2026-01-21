@@ -1,20 +1,10 @@
 @if (product()) {
   <section class="product-page" appFadeUp>
-    <button
-      class="back-btn-mobile"
-      (click)="navigateToList()"
-      aria-label="Назад"
-    >
+    <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
     </button>
-    <div class="product-title-mobile">
-      {{ product()?.name }}
-    </div>
-    <button
-      class="add-to-cart-mobile"
-      (click)="addProductInCart()"
-      aria-label="Add to cart"
-    >
+    <div class="product-title-mobile">{{ product()?.name }}</div>
+    <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
       <i class="pi pi-shopping-bag"></i>
     </button>
 
@@ -37,37 +27,41 @@
         }
       </div>
 
-      <div class="product-info">
-        <h1>{{ product()?.name }}</h1>
-        <p class="brand">{{ product()?.brandAlias }}</p>
-        <p class="price">{{ product()?.price }} MDL</p>
-        <p class="description">
-          {{ product()?.description }}
-        </p>
-        <ul class="features">
-          <li>✓ Веган и cruelty-free</li>
-          <li>✓ Без силиконов и парабенов</li>
-          <li>✓ Подходит для беременных</li>
-        </ul>
+        <div class="product-info">
+          <div class="product-header">
+            <span class="brand">{{ product()?.brandAlias }}</span>
+            <h1>{{ product()?.name }}</h1>
+            <div class="price">{{ product()?.price }} MDL</div>
+          </div>
 
-        <div class="actions">
-          <button class="add-to-bag-btn" (click)="addProductInCart()">
-            {{ 'Add to Cart' | transloco }}
-          </button>
+          <p class="description">
+            {{ product()?.description }}
+          </p>
 
-          <div class="secondary-actions">
-            <button class="btn-secondary" (click)="addToWishlist()">
-              <i class="pi pi-heart"></i>
-              В избранное
+          <ul class="features">
+            <li>✓ Веган и cruelty-free</li>
+            <li>✓ Без силиконов и парабенов</li>
+            <li>✓ Подходит для беременных</li>
+          </ul>
+
+          <div class="actions">
+            <button class="add-to-bag-btn" (click)="addProductInCart()">
+              {{ 'Add to Cart' | transloco }}
             </button>
 
-            <button class="btn-secondary" (click)="shareModal.open()">
-              <i class="pi pi-share-alt"></i>
-              Поделиться
-            </button>
+            <div class="secondary-actions">
+              <button class="btn-secondary" (click)="addToWishlist()">
+                <i class="pi pi-heart"></i>
+                В избранное
+              </button>
+
+              <button class="btn-secondary" (click)="shareModal.open()">
+                <i class="pi pi-share-alt"></i>
+                Поделиться
+              </button>
+            </div>
           </div>
         </div>
-      </div>
     </div>
 
     <div class="product-tabs">

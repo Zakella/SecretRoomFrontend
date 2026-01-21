@@ -33,7 +33,7 @@
 .thumbnails img {
   width: 80px;
   height: 80px;
-  object-fit: cover;
+  object-fit: contain;
   border: 2px solid #ddd;
   border-radius: 8px;
   cursor: pointer;
@@ -50,25 +50,30 @@
   flex-direction: column;
   gap: 1rem;
 }
-
-.product-info h1 {
+.product-header h1 {
   font-size: 2rem;
-  font-weight: bold;
-}
-
-.product-info .brand {
-  background: linear-gradient(90deg, #e86ea8, #ff9cac);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   font-weight: 600;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  line-height: 1.2;
+  color: #111827;
+}
+.product-header .price {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111;
+  margin-top: 0.25rem;
+}
+.product-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
-.price {
-  font-size: 1.5rem;
-  font-weight: bold;
+.product-header .brand {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
 }
 
 .description {
@@ -80,29 +85,6 @@
   margin: 1rem 0;
   font-size: 0.95rem;
   color: #555;
-}
-
-.color-options {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.color-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.color-circle:hover {
-  transform: scale(1.1);
-}
-
-.color-circle.selected {
-  border-color: #333;
 }
 
 .features {

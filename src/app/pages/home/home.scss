@@ -4,6 +4,11 @@
   justify-content: center;
   margin-top: 160px;
 }
+@media (max-width: 768px) {
+  .image-wrapper {
+    margin-top: 38px;
+  }
+}
 
 
 .categories-title {
