@@ -1,0 +1,163 @@
+<div class="checkout-container" appFadeUp>
+  <div class="checkout-form">
+    <h1>CHECKOUT</h1>
+    <div class="steps">
+      <span
+        [class.active]="step==='information'"
+        (click)="goTo('information')">INFORMATION</span>
+      <span
+        [class.active]="step==='shipping'"
+        (click)="goTo('shipping')">SHIPPING</span>
+      <span
+        [class.active]="step==='payment'"
+        (click)="goTo('payment')">PAYMENT</span>
+    </div>
+
+    <div *ngIf="step==='information'">
+      <div class="form-section">
+        <h2>CONTACT INFO</h2>
+        <div class="form-group full">
+          <input type="email" placeholder="Email">
+        </div>
+        <div class="form-group full">
+          <input type="text" placeholder="Phone">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>SHIPPING ADDRESS</h2>
+        <div class="form-group">
+          <input type="text" placeholder="First Name">
+          <input type="text" placeholder="Last Name">
+        </div>
+        <div class="form-group full">
+          <select>
+            <option>Country</option>
+            <option>USA</option>
+            <option>UK</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <input type="text" placeholder="State / Region">
+        </div>
+        <div class="form-group full">
+          <input type="text" placeholder="Address">
+        </div>
+        <div class="form-group">
+          <input type="text" placeholder="City">
+          <input type="text" placeholder="Postal Code">
+        </div>
+
+        <button class="shipping-btn" (click)="goTo('shipping')">
+          Shipping ➜
+        </button>
+      </div>
+    </div>
+
+    <!-- SHIPPING -->
+    <div *ngIf="step==='shipping'">
+      <h2>Shipping Method</h2>
+      <p>Выберите способ доставки</p>
+      <button class="shipping-btn" (click)="goTo('payment')">
+        Continue to Payment ➜
+      </button>
+    </div>
+
+    <!-- PAYMENT -->
+    <div *ngIf="step==='payment'">
+      <h2>Payment</h2>
+      <p>Введите данные карты</p>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="order-summary">
+    <h3>YOUR ORDER</h3>
+
+    <div class="order-item">
+      <img src="https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/N02170s.jpg?im=Resize,width=750" alt="T-shirt">
+      <div class="order-info">
+        <p>Basic Heavy T-Shirt</p>
+        <p>Black / L</p>
+        <a href="#">Change</a>
+      </div>
+      <div class="order-price">$99</div>
+    </div>
+
+    <div class="order-item">
+      <img src="https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/N02170s.jpg?im=Resize,width=750" alt="T-shirt">
+      <div class="order-info">
+        <p>Basic Fit T-Shirt</p>
+        <p>Black / L</p>
+        <a href="#">Change</a>
+      </div>
+      <div class="order-price">$99</div>
+    </div>
+
+    <div class="summary-totals">
+      <div><span>Subtotal</span><span>$180.00</span></div>
+      <div><span>Shipping</span><span>Calculated at next step</span></div>
+      <div><span>Total</span><span>$180.00</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+<div class="reviews-container">
+  <h2>Reviews</h2>
+
+  <div class="summary">
+    <div class="summary-left">
+      <div class="score">{{ totalRating }}</div>
+      <p>of {{ totalCount }} reviews</p>
+      <div class="stars">
+        <ng-container *ngFor="let s of starsArray; let i = index">
+          <span [class.filled]="i < Math.round(totalRating)">★</span>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="summary-bars">
+      <div class="bar" *ngFor="let b of bars">
+        <span class="label">{{ b.label }}</span>
+        <div class="progress">
+          <div class="fill" [style.width.%]="(b.value / totalCount) * 100"></div>
+        </div>
+        <span class="count">{{ b.value }}</span>
+      </div>
+    </div>
+  </div>
+
+  <textarea class="comment-box" placeholder="Leave Comment"></textarea>
+
+  <div class="review-list">
+    <div class="review" *ngFor="let r of visibleReviews">
+      <div class="review-header">
+        <img [src]="r.avatar" alt="avatar" class="avatar" />
+        <div class="info">
+          <div class="top">
+            <span class="name">{{ r.user }}</span>
+            <span class="stars">
+              <ng-container *ngFor="let s of starsArray; let i = index">
+                <span [class.filled]="i < r.rating">★</span>
+              </ng-container>
+            </span>
+          </div>
+          <span class="date">{{ r.date }}</span>
+        </div>
+      </div>
+      <p class="review-text">{{ r.text }}</p>
+
+      <div class="review-images" *ngIf="r.images">
+        <img *ngFor="let img of r.images" [src]="img" />
+      </div>
+    </div>
+  </div>
+
+  <button class="view-more" (click)="toggle()">
+    {{ showAll ? 'Hide' : 'View More' }}
+    <span [ngClass]="{'up': showAll}">▼</span>
+  </button>
+</div>
+-->

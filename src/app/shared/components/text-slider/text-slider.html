@@ -1,0 +1,11 @@
+<div class="marquee">
+  <div class="marquee__track">
+    @for (_ of [1, 2]; track $index) {
+      <div class="marquee__group">
+        @for (t of text; track $index) {
+          <span class="marquee__text">{{ t }}</span>
+        }
+      </div>
+    }
+  </div>
+</div>

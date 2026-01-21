@@ -1,0 +1,180 @@
+.product-card {
+  max-width: 26rem;
+  margin: 0 auto;
+  background: linear-gradient(145deg, #ffffff, #fdfaf6);
+  font-family: 'Playfair Display', serif;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 95%;
+  }
+}
+
+.limited-badge {
+  text-align: center;
+  padding: 1rem 0;
+  background: #fefcf8;
+
+  span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #b5855f; /* золотистый акцент */
+    text-transform: uppercase;
+
+    @media (max-width: 480px) {
+      font-size: 0.7rem;
+    }
+  }
+}
+
+.product-image-container {
+  position: relative;
+  padding: 3rem 2rem;
+  background: linear-gradient(to bottom, #fefcf8, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+    min-height: 240px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 0.5rem;
+    min-height: 180px;
+  }
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 768px) {
+    max-height: 320px;
+  }
+
+  @media (max-width: 480px) {
+    max-height: 200px;
+  }
+}
+
+.product-info {
+  padding: 2rem 2rem;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 0.5rem;
+  }
+}
+
+.product-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #4b3e2b; /* элегантный темно-коричневый */
+  margin-bottom: 0.5rem;
+  white-space: nowrap;       /* текст в одну строку */
+  overflow: hidden;          /* скрываем лишнее */
+  text-overflow: ellipsis;   /* показываем троеточие */
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
+}
+
+.product-description {
+  font-size: 0.95rem;
+  color: #5b5245;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  font-style: italic;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
+}
+
+.product-price {
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #b5855f; /* золотой акцент */
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.35rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+  }
+}
+
+.add-to-bag-btn {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid rgba(181, 133, 95, 0.3);
+  background: transparent;
+  color: #4b3e2b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+  &:hover {
+    background: linear-gradient(135deg, #fdf6ff, #fffaf5);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #fce8f0, #f3e8ff);
+    color: #4b3e2b;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.65rem 0.8rem;
+    font-size: 0.75rem;
+  }
+}
+
+.p-skeleton {
+  background-color: #f5f5f5 !important;
+  border-radius: 10px;
+  animation: p-skeleton-animation 1.5s infinite;
+
+  @media (max-width: 480px) {
+    border-radius: 8px;
+  }
+}

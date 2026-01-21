@@ -1,0 +1,94 @@
+@if (product()) {
+  <section class="product-page" appFadeUp>
+    <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
+      <img src="assets/images/back.svg" alt="Назад" />
+    </button>
+    <div class="product-title-mobile">{{ product()?.name }}</div>
+    <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
+      <i class="pi pi-shopping-bag"></i>
+    </button>
+
+    <div class="product-grid">
+      <div class="product-images">
+        <div class="main-image">
+          <img [src]="mainImage" alt="Product Image"/>
+        </div>
+        @defer {
+          <div class="thumbnails">
+            @for (image of product()!.productImagesWebStore; let i = $index; track image) {
+              <img src="{{image.imageUrl}}"
+                   alt="Product Image"
+                   loading="lazy"
+                   [ngClass]="{'border-pink': mainImage === image.imageUrl}"
+                   (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
+              />
+            }
+          </div>
+        }
+      </div>
+
+        <div class="product-info">
+          <div class="product-header">
+            <span class="brand">{{ product()?.brandAlias }}</span>
+            <h1>{{ product()?.name }}</h1>
+            <div class="price">{{ product()?.price }} MDL</div>
+          </div>
+
+          <p class="description">
+            {{ product()?.description }}
+          </p>
+
+          <ul class="features">
+            <li>✓ Веган и cruelty-free</li>
+            <li>✓ Без силиконов и парабенов</li>
+            <li>✓ Подходит для беременных</li>
+          </ul>
+
+          <div class="actions">
+            <button class="add-to-bag-btn" (click)="addProductInCart()">
+              {{ 'Add to Cart' | transloco }}
+            </button>
+
+            <div class="secondary-actions">
+              <button class="btn-secondary" (click)="addToWishlist()">
+                <i class="pi pi-heart"></i>
+                В избранное
+              </button>
+
+              <button class="btn-secondary" (click)="shareModal.open()">
+                <i class="pi pi-share-alt"></i>
+                Поделиться
+              </button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="product-tabs">
+      <div class="tabs">
+        @for (tab of tabs; track $index) {
+          <button [class.active]="tab.key === selectedTab" (click)="selectedTab = tab.key">
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <div class="tab-content">
+        @if (selectedTab === 'description') {
+          <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
+        } @else if (selectedTab === 'ingredients') {
+          <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
+        } @else if (selectedTab === 'reviews') {
+          <app-reviews/>
+        }
+      </div>
+    </div>
+    <div class="related-products">
+      <h2>{{ 'Recommendation' | transloco }}</h2>
+      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="addToWishlist()"/>
+    </div>
+  </section>
+}
+<app-share-modal #shareModal/>
+
+

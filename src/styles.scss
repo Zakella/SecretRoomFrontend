@@ -1,1 +1,79 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/variables';
+@use 'styles/mixins';
+/*
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+*/
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+:root {
+  --font-title: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+:host,html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  --p-drawer-background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
+  --p-drawer-color: #000!important;
+}
+
+body{
+  box-sizing: border-box;
+  background-color: #FAF5F8;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+
+body:after, body:before {
+  position: fixed;
+  left: 0;
+  top: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 20%;
+  font-family: var(--font-title);
+}
+
+
+/*.fade-in {
+  opacity: 0;
+  transform: translateY(25px);
+  animation: fadeInUp 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(25px);
+    filter: blur(6px);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}*/
+
+:host ::ng-deep p-drawer {
+  background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
+  padding: 16px!important;
+  color: #000!important;
+}
+

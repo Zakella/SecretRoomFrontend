@@ -1,0 +1,36 @@
+<section class="orders-page">
+  <h1>Мои заказы</h1>
+  <div class="order-list">
+    @for (order of orders; track $index) {
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <strong>Заказ №{{ order.id }}</strong><br />
+            <small>{{ order.date | date: 'dd.MM.yyyy' }}</small>
+          </div>
+          <div class="status" [class.completed]="order.status === 'Доставлен'" [class.pending]="order.status === 'В обработке'">
+            {{ order.status }}
+          </div>
+        </div>
+
+        <div class="order-items">
+          @for (item of order.items; track $index){
+            <div class="order-item">
+              <img [src]="item.image" alt="{{ item.title }}" />
+              <div>
+                <p>{{ item.title }}</p>
+                <p class="qty">Кол-во: {{ item.quantity }}</p>
+              </div>
+              <div class="price">{{ item.price | currency:'USD' }}</div>
+            </div>
+
+          }
+        </div>
+        <div class="order-footer">
+          <div>Общая сумма: <strong>{{ order.total | currency:'USD' }}</strong></div>
+          <a href="#" class="order-details-link">Подробнее</a>
+        </div>
+      </div>
+    }
+  </div>
+</section>

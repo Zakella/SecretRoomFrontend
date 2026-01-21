@@ -1,0 +1,74 @@
+.vs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f7cfe3;
+  color: #e86ea8;
+  border-radius: 14px;
+  padding: 0.55rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vs-btn:hover {
+  background: #ffe9f2;
+  border-color: #e86ea8;
+  color: #d9589a;
+  box-shadow: 0 6px 16px rgba(233, 140, 175, 0.3);
+}
+
+.vs-btn:active {
+  transform: scale(0.95);
+}
+
+
+:host ::ng-deep .p-carousel-indicator-active .p-carousel-indicator-button{
+  background-color: #e86ea8;
+}
+
+
+
+
+
+.carousel-item {
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 1rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-container {
+  width: 100%;
+  text-align: center;
+}
+
+.image-container img {
+  max-width: 100%;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+.product-name {
+  font-weight: 500;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttons button {
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .carousel-item {
+    background: transparent;
+  }
+}

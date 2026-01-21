@@ -1,0 +1,26 @@
+<p-dialog [(visible)]="visible"
+          [modal]="true"
+          [dismissableMask]="true"
+          [closable]="true"
+          [style]="{width: '350px', borderRadius: '12px'}"
+          header="Поделиться">
+
+  <div class="share-icons">
+    <button pButton type="button" class="telegram"
+            pTooltip="Telegram"
+            (click)="shareToTelegram()">
+      <i class="ri-telegram-line"></i>
+    </button>
+
+    <button pButton type="button" class="whatsapp"
+            pTooltip="WhatsApp"
+            (click)="shareToWhatsApp()">
+      <i class="ri-whatsapp-line"></i>
+    </button>
+  </div>
+
+  <div class="copy-link">
+    <input pInputText type="text" [value]="shareUrl" readonly>
+      <i class="ri-file-copy-line copy-btn" (click)="copyLink()"></i>
+  </div>
+</p-dialog>

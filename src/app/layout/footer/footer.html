@@ -1,0 +1,55 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-brand">
+      <div class="logo">Secret Room</div>
+      <p class="description">Кураторская косметика. Только проверенные бренды и чистые формулы.</p>
+      <div class="socials">
+        <a href="https://www.instagram.com/secret_room.moldova"
+           target="_blank"
+           rel="noopener noreferrer">
+          <i class="ri-instagram-line"></i>
+        </a>
+        <a href="#"><i class="ri-facebook-line"></i></a>
+        <a href="#"><i class="ri-tiktok-line"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <div class="column">
+        <h4>{{ 'About us' | transloco }}</h4>
+        <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
+        <a (click)="showPolicy()">Политика возврата</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">Правила и условия</a>
+      </div>
+      <div class="column">
+        <h4>О нас</h4>
+        <a [routerLink]="['/', activeLang(), 'about-us']">О компании</a>
+      </div>
+      <div class="column">
+        <h4>Каталог</h4>
+        <a routerLink="/brands">Бренды</a>
+        <a routerLink="/new">Новинки</a>
+        <a routerLink="/offers">Скидки</a>
+        <a routerLink="/gift-cards">Подарочные карты</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <span>© 2025 Secret Room. Все права защищены.</span>
+      <div class="payment-icons">
+        <img src="assets/images/payment/visa.svg" alt="Visa" />
+        <img src="assets/images/payment/master-card.svg" alt="MasterCard" />
+        <img src="assets/images/payment/apple-pay.svg" alt="Apple Pay" />
+        <img src="assets/images/payment/google-gpay.svg" alt="Google Pay" />
+      </div>
+
+      <div class="policies">
+        <a routerLink="/privacy">Политика конфиденциальности</a>
+        <a routerLink="/terms">Условия использования</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<app-return-policy [open]="isReturnPolicyVisible" (closed)="isReturnPolicyVisible = false"/>

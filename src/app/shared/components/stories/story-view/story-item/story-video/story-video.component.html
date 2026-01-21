@@ -1,0 +1,11 @@
+@if (isVideo) {
+  <video class="story-video" autoplay #storyVideo [volume]="videoVolume$ | async">
+    <source [src]="contentUrl"
+            type="video/mp4">
+  </video>
+}@else {
+  <img class="story-video" [src]="contentUrl">
+}
+
+
+

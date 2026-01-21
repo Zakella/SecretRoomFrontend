@@ -1,0 +1,33 @@
+<section>
+  <div class="form-box" appFadeUp>
+    <div class="form-value">
+      <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <h2>{{ 'Sign into your account' |transloco }}</h2>
+        <div class="input-box">
+          <i class="ri-mail-line"></i>
+          <input type="email" required formControlName="email">
+          <label>{{ 'Email' |transloco }}</label>
+        </div>
+        <div class="input-box">
+          <i class="ri-lock-line"></i>
+          <input type="password" required formControlName="password">
+          <label>{{ 'Password' |transloco }}</label>
+        </div>
+        <div class="forget">
+          <a (click)="showDialog()">{{ 'Forgot Password' |transloco }}</a>
+        </div>
+        <button type="submit">{{ 'Sing in' |transloco }}</button>
+        <div class="register">
+          <p>{{ 'No account' |transloco }}
+            <a [routerLink]="['/', activeLang(), 'registration']">{{ 'Register here' |transloco }}</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+@if (showResetPassword()) {
+  <app-reset-password (close)="showResetPassword.set(false)" (submitted)="onResetPasswordSubmitted($event)"/>
+}
+

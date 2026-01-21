@@ -1,0 +1,9 @@
+<span *ngIf="time.total > 0; else expired">
+      Осталось: {{time.days}}д
+  {{time.hours | number:'2.0'}}ч
+  {{time.minutes | number:'2.0'}}м
+  {{time.seconds | number:'2.0'}}с
+    </span>
+<ng-template #expired>
+  Акция завершена
+</ng-template>

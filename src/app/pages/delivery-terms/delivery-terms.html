@@ -1,0 +1,19 @@
+<div class="container" appFadeUp>
+  <nav class="sidebar">
+    @for(section of sections; track section.id){
+      <a [attr.href]="'#' + section.id"
+        [class.active]="activeSection === section.id"
+        (click)="scrollToSection(section.id, $event)">
+        {{ section.title }}</a>
+    }
+  </nav>
+  <main class="content" (window:scroll)="onWindowScroll()">
+    <h1>Правила и условия</h1>
+    @for (section of sections; track section.id) {
+      <section id="{{ section.id }}">
+        <h2>{{ section.number }}. {{ section.title }}</h2>
+        <p>{{ section.text }}</p>
+      </section>
+    }
+  </main>
+</div>

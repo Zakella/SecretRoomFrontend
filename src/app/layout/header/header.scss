@@ -1,0 +1,269 @@
+.header {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+  width: 100%;
+}
+
+.header-top {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-item {
+  cursor: pointer;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  padding: 5px;
+  transition: color 0.3s;
+  &:hover {
+    color: pink;
+  }
+}
+
+.logo {
+  justify-content: center;
+  cursor: pointer;
+  img{
+    width: 100px;
+  }
+}
+
+.icons {
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 18px;
+  color: #333;
+  text-decoration: none;
+}
+.cart-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -12px;
+  background: #FFC5D9;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+  line-height: 1;
+  min-width: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 0 2px white;
+}
+
+
+.nav-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border-top: 1px solid #e5e5e5;
+  position: relative;
+}
+
+.nav-main .nav-item {
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  max-width: 1200px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-top: none;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 20px;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 40px;
+}
+
+.dropdown-section, .dropdown-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.dropdown-section h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.dropdown-section p {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+
+.dropdown-item {
+  cursor: pointer;
+  display: block;
+  padding: 5px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.dropdown-item:hover {
+  color: pink;
+}
+.search-bar {
+  position: relative;
+  max-width: 360px;
+  margin-left: auto;
+
+  input {
+    width: 100%;
+    padding: 0.5em 2.5em 0.5em 1em;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    background-color: #fff;
+    color: #666;
+    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:focus {
+      background-color: #fff;
+      transform: scale(1.03);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+  }
+
+  i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #aaa;
+    transition: color 0.3s, transform 0.3s;
+    cursor: pointer;
+
+    input:focus + & {
+      color: #b34773;
+      cursor: pointer;
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+  padding: 4px 8px;
+  border-radius: 15px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+
+  button {
+    background: transparent;
+    border: none;
+    padding: 6px 14px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #666;
+    border-radius: 12px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+
+    &.active {
+      opacity: 1;
+      color: #4f4a4d;
+      background-color: #faeef2;
+      font-weight: 600;
+    }
+
+    &:hover:not(.active) {
+      opacity: 1;
+      color: #b34773;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #b34773;
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    display: none;
+    width: 100%
+  }
+
+  .nav-left,
+  .nav-main > :not(.search-bar),
+  .dropdown {
+    display: none;
+  }
+  .header-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+
+  .nav-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .nav-main .search-bar {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .lang-switcher {
+    display: flex;
+  }
+}
+
+
+.dropdown.active {
+  display: block;
+}

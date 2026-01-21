@@ -1,0 +1,10 @@
+<div class="product-list">
+  @for (product of products(); track product.id) {
+    <product-card
+      [product]="product"
+      [imageUrl]="product.imageURL || ''"
+      [title]="product.name"
+      [price]="product.id"
+      [brand]="product.brand"/>
+  }
+</div>

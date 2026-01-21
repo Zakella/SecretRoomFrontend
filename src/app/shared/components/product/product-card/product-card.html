@@ -1,0 +1,30 @@
+<div class="product-card">
+  @if (loading()) {
+    <p-skeleton width="100%" height="250px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="60%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="40%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="30%" height="20px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
+    <p-skeleton width="50%" height="30px"></p-skeleton>
+  } @else {
+    @if (isBestSeller()){
+      <div class="limited-badge">
+        <span>LIMITED EDITION</span>
+      </div>
+    }
+
+    <div class="product-image-container">
+      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product()?.name" class="product-image"/>
+    </div>
+
+
+    <div class="product-info">
+      <h3 class="product-name">{{product()?.name}}</h3>
+      <p class="product-description">Lorem ipsum dolor sit.</p>
+      <p class="product-price">{{ price() }} MDL </p>
+
+      <button class="add-to-bag-btn" (click)="addProductInCart()" analyticEvent="buy_click">
+        {{ 'Add to Cart' | transloco }}
+      </button>
+    </div>
+  }
+</div>

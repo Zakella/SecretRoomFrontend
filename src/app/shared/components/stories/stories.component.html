@@ -1,0 +1,24 @@
+@if (stories && stories.data.length > 0) {
+  <div class="stories-wrapper">
+    @for (story of stories.data; track story.name; let i = $index) {
+      <div class="story">
+        <div class="story-img-block" (click)="openStory(i)">
+          <div class="story-avatar">
+            <img [ngSrc]="story.thumbnail" width="64" height="64" [alt]="story.name">
+          </div>
+        </div>
+        <div class="story-author">
+          <p>
+            {{ story.name }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+
+}
+
+@if (stories && stories.data.length > 0) {
+  <story-view [storyIsOpen]="storyIsOpen" [stories]="stories.data" (closeStoryViewEmitter)="closeStory()"></story-view>
+}
+
