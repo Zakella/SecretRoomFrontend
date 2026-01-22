@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  secret-room-frontend:
+    image: secret-room-frontend:prod
+    container_name: secret-room-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "5000:4000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
