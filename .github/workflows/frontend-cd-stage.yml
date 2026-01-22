@@ -25,7 +25,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
 
       # 3. Сборка Docker образа
       - name: Build Docker image
@@ -46,7 +45,6 @@ jobs:
           source: "frontend-stage.tar.gz,docker-compose-stage.yml"
           target: "/tmp"
 
-      # 7. Деплой на сервер через SSH
       # 6. Деплой на сервер через SSH
       - name: Deploy application to server
         uses: appleboy/ssh-action@master
