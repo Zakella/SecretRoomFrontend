@@ -5,6 +5,7 @@ import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
+import {Brand, Category} from '../../entities/category';
 
 
 @Component({
@@ -21,12 +22,12 @@ export class Header implements OnInit {
   public activeLang = this.langService.currentLanguage
   public cartCount = this.cartService.cartCount;
   public languages = ['ru', 'ro'];
-  headerItems: any[] = [];
-  activeBrand = signal<any>(null);
+  headerItems = signal<Brand[] | null>([]);
+  activeBrand = signal<Brand | null>(null);
   query = signal('');
   private router = inject(Router);
   private categoryService = inject(CategoryService);
-  activeCategory = signal<any>(null);
+  activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
 
 
@@ -39,7 +40,7 @@ export class Header implements OnInit {
   }
 
 
-  showDropdown(category: any) {
+  showDropdown(category: Category) {
     if (!category.children?.length) {
       this.activeCategory.set(null);
       return;
@@ -65,14 +66,20 @@ export class Header implements OnInit {
     });
   }
 
-  setActive(brand: any) {
+  setActive(brand: Brand) {
     this.activeBrand.set(brand);
   }
 
   getCategories() {
     this.categoryService.getCategories().subscribe(categories => {
-      this.headerItems = categories;
+      if (!categories?.length) {
+        this.headerItems.set([]);
+        this.activeBrand.set(null);
+        return;
+      }
+
+      this.headerItems.set(categories);
       this.activeBrand.set(categories[0]);
-    })
+    });
   }
 }

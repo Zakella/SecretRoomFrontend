@@ -99,7 +99,7 @@
 }
 
 .dropdown {
-  top: calc(100% - 1px); // 👈 убираем микро-зазор
+  top: calc(100% - 1px);
   left: 0;
   position: absolute;
   width: 100%;
@@ -116,9 +116,9 @@
   transform: translateY(8px);
   pointer-events: none;
 
-  transition:
-    opacity 180ms ease,
-    transform 220ms cubic-bezier(.4,0,.2,1);
+  transition: opacity 180ms ease,
+  transform 220ms cubic-bezier(.4, 0, .2, 1);
+
   &.visible {
     opacity: 1;
     transform: translateY(0);
@@ -155,6 +155,7 @@
   text-decoration: none;
   font-size: 13px;
   transition: color 0.3s;
+
   &:hover {
     color: pink;
   }
@@ -254,9 +255,6 @@
   justify-content: center;
   padding: 1px 1px;
   border-top: 1px solid #e5e5e5;
-  /*
-  background-color: gray;
-  */
 }
 
 
@@ -271,7 +269,6 @@
     color: #000;
   }
 
-  /* РАЗДЕЛИТЕЛЬ */
   &:not(:last-child)::after {
     content: '';
     position: absolute;

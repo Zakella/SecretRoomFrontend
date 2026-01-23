@@ -34,7 +34,7 @@
   </div>
   <div class="header-medium">
     <nav class="nav-left">
-      @for (item of headerItems; track item.id) {
+      @for (item of headerItems(); track item.id) {
         <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
           {{ item.name }}
         </a>
