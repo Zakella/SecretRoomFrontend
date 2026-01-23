@@ -11,6 +11,8 @@ import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
 import {MobileHeader} from '../mobile-header/mobile-header';
+import {CookieBanner} from '../cookie-banner/cookie-banner';
+import {Chat} from '../../widgets/chat/chat';
 
 @Component({
   selector: 'app-main-layout',
@@ -24,6 +26,8 @@ import {MobileHeader} from '../mobile-header/mobile-header';
     MobileMenu,
     Breadcrumb,
     MobileHeader,
+    CookieBanner,
+    Chat,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'

@@ -1,0 +1,27 @@
+@if (!chatOpen()) {
+  <button class="chat-button" (click)="toggleChat()" aria-label="Открыть чат">
+    <i class="ri-chat-1-line"></i>
+  </button>
+}
+
+@if (chatOpen()) {
+  <div class="mini-chat">
+    <div class="chat-header">
+      <span>Техподдержка</span>
+      <button class="close-btn" (click)="toggleChat()"><i class="ri-close-line"></i></button>
+    </div>
+
+    <div class="chat-messages">
+      @for (msg of messages(); track msg) {
+        <div class="chat-message" [class.user]="msg.user === 'user'" [class.support]="msg.user === 'support'">
+          {{ msg.text }}
+        </div>
+      }
+    </div>
+
+    <div class="chat-input">
+      <input type="text" placeholder="Напишите сообщение..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
+      <button (click)="sendMessage()"><i class="ri-send-plane-line"></i></button>
+    </div>
+  </div>
+}

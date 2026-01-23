@@ -32,39 +32,49 @@
       </div>
     </div>
   </div>
-  <nav class="nav-main">
-    @for (item of Object.keys(dropdownContent); track item) {
-      <a class="nav-item" (mouseenter)="showDropdown(item)">
-        {{ item }}
-      </a>
+  <div class="header-medium">
+    <nav class="nav-left">
+      @for (item of headerItems(); track item.id) {
+        <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
+          {{ item.name }}
+        </a>
+      }
+    </nav>
+  </div>
+  <nav
+    class="nav-main"
+    (mouseenter)="navHovered.set(true)"
+    (mouseleave)="closeDropdown()"
+  >
+    @if (activeBrand()?.children) {
+      @for (category of activeBrand()!.children!; track category.id) {
+        <a
+          class="nav-item"
+          (mouseenter)="showDropdown(category)"
+        >
+          {{ category.name }}
+        </a>
+      }
     }
-    @if (activeMenu) {
-      <div class="dropdown" (mouseleave)="hideDropdown()">
+
+    @if (activeCategory()?.children?.length) {
+      <div class="dropdown"   [class.visible]="activeCategory()">
         <div class="dropdown-content">
+          <div class="dropdown-left">
           <div class="dropdown-section">
-            <h4>{{ dropdownContent[activeMenu].title }}</h4>
-            <p>{{ dropdownContent[activeMenu].description }}</p>
+            <h4>{{ activeCategory()!.name }}</h4>
           </div>
           <div class="dropdown-section">
-            <h4>SHOP BY</h4>
-            @for (cat of dropdownContent[activeMenu].categories; track $index) {
-              <a class="dropdown-item">{{ cat }}</a>
+            @for (sub of activeCategory()!.children!; track sub.id) {
+              <a class="dropdown-item">
+                {{ sub.name }}
+              </a>
             }
           </div>
-          <div class="dropdown-section">
-            <h4>HELP</h4>
-            <a class="dropdown-item">Contact Us</a>
-            <a class="dropdown-item">FAQ</a>
           </div>
-          <div class="dropdown-section">
-            <h4>ABOUT US</h4>
-            <a class="dropdown-item">Our Story</a>
-            <a class="dropdown-item">Careers</a>
+          <div class="dropdown-right">
+            <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
           </div>
-          <div class="dropdown-section">
-            <img [src]="dropdownContent[activeMenu].image" alt="Logo">
-          </div>
-
         </div>
       </div>
     }
@@ -78,35 +88,6 @@
              aria-label="Поиск по продуктам">
       <i class="ri-search-line" aria-hidden="true"></i>
     </div>
-    @if (activeMenu && dropdownContent[activeMenu]) {
-      <div class="dropdown" (mouseleave)="hideDropdown()">
-        <div class="dropdown-content">
-          <div class="dropdown-section">
-            <h4>{{ dropdownContent[activeMenu].title }}</h4>
-            <p>{{ dropdownContent[activeMenu].description }}</p>
-          </div>
-
-          <div class="dropdown-section">
-            <h4>SHOP BY</h4>
-            @for (cat of dropdownContent[activeMenu].categories; track $index) {
-              <a class="dropdown-item">{{ cat }}</a>
-            }
-          </div>
-
-          <div class="dropdown-section">
-            <h4>HELP</h4>
-            <a class="dropdown-item">Contact Us</a>
-            <a class="dropdown-item">FAQ</a>
-          </div>
-
-          <div class="dropdown-section">
-            <h4>ABOUT US</h4>
-            <a class="dropdown-item">Our Story</a>
-            <a class="dropdown-item">Careers</a>
-          </div>
-        </div>
-      </div>
-    }
   </nav>
 </header>
 
