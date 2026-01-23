@@ -1,0 +1,123 @@
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    background-color: #ff9cac;
+  }
+}
+
+.mini-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  max-height: 620px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .chat-header {
+    background: #000;
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .chat-messages {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .chat-message {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      max-width: 80%;
+
+      &.user {
+        background-color: #faeef2;
+        color: #b34773;
+        align-self: flex-end;
+      }
+
+      &.support {
+        background-color: #eee;
+        color: #333;
+        align-self: flex-start;
+      }
+    }
+  }
+
+  .chat-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+
+    input {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      color: black;
+    }
+
+    button {
+      background: #000;
+      color: white;
+      border: none;
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #ff9cac;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .mini-chat {
+    width: 90%;
+    bottom: 12px;
+    right: 5%;
+  }
+}
