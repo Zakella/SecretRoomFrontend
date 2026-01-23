@@ -101,7 +101,7 @@
 }
 
 .dropdown {
-  top: calc(100% - 1px);
+  top: 100%;
   left: 0;
   position: absolute;
   width: 100%;
@@ -111,19 +111,21 @@
   border-top: none;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   z-index: 1000;
   padding: 20px;
+
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(16px) scale(0.98);
   pointer-events: none;
 
-  transition: opacity 180ms ease,
-  transform 220ms cubic-bezier(.4, 0, .2, 1);
+  transition:
+    opacity 320ms ease,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 
   &.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     pointer-events: auto;
   }
 }
