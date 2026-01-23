@@ -19,7 +19,7 @@ export class Header implements OnInit {
   private cartService = inject(CartUi);
   private langService = inject(Language);
   protected readonly Object = Object;
-  public activeLang = this.langService.currentLanguage
+  public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ru', 'ro'];
   headerItems = signal<Brand[] | null>([]);

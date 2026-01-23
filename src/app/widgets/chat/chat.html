@@ -1,20 +1,9 @@
-<!--
-@if (showButton()) {
-  <button class="scroll-top" (click)="openChat()" aria-label="Back to top">
-    <i class="ri-chat-1-line"></i>
-  </button>
-}
--->
-
-
-<!-- Кнопка чата -->
 @if (!chatOpen()) {
   <button class="chat-button" (click)="toggleChat()" aria-label="Открыть чат">
     <i class="ri-chat-1-line"></i>
   </button>
 }
 
-<!-- Мини-чат -->
 @if (chatOpen()) {
   <div class="mini-chat">
     <div class="chat-header">

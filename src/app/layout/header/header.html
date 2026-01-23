@@ -6,7 +6,7 @@
       <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
     </nav>
     <a [routerLink]="['/', activeLang()]" class="logo">
-      <img src="assets/images/SR-white.svg" alt="logo">
+      <img src="assets/secret-room-logo.svg" alt="logo">
     </a>
     <div class="nav-right">
       <div class="lang-switcher">
@@ -60,17 +60,20 @@
     @if (activeCategory()?.children?.length) {
       <div class="dropdown"   [class.visible]="activeCategory()">
         <div class="dropdown-content">
+          <div class="dropdown-left">
           <div class="dropdown-section">
             <h4>{{ activeCategory()!.name }}</h4>
           </div>
-
           <div class="dropdown-section">
-            <h4>SHOP BY</h4>
             @for (sub of activeCategory()!.children!; track sub.id) {
               <a class="dropdown-item">
                 {{ sub.name }}
               </a>
             }
+          </div>
+          </div>
+          <div class="dropdown-right">
+            <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
           </div>
         </div>
       </div>
