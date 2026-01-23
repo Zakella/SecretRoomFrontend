@@ -1,0 +1,22 @@
+# Build Angular application
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --legacy-peer-deps
+
+# Copy source code
+COPY . .
+
+# Build the application for stage environment
+RUN npm run build -- --configuration=production
+
+# Expose port 4000
+EXPOSE 4000
+
+# Start the server
+CMD ["node", "dist/secret-room/server/server.mjs"]
