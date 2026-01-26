@@ -2,7 +2,12 @@
   position: fixed;
   top: 0;
   z-index: 1000;
-  background-color: #fff;
+  background: linear-gradient(
+      180deg,
+      #0E0E11 0%,
+      #121216 100%
+  );
+  color: white;
   width: 100%;
 }
 
@@ -23,13 +28,13 @@
 .nav-item {
   cursor: pointer;
   text-decoration: none;
-  color: #333;
+  color: #F5F3F4;
   font-size: 14px;
   padding: 5px;
   transition: color 0.3s;
 
   &:hover {
-    color: pink;
+    color: #E6B3A8;
   }
 }
 
@@ -38,10 +43,31 @@
   cursor: pointer;
   padding: 0;
   margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  background: linear-gradient(
+      135deg,
+      #f6d9d2 0%, // светлый розовый блик
+      #e9b7ad 25%, // основной rose
+      #d79a92 50%, // глубина (НЕ коричневый)
+      #eec3bb 75%, // отражение
+      #f8e4df 100% // хайлайт
+  );
+  text-shadow: 0 0 4px rgba(230, 179, 168, 0.25),
+  0 0 12px rgba(215, 154, 146, 0.15);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: opacity 0.3s ease, text-shadow 0.3s ease;
 
-  img {
-    width: 80px;
-    height: 80px;
+  &:hover {
+    opacity: 0.9;
+    text-shadow: 0 0 8px rgba(246, 209, 189, 0.35),
+    0 0 18px rgba(201, 143, 120, 0.25);
   }
 }
 
@@ -53,8 +79,12 @@
 
 .icon {
   font-size: 18px;
-  color: #333;
+  color: #F5F3F4;
   text-decoration: none;
+
+  &:hover {
+    color: #E6B3A8;
+  }
 }
 
 .cart-icon {
@@ -66,8 +96,9 @@
   position: absolute;
   top: -6px;
   right: -12px;
-  background: #FFC5D9;
-  color: white;
+
+  background: #E6B3A8;          // мягкий rose, гармонирует с логотипом
+  color: #121216;                // тёмный текст для контраста
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -78,7 +109,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 0 2px white;
+
+  box-shadow: 0 2px 6px rgba(230, 179, 168, 0.35); // мягкий glow, без белого «кольца»
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(230, 179, 168, 0.45);
+  }
 }
 
 
@@ -89,7 +128,7 @@
   display: flex;
   gap: 20px;
   align-items: center;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid rgba(230, 179, 168, 0.55);
   position: relative;
 }
 
@@ -106,22 +145,22 @@
   position: absolute;
   width: 100%;
   max-width: 1200px;
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
+  background: #121216;
+  border: 1px solid  rgba(230, 179, 168, 0.55);
+  box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
+  0 8px 24px rgba(230, 179, 168, 0.15);// мягкий rose border
   border-top: none;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   z-index: 1000;
   padding: 20px;
-
+  color: #F5F3F4; // светлый текст
   opacity: 0;
   transform: translateY(16px) scale(0.98);
   pointer-events: none;
 
-  transition:
-    opacity 320ms ease,
-    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 320ms ease,
+  transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 
   &.visible {
     opacity: 1;
@@ -134,7 +173,7 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 40px;
-  color: #666;
+  color: #F5F3F4; // светлый текст
 }
 
 .dropdown-section h4 {
@@ -146,7 +185,7 @@
 
 .dropdown-section p {
   font-size: 12px;
-  color: #666;
+  color: #F5F3F4; // светлый текст
   margin-bottom: 10px;
 }
 
@@ -155,7 +194,7 @@
   cursor: pointer;
   display: block;
   padding: 5px 0;
-  color: #333;
+  color: #F5F3F4;
   text-decoration: none;
   font-size: 13px;
   transition: color 0.3s;
@@ -171,11 +210,64 @@
 
 .dropdown-right {
   width: 200px;
-  img{
+
+  img {
     border-radius: 12px;
   }
 }
 
+.search-bar {
+  position: relative;
+  max-width: 340px;
+  margin-left: auto;
+
+  input {
+    width: 100%;
+    padding: 10px 40px 10px 14px;
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.06);
+    color: #F5F3F4;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+    transition: background 0.25s ease,
+    border 0.25s ease,
+    box-shadow 0.25s ease;
+
+    &::placeholder {
+      color: rgba(245, 243, 244, 0.45);
+    }
+
+    &:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(230, 179, 168, 0.55);
+
+      box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
+      0 8px 24px rgba(230, 179, 168, 0.15);
+    }
+  }
+
+  i {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: rgba(245, 243, 244, 0.55);
+    pointer-events: none;
+    transition: color 0.25s ease;
+  }
+
+  input:focus + i {
+    color: #E6B3A8;
+  }
+}
+/*
 .search-bar {
   position: relative;
   max-width: 360px;
@@ -187,7 +279,7 @@
     border-radius: 10px;
     outline: none;
     border: none;
-    background-color: #fff;
+    background-color: #F9F6F7;
     color: #666;
     box-shadow: inset 2px 5px 10px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
@@ -216,6 +308,7 @@
     }
   }
 }
+*/
 
 .lang-switcher {
   display: flex;
@@ -223,8 +316,8 @@
   margin-left: 16px;
   padding: 4px 8px;
   border-radius: 15px;
-  border: 1.5px solid #e5e7eb;
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
 
   button {
     background: transparent;
@@ -240,18 +333,21 @@
 
     &.active {
       opacity: 1;
-      color: #4f4a4d;
-      background-color: #faeef2;
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(230, 179, 168, 0.55);
+
+      box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
+      0 8px 24px rgba(230, 179, 168, 0.15);
       font-weight: 600;
     }
 
     &:hover:not(.active) {
       opacity: 1;
-      color: #b34773;
+      color: rgba(245, 243, 244, 0.55);
     }
 
     &:focus-visible {
-      outline: 2px solid #b34773;
+      outline: 2px solid rgba(230, 179, 168, 0.55);
       outline-offset: 2px;
     }
   }
@@ -269,7 +365,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1px 360px;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid rgba(230, 179, 168, 0.55);
 }
 
 
@@ -277,11 +373,11 @@
   position: relative;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  color: #666;
+  color: #F5F3F4;       // светлый базовый текст
   font-weight: 500;
 
   &:hover {
-    color: #000;
+    color: #E6B3A8;      // rose акцент на hover
   }
 
   &:not(:last-child)::after {
@@ -292,11 +388,11 @@
     transform: translateY(-50%);
     height: 14px;
     width: 1px;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(230, 179, 168, 0.55);
   }
 
   &.active {
-    color: #000;
+    color: #E6B3A8;
     font-weight: 600;
   }
 }
