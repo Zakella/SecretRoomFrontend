@@ -1,97 +1,89 @@
 <header class="header">
   <div class="header-top">
-    <nav class="nav-left">
-      <a class="nav-item">Our Story</a>
-      <a class="nav-item">Our Standards</a>
-      <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
-    </nav>
-    <a [routerLink]="['/', activeLang()]" class="logo">
-      Secret Room
-    </a>
-    <div class="nav-right">
-      <div class="lang-switcher">
-        @for (lang of languages; track lang) {
-          <button (click)="setActiveLang(lang)" [class.active]="lang === activeLang()">
-            {{ lang.toUpperCase() }}
-          </button>
-        }
-      </div>
-      <div class="icons">
-        <a class="icon">
-          <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
-        </a>
-        <a class="icon">
-          <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
-        </a>
-        <a class="icon cart-icon" (click)="openCart()">
-          <i class="ri-shopping-bag-line"></i>
-          @if (cartCount() > 0) {
-            <span class="cart-badge">{{ cartCount() }}</span>
-          }
-        </a>
+    <div class="header-top-inner">
+      <nav class="nav-left">
+        <a class="nav-item">Our Story</a>
+        <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
+      </nav>
+      <div class="nav-right">
+        <div class="icons">
+          <a class="icon">
+            <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-global-line"></i>
+          </a>
+          <a class="icon">
+            <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
+          </a>
+          <a class="icon">
+            <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
+          </a>
+          <a class="icon cart-icon" (click)="openCart()">
+            <i class="ri-shopping-bag-line"></i>
+            @if (cartCount() > 0) {
+              <span class="cart-badge">{{ cartCount() }}</span>
+            }
+          </a>
+        </div>
       </div>
     </div>
   </div>
   <div class="header-medium" [class.hidden]="isHidden">
-    <nav class="nav-left">
-      @for (item of headerItems(); track item.id) {
-        <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
-          {{ item.name }}
-        </a>
-      }
+    <a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
 
-    </nav>
-    <div class="search-bar">
-      <input type="text"
-             maxlength="60"
-             (keyup.enter)="onSearch()"
-             [(ngModel)]="query"
-             [placeholder]="'Search'| transloco"
-             aria-label="Поиск по продуктам">
-      <i class="ri-search-line" aria-hidden="true"></i>
+    <div class="brands-search">
+      <nav class="nav-left">
+        @for (item of headerItems(); track item.id) {
+          <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
+            {{ item.name }}
+          </a>
+        }
+      </nav>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          maxlength="60"
+          (keyup.enter)="onSearch()"
+          [(ngModel)]="query"
+          [placeholder]="'Search' | transloco"
+          aria-label="Поиск по продуктам"
+        />
+        <i class="ri-search-line" aria-hidden="true"></i>
+      </div>
     </div>
-
   </div>
-  <nav
-    class="nav-main"
-    (mouseenter)="navHovered.set(true)"
-    (mouseleave)="closeDropdown()"
-  >
-    @if (activeBrand()?.children) {
-      @for (category of activeBrand()!.children!; track category.id) {
-        <a
-          class="nav-item"
-          (mouseenter)="showDropdown(category)"
-        >
-          {{ category.name }}
-        </a>
+
+
+  <nav class="nav-main" (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
+    <div class="nav-inner">
+      @if (activeBrand()?.children) {
+        @for (category of activeBrand()!.children!; track category.id) {
+          <a class="nav-item" (mouseenter)="showDropdown(category)">
+            {{ category.name }}
+          </a>
+        }
       }
-    }
-
-
-
-    @if (activeCategory()?.children?.length) {
-      <div class="dropdown"   [class.visible]="activeCategory()">
-        <div class="dropdown-content">
-          <div class="dropdown-left">
-          <div class="dropdown-section">
-            <h4>{{ activeCategory()!.name }}</h4>
-          </div>
-          <div class="dropdown-section">
-            @for (sub of activeCategory()!.children!; track sub.id) {
-              <a class="dropdown-item">
-                {{ sub.name }}
-              </a>
-            }
-          </div>
-          </div>
-          <div class="dropdown-right">
-            <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
+      @if (activeCategory()?.children?.length) {
+        <div class="dropdown" [class.visible]="activeCategory()">
+          <div class="dropdown-content">
+            <div class="dropdown-left">
+              <div class="dropdown-section">
+                <h4>{{ activeCategory()!.name }}</h4>
+              </div>
+              <div class="dropdown-section">
+                @for (sub of activeCategory()!.children!; track sub.id) {
+                  <a class="dropdown-item">{{ sub.name }}</a>
+                }
+              </div>
+            </div>
+            <div class="dropdown-right">
+              <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
+            </div>
           </div>
         </div>
-      </div>
-    }
+      }
+
+    </div>
+
+
   </nav>
 </header>
-
-
