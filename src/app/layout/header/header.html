@@ -32,14 +32,25 @@
       </div>
     </div>
   </div>
-  <div class="header-medium">
+  <div class="header-medium" [class.hidden]="isHidden">
     <nav class="nav-left">
       @for (item of headerItems(); track item.id) {
         <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
           {{ item.name }}
         </a>
       }
+
     </nav>
+    <div class="search-bar">
+      <input type="text"
+             maxlength="60"
+             (keyup.enter)="onSearch()"
+             [(ngModel)]="query"
+             [placeholder]="'Search'| transloco"
+             aria-label="Поиск по продуктам">
+      <i class="ri-search-line" aria-hidden="true"></i>
+    </div>
+
   </div>
   <nav
     class="nav-main"
@@ -56,6 +67,8 @@
         </a>
       }
     }
+
+
 
     @if (activeCategory()?.children?.length) {
       <div class="dropdown"   [class.visible]="activeCategory()">
@@ -78,16 +91,6 @@
         </div>
       </div>
     }
-
-    <div class="search-bar">
-      <input type="text"
-             maxlength="60"
-             (keyup.enter)="onSearch()"
-             [(ngModel)]="query"
-             [placeholder]="'Search'| transloco"
-             aria-label="Поиск по продуктам">
-      <i class="ri-search-line" aria-hidden="true"></i>
-    </div>
   </nav>
 </header>
 

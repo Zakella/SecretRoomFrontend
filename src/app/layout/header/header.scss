@@ -364,10 +364,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1px 360px;
+  padding: 5px 360px;
+  margin: 5px;
   border-top: 1px solid rgba(230, 179, 168, 0.55);
+  background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
+  color: #F5F3F4;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+/*  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 360px;
+  margin: 5px;
+  border-top: 1px solid rgba(230, 179, 168, 0.55);*/
 }
 
+.header-medium.hidden {
+  transform: translateY(-100%);
+  pointer-events: none;
+ display: none;
+}
 
 .nav-medium-item {
   position: relative;
