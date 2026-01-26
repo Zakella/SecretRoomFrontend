@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -29,6 +29,8 @@ export class Header implements OnInit {
   private categoryService = inject(CategoryService);
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
+  lastScroll = 0;
+  isHidden = false;
 
 
   ngOnInit(): void {
@@ -81,5 +83,23 @@ export class Header implements OnInit {
       this.headerItems.set(categories);
       this.activeBrand.set(categories[0]);
     });
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (currentScroll <= 0) {
+      // На самом верху страницы показываем header
+      this.isHidden = false;
+    } else if (currentScroll > this.lastScroll) {
+      // Скролл вниз → скрываем
+      this.isHidden = true;
+    } else {
+      // Скролл вверх → показываем
+      this.isHidden = false;
+    }
+
+    this.lastScroll = currentScroll;
   }
 }
