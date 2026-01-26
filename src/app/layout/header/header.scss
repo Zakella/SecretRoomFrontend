@@ -2,18 +2,20 @@
   position: fixed;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(
-      180deg,
-      #0E0E11 0%,
-      #121216 100%
-  );
-  color: white;
   width: 100%;
+  background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
+  color: #F5F3F4;
+}
+.header-top {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: transparent;
 }
 
-.header-top {
+.header-top-inner {
   max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
@@ -38,6 +40,7 @@
   }
 }
 
+/* --- Логотип --- */
 .logo {
   justify-content: center;
   cursor: pointer;
@@ -51,11 +54,11 @@
   font-family: 'Cinzel', 'Playfair Display', serif;
   background: linear-gradient(
       135deg,
-      #f6d9d2 0%, // светлый розовый блик
-      #e9b7ad 25%, // основной rose
-      #d79a92 50%, // глубина (НЕ коричневый)
-      #eec3bb 75%, // отражение
-      #f8e4df 100% // хайлайт
+      #f6d9d2 0%,
+      #e9b7ad 25%,
+      #d79a92 50%,
+      #eec3bb 75%,
+      #f8e4df 100%
   );
   text-shadow: 0 0 4px rgba(230, 179, 168, 0.25),
   0 0 12px rgba(215, 154, 146, 0.15);
@@ -71,6 +74,7 @@
   }
 }
 
+/* --- Иконки --- */
 .icons {
   display: flex;
   gap: 10px;
@@ -96,9 +100,8 @@
   position: absolute;
   top: -6px;
   right: -12px;
-
-  background: #E6B3A8;          // мягкий rose, гармонирует с логотипом
-  color: #121216;                // тёмный текст для контраста
+  background: #E6B3A8;
+  color: #121216;
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -109,9 +112,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
-  box-shadow: 0 2px 6px rgba(230, 179, 168, 0.35); // мягкий glow, без белого «кольца»
-
+  box-shadow: 0 2px 6px rgba(230, 179, 168, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
@@ -120,52 +121,52 @@
   }
 }
 
-
 .nav-main {
+  width: 100%;
+  background: #F9F8F9;
+  color: black;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-inner {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 20px;
+  color: black;
+  width: 100%;
   display: flex;
   gap: 20px;
   align-items: center;
-  border-top: 1px solid rgba(230, 179, 168, 0.55);
-  position: relative;
+  padding: 10px 20px;
 }
 
 .nav-main .nav-item {
   cursor: pointer;
+  color: black;
   font-size: 14px;
   text-transform: uppercase;
   padding: 5px 10px;
 }
-
 .dropdown {
-  top: 100%;
-  left: 0;
   position: absolute;
+  display: block;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 1200px;
-  background: #121216;
-  border: 1px solid  rgba(230, 179, 168, 0.55);
-  box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
-  0 8px 24px rgba(230, 179, 168, 0.15);// мягкий rose border
+  background: white;
   border-top: none;
-  border-bottom-right-radius: 15px;
-  border-bottom-left-radius: 15px;
-  z-index: 1000;
+  border-radius: 0 0 15px 15px;
   padding: 20px;
-  color: #F5F3F4; // светлый текст
+  color: black;
   opacity: 0;
-  transform: translateY(16px) scale(0.98);
   pointer-events: none;
-
-  transition: opacity 320ms ease,
-  transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.3s, transform 0.3s;
 
   &.visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
     pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
@@ -173,7 +174,8 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 40px;
-  color: #F5F3F4; // светлый текст
+  max-width: 1160px;
+  align-items: flex-start;
 }
 
 .dropdown-section h4 {
@@ -185,7 +187,7 @@
 
 .dropdown-section p {
   font-size: 12px;
-  color: #F5F3F4; // светлый текст
+  color: black;
   margin-bottom: 10px;
 }
 
@@ -194,7 +196,7 @@
   cursor: pointer;
   display: block;
   padding: 5px 0;
-  color: #F5F3F4;
+  color: black;
   text-decoration: none;
   font-size: 13px;
   transition: color 0.3s;
@@ -210,11 +212,13 @@
 
 .dropdown-right {
   width: 200px;
-
+  flex-shrink: 0;
+  margin-left: 40px;
   img {
     border-radius: 12px;
   }
 }
+
 
 .search-bar {
   position: relative;
@@ -225,28 +229,19 @@
     width: 100%;
     padding: 10px 40px 10px 14px;
     border-radius: 14px;
-
     background: rgba(255, 255, 255, 0.06);
     color: #F5F3F4;
-
     border: 1px solid rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(10px);
-
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    transition: background 0.25s ease, border 0.25s ease, box-shadow 0.25s ease;
 
-    transition: background 0.25s ease,
-    border 0.25s ease,
-    box-shadow 0.25s ease;
-
-    &::placeholder {
-      color: rgba(245, 243, 244, 0.45);
-    }
+    &::placeholder { color: rgba(245, 243, 244, 0.45); }
 
     &:focus {
       outline: none;
       background: rgba(255, 255, 255, 0.09);
       border-color: rgba(230, 179, 168, 0.55);
-
       box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
       0 8px 24px rgba(230, 179, 168, 0.15);
     }
@@ -263,137 +258,53 @@
     transition: color 0.25s ease;
   }
 
-  input:focus + i {
-    color: #E6B3A8;
-  }
+  input:focus + i { color: #E6B3A8; }
 }
-/*
-.search-bar {
-  position: relative;
-  max-width: 360px;
-  margin-left: auto;
 
-  input {
-    width: 100%;
-    padding: 0.5em 2.5em 0.5em 1em;
-    border-radius: 10px;
-    outline: none;
-    border: none;
-    background-color: #F9F6F7;
-    color: #666;
-    box-shadow: inset 2px 5px 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-
-    &:focus {
-      background-color: #fff;
-      transform: scale(1.03);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  i {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    color: #aaa;
-    transition: color 0.3s, transform 0.3s;
-    cursor: pointer;
-
-    input:focus + & {
-      color: #b34773;
-      cursor: pointer;
-      transform: translateY(-50%) scale(1.1);
-    }
-  }
-}
-*/
-
-.lang-switcher {
-  display: flex;
-  gap: 8px;
-  margin-left: 16px;
-  padding: 4px 8px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-
-  button {
-    background: transparent;
-    border: none;
-    padding: 6px 14px;
-    font-weight: 500;
-    font-size: 14px;
-    color: #666;
-    border-radius: 12px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s, color 0.2s, background-color 0.2s;
-
-    &.active {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.09);
-      border-color: rgba(230, 179, 168, 0.55);
-
-      box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
-      0 8px 24px rgba(230, 179, 168, 0.15);
-      font-weight: 600;
-    }
-
-    &:hover:not(.active) {
-      opacity: 1;
-      color: rgba(245, 243, 244, 0.55);
-    }
-
-    &:focus-visible {
-      outline: 2px solid rgba(230, 179, 168, 0.55);
-      outline-offset: 2px;
-    }
-  }
-}
 
 @media (max-width: 768px) {
-  .header {
-    display: none;
-  }
+  .header { display: none; }
 }
-
 
 .header-medium {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 5px 360px;
-  margin: 5px;
-  border-top: 1px solid rgba(230, 179, 168, 0.55);
+  padding: 10px 360px;
+  gap: 10px;
   background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
   color: #F5F3F4;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-/*  display: flex;
+}
+
+.brands-search {
+  display: flex;
   align-items: center;
+  gap: 20px;
+  width: 100%;
   justify-content: space-between;
-  padding: 5px 360px;
-  margin: 5px;
-  border-top: 1px solid rgba(230, 179, 168, 0.55);*/
+}
+
+.header-medium .logo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #F5F3F4;
+  text-decoration: none;
 }
 
 .header-medium.hidden {
   transform: translateY(-100%);
   pointer-events: none;
- display: none;
+  display: none;
 }
 
 .nav-medium-item {
   position: relative;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  color: #F5F3F4;       // светлый базовый текст
+  color: #F5F3F4;
   font-weight: 500;
 
-  &:hover {
-    color: #E6B3A8;      // rose акцент на hover
-  }
+  &:hover { color: #E6B3A8; }
 
   &:not(:last-child)::after {
     content: '';
@@ -406,8 +317,5 @@
     background: rgba(230, 179, 168, 0.55);
   }
 
-  &.active {
-    color: #E6B3A8;
-    font-weight: 600;
-  }
+  &.active { color: #E6B3A8; font-weight: 600; }
 }
