@@ -1,5 +1,6 @@
 @use 'styles/variables';
 @use 'styles/mixins';
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600&display=swap');
 /*
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 */
@@ -77,3 +78,12 @@ body:after, body:before {
   color: #000!important;
 }
 
+
+
+@font-face {
+  font-family: 'Public Sans';
+  src: url('/assets/fonts/PublicSans-Light.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
