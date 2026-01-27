@@ -7,9 +7,17 @@
       </nav>
       <div class="nav-right">
         <div class="icons">
-          <a class="icon">
-            <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-global-line"></i>
-          </a>
+          <div class="lang-wrapper" appClickOutside (clickOutside)="closeLang()">
+            <a class="icon" (click)="toggleLang($event)">
+              <i class="ri-global-line"></i>
+            </a>
+
+            <div class="lang-dropdown" [class.open]="isLangOpen">
+              @for (lang of languages; track lang){
+                <button (click)="setActiveLang(lang)">{{lang | uppercase}}</button>
+              }
+            </div>
+          </div>
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
           </a>
@@ -57,7 +65,7 @@
     <div class="nav-inner">
       @if (activeBrand()?.children) {
         @for (category of activeBrand()!.children!; track category.id) {
-          <a class="nav-item" (mouseenter)="showDropdown(category)">
+          <a class="category-text" (mouseenter)="showDropdown(category)">
             {{ category.name }}
           </a>
         }

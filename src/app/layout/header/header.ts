@@ -6,11 +6,13 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
+import {ClickOutside} from './click-outside';
+import {UpperCasePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, FormsModule],
+  imports: [RouterLink, TranslocoPipe, FormsModule, ClickOutside, UpperCasePipe],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,10 +31,18 @@ export class Header implements OnInit {
   private categoryService = inject(CategoryService);
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
-  lastScroll = 0;
   isHidden = false;
+  isLangOpen = false;
 
 
+  toggleLang(event: MouseEvent) {
+    event.stopPropagation();
+    this.isLangOpen = !this.isLangOpen;
+  }
+
+  closeLang() {
+    this.isLangOpen = false;
+  }
   ngOnInit(): void {
     this.getCategories();
   }
@@ -57,6 +67,7 @@ export class Header implements OnInit {
 
   public setActiveLang(lang: string) {
     this.langService.setLanguage(lang);
+    this.isLangOpen = false;
   }
 
   onSearch() {
@@ -85,21 +96,11 @@ export class Header implements OnInit {
     });
   }
 
-  @HostListener('window:scroll', [])
+  @HostListener('window:scroll')
   onWindowScroll() {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const currentScroll =
+      window.pageYOffset || document.documentElement.scrollTop || 0;
 
-    if (currentScroll <= 0) {
-      // На самом верху страницы показываем header
-      this.isHidden = false;
-    } else if (currentScroll > this.lastScroll) {
-      // Скролл вниз → скрываем
-      this.isHidden = true;
-    } else {
-      // Скролл вверх → показываем
-      this.isHidden = false;
-    }
-
-    this.lastScroll = currentScroll;
+    this.isHidden = currentScroll > 0;
   }
 }
