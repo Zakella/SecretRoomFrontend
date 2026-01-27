@@ -270,8 +270,37 @@
 @media (max-width: 768px) {
   .header { display: none; }
 }
-
 .header-medium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 360px;
+  gap: 10px;
+  background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
+  color: #F5F3F4;
+
+  /* Анимация */
+  transition:
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    height 0.4s ease,
+    padding 0.4s ease;
+  transform: translateY(0);
+  opacity: 1;
+  height: auto; /* изначальная высота */
+  overflow: hidden;
+}
+
+.header-medium.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+
+/*.header-medium {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -289,6 +318,13 @@
 
 }
 
+.header-medium.hidden {
+  transform: translateY(-100%);
+  pointer-events: none;
+  display: none;
+}*/
+
+
 .brands-search {
   display: flex;
   align-items: center;
@@ -303,12 +339,14 @@
   color: #F5F3F4;
   text-decoration: none;
 }
+/*
 
 .header-medium.hidden {
   transform: translateY(-100%);
   pointer-events: none;
   display: none;
 }
+*/
 
 .nav-medium-item {
   position: relative;
