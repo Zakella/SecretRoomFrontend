@@ -2,8 +2,8 @@
   <div class="header-top">
     <div class="header-top-inner">
       <nav class="nav-left">
-        <a class="nav-item">Our Story</a>
         <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
+        <a class="nav-item" [routerLink]="['/', activeLang(), 'about-the-secret-room']">Our Story</a>
       </nav>
       <div class="nav-right">
         <div class="icons">
@@ -13,8 +13,8 @@
             </a>
 
             <div class="lang-dropdown" [class.open]="isLangOpen">
-              @for (lang of languages; track lang){
-                <button (click)="setActiveLang(lang)">{{lang | uppercase}}</button>
+              @for (lang of languages; track lang) {
+                <button (click)="setActiveLang(lang)">{{ lang | uppercase }}</button>
               }
             </div>
           </div>
@@ -84,14 +84,11 @@
               </div>
             </div>
             <div class="dropdown-right">
-              <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
+              <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg"/>
             </div>
           </div>
         </div>
       }
-
     </div>
-
-
   </nav>
 </header>

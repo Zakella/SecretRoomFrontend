@@ -21,6 +21,7 @@ import {List} from './pages/promotion/list/list';
 import {ProductResolver} from './pages/product-detail/product.resolver';
 import {SearchResult} from './pages/search-result/search-result';
 import {AccessGuard} from './@core/guards/acces-guard';
+import {OurStory} from './pages/our-story/our-story';
 
 export const routes: Routes = [
   {
@@ -64,6 +65,7 @@ export const routes: Routes = [
             component: Checkout},
           {path: 'promotion', component: PromotionCard},
           {path: 'promotion-list', component: List},
+          {path: 'about-the-secret-room', component: OurStory},
           {path: 'test', component: SearchResult}
         ],
       },

@@ -43,5 +43,17 @@ export class ProductService {
   getProductById(id: string | null): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
   }
+
+  getBestSellers(page: number, size: number): Observable<GetResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'id,desc');
+
+    return this.http.get<GetResponse>(
+      `${this.baseUrL}/bestsellers`,
+      { params }
+    );
+  }
 }
 

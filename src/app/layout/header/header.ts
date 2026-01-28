@@ -35,14 +35,6 @@ export class Header implements OnInit {
   isLangOpen = false;
 
 
-  toggleLang(event: MouseEvent) {
-    event.stopPropagation();
-    this.isLangOpen = !this.isLangOpen;
-  }
-
-  closeLang() {
-    this.isLangOpen = false;
-  }
   ngOnInit(): void {
     this.getCategories();
   }
@@ -102,5 +94,14 @@ export class Header implements OnInit {
       window.pageYOffset || document.documentElement.scrollTop || 0;
 
     this.isHidden = currentScroll > 0;
+  }
+
+  toggleLang(event: MouseEvent) {
+    event.stopPropagation();
+    this.isLangOpen = !this.isLangOpen;
+  }
+
+  closeLang() {
+    this.isLangOpen = false;
   }
 }
