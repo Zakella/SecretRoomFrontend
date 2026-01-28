@@ -23,10 +23,21 @@
   align-items: center;
 }
 
-.nav-left, .nav-right {
+.nav-left {
+  min-width: 0;              // КРИТИЧНО для grid
   display: flex;
-  gap: 20px;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  padding-top: 4px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
+
+
 
 .nav-item {
   cursor: pointer;
@@ -230,7 +241,10 @@
 .search-bar {
   position: relative;
   max-width: 340px;
+  width: 340px;
+  /*
   margin-left: auto;
+  */
 
   input {
     width: 100%;
@@ -283,7 +297,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 360px;
+  padding: 10px 150px;
   gap: 10px;
   background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
   color: #F5F3F4;
@@ -306,12 +320,15 @@
 }
 
 .brands-search {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 340px; // бренды | поиск
   align-items: center;
   gap: 20px;
   width: 100%;
-  justify-content: space-between;
 }
+
+
+
 
 .header-medium .logo {
   font-size: 40px;
@@ -321,35 +338,35 @@
 }
 
 
+
 .nav-medium-item {
-  position: relative;
-  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  opacity: .7;
+  transition: all .25s ease;
   cursor: pointer;
-  color: #F5F3F4;
-  font-weight: 500;
-  font-family: 'Public Sans', Helvetica, Arial, sans-serif;
-  line-height: 20px;
 
   &:hover {
-    color: #E6B3A8;
-  }
-
-  &:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 14px;
-    width: 1px;
-    background: rgba(230, 179, 168, 0.55);
+    opacity: 1;
+    border-color: rgba(230,179,168,.5);
   }
 
   &.active {
-    color: #E6B3A8;
-    font-weight: 600;
+    opacity: 1;
+    background: rgba(230,179,168,.15);
+    border-color: rgba(230,179,168,.6);
+  }
+
+  &:not(:last-child)::after {
+    display: none;
   }
 }
+
 
 .category-text {
   font-feature-settings: "liga" 0;
@@ -448,10 +465,6 @@
     margin: 0;
   }
 
-  .search-bar {
-    max-width: 280px;
-    margin-left: auto;
-  }
 
   /* нижний ряд: категории/меню */
   .nav-left, .nav-right {

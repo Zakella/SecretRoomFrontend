@@ -34,7 +34,8 @@
       </div>
     </div>
   </div>
-  <div class="header-medium" [class.hidden]="isHidden">
+  <div class="header-medium" [class.hidden]="isHidden"
+       [ngStyle]="{        'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
     <a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
 
     <div class="brands-search">

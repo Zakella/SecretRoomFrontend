@@ -7,12 +7,12 @@ import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
 import {ClickOutside} from './click-outside';
-import {UpperCasePipe} from '@angular/common';
+import {NgStyle, UpperCasePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, FormsModule, ClickOutside, UpperCasePipe],
+  imports: [RouterLink, TranslocoPipe, FormsModule, ClickOutside, UpperCasePipe, NgStyle],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,6 +33,7 @@ export class Header implements OnInit {
   navHovered = signal(false);
   isHidden = false;
   isLangOpen = false;
+  isMinBrands = signal<boolean>(false)
 
 
   ngOnInit(): void {
@@ -80,13 +81,17 @@ export class Header implements OnInit {
       if (!categories?.length) {
         this.headerItems.set([]);
         this.activeBrand.set(null);
+        this.isMinBrands.set(true);
         return;
       }
 
-      this.headerItems.set(categories);
+      this.headerItems.set(categories.slice(0, 5));
       this.activeBrand.set(categories[0]);
+
+      this.isMinBrands.set(this.headerItems()!.length <= 5);
     });
   }
+
 
   @HostListener('window:scroll')
   onWindowScroll() {
