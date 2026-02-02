@@ -10,17 +10,6 @@
       </div>
       <div class="nav-right">
         <div class="icons">
-          <div class="lang-wrapper" appClickOutside (clickOutside)="closeLang()">
-            <a class="icon" (click)="toggleLang($event)">
-              <i class="ri-global-line"></i>
-            </a>
-
-            <div class="lang-dropdown" [class.open]="isLangOpen">
-              @for (lang of languages; track lang) {
-                <button (click)="setActiveLang(lang)">{{ lang | uppercase }}</button>
-              }
-            </div>
-          </div>
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
           </a>
@@ -38,10 +27,37 @@
     </div>
   </div>
   <div class="header-medium" [class.hidden]="isHidden"
-       [ngStyle]="{        'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
-    <ng-container *ngTemplateOutlet="logo"/>
+       [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
 
-    <div class="brands-search">
+    <div class="logo-search-row">
+      <div class="row-left">
+        <div class="lang-switch">
+          @for (lang of languages; track lang) {
+            <div class="lang-option" [class.active]="activeLang() === lang" (click)="setActiveLang(lang)">
+              {{ lang | uppercase }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <ng-container *ngTemplateOutlet="logo"/>
+
+      <div class="row-right">
+        <div class="search-bar">
+          <input
+            type="text"
+            maxlength="60"
+            (keyup.enter)="onSearch()"
+            [(ngModel)]="query"
+            [placeholder]="'Search' | transloco"
+            aria-label="Поиск по продуктам"
+          />
+          <i class="ri-search-line" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="brands-row">
       <nav class="nav-left">
         @for (item of headerItems(); track item.id) {
           <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
@@ -49,18 +65,6 @@
           </a>
         }
       </nav>
-
-      <div class="search-bar">
-        <input
-          type="text"
-          maxlength="60"
-          (keyup.enter)="onSearch()"
-          [(ngModel)]="query"
-          [placeholder]="'Search' | transloco"
-          aria-label="Поиск по продуктам"
-        />
-        <i class="ri-search-line" aria-hidden="true"></i>
-      </div>
     </div>
   </div>
 

@@ -6,7 +6,6 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
-import {ClickOutside} from './click-outside';
 import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 
 
@@ -16,7 +15,6 @@ import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
     RouterLink,
     TranslocoPipe,
     FormsModule,
-    ClickOutside,
     UpperCasePipe,
     NgStyle,
     NgTemplateOutlet
@@ -40,7 +38,6 @@ export class Header implements OnInit {
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
   isHidden = false;
-  isLangOpen = false;
   isMinBrands = signal<boolean>(false)
 
 
@@ -68,7 +65,6 @@ export class Header implements OnInit {
 
   public setActiveLang(lang: string) {
     this.langService.setLanguage(lang);
-    this.isLangOpen = false;
   }
 
   onSearch() {
@@ -105,14 +101,5 @@ export class Header implements OnInit {
       window.pageYOffset || document.documentElement.scrollTop || 0;
 
     this.isHidden = currentScroll > 0;
-  }
-
-  toggleLang(event: MouseEvent) {
-    event.stopPropagation();
-    this.isLangOpen = !this.isLangOpen;
-  }
-
-  closeLang() {
-    this.isLangOpen = false;
   }
 }
