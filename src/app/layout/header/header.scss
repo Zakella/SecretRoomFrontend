@@ -69,25 +69,212 @@
   text-transform: uppercase;
   text-decoration: none;
   font-family: 'Cinzel', 'Playfair Display', serif;
+
   background: linear-gradient(
-      135deg,
-      #f6d9d2 0%,
-      #e9b7ad 25%,
-      #d79a92 50%,
-      #eec3bb 75%,
-      #f8e4df 100%
+      90deg,
+      #C4948F 0%,
+      #C4948F 35%,
+      #D9B5AC 40%,
+      #E8CCC4 44%,
+      #F5E4E0 47%,
+      #FFFFFF 50%,
+      #F5E4E0 53%,
+      #E8CCC4 56%,
+      #D9B5AC 60%,
+      #C4948F 65%,
+      #C4948F 100%
   );
-  text-shadow: 0 0 4px rgba(230, 179, 168, 0.25),
-  0 0 12px rgba(215, 154, 146, 0.15);
+  background-size: 500% 100%;
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  transition: opacity 0.3s ease, text-shadow 0.3s ease;
+
+  animation: shineLeft 10s linear infinite;
+
+  filter: contrast(1.1) brightness(1.05);
 
   &:hover {
-    opacity: 0.9;
-    text-shadow: 0 0 8px rgba(246, 209, 189, 0.35),
-    0 0 18px rgba(201, 143, 120, 0.25);
+    animation-duration: 5s;
+  }
+}
+
+@keyframes shineLeft {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@keyframes shineLeft {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@keyframes shineLeft {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@keyframes shineLeft {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@keyframes shineLeft {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@keyframes metallicRoseGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes metallicRoseGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes metallicRoseGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes metallicRoseGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes roseGoldShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes luxuryRoseGold {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 75%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes premiumShine {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes luxuryShimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
   }
 }
 
@@ -459,5 +646,29 @@
   .dropdown-right {
     width: 140px;
     margin-left: 10px;
+  }
+}
+
+.nav-item {
+  cursor: pointer;
+  text-decoration: none;
+  color: #F5F3F4;
+  font-size: 14px;
+  padding: 5px;
+  text-transform: uppercase;
+  font-family: 'Public Sans', Helvetica, Arial, sans-serif;
+  line-height: 20px;
+  letter-spacing: 0.16em;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    font-size: 16px;
+  }
+
+  &:hover {
+    color: #E6B3A8;
   }
 }

@@ -2,8 +2,14 @@
   <div class="header-top">
     <div class="header-top-inner">
       <nav class="nav-left">
-        <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
-        <a class="nav-item" [routerLink]="['/', activeLang(), 'about-the-secret-room']">Our Story</a>
+        <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">
+          <i class="ri-map-pin-line"></i>
+          {{'Stores' | transloco}}
+        </a>
+        <a class="nav-item" [routerLink]="['/', activeLang(), 'about-the-secret-room']">
+          <i class="ri-instagram-line"></i>
+          {{'Instagram' | transloco}}
+        </a>
       </nav>
       <div class="logo-scroll-wrapper" [class.visible]="isHidden">
         <ng-container *ngTemplateOutlet="logo"/>
