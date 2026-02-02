@@ -55,7 +55,7 @@
                 type="tel"
                 id="phone"
                 formControlName="phone"
-                placeholder="06XXXXXXX или 07XXXXXXX"
+                placeholder="{{ 'checkout.phonePlaceholder' | transloco }}"
                 [class.invalid]="isFieldInvalid('phone')">
               <span class="error-message" *ngIf="isFieldInvalid('phone')">
                 {{ 'Please enter a valid phone number' | transloco }}
@@ -107,7 +107,7 @@
                 type="text"
                 id="address"
                 formControlName="address"
-                placeholder="Street, building, apartment"
+                placeholder="{{ 'checkout.addressPlaceholder' | transloco }}"
                 [class.invalid]="isFieldInvalid('address')">
               <span class="error-message" *ngIf="isFieldInvalid('address')">
                 {{ 'Please enter your address' | transloco }}
@@ -152,30 +152,37 @@
           <div class="form-section">
             <h2 class="section-title">{{ 'Shipping Method' | transloco }}</h2>
 
-            <div class="shipping-options">
-              @for (option of shippingOptions; track option.id) {
-                <div
-                  class="shipping-option"
-                  [class.selected]="selectedShippingOption?.id === option.id"
-                  (click)="selectShippingOption(option)">
-                  <div class="option-radio">
-                    <span class="radio-dot" *ngIf="selectedShippingOption?.id === option.id"></span>
+            @if (isLoading()) {
+              <div class="loading-spinner">
+                <span class="spinner"></span>
+                {{ 'Loading...' | transloco }}
+              </div>
+            } @else {
+              <div class="shipping-options">
+                @for (option of shippingOptions; track option.id) {
+                  <div
+                    class="shipping-option"
+                    [class.selected]="selectedShippingOption?.id === option.id"
+                    (click)="selectShippingOption(option)">
+                    <div class="option-radio">
+                      <span class="radio-dot" *ngIf="selectedShippingOption?.id === option.id"></span>
+                    </div>
+                    <div class="option-info">
+                      <span class="option-name">{{ option.name }}</span>
+                      <span class="option-description">{{ option.description }}</span>
+                      <span class="option-delivery">{{ option.expectedDeliveryDescription }}</span>
+                    </div>
+                    <div class="option-price">
+                      @if (totalAmount >= option.freeShippingFrom) {
+                        <span class="free-shipping">{{ 'Free' | transloco }}</span>
+                      } @else {
+                        <span>{{ option.cost }} MDL</span>
+                      }
+                    </div>
                   </div>
-                  <div class="option-info">
-                    <span class="option-name">{{ option.name }}</span>
-                    <span class="option-description">{{ option.description }}</span>
-                    <span class="option-delivery">{{ option.expectedDeliveryDescription }}</span>
-                  </div>
-                  <div class="option-price">
-                    @if (totalAmount >= option.freeShippingFrom) {
-                      <span class="free-shipping">{{ 'Free' | transloco }}</span>
-                    } @else {
-                      <span>{{ option.cost }} MDL</span>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
+                }
+              </div>
+            }
 
             @if (selectedShippingOption && totalAmount < selectedShippingOption.freeShippingFrom) {
               <div class="free-shipping-hint">
@@ -216,7 +223,7 @@
                     <span class="radio-dot" *ngIf="selectedPayment === method"></span>
                   </div>
                   <div class="option-info">
-                    <span class="option-name">{{ getPaymentLabel(method) }}</span>
+                    <span class="option-name">{{ getPaymentLabel(method) | transloco }}</span>
                   </div>
                   <div class="payment-icon">
                     @if (method === 'OnlinePayment') {
@@ -243,15 +250,24 @@
             </div>
           </div>
 
-          <div class="form-section agreement-section">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="iAgree">
-              <span class="checkmark"></span>
-              <span class="label-text">
-                {{ 'I agree to the' | transloco }}
-                <a href="#">{{ 'Terms and Conditions' | transloco }}</a>
+          <div class="form-section agreement-section" [class.agreement-error]="isFieldInvalid('iAgree')">
+            <div class="agreement-box">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="iAgree">
+                <span class="custom-checkbox">
+                  <i class="ri-check-line"></i>
+                </span>
+                <span class="label-text">
+                  {{ 'I agree' | transloco }}
+                  <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ 'With terms and conditions' | transloco }}</a>
+                  <span class="required-marker">*</span>
+                </span>
+              </label>
+              <span class="agreement-error-message" *ngIf="isFieldInvalid('iAgree')">
+                <i class="ri-error-warning-line"></i>
+                {{ 'checkout.agreementRequired' | transloco }}
               </span>
-            </label>
+            </div>
           </div>
 
           <div class="step-navigation">

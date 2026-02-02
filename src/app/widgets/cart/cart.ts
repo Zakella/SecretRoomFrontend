@@ -1,23 +1,27 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   inject,
   Input,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  signal
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {DecimalPipe, NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 import {CartUi} from './services/cart'
 import {Subject} from 'rxjs';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
 import {CartItem} from '../../entities/cart-item';
+import {Shipping} from '../../@core/api/shipping';
+import {ShippingOption} from '../../entities/shipping-options';
 
 @Component({
   selector: 'app-cart',
@@ -26,6 +30,7 @@ import {CartItem} from '../../entities/cart-item';
     NgTemplateOutlet,
     TranslocoPipe,
     InputNumber,
+    RouterLink
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
@@ -34,6 +39,8 @@ import {CartItem} from '../../entities/cart-item';
 export class Cart implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
+  private shippingService = inject(Shipping);
+  private cdr = inject(ChangeDetectorRef);
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
   totalQuantity: number = 0;
@@ -57,7 +64,10 @@ export class Cart implements OnInit, OnDestroy {
       image: '/assets/images/demo/slider1.jpeg'
     }
   ];
-  freeShippingThreshold = 861;
+
+  freeShippingThreshold = signal<number>(0);
+  shippingOptionsLoaded = signal<boolean>(false);
+
   private langService = inject(Language);
   public activeLang = this.langService.currentLanguage
 
@@ -68,6 +78,29 @@ export class Cart implements OnInit, OnDestroy {
     this.subscribeToTotalQuantity();
     this.subscribeToCartModification();
     this.cartService.computeCartTotals();
+    this.loadShippingOptions();
+  }
+
+  private loadShippingOptions(): void {
+    this.shippingService.getShippingOptions()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (options: ShippingOption[]) => {
+          const validThresholds = options
+            .map(opt => opt.freeShippingFrom)
+            .filter(threshold => threshold > 0);
+
+          if (validThresholds.length > 0) {
+            this.freeShippingThreshold.set(Math.min(...validThresholds));
+          }
+          this.shippingOptionsLoaded.set(true);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.shippingOptionsLoaded.set(true);
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -120,18 +153,20 @@ export class Cart implements OnInit, OnDestroy {
   }
 
 
-  get freeShippingRemaining() {
-    return null
-    /*
-        return Math.max(this.freeShippingThreshold - this.subtotal, 0).toFixed(2);
-    */
+  get freeShippingRemaining(): number {
+    const threshold = this.freeShippingThreshold();
+    if (threshold <= 0) return 0;
+    return Math.max(threshold - this.totalAmount, 0);
   }
 
-  get shippingProgress() {
-    return null
-    /*
-        return Math.min((this.subtotal / this.freeShippingThreshold) * 100, 100);
-    */
+  get shippingProgress(): number {
+    const threshold = this.freeShippingThreshold();
+    if (threshold <= 0) return 0;
+    return Math.min((this.totalAmount / threshold) * 100, 100);
+  }
+
+  get hasFreeShipping(): boolean {
+    return this.freeShippingRemaining === 0 && this.freeShippingThreshold() > 0;
   }
 
   protected navToProduct(id: string| undefined): void {

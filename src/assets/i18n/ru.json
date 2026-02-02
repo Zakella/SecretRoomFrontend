@@ -72,7 +72,7 @@
   "Order Date": "Дата заказа",
   "Total Amount": "Общая сумма",
   "Qty": "Кол-во",
-  "Shipping address": "Адрес доставки",
+  "Shipping Address": "Адрес доставки",
   "Password Reset": "Сброс пароля",
   "Email address": "Адрес электронной почты",
   "Enter your email address and we'll send you an email with instructions to reset your password.": "Введите адрес электронной почты, и мы отправим вам письмо с инструкциями по сбросу пароля.",
@@ -148,5 +148,38 @@
   "New": "Новый",
   "About us": "О нас",
   "Our story": "Наша история",
-  "Our stores": "Наши магазины"
+  "Our stores": "Наши магазины",
+  "Checkout": "Оформление заказа",
+  "Payment": "Оплата",
+  "First Name": "Имя",
+  "Last Name": "Фамилия",
+  "Postal Code": "Почтовый индекс",
+  "Please enter a valid email address": "Пожалуйста, введите корректный email",
+  "Please enter a valid phone number": "Пожалуйста, введите корректный номер телефона",
+  "Required field": "Обязательное поле",
+  "Please enter your address": "Пожалуйста, введите адрес",
+  "Please enter valid postal code": "Пожалуйста, введите корректный почтовый индекс",
+  "Continue to Shipping": "Продолжить к доставке",
+  "Continue to Payment": "Продолжить к оплате",
+  "Back": "Назад",
+  "Free": "Бесплатно",
+  "Payment Method": "Способ оплаты",
+  "Leave a comment for your order": "Оставьте комментарий к заказу",
+  "Place Order": "Оформить заказ",
+  "Processing...": "Обработка...",
+  "Select shipping method": "Выберите способ доставки",
+  "checkout": {
+    "phonePlaceholder": "06XXXXXXX или 07XXXXXXX",
+    "addressPlaceholder": "Улица, дом, квартира",
+    "agreementRequired": "Необходимо принять условия для оформления заказа"
+  },
+  "cart": {
+    "youMayAlsoLike": "Вам также понравится",
+    "welcomeMessage": "Добро пожаловать в Secret Room!",
+    "freeShippingRemaining": "Вам осталось",
+    "freeShippingGoal": "до бесплатной доставки",
+    "freeShippingAchieved": "Поздравляем! Доставка бесплатная!",
+    "emptyMessage": "Ваша корзина пуста",
+    "startShopping": "Начать покупки"
+  }
 }

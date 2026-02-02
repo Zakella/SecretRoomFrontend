@@ -26,10 +26,15 @@
     }
     .cart-welcome { font-size: 0.9rem; margin: 0.5rem 0 1.5rem; color: #8a7a6b; font-style: italic; }
     .free-shipping-bar { font-size: 0.85rem; background: linear-gradient(135deg, #fef8f5, #fff5f0); padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #4b3e2b; border-radius: 10px; border: 1px solid rgba(181, 133, 95, 0.15);
-      p { margin: 0 0 0.75rem; } strong { color: #b5855f; }
-      .progress-bar { height: 6px; background: rgba(181, 133, 95, 0.15); border-radius: 3px; overflow: hidden;
-        .progress { height: 100%; background: linear-gradient(90deg, #d4a574, #b5855f); border-radius: 3px; transition: width 0.5s; position: relative;
+      p { margin: 0 0 0.75rem; text-align: center; } strong { color: #b5855f; }
+      .progress-bar { height: 8px; background: rgba(181, 133, 95, 0.15); border-radius: 4px; overflow: hidden;
+        .progress { height: 100%; background: linear-gradient(90deg, #d4a574, #b5855f); border-radius: 4px; transition: width 0.5s; position: relative;
           &::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4) 50%, transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
+        }
+      }
+      &.achieved { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-color: rgba(90, 158, 90, 0.3);
+        .free-shipping-achieved { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #5a9e5a; font-weight: 600; margin: 0;
+          i { font-size: 1.2rem; }
         }
       }
     }
@@ -59,11 +64,11 @@
     .cart-footer { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(181, 133, 95, 0.15);
       span { color: #4b3e2b; }
       .subtotal { display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; margin-bottom: 0.75rem; color: #4b3e2b;
-        &:last-of-type { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; padding-top: 0.75rem; border-top: 1px solid rgba(181, 133, 95, 0.1); span:last-child { color: #b5855f; } }
+        &.total-row { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; padding-top: 0.75rem; border-top: 1px solid rgba(181, 133, 95, 0.1); span:last-child { color: #b5855f; } }
       }
-      .btn-checkout { width: 100%; background: linear-gradient(135deg, #2d2a26, #1a1816); color: #f5f0eb; border: none; padding: 1rem 1.5rem; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.12em; cursor: pointer; text-transform: uppercase; border-radius: 6px; transition: all 0.4s; box-shadow: 0 4px 15px rgba(45, 42, 38, 0.2); position: relative; overflow: hidden;
-        &::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(181, 133, 95, 0.2), transparent); transition: left 0.5s; }
-        &:hover { background: linear-gradient(135deg, #4b3e2b, #2d2a26); box-shadow: 0 6px 20px rgba(45, 42, 38, 0.3); transform: translateY(-2px); &::before { left: 100%; } }
+      .btn-checkout { width: 100%; background: linear-gradient(135deg, #b5855f, #d4a574); color: #fff; border: none; padding: 1rem 1.5rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        &:hover { background: linear-gradient(135deg, #a07550, #c9956a); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181, 133, 95, 0.3); }
+        i { font-size: 1.1rem; }
       }
       .installments { font-size: 0.75rem; text-align: center; margin-top: 0.75rem; color: #8a7a6b; font-style: italic; }
     }

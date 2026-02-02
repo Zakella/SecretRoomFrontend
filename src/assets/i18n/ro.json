@@ -149,5 +149,39 @@
   "Fill required fields": "Completați câmpurile obligatorii",
   "New": "Nou",
   "About us": "Despre noi",
-  "Our stores": "Magazinele noastre"
+  "Our stores": "Magazinele noastre",
+  "Checkout": "Finalizare comandă",
+  "Payment": "Plată",
+  "First Name": "Prenume",
+  "Last Name": "Nume",
+  "Postal Code": "Cod poștal",
+  "Please enter a valid email address": "Vă rugăm să introduceți o adresă de email validă",
+  "Please enter a valid phone number": "Vă rugăm să introduceți un număr de telefon valid",
+  "Required field": "Câmp obligatoriu",
+  "Please enter your address": "Vă rugăm să introduceți adresa",
+  "Please enter valid postal code": "Vă rugăm să introduceți un cod poștal valid",
+  "Continue to Shipping": "Continuă la livrare",
+  "Continue to Payment": "Continuă la plată",
+  "Back": "Înapoi",
+  "Free": "Gratuit",
+  "Payment Method": "Metodă de plată",
+  "Leave a comment for your order": "Lăsați un comentariu pentru comandă",
+  "Place Order": "Plasează comanda",
+  "Processing...": "Se procesează...",
+  "Select shipping method": "Selectați metoda de livrare",
+  "Our story": "Povestea noastră",
+  "checkout": {
+    "phonePlaceholder": "06XXXXXXX sau 07XXXXXXX",
+    "addressPlaceholder": "Strada, numărul, apartamentul",
+    "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda"
+  },
+  "cart": {
+    "youMayAlsoLike": "S-ar putea să vă placă și",
+    "welcomeMessage": "Bine ați venit la Secret Room!",
+    "freeShippingRemaining": "Mai aveți nevoie de",
+    "freeShippingGoal": "pentru livrare gratuită",
+    "freeShippingAchieved": "Felicitări! Livrarea este gratuită!",
+    "emptyMessage": "Coșul tău este gol",
+    "startShopping": "Începe cumpărăturile"
+  }
 }

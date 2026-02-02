@@ -14,7 +14,7 @@ import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe} from '@ngneat/transloco';
@@ -33,7 +33,8 @@ type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
     FormsModule,
     ReactiveFormsModule,
     TranslocoPipe,
-    InputNumber
+    InputNumber,
+    RouterLink
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
@@ -69,7 +70,6 @@ export class Checkout implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.loadCart();
-    this.loadShippingOptions();
     this.subscribeToCartChanges();
   }
 
@@ -172,6 +172,12 @@ export class Checkout implements OnInit, OnDestroy {
     if (step === 'payment' && !this.selectedShippingOption) {
       return;
     }
+
+    // Загружаем опции доставки при переходе на шаг shipping (если ещё не загружены)
+    if (step === 'shipping' && this.shippingOptions.length === 0) {
+      this.loadShippingOptions();
+    }
+
     this.step = step;
   }
 
@@ -192,6 +198,7 @@ export class Checkout implements OnInit, OnDestroy {
     this.updateAvailablePaymentMethods();
     this.selectedPayment = null;
     this.form.patchValue({payment: ''});
+    this.cdr.markForCheck();
   }
 
   private updateShippingCost(): void {
@@ -222,15 +229,11 @@ export class Checkout implements OnInit, OnDestroy {
   selectPaymentMethod(method: PaymentMethod): void {
     this.selectedPayment = method;
     this.form.patchValue({payment: method});
+    this.cdr.markForCheck();
   }
 
   getPaymentLabel(method: PaymentMethod): string {
-    const labels: Record<PaymentMethod, string> = {
-      OnlinePayment: 'Онлайн оплата',
-      CashOnDelivery: 'Оплата наличными при получении',
-      CardOnDelivery: 'Оплата картой при получении'
-    };
-    return labels[method];
+    return method;
   }
 
   // Cart management
