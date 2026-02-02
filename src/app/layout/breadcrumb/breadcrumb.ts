@@ -6,9 +6,6 @@ import {BreadcrumbsService} from '../../@core/services/breadcrumb';
 @Component({
   selector: 'breadcrumb',
   imports: [
-    RouterLink,
-    NgIf,
-    NgForOf
   ],
   templateUrl: './breadcrumb.html',
   styleUrl: './breadcrumb.scss'

@@ -5,8 +5,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 @Component({
   selector: 'app-notfound',
   imports: [
-    RouterLink,
-    TranslocoPipe
+    RouterLink
   ],
   templateUrl: './notfound.html',
   styleUrl: './notfound.scss',

@@ -1,25 +1,54 @@
 <section class="store-page" appFadeUp>
   <div class="store-hero">
-    <h1>Найди свой Secret Room</h1>
-    <p>Места, где рождается красота. Приходите за вдохновением и любимыми продуктами.</p>
+    <h1>{{'Our stores' | transloco}}</h1>
   </div>
-  <div class="store-grid">
-    @for (store of stores; track store.id) {
-      <div class="store-card">
-        <div class="store-image">
-          <img [src]="store.imgUrl" [alt]="store.name">
+
+  <div class="store-list">
+    @for (store of stores; track store.id; let i = $index) {
+      <div class="store-item" [class.store-item--reverse]="i % 2 !== 0">
+        <div class="store-item__map">
+          <iframe
+            [src]="getGoogleMapsUrl(store.latitude, store.longitude)"
+            width="100%"
+            height="100%"
+            loading="lazy">
+          </iframe>
+          <div class="store-item__map-overlay">
+            <a [href]="'https://maps.google.com/?q=' + store.latitude + ',' + store.longitude"
+               target="_blank"
+               class="store-item__map-btn">
+              <i class="ri-fullscreen-line"></i>
+            </a>
+          </div>
         </div>
-        <div class="store-info">
+
+        <div class="store-item__content">
+          <span class="store-item__number">0{{ i + 1 }}</span>
           <h3>{{ store.name }}</h3>
-          <p>{{ store.location }}</p>
-          <p>{{ store.workTime }}</p>
-          <iframe [src]="getGoogleMapsUrl(store.latitude, store.longitude)"
-                  width="100%"
-                  height="200"
-                  loading="lazy"></iframe>
+
+          <div class="store-item__info">
+            <div class="store-item__row">
+              <i class="ri-map-pin-line"></i>
+              <span>{{ store.location }}</span>
+            </div>
+            <div class="store-item__row">
+              <i class="ri-time-line"></i>
+              <span>{{ store.workTime }}</span>
+            </div>
+            <div class="store-item__row">
+              <i class="ri-phone-line"></i>
+              <span>+373 XX XXX XXX</span>
+            </div>
+          </div>
+
+          <a [href]="'https://maps.google.com/?q=' + store.latitude + ',' + store.longitude"
+             target="_blank"
+             class="store-item__btn">
+            <span>Построить маршрут</span>
+            <i class="ri-arrow-right-line"></i>
+          </a>
         </div>
       </div>
     }
   </div>
 </section>
-
