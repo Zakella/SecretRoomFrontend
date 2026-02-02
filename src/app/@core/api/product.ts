@@ -5,9 +5,8 @@ import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
+
 export class ProductService {
   private http = inject(HttpClient);
   private baseUrL = environment.apiUrl + "products";
@@ -49,11 +48,15 @@ export class ProductService {
       .set('page', page)
       .set('size', size)
       .set('sort', 'id,desc');
+    return this.http.get<GetResponse>(`${this.baseUrL}/bestsellers`, {params});
+  }
 
-    return this.http.get<GetResponse>(
-      `${this.baseUrL}/bestsellers`,
-      { params }
-    );
+  getNewArrivals(page: number, size: number): Observable<GetResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'id,desc');
+    return this.http.get<GetResponse>(`${this.baseUrL}/bestsellers`, {params});
   }
 }
 

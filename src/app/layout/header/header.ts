@@ -7,12 +7,20 @@ import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
 import {ClickOutside} from './click-outside';
-import {NgStyle, UpperCasePipe} from '@angular/common';
+import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, FormsModule, ClickOutside, UpperCasePipe, NgStyle],
+  imports: [
+    RouterLink,
+    TranslocoPipe,
+    FormsModule,
+    ClickOutside,
+    UpperCasePipe,
+    NgStyle,
+    NgTemplateOutlet
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -67,9 +75,7 @@ export class Header implements OnInit {
     const q = this.query().trim();
     if (!q) return;
 
-    this.router.navigate(['/search'], {
-      queryParams: {q}
-    });
+    this.router.navigate([this.activeLang(), 'search', q]);
   }
 
   setActive(brand: Brand) {

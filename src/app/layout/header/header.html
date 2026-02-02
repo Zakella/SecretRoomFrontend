@@ -5,6 +5,9 @@
         <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
         <a class="nav-item" [routerLink]="['/', activeLang(), 'about-the-secret-room']">Our Story</a>
       </nav>
+      <div class="logo-scroll-wrapper" [class.visible]="isHidden">
+        <ng-container *ngTemplateOutlet="logo"/>
+      </div>
       <div class="nav-right">
         <div class="icons">
           <div class="lang-wrapper" appClickOutside (clickOutside)="closeLang()">
@@ -36,7 +39,7 @@
   </div>
   <div class="header-medium" [class.hidden]="isHidden"
        [ngStyle]="{        'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
-    <a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
+    <ng-container *ngTemplateOutlet="logo"/>
 
     <div class="brands-search">
       <nav class="nav-left">
@@ -93,3 +96,6 @@
     </div>
   </nav>
 </header>
+
+<ng-template #logo><a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
+</ng-template>

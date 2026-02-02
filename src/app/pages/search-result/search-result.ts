@@ -9,19 +9,27 @@ import {FormsModule} from '@angular/forms';
 import {DataViewModule} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import {SearchService} from '../../@core/services/search';
 import {ProductService} from '../../@core/api/product';
 
 @Component({
   selector: 'app-search-result',
-  imports: [CommonModule, DataViewModule, FormsModule, SelectButtonModule, PickListModule, OrderListModule, TagModule, ButtonModule],
+  imports: [
+    CommonModule,
+    DataViewModule,
+    FormsModule,
+    SelectButtonModule,
+    PickListModule,
+    OrderListModule,
+    TagModule,
+    ButtonModule
+  ],
+  providers: [ProductService],
   templateUrl: './search-result.html',
   styleUrl: './search-result.scss'
 })
 export class SearchResult implements OnInit{
   private route = inject(ActivatedRoute);
   private api = inject(ProductService);
-
   results = signal<any[]>([]);
   loading = signal(false);
 

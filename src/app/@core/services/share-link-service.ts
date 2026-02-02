@@ -1,15 +1,25 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, PLATFORM_ID, Inject} from '@angular/core';
 import {MessageService} from 'primeng/api';
+import {isPlatformBrowser} from '@angular/common';
 
 @Injectable()
 export class ShareLinkService {
   private notification = inject(MessageService);
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
   public createShareableLink(): string {
-    return window.location.href;
+    if (isPlatformBrowser(this.platformId)) {
+      return window.location.href;
+    }
+    return '';
   }
 
   public copyLinkToClipboard(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const link = this.createShareableLink();
     if (this.isClipboardApiAvailable()) {
       this.copyUsingClipboardApi(link);
@@ -19,12 +29,20 @@ export class ShareLinkService {
   }
 
   public shareToTelegram(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const link = encodeURIComponent(this.createShareableLink());
     console.log(link)
     window.open(`https://t.me/share/url?url=${link}`, '_blank');
   }
 
   public shareToWhatsApp(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const link = encodeURIComponent(this.createShareableLink());
     console.log(link)
     window.open(`https://wa.me/?text=${link}`, '_blank');
@@ -32,6 +50,9 @@ export class ShareLinkService {
 
 
   private isClipboardApiAvailable(): boolean {
+    if (!isPlatformBrowser(this.platformId)) {
+      return false;
+    }
     return !!navigator.clipboard;
   }
 

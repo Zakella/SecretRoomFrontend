@@ -1,11 +1,5 @@
+<!--
 <div class="product-card">
-  @if (loading()) {
-    <p-skeleton width="100%" height="250px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
-    <p-skeleton width="60%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
-    <p-skeleton width="40%" height="20px" styleClass="mb-2" borderRadius="16px"></p-skeleton>
-    <p-skeleton width="30%" height="20px" styleClass="mb-4" borderRadius="16px"></p-skeleton>
-    <p-skeleton width="50%" height="30px"></p-skeleton>
-  } @else {
     @if (isBestSeller()){
       <div class="limited-badge">
         <span>LIMITED EDITION</span>
@@ -26,5 +20,49 @@
         {{ 'Add to Cart' | transloco }}
       </button>
     </div>
-  }
+</div>
+-->
+
+
+<div class="product-card" [class.bestseller]="isBestSeller()">
+  <div class="image-wrapper">
+    @if (isBestSeller()) {
+      <div class="badge">Limited Edition</div>
+    }
+
+    <button class="wishlist-btn" (click)="$event.stopPropagation()">
+      <i class="ri-heart-line"></i>
+    </button>
+
+    <div class="img-container" (click)="navToProduct()">
+      <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
+      <div class="quick-add-overlay">
+        <button class="action-btn" (click)="addProductInCart(); $event.stopPropagation()">
+          {{ 'Add to Cart' | transloco }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info" (click)="navToProduct()">
+    <div class="meta">
+      <span class="category">{{product()?.brand}}</span> </div>
+    <h3 class="name">{{ product()?.name }}</h3>
+    <p class="price">
+      <span class="amount">{{ price() }}</span>
+      <span class="currency">MDL</span>
+    </p>
+  </div>
+  <div class="product-info">
+    <div class="actions">
+      <button
+        class="add-to-bag-btn"
+        (click)="addProductInCart()"
+        analyticEvent="buy_click"
+      >
+        <i class="ri-shopping-bag-line"></i>
+        <span>{{ 'Add to Cart' | transloco }}</span>
+      </button>
+    </div>
+  </div>
 </div>

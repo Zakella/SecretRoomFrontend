@@ -1,3 +1,10 @@
+@mixin flex-position($jc:space-between, $ai:center ) {
+  display: flex;
+  justify-content: $jc;
+  align-items: $ai;
+}
+
+
 .header {
   position: fixed;
   top: 0;
@@ -9,8 +16,7 @@
 
 .header-top {
   width: 100%;
-  display: flex;
-  justify-content: center;
+  @include flex-position(center);
   background: transparent;
 }
 
@@ -18,13 +24,11 @@
   max-width: 1200px;
   width: 100%;
   padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @include flex-position();
 }
 
 .nav-left {
-  min-width: 0;              // КРИТИЧНО для grid
+  min-width: 0;
   display: flex;
   gap: 8px;
   overflow-x: auto;
@@ -111,6 +115,7 @@
 }
 
 .cart-badge {
+  @include flex-position(center);
   position: absolute;
   top: -6px;
   right: -12px;
@@ -123,9 +128,6 @@
   line-height: 1;
   min-width: 20px;
   text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   box-shadow: 0 2px 6px rgba(230, 179, 168, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -140,8 +142,7 @@
   background: #F9F8F9;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   color: black;
-  display: flex;
-  justify-content: center;
+  @include flex-position(center);
 }
 
 .nav-inner {
@@ -242,9 +243,6 @@
   position: relative;
   max-width: 340px;
   width: 340px;
-  /*
-  margin-left: auto;
-  */
 
   input {
     width: 100%;
@@ -442,14 +440,14 @@
 }
 @media (max-width: 1024px) and (min-width: 767px) {
   .header-medium {
+
     display: flex;
-    flex-direction: column; /* общая колонка для логотипа+поиска и меню */
+    flex-direction: column;
     align-items: center;
     padding: 10px 20px;
     gap: 10px;
   }
 
-  /* верхний ряд: лого + поиск */
   .top-row {
     display: flex;
     flex-direction: row;
@@ -480,4 +478,19 @@
     margin-left: 10px;
   }
 }
+
+.logo-scroll-wrapper {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+
 

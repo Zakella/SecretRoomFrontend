@@ -1,9 +1,6 @@
 @use 'styles/variables';
 @use 'styles/mixins';
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600&display=swap');
-/*
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
-*/
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
@@ -11,6 +8,8 @@
 :root {
   --font-title: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
+  --p-dataview-header-background : transparent!important;
+  --p-dataview-content-background : transparent!important;
 }
 
 :host,html {
@@ -49,7 +48,7 @@ body:after, body:before {
 }
 
 
-/*.fade-in {
+.fade-in {
   opacity: 0;
   transform: translateY(25px);
   animation: fadeInUp 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
@@ -70,7 +69,7 @@ body:after, body:before {
     transform: translateY(0);
     filter: blur(0);
   }
-}*/
+}
 
 :host ::ng-deep p-drawer {
   background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
