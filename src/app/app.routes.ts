@@ -61,7 +61,6 @@ export const routes: Routes = [
           },
           {
             path: 'checkout',
-            canActivate: [AccessGuard],
             component: Checkout
           },
           {path: 'promotion', component: PromotionCard},
