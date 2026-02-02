@@ -168,6 +168,9 @@
   "Place Order": "Оформить заказ",
   "Processing...": "Обработка...",
   "Select shipping method": "Выберите способ доставки",
+  "Welcome back! Please enter your details.": "С возвращением! Пожалуйста, введите свои данные.",
+  "Email is required": "Электронная почта обязательна",
+  "Password is required": "Пароль обязателен",
   "checkout": {
     "phonePlaceholder": "06XXXXXXX или 07XXXXXXX",
     "addressPlaceholder": "Улица, дом, квартира",

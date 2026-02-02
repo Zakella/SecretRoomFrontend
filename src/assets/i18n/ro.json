@@ -170,6 +170,9 @@
   "Processing...": "Se procesează...",
   "Select shipping method": "Selectați metoda de livrare",
   "Our story": "Povestea noastră",
+  "Welcome back! Please enter your details.": "Bine ați venit înapoi! Vă rugăm să introduceți detaliile dvs.",
+  "Email is required": "Emailul este obligatoriu",
+  "Password is required": "Parola este obligatorie",
   "checkout": {
     "phonePlaceholder": "06XXXXXXX sau 07XXXXXXX",
     "addressPlaceholder": "Strada, numărul, apartamentul",
