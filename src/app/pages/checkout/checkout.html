@@ -36,6 +36,17 @@
           <div class="form-section">
             <h2 class="section-title">{{ 'Contact Information' | transloco }}</h2>
 
+            <!-- Auth prompt -->
+            <div class="auth-prompt">
+              <div class="auth-prompt-content">
+                <i class="ri-user-line"></i>
+                <span>{{ 'checkout.alreadyHaveAccount' | transloco }}</span>
+                <a [routerLink]="['/', activeLang(), 'profile']" class="auth-link">{{ 'Login' | transloco }}</a>
+                <span class="auth-divider">|</span>
+                <a [routerLink]="['/', activeLang(), 'registration']" class="auth-link">{{ 'checkout.createAccount' | transloco }}</a>
+              </div>
+            </div>
+
             <div class="form-group">
               <label for="email">Email *</label>
               <input

@@ -1,24 +1,51 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {FormsModule} from "@angular/forms";
-import {TranslocoPipe} from "@ngneat/transloco";
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ReactiveFormsModule} from '@angular/forms';
+import {TranslocoPipe} from '@ngneat/transloco';
 import {RegistrationService} from './services/registration';
-import {FadeUp} from '../../@core/directives/fade-up';
+import {RouterLink} from '@angular/router';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-registration',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     TranslocoPipe,
-    FadeUp
+    RouterLink
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Registration {
-  private registrationService = inject(RegistrationService);
-  public registrationForm = this.registrationService.registrationForm;
+  registrationService = inject(RegistrationService);
+  private langService = inject(Language);
 
-  public onSubmit() {
+  registrationForm = this.registrationService.registrationForm;
+  activeLang = this.langService.currentLanguage;
+
+  showPassword = false;
+  isSubmitting = signal(false);
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registrationForm.get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
+
+  hasValue(fieldName: string): boolean {
+    const field = this.registrationForm.get(fieldName);
+    return !!(field && field.value && field.value.length > 0);
+  }
+
+  onSubmit(): void {
+    if (this.registrationForm.invalid) {
+      this.registrationForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.registrationService.onSubmit(this.registrationForm.value);
+
+    // Reset submitting state after a delay (in real app, this would be in the service callback)
+    setTimeout(() => this.isSubmitting.set(false), 2000);
   }
 }

@@ -171,7 +171,9 @@
   "checkout": {
     "phonePlaceholder": "06XXXXXXX или 07XXXXXXX",
     "addressPlaceholder": "Улица, дом, квартира",
-    "agreementRequired": "Необходимо принять условия для оформления заказа"
+    "agreementRequired": "Необходимо принять условия для оформления заказа",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "createAccount": "Создать аккаунт"
   },
   "cart": {
     "youMayAlsoLike": "Вам также понравится",
@@ -181,5 +183,13 @@
     "freeShippingAchieved": "Поздравляем! Доставка бесплатная!",
     "emptyMessage": "Ваша корзина пуста",
     "startShopping": "Начать покупки"
+  },
+  "registration": {
+    "title": "Создать аккаунт",
+    "subtitle": "Присоединяйтесь к Secret Room",
+    "createAccount": "Зарегистрироваться",
+    "or": "или",
+    "haveAccount": "Уже есть аккаунт?",
+    "backToHome": "Вернуться на главную"
   }
 }

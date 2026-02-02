@@ -173,7 +173,9 @@
   "checkout": {
     "phonePlaceholder": "06XXXXXXX sau 07XXXXXXX",
     "addressPlaceholder": "Strada, numărul, apartamentul",
-    "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda"
+    "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda",
+    "alreadyHaveAccount": "Aveți deja un cont?",
+    "createAccount": "Creează cont"
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
@@ -183,5 +185,13 @@
     "freeShippingAchieved": "Felicitări! Livrarea este gratuită!",
     "emptyMessage": "Coșul tău este gol",
     "startShopping": "Începe cumpărăturile"
+  },
+  "registration": {
+    "title": "Creează cont",
+    "subtitle": "Alătură-te la Secret Room",
+    "createAccount": "Înregistrează-te",
+    "or": "sau",
+    "haveAccount": "Ai deja un cont?",
+    "backToHome": "Înapoi la pagina principală"
   }
 }
