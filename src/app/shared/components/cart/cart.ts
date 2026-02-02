@@ -143,4 +143,14 @@ export class Cart implements OnInit, OnDestroy {
       }
     );
   }
+
+  protected navigateToCheckout(): void {
+    if (this.cartItems.length === 0) return;
+
+    this.router.navigate([this.activeLang(), 'checkout']).then(
+      () => {
+        this.closeDrawer();
+      }
+    );
+  }
 }

@@ -1,163 +1,346 @@
-<div class="checkout-container" appFadeUp>
-  <div class="checkout-form">
-    <h1>CHECKOUT</h1>
-    <div class="steps">
-      <span
-        [class.active]="step==='information'"
-        (click)="goTo('information')">INFORMATION</span>
-      <span
-        [class.active]="step==='shipping'"
-        (click)="goTo('shipping')">SHIPPING</span>
-      <span
-        [class.active]="step==='payment'"
-        (click)="goTo('payment')">PAYMENT</span>
-    </div>
+<div class="checkout-page" appFadeUp>
+  <div class="checkout-container">
+    <!-- Left: Form -->
+    <div class="checkout-form">
+      <h1 class="checkout-title">{{ 'Checkout' | transloco }}</h1>
 
-    <div *ngIf="step==='information'">
-      <div class="form-section">
-        <h2>CONTACT INFO</h2>
-        <div class="form-group full">
-          <input type="email" placeholder="Email">
-        </div>
-        <div class="form-group full">
-          <input type="text" placeholder="Phone">
-        </div>
+      <!-- Steps Navigation -->
+      <div class="steps">
+        <span
+          [class.active]="step === 'information'"
+          [class.completed]="step !== 'information'"
+          (click)="goTo('information')">
+          <span class="step-number">1</span>
+          {{ 'Information' | transloco }}
+        </span>
+        <span class="step-divider"></span>
+        <span
+          [class.active]="step === 'shipping'"
+          [class.completed]="step === 'payment'"
+          (click)="goTo('shipping')">
+          <span class="step-number">2</span>
+          {{ 'Shipping' | transloco }}
+        </span>
+        <span class="step-divider"></span>
+        <span
+          [class.active]="step === 'payment'"
+          (click)="goTo('payment')">
+          <span class="step-number">3</span>
+          {{ 'Payment' | transloco }}
+        </span>
       </div>
 
-      <div class="form-section">
-        <h2>SHIPPING ADDRESS</h2>
-        <div class="form-group">
-          <input type="text" placeholder="First Name">
-          <input type="text" placeholder="Last Name">
-        </div>
-        <div class="form-group full">
-          <select>
-            <option>Country</option>
-            <option>USA</option>
-            <option>UK</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <input type="text" placeholder="State / Region">
-        </div>
-        <div class="form-group full">
-          <input type="text" placeholder="Address">
-        </div>
-        <div class="form-group">
-          <input type="text" placeholder="City">
-          <input type="text" placeholder="Postal Code">
-        </div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- STEP 1: Information -->
+        <div *ngIf="step === 'information'" class="form-step">
+          <div class="form-section">
+            <h2 class="section-title">{{ 'Contact Information' | transloco }}</h2>
 
-        <button class="shipping-btn" (click)="goTo('shipping')">
-          Shipping ➜
-        </button>
-      </div>
-    </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="your@email.com"
+                [class.invalid]="isFieldInvalid('email')">
+              <span class="error-message" *ngIf="isFieldInvalid('email')">
+                {{ 'Please enter a valid email address' | transloco }}
+              </span>
+            </div>
 
-    <!-- SHIPPING -->
-    <div *ngIf="step==='shipping'">
-      <h2>Shipping Method</h2>
-      <p>Выберите способ доставки</p>
-      <button class="shipping-btn" (click)="goTo('payment')">
-        Continue to Payment ➜
-      </button>
-    </div>
-
-    <!-- PAYMENT -->
-    <div *ngIf="step==='payment'">
-      <h2>Payment</h2>
-      <p>Введите данные карты</p>
-    </div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="order-summary">
-    <h3>YOUR ORDER</h3>
-
-    <div class="order-item">
-      <img src="https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/N02170s.jpg?im=Resize,width=750" alt="T-shirt">
-      <div class="order-info">
-        <p>Basic Heavy T-Shirt</p>
-        <p>Black / L</p>
-        <a href="#">Change</a>
-      </div>
-      <div class="order-price">$99</div>
-    </div>
-
-    <div class="order-item">
-      <img src="https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/N02170s.jpg?im=Resize,width=750" alt="T-shirt">
-      <div class="order-info">
-        <p>Basic Fit T-Shirt</p>
-        <p>Black / L</p>
-        <a href="#">Change</a>
-      </div>
-      <div class="order-price">$99</div>
-    </div>
-
-    <div class="summary-totals">
-      <div><span>Subtotal</span><span>$180.00</span></div>
-      <div><span>Shipping</span><span>Calculated at next step</span></div>
-      <div><span>Total</span><span>$180.00</span></div>
-    </div>
-  </div>
-</div>
-
-
-<!--
-<div class="reviews-container">
-  <h2>Reviews</h2>
-
-  <div class="summary">
-    <div class="summary-left">
-      <div class="score">{{ totalRating }}</div>
-      <p>of {{ totalCount }} reviews</p>
-      <div class="stars">
-        <ng-container *ngFor="let s of starsArray; let i = index">
-          <span [class.filled]="i < Math.round(totalRating)">★</span>
-        </ng-container>
-      </div>
-    </div>
-
-    <div class="summary-bars">
-      <div class="bar" *ngFor="let b of bars">
-        <span class="label">{{ b.label }}</span>
-        <div class="progress">
-          <div class="fill" [style.width.%]="(b.value / totalCount) * 100"></div>
-        </div>
-        <span class="count">{{ b.value }}</span>
-      </div>
-    </div>
-  </div>
-
-  <textarea class="comment-box" placeholder="Leave Comment"></textarea>
-
-  <div class="review-list">
-    <div class="review" *ngFor="let r of visibleReviews">
-      <div class="review-header">
-        <img [src]="r.avatar" alt="avatar" class="avatar" />
-        <div class="info">
-          <div class="top">
-            <span class="name">{{ r.user }}</span>
-            <span class="stars">
-              <ng-container *ngFor="let s of starsArray; let i = index">
-                <span [class.filled]="i < r.rating">★</span>
-              </ng-container>
-            </span>
+            <div class="form-group">
+              <label for="phone">{{ 'Phone' | transloco }} *</label>
+              <input
+                type="tel"
+                id="phone"
+                formControlName="phone"
+                placeholder="06XXXXXXX или 07XXXXXXX"
+                [class.invalid]="isFieldInvalid('phone')">
+              <span class="error-message" *ngIf="isFieldInvalid('phone')">
+                {{ 'Please enter a valid phone number' | transloco }}
+              </span>
+            </div>
           </div>
-          <span class="date">{{ r.date }}</span>
-        </div>
-      </div>
-      <p class="review-text">{{ r.text }}</p>
 
-      <div class="review-images" *ngIf="r.images">
-        <img *ngFor="let img of r.images" [src]="img" />
+          <div class="form-section">
+            <h2 class="section-title">{{ 'Shipping Address' | transloco }}</h2>
+
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="name">{{ 'First Name' | transloco }} *</label>
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  [class.invalid]="isFieldInvalid('name')">
+                <span class="error-message" *ngIf="isFieldInvalid('name')">
+                  {{ 'Required field' | transloco }}
+                </span>
+              </div>
+
+              <div class="form-group half">
+                <label for="lastname">{{ 'Last Name' | transloco }} *</label>
+                <input
+                  type="text"
+                  id="lastname"
+                  formControlName="lastname"
+                  [class.invalid]="isFieldInvalid('lastname')">
+                <span class="error-message" *ngIf="isFieldInvalid('lastname')">
+                  {{ 'Required field' | transloco }}
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="country">{{ 'Country' | transloco }}</label>
+              <input
+                type="text"
+                id="country"
+                formControlName="country"
+                class="disabled">
+            </div>
+
+            <div class="form-group">
+              <label for="address">{{ 'Address' | transloco }} *</label>
+              <input
+                type="text"
+                id="address"
+                formControlName="address"
+                placeholder="Street, building, apartment"
+                [class.invalid]="isFieldInvalid('address')">
+              <span class="error-message" *ngIf="isFieldInvalid('address')">
+                {{ 'Please enter your address' | transloco }}
+              </span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="city">{{ 'City' | transloco }} *</label>
+                <input
+                  type="text"
+                  id="city"
+                  formControlName="city"
+                  [class.invalid]="isFieldInvalid('city')">
+                <span class="error-message" *ngIf="isFieldInvalid('city')">
+                  {{ 'Required field' | transloco }}
+                </span>
+              </div>
+
+              <div class="form-group half">
+                <label for="zip">{{ 'Postal Code' | transloco }} *</label>
+                <input
+                  type="text"
+                  id="zip"
+                  formControlName="zip"
+                  [class.invalid]="isFieldInvalid('zip')">
+                <span class="error-message" *ngIf="isFieldInvalid('zip')">
+                  {{ 'Please enter valid postal code' | transloco }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-continue" (click)="goTo('shipping')">
+            {{ 'Continue to Shipping' | transloco }}
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- STEP 2: Shipping -->
+        <div *ngIf="step === 'shipping'" class="form-step">
+          <div class="form-section">
+            <h2 class="section-title">{{ 'Shipping Method' | transloco }}</h2>
+
+            <div class="shipping-options">
+              @for (option of shippingOptions; track option.id) {
+                <div
+                  class="shipping-option"
+                  [class.selected]="selectedShippingOption?.id === option.id"
+                  (click)="selectShippingOption(option)">
+                  <div class="option-radio">
+                    <span class="radio-dot" *ngIf="selectedShippingOption?.id === option.id"></span>
+                  </div>
+                  <div class="option-info">
+                    <span class="option-name">{{ option.name }}</span>
+                    <span class="option-description">{{ option.description }}</span>
+                    <span class="option-delivery">{{ option.expectedDeliveryDescription }}</span>
+                  </div>
+                  <div class="option-price">
+                    @if (totalAmount >= option.freeShippingFrom) {
+                      <span class="free-shipping">{{ 'Free' | transloco }}</span>
+                    } @else {
+                      <span>{{ option.cost }} MDL</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (selectedShippingOption && totalAmount < selectedShippingOption.freeShippingFrom) {
+              <div class="free-shipping-hint">
+                <i class="pi pi-info-circle"></i>
+                {{ 'Free shipping from' | transloco }} {{ selectedShippingOption.freeShippingFrom }} MDL
+              </div>
+            }
+          </div>
+
+          <div class="step-navigation">
+            <button type="button" class="btn-back" (click)="goTo('information')">
+              <span class="btn-arrow">←</span>
+              {{ 'Back' | transloco }}
+            </button>
+            <button
+              type="button"
+              class="btn-continue"
+              [disabled]="!selectedShippingOption"
+              (click)="goTo('payment')">
+              {{ 'Continue to Payment' | transloco }}
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Payment -->
+        <div *ngIf="step === 'payment'" class="form-step">
+          <div class="form-section">
+            <h2 class="section-title">{{ 'Payment Method' | transloco }}</h2>
+
+            <div class="payment-options">
+              @for (method of availablePaymentMethods; track method) {
+                <div
+                  class="payment-option"
+                  [class.selected]="selectedPayment === method"
+                  (click)="selectPaymentMethod(method)">
+                  <div class="option-radio">
+                    <span class="radio-dot" *ngIf="selectedPayment === method"></span>
+                  </div>
+                  <div class="option-info">
+                    <span class="option-name">{{ getPaymentLabel(method) }}</span>
+                  </div>
+                  <div class="payment-icon">
+                    @if (method === 'OnlinePayment') {
+                      <i class="pi pi-credit-card"></i>
+                    } @else if (method === 'CashOnDelivery') {
+                      <i class="pi pi-wallet"></i>
+                    } @else {
+                      <i class="pi pi-credit-card"></i>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2 class="section-title">{{ 'Comment' | transloco }}</h2>
+            <div class="form-group">
+              <textarea
+                formControlName="comment"
+                rows="3"
+                placeholder="{{ 'Leave a comment for your order' | transloco }}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="form-section agreement-section">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="iAgree">
+              <span class="checkmark"></span>
+              <span class="label-text">
+                {{ 'I agree to the' | transloco }}
+                <a href="#">{{ 'Terms and Conditions' | transloco }}</a>
+              </span>
+            </label>
+          </div>
+
+          <div class="step-navigation">
+            <button type="button" class="btn-back" (click)="goTo('shipping')">
+              <span class="btn-arrow">←</span>
+              {{ 'Back' | transloco }}
+            </button>
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="!canSubmit()"
+              [class.loading]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="spinner"></span>
+                {{ 'Processing...' | transloco }}
+              } @else {
+                {{ 'Place Order' | transloco }}
+                <span class="btn-arrow">→</span>
+              }
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right: Order Summary -->
+    <div class="order-summary">
+      <h3 class="summary-title">{{ 'Your Order' | transloco }}</h3>
+
+      <div class="cart-items">
+        @for (item of cartItems; track item.id; let i = $index) {
+          <div class="cart-item">
+            <div class="item-image">
+              <img [src]="item.product.imageURL ?? 'assets/images/unavailable.jpg'" [alt]="item.product.name">
+              <span class="item-quantity-badge">{{ item.quantity }}</span>
+            </div>
+            <div class="item-details">
+              <p class="item-name">{{ item.product.name }}</p>
+              @if (item.size) {
+                <p class="item-size">{{ 'Size' | transloco }}: {{ item.size.sizeType }}</p>
+              }
+              <div class="item-actions">
+                <p-inputNumber
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  [min]="1"
+                  [max]="100"
+                  [(ngModel)]="item.quantity"
+                  (ngModelChange)="updateCartItemQuantity(item, i)"
+                  inputStyleClass="quantity-input"
+                  decrementButtonClass="qty-btn"
+                  incrementButtonClass="qty-btn"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus">
+                </p-inputNumber>
+                <button type="button" class="btn-remove" (click)="removeCartItem(i)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="item-price">{{ item.amount }} MDL</div>
+          </div>
+        }
+      </div>
+
+      <div class="summary-totals">
+        <div class="total-row">
+          <span>{{ 'Subtotal' | transloco }}</span>
+          <span>{{ totalAmount }} MDL</span>
+        </div>
+        <div class="total-row">
+          <span>{{ 'Shipping' | transloco }}</span>
+          <span>
+            @if (selectedShippingOption) {
+              @if (shippingCost === 0) {
+                <span class="free-shipping-text">{{ 'Free' | transloco }}</span>
+              } @else {
+                {{ shippingCost }} MDL
+              }
+            } @else {
+              {{ 'Select shipping method' | transloco }}
+            }
+          </span>
+        </div>
+        <div class="total-row grand-total">
+          <span>{{ 'Total' | transloco }}</span>
+          <span>{{ grandTotal }} MDL</span>
+        </div>
       </div>
     </div>
   </div>
-
-  <button class="view-more" (click)="toggle()">
-    {{ showAll ? 'Hide' : 'View More' }}
-    <span [ngClass]="{'up': showAll}">▼</span>
-  </button>
 </div>
--->

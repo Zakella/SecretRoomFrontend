@@ -39,7 +39,7 @@
                 <div class="qty-controls">
                   <p-inputNumber [showButtons]="true"
                                  buttonLayout="horizontal"
-                                 pinnerMode="horizontal"
+                                 spinnerMode="horizontal"
                                  [min]="1"
                                  [max]="100"
                                  [(ngModel)]="cartItem.quantity"
@@ -61,7 +61,7 @@
         <div class="cart-footer">
           <div class="subtotal">
             <span>{{ 'Subtotal' | transloco }}</span>
-            <span>{{ totalAmount + shippingCost }}  MDL</span>
+            <span>{{ totalAmount }}  MDL</span>
           </div>
           <div class="subtotal">
             <span>{{ 'Delivery' | transloco }}</span>
@@ -71,7 +71,7 @@
             <span>{{ 'Total' | transloco }}</span>
             <span>{{ totalAmount + shippingCost }}  MDL</span>
           </div>
-          <button class="btn-checkout">{{ 'Check out' | transloco }} →</button>
+          <button class="btn-checkout" (click)="navigateToCheckout()">{{ 'Check out' | transloco }} →</button>
         </div>
       } @else {
         <ng-container *ngTemplateOutlet="emptyCart"/>

@@ -1,12 +1,14 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {ChangeDetectionStrategy, Component, computed, HostListener, inject, OnInit, signal} from '@angular/core';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
-import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
+import {NgIf, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {filter, map} from 'rxjs/operators';
 
 
 @Component({
@@ -17,7 +19,8 @@ import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
     FormsModule,
     UpperCasePipe,
     NgStyle,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    NgIf
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -39,6 +42,17 @@ export class Header implements OnInit {
   navHovered = signal(false);
   isHidden = false;
   isMinBrands = signal<boolean>(false)
+
+  // Check if current page is checkout
+  private currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map((event: NavigationEnd) => event.urlAfterRedirects)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  isCheckoutPage = computed(() => this.currentUrl()?.includes('/checkout'));
 
 
   ngOnInit(): void {

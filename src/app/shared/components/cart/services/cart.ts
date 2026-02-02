@@ -10,13 +10,14 @@ export class CartUi {
   public cartCount = signal<number>(0);
   visible = this._visible.asReadonly();
   public cartItems: BehaviorSubject<CartItem[]> = new BehaviorSubject<CartItem[]>([]);
-  public totalAmount: Subject<number> = new Subject<number>();
-  public totalQuantity: Subject<number> = new Subject<number>();
+  public totalAmount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public totalQuantity: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public cartModified: Subject<boolean> = new Subject<boolean>();
   private readonly storageKey = 'cartItems';
 
   constructor() {
     this.cartItems.next(this.loadCartItemsFromStorage());
+    this.computeCartTotals();
   }
 
 

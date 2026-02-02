@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  <nav class="nav-main" (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
+  <nav class="nav-main" *ngIf="!isCheckoutPage()" (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
     <div class="nav-inner">
       @if (activeBrand()?.children) {
         @for (category of activeBrand()!.children!; track category.id) {
