@@ -696,12 +696,45 @@
 // NAV MAIN
 // ========================================
 
-.nav-main {
-  width: 100%;
-  background: #FFFFFF;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-  position: relative;
-  z-index: 100;
+// ========================================
+// NAV MAIN - с разделителем
+// ========================================
+
+
+@keyframes expandLine {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+    max-width: 1200px;
+  }
+}
+
+// ========================================
+// NAV MAIN - с разделителем
+// ========================================
+
+
+@keyframes expandLine {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+    max-width: 1200px;
+  }
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 48px;
+  padding: 0 20px;
+  height: 64px; // увеличил высоту для воздуха
 }
 
 .nav-inner {
@@ -752,6 +785,8 @@
     }
   }
 }
+
+
 
 // ========================================
 // MEGA DROPDOWN
@@ -948,4 +983,59 @@
       font-size: 14px;
     }
   }
+}
+
+// ========================================
+// NAV MAIN - ROSE GOLD DIVIDER
+// ========================================
+
+.nav-main {
+  width: 100%;
+  background: #FFFFFF;
+  position: relative;
+  z-index: 100;
+
+  // Анимированная линия розового золота
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        #C4948F 0%,
+        #D9B5AC 15%,
+        #E8CCC4 25%,
+        #F5E4E0 35%,
+        #FFFFFF 50%,
+        #F5E4E0 65%,
+        #E8CCC4 75%,
+        #D9B5AC 85%,
+        #C4948F 100%
+    );
+    background-size: 200% 100%;
+    animation: roseGoldShine 8s linear infinite;
+  }
+}
+
+@keyframes roseGoldShine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 56px;
+  padding: 0 20px;
+  height: 56px;
 }
