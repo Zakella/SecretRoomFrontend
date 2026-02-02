@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://public.secretroom.md/api/',
+  apiUrl: 'https://api-sr.solterprise.com/api/',
   frontend:"http://localhost:7200"
 
 };

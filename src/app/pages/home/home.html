@@ -1,47 +1,10 @@
 <main appFadeUp>
   <div class="image-wrapper">
-    <app-image-slider [images]="images" [autoSlide]="true" [controls]="false"/>
+    <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="false" [controls]="false"/>
   </div>
   <app-text-slider/>
-    <h3 class="categories-title">Shop by Categories</h3>
-    <div class="categories-list">
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ11B1SkywJlHdECzJcDlUM8oo8RAMATj7kOg&s" alt="Cleanser" />
-        </div>
-        <span>Мисты</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRj810yrcIcWeSDkHGOt9yqRtYt3Ly6OtILTA&s" alt="Toner" />
-        </div>
-        <span>Лосьоны</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRj810yrcIcWeSDkHGOt9yqRtYt3Ly6OtILTA&s" alt="Toner" />
-        </div>
-        <span>Парфюмы</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3nIqn6xgyqu1abYIjgruPDag4bAWsS60tqg&s" alt="Serum" />
-        </div>
-        <span>Белье</span>
-      </div>
-
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3nIqn6xgyqu1abYIjgruPDag4bAWsS60tqg&s" alt="Serum" />
-        </div>
-        <span>Пижамы</span>
-      </div>
-    </div>
-  <promo-section/>
-  <best-sellers/>
+  <app-categories/>
+  <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
+  <new-arrivals [newArrivals]="(newArrivals$| async) || []"/>
   <socials/>
 </main>

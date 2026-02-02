@@ -7,12 +7,20 @@ import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
 import {ClickOutside} from './click-outside';
-import {UpperCasePipe} from '@angular/common';
+import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, TranslocoPipe, FormsModule, ClickOutside, UpperCasePipe],
+  imports: [
+    RouterLink,
+    TranslocoPipe,
+    FormsModule,
+    ClickOutside,
+    UpperCasePipe,
+    NgStyle,
+    NgTemplateOutlet
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,16 +41,9 @@ export class Header implements OnInit {
   navHovered = signal(false);
   isHidden = false;
   isLangOpen = false;
+  isMinBrands = signal<boolean>(false)
 
 
-  toggleLang(event: MouseEvent) {
-    event.stopPropagation();
-    this.isLangOpen = !this.isLangOpen;
-  }
-
-  closeLang() {
-    this.isLangOpen = false;
-  }
   ngOnInit(): void {
     this.getCategories();
   }
@@ -74,9 +75,7 @@ export class Header implements OnInit {
     const q = this.query().trim();
     if (!q) return;
 
-    this.router.navigate(['/search'], {
-      queryParams: {q}
-    });
+    this.router.navigate([this.activeLang(), 'search', q]);
   }
 
   setActive(brand: Brand) {
@@ -88,13 +87,17 @@ export class Header implements OnInit {
       if (!categories?.length) {
         this.headerItems.set([]);
         this.activeBrand.set(null);
+        this.isMinBrands.set(true);
         return;
       }
 
-      this.headerItems.set(categories);
+      this.headerItems.set(categories.slice(0, 5));
       this.activeBrand.set(categories[0]);
+
+      this.isMinBrands.set(this.headerItems()!.length <= 5);
     });
   }
+
 
   @HostListener('window:scroll')
   onWindowScroll() {
@@ -102,5 +105,14 @@ export class Header implements OnInit {
       window.pageYOffset || document.documentElement.scrollTop || 0;
 
     this.isHidden = currentScroll > 0;
+  }
+
+  toggleLang(event: MouseEvent) {
+    event.stopPropagation();
+    this.isLangOpen = !this.isLangOpen;
+  }
+
+  closeLang() {
+    this.isLangOpen = false;
   }
 }

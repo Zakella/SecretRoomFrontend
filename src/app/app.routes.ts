@@ -1,12 +1,8 @@
 import {Routes} from '@angular/router';
-import {Notfound} from './pages/notfound/notfound';
 import {Home} from './pages/home/home';
-import {VsList} from './pages/vs-list/vs-list';
-import {ProductDetail} from './pages/product-detail/product-detail';
 import {Contacts} from './pages/contacts/contacts';
 import {AboutUs} from './pages/about-us/about-us';
 import {Wishlist} from './pages/wishlist/wishlist';
-import {PaymentFail} from './pages/payment-fail/payment-fail';
 import {Login} from './pages/login/login';
 import {Cabinet} from './pages/cabinet/cabinet';
 import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
@@ -14,13 +10,18 @@ import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
 import {Registration} from './pages/registration/registration';
 import {Checkout} from './pages/checkout/checkout';
-import {AccountNotFound} from './pages/account-not-found/account-not-found';
 import {OrderSummary} from './pages/order-summary/order-summary';
 import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
 import {List} from './pages/promotion/list/list';
-import {ProductResolver} from './pages/product-detail/product.resolver';
 import {SearchResult} from './pages/search-result/search-result';
 import {AccessGuard} from './@core/guards/acces-guard';
+import {OurStory} from './pages/our-story/our-story';
+import {Catalog} from './pages/catalog/catalog';
+import {AccountNotFound} from './pages/states/account-not-found/account-not-found';
+import {ProductDetail} from './pages/products/product-detail/product-detail';
+import { ProductResolver } from './pages/products/product-detail/product.resolver';
+import {PaymentFail} from './pages/states/payment-fail/payment-fail';
+import {Notfound} from './pages/states/notfound/notfound';
 
 export const routes: Routes = [
   {
@@ -37,9 +38,9 @@ export const routes: Routes = [
         children: [
           {path: '', component: Home},
           {
-            path: 'vs',
-            component: VsList,
-            data: { breadcrumb: 'Редактирование' }
+            path: 'catalog/:tag',
+            component: Catalog,
+            data: {breadcrumb: 'Редактирование'}
           },
           {
             path: 'product-detail/:id',
@@ -61,10 +62,12 @@ export const routes: Routes = [
           {
             path: 'checkout',
             canActivate: [AccessGuard],
-            component: Checkout},
+            component: Checkout
+          },
           {path: 'promotion', component: PromotionCard},
           {path: 'promotion-list', component: List},
-          {path: 'test', component: SearchResult}
+          {path: 'about-the-secret-room', component: OurStory},
+          {path: 'search/:query', component: SearchResult}
         ],
       },
       {

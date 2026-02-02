@@ -1,5 +1,5 @@
 import {inject, Injectable, signal} from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import {TranslocoService} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 
 @Injectable({
@@ -7,16 +7,22 @@ import {Router} from '@angular/router';
 })
 export class Language {
   currentLanguage = signal<string>('ro');
-  private router= inject(Router);
+  private router = inject(Router);
   private translocateService = inject(TranslocoService);
 
+  public init(): void {
+    const lang = this.router.url.split('/')[1] || 'ro';
 
- public setLanguage(lang: string){
-     this.translocateService.setActiveLang(lang);
-     this.currentLanguage.set(lang);
-     const segments = this.router.url.split('/');
-     segments[1] = lang;
-     this.router.navigate(segments);
+    this.currentLanguage.set(lang);
+    this.translocateService.setActiveLang(lang);
   }
 
+
+  public setLanguage(lang: string): void {
+    this.translocateService.setActiveLang(lang);
+    this.currentLanguage.set(lang);
+    const segments = this.router.url.split('/');
+    segments[1] = lang;
+    this.router.navigate(segments);
+  }
 }

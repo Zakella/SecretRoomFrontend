@@ -7,11 +7,9 @@ import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {TranslocoService} from '@ngneat/transloco';
 import {distinctUntilChanged, filter, map} from 'rxjs';
-import {ScrollTop} from '../../shared/components/scroll-top/scroll-top';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
 import {MobileHeader} from '../mobile-header/mobile-header';
-import {CookieBanner} from '../cookie-banner/cookie-banner';
 import {Chat} from '../../widgets/chat/chat';
 
 @Component({
@@ -22,11 +20,9 @@ import {Chat} from '../../widgets/chat/chat';
     RouterOutlet,
     Cart,
     Loader,
-    ScrollTop,
     MobileMenu,
     Breadcrumb,
     MobileHeader,
-    CookieBanner,
     Chat,
   ],
   templateUrl: './main-layout.html',

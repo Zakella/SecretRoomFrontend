@@ -1,13 +1,9 @@
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {FadeUp} from '../../@core/directives/fade-up';
-import {CustomTitle} from '../../shared/components/custom-title/custom-title';
 import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-wishlist',
   imports: [
-    FadeUp,
-    CustomTitle,
     NgForOf
   ],
   templateUrl: './wishlist.html',

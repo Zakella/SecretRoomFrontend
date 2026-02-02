@@ -2,9 +2,12 @@
   <div class="header-top">
     <div class="header-top-inner">
       <nav class="nav-left">
-        <a class="nav-item">Our Story</a>
         <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']">Our Stores & Services</a>
+        <a class="nav-item" [routerLink]="['/', activeLang(), 'about-the-secret-room']">Our Story</a>
       </nav>
+      <div class="logo-scroll-wrapper" [class.visible]="isHidden">
+        <ng-container *ngTemplateOutlet="logo"/>
+      </div>
       <div class="nav-right">
         <div class="icons">
           <div class="lang-wrapper" appClickOutside (clickOutside)="closeLang()">
@@ -13,8 +16,8 @@
             </a>
 
             <div class="lang-dropdown" [class.open]="isLangOpen">
-              @for (lang of languages; track lang){
-                <button (click)="setActiveLang(lang)">{{lang | uppercase}}</button>
+              @for (lang of languages; track lang) {
+                <button (click)="setActiveLang(lang)">{{ lang | uppercase }}</button>
               }
             </div>
           </div>
@@ -34,8 +37,9 @@
       </div>
     </div>
   </div>
-  <div class="header-medium" [class.hidden]="isHidden">
-    <a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
+  <div class="header-medium" [class.hidden]="isHidden"
+       [ngStyle]="{        'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
+    <ng-container *ngTemplateOutlet="logo"/>
 
     <div class="brands-search">
       <nav class="nav-left">
@@ -84,14 +88,14 @@
               </div>
             </div>
             <div class="dropdown-right">
-              <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg" />
+              <img src="https://90-60-90.in.ua/images/MODELING/MAIN-PHOTO/vs-angels3.jpg"/>
             </div>
           </div>
         </div>
       }
-
     </div>
-
-
   </nav>
 </header>
+
+<ng-template #logo><a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
+</ng-template>

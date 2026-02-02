@@ -1,0 +1,229 @@
+$accent: #1a1a1a;
+$gray: #757575;
+$bg: #fdfdfd;
+
+.arrivals-section {
+  background-color: $bg;
+  padding: 120px 0;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+
+  .subtitle {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+    color: $gray;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    font-size: 42px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    margin: 0;
+    color: $accent;
+  }
+}
+
+.nav-arrows {
+  display: flex;
+  gap: 16px;
+
+  .arrow-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 24px;
+      fill: $accent;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: $accent;
+      background: $accent;
+
+      svg {
+        fill: #fff;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
+.slider-viewport {
+  overflow: visible;
+}
+
+.slider-track {
+  display: flex;
+  gap: 40px;
+  transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.product-card {
+  min-width: 320px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.8s ease;
+
+  &.active {
+    opacity: 1;
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 70vh; // Занимает 70% высоты видимой области экрана
+    min-height: 400px; // Чтобы на очень маленьких экранах не схлопнулось совсем
+    max-height: 400px; // Чтобы на 4K мониторах не было бесконечным
+    overflow: hidden;
+    border-radius: 12px; // Для больших баннеров скругление можно чуть больше
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center 20%; // Позволяет чуть приподнять фокус картинки
+      transition: transform 2s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    &:hover .overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .quick-view {
+      background: $accent;
+
+      border: none;
+      padding: 10px 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .quick-view:hover {
+      background: #0b0b0b;
+      transform: scale(1.05);
+    }
+  }
+
+  &:hover {
+    .image-wrapper img {
+      transform: scale(1.08);
+    }
+
+    .overlay {
+      opacity: 1;
+    }
+  }
+
+  .product-info {
+    padding: 24px 0;
+    text-align: center;
+
+    .brand {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: $gray;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: 300;
+      margin: 0 0 10px 0;
+      color: $accent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price {
+      font-size: 16px;
+      font-weight: 500;
+      color: $accent;
+    }
+  }
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+
+  .dash {
+    height: 2px;
+    width: 30px;
+    background: #000;
+    opacity: 0.1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &.active {
+      opacity: 1;
+      width: 60px;
+    }
+  }
+}
+
+.quick-view {
+  background: black;
+  border: none;
+  padding: 12px 24px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .quick-view {
+  transform: translateY(0);
+}

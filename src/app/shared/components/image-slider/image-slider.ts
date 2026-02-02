@@ -10,15 +10,17 @@ import {
 } from '@angular/core';
 import {isPlatformBrowser, NgClass,} from '@angular/common';
 import {CarouselImage} from '../../../entities/carousel-image';
+import {Router} from '@angular/router';
 
 @Component({
-  selector: 'app-image-slider',
+  selector: 'image-slider',
   imports: [NgClass],
   templateUrl: './image-slider.html',
   styleUrl: './image-slider.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
+  private router = Inject(Router);
   public images = input<CarouselImage[]>([]);
   public indicator = input<boolean>(true);
   public controls = input<boolean>(true);
@@ -103,4 +105,9 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
       this.onNextClick();
     }
   }
+
+  goToImage(image: CarouselImage) {
+    this.router.navigate(['/products', image.id]);
+  }
+
 }
