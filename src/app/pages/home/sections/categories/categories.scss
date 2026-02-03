@@ -260,3 +260,138 @@
   font-weight: 600;
   color: #8d8d8d;
 }
+
+/* =========================
+   TABLET ≤ 1024px
+========================= */
+@media (max-width: 1024px) {
+  .more-to-love {
+    padding: 64px 40px;
+  }
+
+  .header-container {
+    padding: 0 32px;
+    margin-bottom: 40px;
+
+    h2 {
+      font-size: 28px;
+    }
+  }
+
+  .slider {
+    padding-left: 32px;
+  }
+
+  .slide {
+    min-width: 300px;
+    height: 460px;
+  }
+}
+
+/* =========================
+   MOBILE ≤ 768px
+========================= */
+@media (max-width: 768px) {
+  .more-to-love {
+    padding: 48px 0;
+  }
+
+  .header-container {
+    padding: 0 20px;
+    margin-bottom: 32px;
+
+    h2 {
+      font-size: 24px;
+    }
+  }
+
+  /* стрелки убираем — свайп */
+  .nav-buttons {
+    display: none;
+  }
+
+  .slider {
+    padding-left: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .slider-track {
+    gap: 16px;
+  }
+
+  .slide {
+    min-width: 80%;
+    height: 420px;
+
+    scroll-snap-align: center;
+    border-radius: 6px;
+  }
+
+  .slide .label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+
+  /* NEW ARRIVALS */
+  .new-arrivals {
+    padding: 3rem 1rem;
+  }
+
+  .new-arrivals__grid {
+    gap: 1.5rem;
+  }
+
+  .product-card {
+    border-radius: 10px;
+  }
+
+  /* PREMIUM */
+  .new-arrivals-premium {
+    padding: 3rem 1rem;
+  }
+
+  .new-arrivals-premium .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .new-arrivals-premium h2 {
+    font-size: 1.6rem;
+  }
+
+  .products {
+    gap: 1.5rem;
+  }
+}
+
+/* =========================
+   SMALL MOBILE ≤ 480px
+========================= */
+@media (max-width: 480px) {
+  .slide {
+    min-width: 90%;
+    height: 380px;
+  }
+
+  .header-container h2 {
+    font-size: 22px;
+  }
+
+  .product-info h3 {
+    font-size: 1rem;
+  }
+
+  .product-info .price {
+    font-size: 0.95rem;
+  }
+}

@@ -22,11 +22,6 @@ export class ProductCard {
   private cartService = inject(CartUi);
   public activeLang = this.langService.currentLanguage
   product = input<Product>();
-  readonly imageUrl = input<string>('');
-  readonly title = input<string>();
-  readonly brand = input<string>();
-  readonly price = input<string>();
-  readonly rating = input<number>(3);
   readonly isBestSeller = input<boolean>(true);
   readonly showOptions = input<boolean>();
   currentSize: string | undefined;

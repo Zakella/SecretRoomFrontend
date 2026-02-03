@@ -17,9 +17,6 @@
       <div class="nav-right">
         <div class="icons">
           <a class="icon">
-            <i [routerLink]="['/', activeLang(), 'wishlist']" class="ri-heart-line"></i>
-          </a>
-          <a class="icon">
             <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
           </a>
           <a class="icon cart-icon" (click)="openCart()">
@@ -32,8 +29,7 @@
       </div>
     </div>
   </div>
-  <div class="header-medium" [class.hidden]="isHidden"
-       [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
+  <div class="header-medium" [class.hidden]="isHidden" [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
 
     <div class="logo-search-row">
       <div class="row-left">
@@ -113,5 +109,4 @@
   </nav>
 </header>
 
-<ng-template #logo><a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a>
-</ng-template>
+<ng-template #logo><a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a></ng-template>
