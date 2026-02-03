@@ -1,45 +1,51 @@
-<section class="arrivals-section">
-  <div class="container">
-    <header class="section-header">
-      <div class="title-group">
-        <span class="subtitle">Limited Collection</span>
-        <h2 class="title">Новинки сезона</h2>
-      </div>
+@if (newArrivals().length > 0) {
+  <section class="arrivals-section">
+    <div class="container">
+      <header class="section-header">
+        <div class="title-group">
+          <span class="subtitle">Limited Collection</span>
+          <h2 class="title">Новинки сезона</h2>
+        </div>
 
-      <div class="nav-arrows">
-        <button (click)="prev()" [disabled]="currentIndex === 0" class="arrow-btn">
-          <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-        </button>
-        <button (click)="next()" [disabled]="currentIndex >= newArrivals().length - 1" class="arrow-btn">
-          <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-        </button>
-      </div>
-    </header>
+        <div class="nav-arrows">
+          <button (click)="prev()" [disabled]="currentIndex === 0" class="arrow-btn">
+            <svg viewBox="0 0 24 24">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+          <button (click)="next()" [disabled]="currentIndex >= newArrivals().length - 1" class="arrow-btn">
+            <svg viewBox="0 0 24 24">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
 
-    <div class="slider-viewport">
-      <div class="slider-track" [style.transform]="'translateX(' + translateX + 'px)'">
-        @for (item of newArrivals(); track item.id; let i = $index) {
-          <div class="product-card" [class.active]="i === currentIndex">
-            <div class="image-wrapper">
-              <img [src]="item.imageURL" [alt]="item.name">
-              <div class="overlay">
-                <button class="quick-view">Quick View</button>
+      <div class="slider-viewport">
+        <div class="slider-track" [style.transform]="'translateX(' + translateX + 'px)'">
+          @for (item of newArrivals(); track item.id; let i = $index) {
+            <div class="product-card" [class.active]="i === currentIndex">
+              <div class="image-wrapper">
+                <img [src]="item.imageURL" [alt]="item.name">
+                <div class="overlay">
+                  <button class="quick-view">Quick View</button>
+                </div>
+              </div>
+              <div class="product-info">
+                <span class="brand">VS</span>
+                <h3 class="name">{{ item.name }}</h3>
+                <span class="price">{{ item.price }} MDL</span>
               </div>
             </div>
-            <div class="product-info">
-              <span class="brand">VS</span>
-              <h3 class="name">{{ item.name }}</h3>
-              <span class="price">{{ item.price }} MDL</span>
-            </div>
-          </div>
+          }
+        </div>
+      </div>
+
+      <div class="indicators">
+        @for (item of newArrivals(); track item.id; let i = $index) {
+          <div class="dash" [class.active]="i === currentIndex" (click)="goTo(i)"></div>
         }
       </div>
     </div>
-
-    <div class="indicators">
-      @for (item of newArrivals(); track item.id; let i = $index) {
-        <div class="dash" [class.active]="i === currentIndex" (click)="goTo(i)"></div>
-      }
-    </div>
-  </div>
-</section>
+  </section>
+}

@@ -8,7 +8,7 @@ import {CarouselImage} from '../../entities/carousel-image';
 @Injectable({
   providedIn: 'root',
 })
-export class Hero {
+export class HeroService {
   private http = inject(HttpClient);
   private baseUrL = environment.apiUrl + "heroSections";
 
