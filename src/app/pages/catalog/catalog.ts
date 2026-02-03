@@ -1,17 +1,19 @@
-import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {CustomTitle} from "../../shared/components/custom-title/custom-title";
 import {FadeUp} from "../../@core/directives/fade-up";
 import {ProductList} from "../../shared/components/product/product-list/product-list";
 import {ProductService} from '../../@core/api/product';
 import {Product} from '../../entities/product';
 import {ActivatedRoute} from '@angular/router';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-catalog',
   imports: [
     CustomTitle,
     FadeUp,
-    ProductList
+    ProductList,
+    TranslocoPipe
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',
@@ -21,7 +23,7 @@ export class Catalog implements OnInit {
   private productService = inject(ProductService);
   protected products = signal<Product[]>([]);
   protected isLoading = signal<boolean>(false);
-  private currentPage = 1;
+  private currentPage = 0;
   private readonly itemsPerPage = 12;
   allLoaded = signal<boolean>(false);
   tag = signal<string | null>('');
@@ -62,14 +64,7 @@ export class Catalog implements OnInit {
       });
   }
 
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const threshold = 500;
-    const pageHeight = document.documentElement.scrollHeight;
-
-    if (pageHeight - scrollPosition < threshold) {
-      this.fetchProducts(true);
-    }
+  loadMore(): void {
+    this.fetchProducts(true);
   }
 }

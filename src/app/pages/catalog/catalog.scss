@@ -30,3 +30,86 @@ custom-title {
 .product-list-panel {
   width: 100%;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// LOAD MORE BUTTON — Black & Gold
+// ═══════════════════════════════════════════════════════════════
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+
+  @media (max-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.load-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 50px;
+  background: #1a1a1a;
+  color: #b8956c;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: #000;
+    color: #d4b896;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+
+    i {
+      transform: translateY(3px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    padding: 14px 35px;
+    font-size: 11px;
+    gap: 10px;
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// Spinner animation
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(184, 149, 108, 0.3);
+  border-top-color: #b8956c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
