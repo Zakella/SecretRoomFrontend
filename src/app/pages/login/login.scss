@@ -34,6 +34,43 @@
   to { width: 100%; }
 }
 
+// Language Switcher
+.lang-switcher {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 0.25rem;
+
+  .lang-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 20px;
+    color: rgba(245, 243, 244, 0.5);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #F5F3F4;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #C4948F 0%, #D9B5AC 100%);
+      color: #0a0a0c;
+    }
+  }
+}
+
 // Page container
 .auth-page {
   min-height: 100vh;
@@ -243,7 +280,8 @@
 
   // Focus state
   input:focus ~ label,
-  &.has-value label {
+  &.has-value label,
+  input:-webkit-autofill ~ label {
     top: -0.5rem;
     font-size: 0.75rem;
     color: #C4948F;

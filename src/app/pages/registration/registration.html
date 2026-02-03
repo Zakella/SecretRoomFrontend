@@ -5,6 +5,22 @@
     <div class="auth-bg-pattern"></div>
   </div>
 
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button
+      class="lang-btn"
+      [class.active]="activeLang() === 'ro'"
+      (click)="switchLang('ro')">
+      RO
+    </button>
+    <button
+      class="lang-btn"
+      [class.active]="activeLang() === 'ru'"
+      (click)="switchLang('ru')">
+      RU
+    </button>
+  </div>
+
   <div class="auth-container">
     <!-- Logo -->
     <a [routerLink]="['/', activeLang()]" class="auth-logo">Secret Room</a>

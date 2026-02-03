@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {ResetPassword} from '../../shared/components/modals/reset-password/reset-password';
 import {LoginService} from './services/login';
@@ -22,6 +22,7 @@ import {LoginService} from './services/login';
 export class Login {
   protected showResetPassword = signal<boolean>(false)
   private langService = inject(Language);
+  private router = inject(Router);
   public loginService = inject(LoginService);
   public activeLang = this.langService.currentLanguage
   protected loginForm = new FormGroup({
@@ -62,5 +63,10 @@ export class Login {
 
   showDialog() {
     this.showResetPassword.set(true);
+  }
+
+  switchLang(lang: 'ro' | 'ru') {
+    this.langService.setLanguage(lang);
+    this.router.navigate(['/', lang, 'login']);
   }
 }

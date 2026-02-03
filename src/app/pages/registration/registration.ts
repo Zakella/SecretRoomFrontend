@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core'
 import {ReactiveFormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {RegistrationService} from './services/registration';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 
 @Component({
@@ -19,6 +19,7 @@ import {Language} from '../../@core/services/language';
 export class Registration {
   registrationService = inject(RegistrationService);
   private langService = inject(Language);
+  private router = inject(Router);
 
   registrationForm = this.registrationService.registrationForm;
   activeLang = this.langService.currentLanguage;
@@ -47,5 +48,10 @@ export class Registration {
 
     // Reset submitting state after a delay (in real app, this would be in the service callback)
     setTimeout(() => this.isSubmitting.set(false), 2000);
+  }
+
+  switchLang(lang: 'ro' | 'ru') {
+    this.langService.setLanguage(lang);
+    this.router.navigate(['/', lang, 'registration']);
   }
 }
