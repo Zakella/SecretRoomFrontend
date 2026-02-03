@@ -1,0 +1,32 @@
+// ═══════════════════════════════════════════════════════════════
+// CATALOG PAGE - EDITORIAL STYLE
+// ═══════════════════════════════════════════════════════════════
+
+:host {
+  display: block;
+  padding: 0 60px 80px;
+  max-width: 1800px;
+  margin: 0 auto;
+
+  @media (max-width: 1200px) {
+    padding: 0 40px 60px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 16px 40px;
+  }
+}
+
+custom-title {
+  display: block;
+  margin-bottom: 50px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 30px;
+  }
+}
+
+.product-list-panel {
+  width: 100%;
+}

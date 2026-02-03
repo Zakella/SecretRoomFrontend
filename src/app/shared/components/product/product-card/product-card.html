@@ -24,10 +24,18 @@
 -->
 
 
-<div class="product-card" [class.bestseller]="isBestSeller()">
+<div class="product-card" [class.bestseller]="isBestSeller()" [class.new-arrival]="isNew()" [class.on-sale]="hasDiscount()">
   <div class="image-wrapper">
     @if (isBestSeller()) {
-      <div class="badge">Limited Edition</div>
+      <div class="badge badge-bestseller">
+        <i class="ri-fire-fill"></i>
+        <span>Bestseller</span>
+      </div>
+    } @else if (isNew()) {
+      <div class="badge badge-new">
+        <i class="ri-sparkling-fill"></i>
+        <span>New</span>
+      </div>
     }
 
     <button class="wishlist-btn" (click)="$event.stopPropagation()">
@@ -36,33 +44,34 @@
 
     <div class="img-container" (click)="navToProduct()">
       <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
-      <div class="quick-add-overlay">
-        <button class="action-btn" (click)="addProductInCart(); $event.stopPropagation()">
-          {{ 'Add to Cart' | transloco }}
-        </button>
-      </div>
+      @if (hoverImageUrl()) {
+        <img [src]="hoverImageUrl()" [alt]="product()?.name" class="hover-img"/>
+      }
     </div>
   </div>
 
   <div class="info" (click)="navToProduct()">
-    <div class="meta">
-      <span class="category">{{product()?.brand}}</span> </div>
     <h3 class="name">{{ product()?.name }}</h3>
-    <p class="price">
-      <span class="amount">{{ price() }}</span>
-      <span class="currency">MDL</span>
-    </p>
-  </div>
-  <div class="product-info">
-    <div class="actions">
-      <button
-        class="add-to-bag-btn"
-        (click)="addProductInCart()"
-        analyticEvent="buy_click"
-      >
-        <i class="ri-shopping-bag-line"></i>
-        <span>{{ 'Add to Cart' | transloco }}</span>
-      </button>
+
+    <div class="price-block" [class.has-discount]="hasDiscount()">
+      @if (hasDiscount() && oldPrice()) {
+        <span class="old-price">{{ oldPrice() }} MDL</span>
+      }
+      <p class="price" [class.sale-price]="hasDiscount()">
+        <span class="amount">{{ price() }}</span>
+        <span class="currency">MDL</span>
+      </p>
     </div>
+  </div>
+
+  <div class="product-info">
+    <button
+      class="add-to-bag-btn"
+      (click)="addProductInCart(); $event.stopPropagation()"
+      analyticEvent="buy_click"
+    >
+      <i class="ri-shopping-bag-line"></i>
+      <span>{{ 'Add to Cart' | transloco }}</span>
+    </button>
   </div>
 </div>

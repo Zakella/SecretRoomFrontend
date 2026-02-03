@@ -25,10 +25,33 @@ export class ProductCard {
   readonly imageUrl = input<string>('');
   readonly title = input<string>();
   readonly brand = input<string>();
-  readonly price = input<string>();
+  readonly price = input<number>();
   readonly rating = input<number>(3);
-  readonly isBestSeller = input<boolean>(true);
+  readonly isBestSeller = input<boolean>(false);
+  readonly isNew = input<boolean>(false);
+  readonly oldPrice = input<number | null>(null);
+  readonly discountPercent = input<number>(0);
   readonly showOptions = input<boolean>();
+
+  hasDiscount(): boolean {
+    const old = this.oldPrice();
+    const current = this.price();
+    // Скидка только если oldPrice больше текущей цены
+    return old !== null && old > 0 && current !== undefined && old > current;
+  }
+
+  hoverImageUrl(): string | null {
+    const images = this.product()?.productImagesWebStore;
+    // Берём второе изображение из массива, если есть
+    if (images && images.length > 1) {
+      return images[1].imageUrl;
+    }
+    // Или первое, если основное отличается
+    if (images && images.length > 0 && images[0].imageUrl !== this.imageUrl()) {
+      return images[0].imageUrl;
+    }
+    return null;
+  }
   currentSize: string | undefined;
   quantity: number = 1;
   loading  = signal<boolean>(false);
