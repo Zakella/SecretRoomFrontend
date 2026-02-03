@@ -1,20 +1,24 @@
-<section class="bestsellers">
-  <div class="bestsellers-left">
-    <span class="eyebrow">Top Picks</span>
-    <h2>Best<br />Sellers</h2>
-    <p>Самые покупаемые продукты этого месяца</p>
-    <a class="cta" href="/catalog">Смотреть все</a>
-  </div>
-  <div class="bestsellers-right">
-    @for (product of bestSellers(); track product.id) {
-      <article class="product" [class.hero]="$first">
-        <img src="https://api.victoriasecret.md/api/public/serveFile/MistLimitedCollection/FragranceMistBareVanillaBliss1.jpg" [alt]="product.nameRu" />
-        <div class="meta">
-          <span class="brand">{{ product.brandAlias }}</span>
-          <span class="name">{{ product.nameRu }}</span>
-          <span class="price">{{ product.price }} MDL</span>
-        </div>
-      </article>
-    }
-  </div>
-</section>
+@if (bestSellers().length > 0) {
+  <section class="bestsellers">
+    <div class="bestsellers-left">
+      <span class="eyebrow">Top Picks</span>
+      <h2>Best<br/>Sellers</h2>
+      <p>Самые покупаемые продукты этого месяца</p>
+      <a class="cta" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">Смотреть все</a>
+    </div>
+    <div class="bestsellers-right">
+      @for (product of bestSellers(); track product.id) {
+        <article class="product" [class.hero]="$first">
+          <img
+            src="https://api.victoriasecret.md/api/public/serveFile/MistLimitedCollection/FragranceMistBareVanillaBliss1.jpg"
+            [alt]="product.nameRu"/>
+          <div class="meta">
+            <span class="brand">{{ product.brandAlias }}</span>
+            <span class="name">{{ product.nameRu }}</span>
+            <span class="price">{{ product.price }} MDL</span>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+}

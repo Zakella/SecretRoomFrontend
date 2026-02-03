@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  Inject,
+  inject,
+  OnInit,
+  PLATFORM_ID,
+  signal
+} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -6,8 +15,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
-import {ClickOutside} from './click-outside';
-import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
+import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 
 
 @Component({
@@ -16,7 +24,6 @@ import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
     RouterLink,
     TranslocoPipe,
     FormsModule,
-    ClickOutside,
     UpperCasePipe,
     NgStyle,
     NgTemplateOutlet
@@ -28,21 +35,20 @@ import {NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 export class Header implements OnInit {
   private cartService = inject(CartUi);
   private langService = inject(Language);
-  protected readonly Object = Object;
+  private router = inject(Router);
+  private categoryService = inject(CategoryService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ru', 'ro'];
   headerItems = signal<Brand[] | null>([]);
   activeBrand = signal<Brand | null>(null);
   query = signal('');
-  private router = inject(Router);
-  private categoryService = inject(CategoryService);
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
   isHidden = false;
-  isLangOpen = false;
   isMinBrands = signal<boolean>(false)
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
     this.getCategories();
@@ -68,7 +74,6 @@ export class Header implements OnInit {
 
   public setActiveLang(lang: string) {
     this.langService.setLanguage(lang);
-    this.isLangOpen = false;
   }
 
   onSearch() {
@@ -101,18 +106,9 @@ export class Header implements OnInit {
 
   @HostListener('window:scroll')
   onWindowScroll() {
-    const currentScroll =
-      window.pageYOffset || document.documentElement.scrollTop || 0;
-
-    this.isHidden = currentScroll > 0;
-  }
-
-  toggleLang(event: MouseEvent) {
-    event.stopPropagation();
-    this.isLangOpen = !this.isLangOpen;
-  }
-
-  closeLang() {
-    this.isLangOpen = false;
-  }
+    if (isPlatformBrowser(this.platformId)) {
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+      this.isHidden = currentScroll > 0;
+    }
+    }
 }

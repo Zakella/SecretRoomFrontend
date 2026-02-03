@@ -11,12 +11,14 @@ import {CartUi} from '../../../widgets/cart/services/cart';
 import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
+import {ProductService} from '../../../@core/api/product';
 
 @Component({
   selector: 'app-product-detail',
   imports: [Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
+  providers: [ProductService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetail {

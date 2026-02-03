@@ -26,4 +26,9 @@ export class NewArrivals {
   goTo(i: number) {
     this.currentIndex = i;
   }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/no-image.png';
+  }
 }

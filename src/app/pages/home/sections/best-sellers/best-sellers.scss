@@ -97,30 +97,43 @@
 @media (max-width: 768px) {
   .bestsellers {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 48px;
     padding: 64px 0;
   }
 
+  .bestsellers-left {
+    padding: 0 20px;
+
+    h2 {
+      font-size: 2.4rem;
+      line-height: 1.05;
+    }
+
+    p {
+      max-width: 100%;
+    }
+  }
+
   .bestsellers-right {
-    mask-image: linear-gradient(
-        to right,
-        transparent,
-        black 6%,
-        black 94%,
-        transparent
-    );
     display: flex;
-    gap: 16px;
+    gap: 20px;
 
     overflow-x: auto;
     overflow-y: hidden;
 
-    padding-right: 16px;
+    padding: 0 20px;
 
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
 
-    /* скрываем скролл */
+    mask-image: linear-gradient(
+        to right,
+        transparent,
+        black 10%,
+        black 90%,
+        transparent
+    );
+
     scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
@@ -128,15 +141,94 @@
   }
 
   .bestsellers-right .product {
-    flex: 0 0 75%;
-    height: 260px;
+    flex: 0 0 85%;
+    height: 300px;
 
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     border-radius: 20px;
   }
 
   .bestsellers-right .hero {
     flex: 0 0 85%;
     height: 300px;
+    grid-row: auto;
+  }
+}
+
+
+
+
+
+// ========================================
+// BESTSELLERS TABLET ADAPTIVE (768px - 1024px)
+// ========================================
+
+@media screen and (min-width: 769px) and (max-width: 1100px) {
+  .bestsellers {
+    // 1. Уменьшаем гигантские отступы десктопа
+    padding: 80px 40px;
+    gap: 40px;
+    // Меняем пропорции: даем больше места тексту, если нужно
+    grid-template-columns: 1fr 1.5fr;
+  }
+
+  .bestsellers-left {
+    h2 {
+      // 4rem на планшете — это слишком много
+      font-size: 2.8rem;
+      line-height: 1.1;
+    }
+
+    p {
+      max-width: 100%;
+      font-size: 0.95rem;
+    }
+  }
+
+  .bestsellers-right {
+    // 2. Корректируем сетку товаров
+    // Вместо 260px делаем высоту чуть меньше, чтобы влезло по высоте
+    grid-template-rows: repeat(2, 220px);
+    gap: 16px;
+
+    .product {
+      border-radius: 18px; // Чуть меньше скругления для гармонии
+
+      .meta {
+        bottom: 15px;
+        left: 15px;
+
+        .name {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+// Дополнительная правка для узких планшетов (iPad Portrait)
+@media screen and (min-width: 769px) and (max-width: 900px) {
+  .bestsellers {
+    // Если экран совсем узкий, ставим текст НАД товарами, как в мобилке,
+    // но сохраняем десктопную сетку для самих карточек
+    grid-template-columns: 1fr;
+    padding: 60px 30px;
+    text-align: center;
+  }
+
+  .bestsellers-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+      max-width: 450px;
+    }
+  }
+
+  .bestsellers-right {
+    // Оставляем красивую сетку, а не мобильный скролл
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: repeat(2, 200px);
   }
 }

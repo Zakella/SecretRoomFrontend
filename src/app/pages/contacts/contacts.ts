@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'contacts',
-  imports: [FadeUp],
+  imports: [FadeUp, TranslocoPipe],
   templateUrl: './contacts.html',
   styleUrl: './contacts.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,29 +1,3 @@
-<!--
-<div class="product-card">
-    @if (isBestSeller()){
-      <div class="limited-badge">
-        <span>LIMITED EDITION</span>
-      </div>
-    }
-
-    <div class="product-image-container">
-      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product()?.name" class="product-image"/>
-    </div>
-
-
-    <div class="product-info">
-      <h3 class="product-name">{{product()?.name}}</h3>
-      <p class="product-description">Lorem ipsum dolor sit.</p>
-      <p class="product-price">{{ price() }} MDL </p>
-
-      <button class="add-to-bag-btn" (click)="addProductInCart()" analyticEvent="buy_click">
-        {{ 'Add to Cart' | transloco }}
-      </button>
-    </div>
-</div>
--->
-
-
 <div class="product-card" [class.bestseller]="isBestSeller()">
   <div class="image-wrapper">
     @if (isBestSeller()) {
@@ -35,21 +9,16 @@
     </button>
 
     <div class="img-container" (click)="navToProduct()">
-      <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
-      <div class="quick-add-overlay">
-        <button class="action-btn" (click)="addProductInCart(); $event.stopPropagation()">
-          {{ 'Add to Cart' | transloco }}
-        </button>
-      </div>
+      <img [src]="product()?.imageURL" [alt]="product()?.name" class="main-img"/>
     </div>
   </div>
 
   <div class="info" (click)="navToProduct()">
     <div class="meta">
-      <span class="category">{{product()?.brand}}</span> </div>
+      <span class="category">Victoria's Secret</span> </div>
     <h3 class="name">{{ product()?.name }}</h3>
     <p class="price">
-      <span class="amount">{{ price() }}</span>
+      <span class="amount">{{ product()?.price }}</span>
       <span class="currency">MDL</span>
     </p>
   </div>

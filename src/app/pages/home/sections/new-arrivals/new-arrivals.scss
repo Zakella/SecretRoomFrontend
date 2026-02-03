@@ -4,7 +4,7 @@ $bg: #fdfdfd;
 
 .arrivals-section {
   background-color: $bg;
-  padding: 120px 0;
+  padding: 100px 0;
   width: 100%;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
@@ -226,4 +226,160 @@ $bg: #fdfdfd;
 
 .product-card:hover .quick-view {
   transform: translateY(0);
+}
+
+
+
+
+
+
+/* =========================
+   TABLET ≤ 1024px
+========================= */
+@media (max-width: 1024px) {
+  .arrivals-section {
+    padding: 80px 0;
+
+    .container {
+      padding: 0 32px;
+    }
+  }
+
+  .section-header {
+    margin-bottom: 48px;
+
+    .title {
+      font-size: 36px;
+    }
+  }
+
+  .slider-track {
+    gap: 28px;
+  }
+
+  .product-card {
+    min-width: 280px;
+
+    .image-wrapper {
+      height: 55vh;
+      min-height: 360px;
+      max-height: 380px;
+    }
+  }
+}
+
+/* =========================
+   MOBILE ≤ 768px
+========================= */
+@media (max-width: 768px) {
+  .arrivals-section {
+    padding: 64px 0;
+
+    .container {
+      padding: 0 20px;
+    }
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 32px;
+
+    .subtitle {
+      font-size: 10px;
+    }
+
+    .title {
+      font-size: 28px;
+    }
+  }
+
+  /* стрелки не нужны — свайп */
+  .nav-arrows {
+    display: none;
+  }
+
+  .slider-viewport {
+    overflow: hidden;
+  }
+
+  .slider-track {
+    gap: 0;
+  }
+
+  /* строго один айтем */
+  .product-card {
+    min-width: 100%;
+    opacity: 1;
+
+    .image-wrapper {
+      height: 50vh;
+      min-height: 300px;
+      max-height: 340px;
+      border-radius: 10px;
+    }
+
+    .product-info {
+      padding: 16px 0;
+
+      .name {
+        font-size: 16px;
+      }
+
+      .price {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .indicators {
+    margin-top: 24px;
+
+    .dash {
+      width: 24px;
+
+      &.active {
+        width: 48px;
+      }
+    }
+  }
+}
+
+/* =========================
+   SMALL MOBILE ≤ 480px
+========================= */
+@media (max-width: 480px) {
+  .arrivals-section {
+    padding: 48px 0;
+  }
+
+  .section-header {
+    .title {
+      font-size: 24px;
+    }
+  }
+
+  .product-card {
+    .image-wrapper {
+      height: 45vh;
+      min-height: 260px;
+      max-height: 300px;
+      border-radius: 8px;
+    }
+
+    .product-info {
+      .brand {
+        font-size: 9px;
+      }
+
+      .name {
+        font-size: 15px;
+      }
+
+      .price {
+        font-size: 13px;
+      }
+    }
+  }
 }

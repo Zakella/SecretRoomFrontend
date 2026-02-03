@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
-import {TextSlider} from '../../shared/components/text-slider/text-slider';
 import {FadeUp} from '../../@core/directives/fade-up';
-import {imageSliderMock} from '../../mock/image-skider-mock';
 import {ProductService} from '../../@core/api/product';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
@@ -10,14 +8,14 @@ import {BestSellers} from './sections/best-sellers/best-sellers';
 import {NewArrivals} from './sections/new-arrivals/new-arrivals';
 import {Categories} from './sections/categories/categories';
 import {Socials} from './sections/socials/socials';
-import {Hero} from '../../@core/api/hero';
+import {HeroService} from '../../@core/api/hero';
+import {CategoryService} from '../../@core/api/category';
 
 @Component({
   selector: 'app-home',
   imports: [
     ImageSlider,
     BestSellers,
-    TextSlider,
     FadeUp,
     Socials,
     NewArrivals,
@@ -32,7 +30,8 @@ import {Hero} from '../../@core/api/hero';
 })
 export class Home {
   private productService = inject(ProductService);
-  private heroService = inject(Hero)
+  private heroService = inject(HeroService)
+  private categoryService = inject(CategoryService);
   protected readonly bestSellers$ = this.productService.getBestSellers(1, 3).pipe(
     map(res => res.content)
   );
@@ -40,6 +39,9 @@ export class Home {
     map(res => res.content)
   );
   protected readonly heroItems$ = this.heroService.getActiveHeroItems().pipe(
+    map(res => res)
+  )
+  protected readonly categories$ = this.categoryService.getCategories().pipe(
     map(res => res)
   )
 }
