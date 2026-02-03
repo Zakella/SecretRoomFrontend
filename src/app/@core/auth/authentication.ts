@@ -66,6 +66,10 @@ export class Authentication {
     );
   }
 
+  public hasActiveSession(): boolean {
+    return this.hasValidTokenInLocalStorage();
+  }
+
   logout(): void {
     const userDetails = this.getUserDetails();
     if (userDetails) {
