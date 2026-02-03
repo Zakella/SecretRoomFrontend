@@ -1,4 +1,4 @@
-import {HttpEvent, HttpHandler, HttpHeaders, HttpRequest} from '@angular/common/http';
+import {HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs';
 import {isPlatformBrowser} from '@angular/common';
@@ -9,7 +9,7 @@ import {ProtectedEndpoints} from '../../entities/protected-endpoints';
 @Injectable({
   providedIn: 'root'
 })
-export class HttpInterceptor {
+export class AuthInterceptor implements HttpInterceptor {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 

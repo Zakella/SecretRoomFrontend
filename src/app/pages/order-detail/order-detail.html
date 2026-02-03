@@ -1,0 +1,147 @@
+<div class="order-detail-page">
+  <div class="order-detail-container">
+    <!-- Back Button -->
+    <button class="btn-back" (click)="goBack()">
+      <i class="pi pi-arrow-left"></i>
+      {{ 'orderDetail.backToOrders' | transloco }}
+    </button>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>{{ 'orderDetail.loading' | transloco }}</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div class="error-state">
+        <i class="pi pi-exclamation-circle"></i>
+        <p>{{ error() | transloco }}</p>
+        <button class="btn-retry" (click)="retryLoad()">
+          <i class="pi pi-refresh"></i>
+          {{ 'cabinet.retry' | transloco }}
+        </button>
+      </div>
+    }
+
+    <!-- Order Content -->
+    @if (!isLoading() && !error() && order()) {
+      <div class="order-content">
+        <!-- Order Header -->
+        <div class="order-header-card">
+          <div class="order-header-info">
+            <h1 class="order-title">{{ 'cabinet.orderNumber' | transloco }} #{{ order()!.id }}</h1>
+            <p class="order-date">{{ 'orderDetail.placedOn' | transloco }} {{ order()!.placementDate | date: 'dd MMMM yyyy, HH:mm' }}</p>
+          </div>
+          <div class="order-status" [ngClass]="getStatusClass(order()!.status)">
+            {{ getStatusLabel(order()!.status) | transloco }}
+          </div>
+        </div>
+
+        <div class="order-grid">
+          <!-- Order Items -->
+          <div class="order-items-section">
+            <h2 class="section-title">{{ 'orderDetail.orderItems' | transloco }}</h2>
+            <div class="items-list">
+              @for (item of order()!.items; track item.product.id) {
+                <div class="order-item">
+                  <div class="item-image">
+                    <img [src]="item.product.imageURL" [alt]="item.product.name">
+                  </div>
+                  <div class="item-details">
+                    <h4 class="item-name">{{ item.product.name }}</h4>
+                    @if (item.sizeType) {
+                      <p class="item-size">{{ 'orderDetail.size' | transloco }}: {{ item.sizeType }}</p>
+                    }
+                    <p class="item-qty">{{ 'orderDetail.quantity' | transloco }}: {{ item.quantity }}</p>
+                  </div>
+                  <div class="item-price">
+                    {{ item.amount }} MDL
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Order Totals -->
+            <div class="order-totals">
+              <div class="total-row">
+                <span>{{ 'orderDetail.subtotal' | transloco }}</span>
+                <span>{{ order()!.totalAmount }} MDL</span>
+              </div>
+              <div class="total-row">
+                <span>{{ 'orderDetail.shipping' | transloco }}</span>
+                <span [class.free]="order()!.shippingCost === 0">
+                  @if (order()!.shippingCost === 0) {
+                    {{ 'orderDetail.freeShipping' | transloco }}
+                  } @else {
+                    {{ order()!.shippingCost }} MDL
+                  }
+                </span>
+              </div>
+              <div class="total-row grand-total">
+                <span>{{ 'orderDetail.total' | transloco }}</span>
+                <span>{{ order()!.totalAmountOrder }} MDL</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Info Sidebar -->
+          <div class="order-info-sidebar">
+            <!-- Shipping Address -->
+            <div class="info-card">
+              <h3 class="info-title">
+                <i class="pi pi-map-marker"></i>
+                {{ 'orderDetail.shippingAddress' | transloco }}
+              </h3>
+              <div class="info-content">
+                <p>{{ order()!.customer?.firstName }} {{ order()!.customer?.lastName }}</p>
+                <p>{{ order()!.shippingAddress?.street }}</p>
+                <p>{{ order()!.shippingAddress?.city }}, {{ order()!.shippingAddress?.zipCode }}</p>
+                <p>{{ order()!.shippingAddress?.country }}</p>
+                <p class="phone">{{ order()!.customer?.phone }}</p>
+              </div>
+            </div>
+
+            <!-- Shipping Method -->
+            <div class="info-card">
+              <h3 class="info-title">
+                <i class="pi pi-truck"></i>
+                {{ 'orderDetail.shippingMethod' | transloco }}
+              </h3>
+              <div class="info-content">
+                <p class="shipping-name">{{ order()!.shippingOption?.name }}</p>
+                <p class="shipping-desc">{{ order()!.shippingOption?.description }}</p>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="info-card">
+              <h3 class="info-title">
+                <i class="pi pi-credit-card"></i>
+                {{ 'orderDetail.paymentMethod' | transloco }}
+              </h3>
+              <div class="info-content">
+                <p>{{ getPaymentLabel(order()!.payment) | transloco }}</p>
+              </div>
+            </div>
+
+            <!-- Comment -->
+            @if (order()!.comment) {
+              <div class="info-card">
+                <h3 class="info-title">
+                  <i class="pi pi-comment"></i>
+                  {{ 'orderDetail.comment' | transloco }}
+                </h3>
+                <div class="info-content">
+                  <p class="comment-text">{{ order()!.comment }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -21,6 +21,7 @@ import { ProductResolver } from './pages/products/product-detail/product.resolve
 import {PaymentFail} from './pages/states/payment-fail/payment-fail';
 import {Notfound} from './pages/states/notfound/notfound';
 import {Catalog} from './pages/products/catalog/catalog';
+import {OrderDetail} from './pages/order-detail/order-detail';
 
 export const routes: Routes = [
   {
@@ -58,8 +59,12 @@ export const routes: Routes = [
             component: Cabinet
           },
           {
-            path: 'checkout',
+            path: 'order/:trackingNumber',
             canActivate: [AccessGuard],
+            component: OrderDetail
+          },
+          {
+            path: 'checkout',
             component: Checkout
           },
           {path: 'promotion', component: PromotionCard},
@@ -75,7 +80,7 @@ export const routes: Routes = [
           {path: 'profile', component: Login},
           {path: 'registration', component: Registration},
           {path: 'account-not-found', component: AccountNotFound},
-          {path: 'order-success', component: OrderSummary},
+          {path: 'order-success/:trackingNumber', component: OrderSummary},
           {path: '**', component: Notfound}
         ]
       }

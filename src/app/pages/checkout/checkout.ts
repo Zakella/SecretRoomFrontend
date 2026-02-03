@@ -1,486 +1,366 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal
+} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {NgIf} from '@angular/common';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {CartUi} from '../../shared/components/cart/services/cart';
+import {CartItem} from '../../entities/cart-item';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {Router, RouterLink} from '@angular/router';
+import {Shipping} from '../../@core/api/shipping';
+import {ShippingOption} from '../../entities/shipping-options';
+import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
+import {InputNumber} from 'primeng/inputnumber';
+import {Language} from '../../@core/services/language';
+import {PurchaseService} from '../../@core/api/purchase';
+import {Purchase} from '../../entities/purchase';
 
 type Step = 'information' | 'shipping' | 'payment';
-export interface Review {
-  user: string;
-  avatar: string;
-  rating: number;
-  date: string;
-  text: string;
-  images?: string[];
-}
+
+type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
 
 @Component({
   selector: 'app-checkout',
   imports: [
     FadeUp,
-    NgIf
+    NgIf,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    InputNumber,
+    RouterLink
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Checkout {
+export class Checkout implements OnInit, OnDestroy {
   step: Step = 'information';
+  form!: FormGroup;
 
-  goTo(step: Step) {
+  cartItems: CartItem[] = [];
+  totalAmount = 0;
+  totalQuantity = 0;
+  shippingCost = 0;
+
+  shippingOptions: ShippingOption[] = [];
+  selectedShippingOption: ShippingOption | null = null;
+  availablePaymentMethods: PaymentMethod[] = [];
+  selectedPayment: PaymentMethod | null = null;
+
+  isLoading = signal(false);
+  isSubmitting = signal(false);
+  orderError = signal<string | null>(null);
+  shippingError = signal<string | null>(null);
+
+  private fb = inject(FormBuilder);
+  private cartService = inject(CartUi);
+  private router = inject(Router);
+  private shippingService = inject(Shipping);
+  private purchaseService = inject(PurchaseService);
+  private cdr = inject(ChangeDetectorRef);
+  private langService = inject(Language);
+  private translocoService = inject(TranslocoService);
+  private destroy$ = new Subject<void>();
+
+  activeLang = this.langService.currentLanguage;
+
+  ngOnInit(): void {
+    this.initForm();
+    this.loadCart();
+    this.subscribeToCartChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
+      country: [{value: 'Moldova, Republic of', disabled: true}],
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      lastname: ['', [Validators.required, Validators.minLength(2)]],
+      address: ['', [Validators.required, Validators.minLength(3)]],
+      city: ['', [Validators.required, Validators.minLength(2)]],
+      zip: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^0[67]\d{7}$/)]],
+      selectedShipping: ['', Validators.required],
+      payment: ['', Validators.required],
+      iAgree: [false, Validators.requiredTrue],
+      comment: ['']
+    });
+  }
+
+  private loadCart(): void {
+    this.cartItems = this.cartService.loadCartItemsFromStorage();
+    if (this.cartItems.length === 0) {
+      this.router.navigate([this.activeLang(), 'catalog', 'all']);
+      return;
+    }
+    this.cartService.computeCartTotals();
+  }
+
+  private subscribeToCartChanges(): void {
+    this.cartService.cartItems
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(items => {
+        this.cartItems = items;
+        this.cdr.markForCheck();
+      });
+
+    this.cartService.totalAmount
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(amount => {
+        this.totalAmount = amount;
+        this.updateShippingCost();
+        this.cdr.markForCheck();
+      });
+
+    this.cartService.totalQuantity
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(qty => {
+        this.totalQuantity = qty;
+        this.cdr.markForCheck();
+      });
+
+    this.cartService.cartModified
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(modified => {
+        if (modified) {
+          this.cartService.computeCartTotals();
+        }
+      });
+  }
+
+  private loadShippingOptions(): void {
+    this.isLoading.set(true);
+    this.shippingError.set(null);
+
+    this.shippingService.getShippingOptions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (options) => {
+          this.shippingOptions = options.map(opt => ({
+            ...opt,
+            expectedDeliveryDescription: this.getDeliveryDateRange(opt.expectedDeliveryFrom, opt.expectedDeliveryTo)
+          }));
+          this.isLoading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.isLoading.set(false);
+          this.shippingError.set('errors.serverError');
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private getDeliveryDateRange(minDays: number, maxDays: number): string {
+    const formatter = new Intl.DateTimeFormat('ru', {day: '2-digit', month: '2-digit', year: 'numeric'});
+    const now = new Date();
+    const from = new Date(now.getTime() + minDays * 24 * 60 * 60 * 1000);
+    const to = new Date(now.getTime() + maxDays * 24 * 60 * 60 * 1000);
+    return `${formatter.format(from)} - ${formatter.format(to)}`;
+  }
+
+  goTo(step: Step): void {
+    if (step === 'shipping' && !this.isInformationValid()) {
+      this.markInformationFieldsTouched();
+      return;
+    }
+    if (step === 'payment' && !this.selectedShippingOption) {
+      return;
+    }
+
+    // Загружаем опции доставки при переходе на шаг shipping (если ещё не загружены)
+    if (step === 'shipping' && this.shippingOptions.length === 0) {
+      this.loadShippingOptions();
+    }
+
     this.step = step;
   }
 
+  private isInformationValid(): boolean {
+    const fields = ['email', 'name', 'lastname', 'address', 'city', 'zip', 'phone'];
+    return fields.every(field => this.form.get(field)?.valid);
+  }
 
-  totalRating = 4.8;
-  totalCount = 125;
+  private markInformationFieldsTouched(): void {
+    const fields = ['email', 'name', 'lastname', 'address', 'city', 'zip', 'phone'];
+    fields.forEach(field => this.form.get(field)?.markAsTouched());
+  }
 
-  bars = [
-    { label: 'Excellent', value: 100 },
-    { label: 'Good', value: 11 },
-    { label: 'Average', value: 3 },
-    { label: 'Below Average', value: 8 },
-    { label: 'Poor', value: 1 }
-  ];
+  selectShippingOption(option: ShippingOption): void {
+    this.selectedShippingOption = option;
+    this.form.patchValue({selectedShipping: option.id});
+    this.updateShippingCost();
+    this.updateAvailablePaymentMethods();
+    this.selectedPayment = null;
+    this.form.patchValue({payment: ''});
+    this.cdr.markForCheck();
+  }
 
-  reviews: Review[] = [
-    {
-      user: 'Grace Carey',
-      avatar: 'https://i.pravatar.cc/50?img=1',
-      rating: 4,
-      date: '24 January,2023',
-      text: `I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier
-      with my purchase!! ... Highly recommend!!!`
-    },
-    {
-      user: 'Ronald Richards',
-      avatar: 'https://i.pravatar.cc/50?img=2',
-      rating: 5,
-      date: '24 January,2023',
-      text: `This phone has 1T storage and is durable. Plus all the new iPhones have a C port! ...`
-    },
-    {
-      user: 'Darcy King',
-      avatar: 'https://i.pravatar.cc/50?img=3',
-      rating: 3,
-      date: '24 January,2023',
-      text: `I might be the only one to say this but the camera is a little funky. Hoping it will change with a software update...`,
-      images: [
-        'https://via.placeholder.com/60',
-        'https://via.placeholder.com/60'
-      ]
+  private updateShippingCost(): void {
+    if (this.selectedShippingOption) {
+      if (this.totalAmount >= this.selectedShippingOption.freeShippingFrom) {
+        this.shippingCost = 0;
+      } else {
+        this.shippingCost = this.selectedShippingOption.cost;
+      }
     }
-  ];
-
-  showAll = false;
-
-  toggle() {
-    this.showAll = !this.showAll;
   }
 
-  get visibleReviews() {
-    return this.showAll ? this.reviews : this.reviews.slice(0, 2);
+  private updateAvailablePaymentMethods(): void {
+    this.availablePaymentMethods = [];
+    if (this.selectedShippingOption) {
+      if (this.selectedShippingOption.onlinePaymentAvailable) {
+        this.availablePaymentMethods.push('OnlinePayment');
+      }
+      if (this.selectedShippingOption.cashOnDeliveryAvailable) {
+        this.availablePaymentMethods.push('CashOnDelivery');
+      }
+      if (this.selectedShippingOption.cardOnDeliveryAvailable) {
+        this.availablePaymentMethods.push('CardOnDelivery');
+      }
+    }
   }
 
-  get starsArray() {
-    return Array(5).fill(0);
+  selectPaymentMethod(method: PaymentMethod): void {
+    this.selectedPayment = method;
+    this.form.patchValue({payment: method});
+    this.cdr.markForCheck();
   }
 
-  /* cartItems: CartItem[] = [];
-   selectedPayment: string[] = [];
-   selectedPaymentValue: string = '';
-   currentLang: string = 'ro';
+  getPaymentLabel(method: PaymentMethod): string {
+    return method;
+  }
 
-   totalAmount: number = 0;
-   loading: boolean = false;
-   private ngUnsubscribe = new Subject<void>();
+  // Cart management
+  updateCartItemQuantity(item: CartItem, index: number): void {
+    this.cartService.recalculateCartItem(item, index);
+  }
 
+  removeCartItem(index: number): void {
+    this.cartService.deleteItemFromCart(index);
+    if (this.cartItems.length === 0) {
+      this.router.navigate([this.activeLang(), 'catalog', 'all']);
+    }
+  }
 
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.form.get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
 
-   shippingOptions: ShippingOption[] = [];
-   selectedOption: ShippingOption | undefined = undefined;
-   shippingCost: number = 0;
-   form!: FormGroup;
-   isLoading: boolean = false;
+  canSubmit(): boolean {
+    return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0;
+  }
 
+  onSubmit(): void {
+    if (!this.canSubmit()) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-   constructor(private cartService: CartService,
-               private fb: FormBuilder,
-               private router: Router,
-               private purchaseService: PurchaseService,
-               private shippingService: ShippingService,
-               private messageService: MessageService,
-               private analyticsService: AnalyticsService,
-               private languageService: LanguageService,
-               private authService: AuthenticationService) {
-   }
+    this.isSubmitting.set(true);
 
-   ngOnInit(): void {
-     this.isLoading = true; // Устанавливаем isLoading в true.
+    const formValue = this.form.getRawValue();
 
+    const purchase: Purchase = {
+      customer: {
+        firstName: formValue.name,
+        lastName: formValue.lastname,
+        email: formValue.email,
+        phone: formValue.phone
+      },
+      shippingAddress: {
+        street: formValue.address,
+        city: formValue.city,
+        country: formValue.country,
+        zipCode: formValue.zip,
+        phone: formValue.phone
+      },
+      order: {
+        id: null,
+        placementDate: new Date(),
+        shippingOption: this.selectedShippingOption!,
+        shippingCost: this.shippingCost,
+        totalQuantity: this.totalQuantity,
+        totalAmount: this.totalAmount,
+        totalAmountOrder: this.totalAmount + this.shippingCost
+      },
+      orderItems: this.cartItems.map(item => ({
+        product: item.product,
+        sizeType: item.size?.sizeType,
+        amount: item.amount,
+        quantity: item.quantity
+      })),
+      comment: formValue.comment || '',
+      language: this.translocoService.getActiveLang(),
+      payment: this.selectedPayment
+    };
 
-     forkJoin({
-       formInit: this.initForm(),
-       cartItems: this.loadCartItems(),
-       shippingOptions: this.loadShippingOptions(),
-       userDetails: this.checkUserDetails()
-     }).subscribe({
-       next: () => {
+    this.orderError.set(null);
 
-         if (this.shippingOptions.length > 0) {
-           this.selectedOption = this.shippingOptions[0];
-           this.form.controls['selectedValue'].setValue(this.selectedOption.id, {onlySelf: true});
-           this.putAvailablePaymentOptions();
-         }
-         this.isLoading = false;
-       },
-       error: () => {
-         this.isLoading = false;
-       }
-     });
+    this.purchaseService.placeOrder(purchase)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting.set(false);
 
-     this.cardModified();
-     this.subscribeToTotalAmount();
-     this.subscribeToShippingOption();
-     this.setLanguage();
-   }
+          if (response.ok === false) {
+            this.orderError.set('errors.serverError');
+            this.cdr.markForCheck();
+            return;
+          }
 
-   setLanguage() {
-     this.languageService.language$.subscribe(
-       lang => {
-         this.currentLang = lang;
-       }
-     );
-   }
+          this.cartService.clearCart();
 
+          if (response.waitingForPayment && response.paymentUrl) {
+            window.location.href = response.paymentUrl;
+          } else {
+            this.router.navigate(['/', this.activeLang(), 'order-success', response.orderTrackingNumber]);
+          }
+        },
+        error: (error) => {
+          console.error('Order placement failed:', error);
+          this.isSubmitting.set(false);
 
- // Инициализация формы
-   private initForm() {
-  /!*   return new Observable<void>((observer) => {
-       this.form = this.fb.group({
-         email: ["", [Validators.required, Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
-         country: {value: "Moldova, Republic of", disabled: true},
-         name: ["", this.nameValidator],
-         checked: this.fb.control(true),
-         selectedValue: ["", Validators.required],
-         lastname: ["", this.nameValidator],
-         address: ["", [Validators.required, Validators.minLength(3)]],
-         city: ["", this.nameValidator],
-         zip: ["", [Validators.required, Validators.pattern(/^\d+$/)]],
-         phone: ["", [Validators.required, Validators.pattern(/^0[67]\d{7}$/)]],
-         payment: ["", Validators.required],
-         iAgree: [false, Validators.required],
-         delivery: "",
-         comment: ""
-       });
-       observer.next();
-       observer.complete();
-     });*!/
-   }
+          if (error.status === 0) {
+            this.orderError.set('errors.serverError');
+          } else if (error.status >= 500) {
+            this.orderError.set('errors.serverError');
+          } else if (error.error?.message) {
+            this.orderError.set(error.error.message);
+          } else {
+            this.orderError.set('errors.serverError');
+          }
 
- // Загрузка товаров из корзины
-   private loadCartItems() {
-     return new Observable<void>((observer) => {
-       this.cartItems = this.cartService.loadCartItemsFromStorage();
-       if (this.cartItems.length === 0) {
-         this.router.navigate(['empty-cart']);
-       }
-       observer.next();
-       observer.complete();
-     });
-   }
+          this.cdr.markForCheck();
+        }
+      });
+  }
 
- // Загрузка вариантов доставки
-   private loadShippingOptions() {
-     return this.shippingService.getShippingOptions().pipe(
-       takeUntil(this.ngUnsubscribe),
-       map((response) => {
-         this.shippingOptions = response.map(option => {
-           option.expectedDeliveryDescription = this.getDeliveryDate(option.expectedDeliveryFrom, option.expectedDeliveryTo);
-           return option;
-         });
-       })
-     );
-   }
+  get grandTotal(): number {
+    return this.totalAmount + this.shippingCost;
+  }
 
- // Проверка данных пользователя
-   private checkUserDetails() {
-     return new Observable<void>((observer) => {
-       this.authService.loggedIn.subscribe(loggedIn => {
-           if (this.form.controls['email']) {
-             if (loggedIn) {
-               this.setUserDetails();
-               this.form.controls['email'].disable();
-             } else {
-               this.form.controls['email'].enable();
-             }
-           }
-           observer.next();
-           observer.complete();
-         });
-     });
-   }
+  dismissError(): void {
+    this.orderError.set(null);
+  }
 
-
-   private subscribeToTotalAmount() {
-     this.cartService.totalAmount.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
-       (amount) => {
-         this.totalAmount = amount;
-         this.onTotalAmountChange(amount);
-       }
-     );
-   }
-
-   private onTotalAmountChange(amount: number) {
-     if (this.selectedOption) {
-       if (this.totalAmount >= this.selectedOption.freeShippingFrom) {
-         this.shippingCost = 0;
-       } else {
-         this.shippingCost = this.selectedOption.cost;
-       }
-     }
-   }
-
-   private setUserDetails() {
-     const userDetails = this.authService.getUserDetails();
-     if (userDetails) {
-       this.form.patchValue({
-         name: userDetails.givenName,
-         lastname: userDetails.familyName,
-         email: userDetails.email
-       });
-     }
-   }
-
-   cardModified() {
-     this.cartService.cartModified
-       .subscribe(
-         (data) => {
-           if (data) {
-             this.cartItems = this.cartService.cartItems.value;
-           }
-         }
-       );
-   }
-
-   getDeliveryDate(minDays: number, maxDays: number): string {
-     const current = new Date();
-     const formatter = new Intl.DateTimeFormat('ru', {day: '2-digit', month: '2-digit', year: 'numeric'});
-
-     const startDeliveryDate = formatter.format(new Date(current.getFullYear(), current.getMonth(), current.getDate() + minDays));
-     const endDeliveryDate = formatter.format(new Date(current.getFullYear(), current.getMonth(), current.getDate() + maxDays));
-
-     return `${startDeliveryDate} - ${endDeliveryDate}`;
-   }
-
-   placeOrder() {
-     this.loading = true;
-     const lang = localStorage.getItem('lang') || 'ro';
-     const payment = this.form.get('payment')?.value || '';
-
-     let purchase = new Purchase(
-       this.createCustomer(),
-       this.createShippingAddress(),
-       this.createOrder(),
-       this.createOrderItems(),
-       this.setComment(),
-       lang,
-       payment,
-     );
-
-
-     this.purchaseService.placeOrder(purchase)
-       .pipe(untilDestroyed(this))
-       .subscribe({
-         next: response => {
-
-           this.handleResponse(response);
-         },
-         error: error => {
-           this.loading = false;
-           if (error.status === 0) {
-             this.showError('Server is not responding. Please try again later.');
-           } else {
-             this.showError("Server error, try to refresh the page or contact us");
-           }
-           return throwError(() => new Error('Something bad happened; please try again later.'));
-         }
-       });
-   }
-
-   showError(summary: string) {
-     this.messageService.add({
-       severity: 'error',
-       summary: summary,
-       icon: "pi pi-times-circle"
-     });
-   }
-
-   private createOrder() {
-     const totalAmount = this.totalAmount;
-     const orderQuantity = this.cartItems.reduce(
-       (total, cartItem) => total + cartItem.quantity, 0);
-
-     const selectedShippingOptionId = this.form.get('selectedValue')?.value ?? '';
-     const selectedOption = this.shippingOptions.find(option => option.id === selectedShippingOptionId);
-
-     const shippingCost = selectedOption?.cost || 0;
-
-     const shippingAddress = this.createShippingAddress();
-     const customer = this.createCustomer();
-
-     return new Order(
-       null,
-       new Date(),
-       selectedOption,
-       shippingAddress,
-       customer,
-       shippingCost,
-       orderQuantity,
-       totalAmount,
-       totalAmount + shippingCost,
-     );
-   }
-
-   setShippingOptions(id: string) {
-     this.form.controls['selectedValue'].setValue(id);
-     this.selectedOption = this.shippingOptions.find(option => option.id === id);
-     this.shippingCost = this.selectedOption?.cost || 0;
-     this.onTotalAmountChange(this.totalAmount);
-
-     if (this.selectedOption) {
-       //   // Отправка события аналитики
-       this.analyticsService.sendEvent('shipping_option_selected', {
-         shipping_option_name: this.selectedOption.name
-       });
-
-       this.putAvailablePaymentOptions();
-
-     }
-   }
-
-   //Метод не используется :)
-   private subscribeToCartItems() {
-     combineLatest([this.cartService.totalAmount, this.cartService.cartModified]).pipe(takeUntil(this.ngUnsubscribe)).subscribe(
-       ([totalAmount, cartModified]) => {
-         if (cartModified) {
-           this.cartItems = this.cartService.cartItems.value;
-         }
-         this.totalAmount = totalAmount;
-         if (this.cartItems.length === 0) {
-           this.router.navigate(['empty-cart']);
-         }
-       }
-     );
-   }
-
-   ngOnDestroy(): void {
-     this.ngUnsubscribe.next();
-     this.ngUnsubscribe.complete();
-   }
-
-   onSubmit() {
-     if (this.form.valid) {
-       this.analyticsService.sendEvent('order_submission');
-       this.placeOrder();
-     }
-   }
-
-   private subscribeToShippingOption() {
-     this.shippingService.getShippingOptions()
-       .pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-       next: response => {
-         this.shippingOptions = response.map(option => {
-           option.expectedDeliveryDescription = this.getDeliveryDate(option.expectedDeliveryFrom, option.expectedDeliveryTo);
-           return option;
-         });
-       },
-       error: error => {
-         console.log(error);
-       }
-     });
-   }
-
-   private createOrderItems() {
-     return this.cartItems.map(cartItem => {
-       const product = cartItem.product;
-       const unitPrice = product?.price ?? 0;
-       return {
-         product,
-         sizeType: cartItem.size?.sizeType,
-         amount: unitPrice * cartItem.quantity,
-         quantity: cartItem.quantity
-       };
-     });
-   }
-
-   private createCustomer() {
-     return new Customer(
-       this.form.get('name')?.value ?? '',
-       this.form.get('lastname')?.value ?? '',
-       this.form.get('email')?.value ?? '',
-       this.form.get('phone')?.value ?? '',
-     );
-   }
-
-   private createShippingAddress() {
-     return new Address(
-       this.form.get('address')?.value ?? '',
-       this.form.get('city')?.value ?? '',
-       "Moldova, Republic of",
-       this.form.get('zip')?.value ?? '',
-       this.form.get('phone')?.value ?? ''
-     );
-   }
-
-   markFieldAsTouched(fieldName: string) {
-     const field = this.form.get(fieldName);
-     if (field) {
-       field.markAsTouched();
-     }
-   }
-
-   private setComment() {
-     return this.form.get('comment')?.value ?? '';
-   }
-
-   onPaymentSelect(payment: string): void {
-     this.selectedPaymentValue = payment;
-     this.form.controls['payment'].setValue(payment);
-     this.analyticsService.sendEvent('payment_option_selected', {
-       payment_option_name: payment
-     });
-   }
-
-   private handleResponse(response: ResponsePurchase) {
-
-     if (response.waitingForPayment && response.ok && response.paymentUrl) {
-       window.location.href = response.paymentUrl;
-     } else {
-       this.cartService.clearCart();
-       this.router.navigate([`/order-success/${response.orderTrackingNumber}`]);
-       this.loading = false;
-     }
-   }
-
-
-   private putAvailablePaymentOptions() {
-     this.selectedPayment = [];
-     if (this.selectedOption) {
-       if (this.selectedOption.onlinePaymentAvailable) {
-         this.selectedPayment.push('OnlinePayment');
-       }
-
-       if (this.selectedOption.cashOnDeliveryAvailable) {
-         this.selectedPayment.push('CashOnDelivery');
-       }
-
-       if (this.selectedOption.cardOnDeliveryAvailable) {
-         this.selectedPayment.push('CardOnDelivery');
-       }
-
-     }
-   }
-
-   disableSubmitButton() {
-     return !this.form.valid || this.loading || this.form.get('iAgree')?.value === false;
-   }*/
+  retryLoadShipping(): void {
+    this.shippingError.set(null);
+    this.loadShippingOptions();
+  }
 }

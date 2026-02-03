@@ -70,43 +70,45 @@
     </div>
   </div>
 
-  <nav class="nav-main" (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
-    <div class="nav-inner">
-      @if (activeBrand()?.children) {
-        @for (category of activeBrand()!.children!; track category.id) {
-          <a class="category-text"
-             [class.active]="activeCategory()?.id === category.id"
-             (mouseenter)="showDropdown(category)">
-            {{ category.name }}
-          </a>
+  @if (!isCheckoutPage()) {
+    <nav class="nav-main"  (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
+      <div class="nav-inner">
+        @if (activeBrand()?.children) {
+          @for (category of activeBrand()!.children!; track category.id) {
+            <a class="category-text"
+               [class.active]="activeCategory()?.id === category.id"
+               (mouseenter)="showDropdown(category)">
+              {{ category.name }}
+            </a>
+          }
         }
-      }
-    </div>
-
-    <!-- Dropdown -->
-    @if (activeCategory()?.children?.length) {
-      <div class="mega-dropdown" [class.visible]="activeCategory()">
-        <div class="mega-dropdown__inner">
-          <h3 class="mega-dropdown__title">{{ activeCategory()!.name }}</h3>
-
-          <div class="mega-dropdown__list">
-            @for (sub of activeCategory()!.children!; track sub.id; let i = $index) {
-              <a class="mega-dropdown__item"
-                 [style.animation-delay]="i * 0.05 + 's'"
-                 [routerLink]="['/', activeLang(), 'catalog', sub.id]">
-                {{ sub.name }}
-              </a>
-            }
-          </div>
-
-          <a class="mega-dropdown__all" [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.id]">
-            Смотреть всё
-            <i class="ri-arrow-right-line"></i>
-          </a>
-        </div>
       </div>
-    }
-  </nav>
+
+      <!-- Dropdown -->
+      @if (activeCategory()?.children?.length) {
+        <div class="mega-dropdown" [class.visible]="activeCategory()">
+          <div class="mega-dropdown__inner">
+            <h3 class="mega-dropdown__title">{{ activeCategory()!.name }}</h3>
+
+            <div class="mega-dropdown__list">
+              @for (sub of activeCategory()!.children!; track sub.id; let i = $index) {
+                <a class="mega-dropdown__item"
+                   [style.animation-delay]="i * 0.05 + 's'"
+                   [routerLink]="['/', activeLang(), 'catalog', sub.id]">
+                  {{ sub.name }}
+                </a>
+              }
+            </div>
+
+            <a class="mega-dropdown__all" [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.id]">
+              Смотреть всё
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+      }
+    </nav>
+  }
 </header>
 
 <ng-template #logo><a [routerLink]="['/', activeLang()]" class="logo">Secret Room</a></ng-template>

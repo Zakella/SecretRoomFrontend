@@ -24,10 +24,9 @@ export class RegistrationService {
       this.authenticationService.registration(user).subscribe(
         {
           next: authResponse => {
-
-            localStorage.setItem('user', JSON.stringify(authResponse))
-            this.router.navigate(["myAccount"])
-
+            localStorage.setItem('user', JSON.stringify(authResponse));
+            const lang = this.router.url.split('/')[1] || 'ru';
+            this.router.navigate(['/', lang, 'cabinet']);
           },
           error: error => {
             if (error.status === 409) {

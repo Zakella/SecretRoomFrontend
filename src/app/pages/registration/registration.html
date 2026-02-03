@@ -1,31 +1,151 @@
-<section>
-  <div class="form-box" appFadeUp>
-    <div class="form-value">
-      <form action="">
-        <h2>{{'Sign up now' | transloco}}</h2>
-        <div class="input-box">
-          <i class="ri-user-line"></i>
-          <input type="text" required>
-          <label>{{'Name' | transloco}}</label>
+<div class="auth-page">
+  <!-- Animated background -->
+  <div class="auth-bg">
+    <div class="auth-bg-gradient"></div>
+    <div class="auth-bg-pattern"></div>
+  </div>
+
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button
+      class="lang-btn"
+      [class.active]="activeLang() === 'ro'"
+      (click)="switchLang('ro')">
+      RO
+    </button>
+    <button
+      class="lang-btn"
+      [class.active]="activeLang() === 'ru'"
+      (click)="switchLang('ru')">
+      RU
+    </button>
+  </div>
+
+  <div class="auth-container">
+    <!-- Logo -->
+    <a [routerLink]="['/', activeLang()]" class="auth-logo">Secret Room</a>
+
+    <!-- Form Card -->
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1>{{ 'registration.title' | transloco }}</h1>
+        <p>{{ 'registration.subtitle' | transloco }}</p>
+      </div>
+
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Name Row -->
+        <div class="form-row">
+          <div class="form-group" [class.has-error]="isFieldInvalid('firstName')" [class.has-value]="hasValue('firstName')">
+            <input
+              type="text"
+              id="firstName"
+              formControlName="firstName"
+              autocomplete="given-name">
+            <label for="firstName">
+              {{ 'First Name' | transloco }}
+              <span class="required">*</span>
+            </label>
+            <div class="input-line"></div>
+            <i class="ri-user-line field-icon"></i>
+            @if (isFieldInvalid('firstName')) {
+              <span class="error-text">{{ 'Name is required' | transloco }}</span>
+            }
+          </div>
+
+          <div class="form-group" [class.has-error]="isFieldInvalid('lastName')" [class.has-value]="hasValue('lastName')">
+            <input
+              type="text"
+              id="lastName"
+              formControlName="lastName"
+              autocomplete="family-name">
+            <label for="lastName">
+              {{ 'Last Name' | transloco }}
+              <span class="required">*</span>
+            </label>
+            <div class="input-line"></div>
+            <i class="ri-user-line field-icon"></i>
+            @if (isFieldInvalid('lastName')) {
+              <span class="error-text">{{ 'Name is required' | transloco }}</span>
+            }
+          </div>
         </div>
-        <div class="input-box">
-          <i class="ri-user-line"></i>
-          <input type="text" required>
-          <label>{{'Lastname' | transloco}}</label>
+
+        <!-- Email -->
+        <div class="form-group" [class.has-error]="isFieldInvalid('email')" [class.has-value]="hasValue('email')">
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            autocomplete="email">
+          <label for="email">
+            Email
+            <span class="required">*</span>
+          </label>
+          <div class="input-line"></div>
+          <i class="ri-mail-line field-icon"></i>
+          @if (isFieldInvalid('email')) {
+            <span class="error-text">{{ 'Email is not valid' | transloco }}</span>
+          }
         </div>
-        <div class="input-box">
-          <i class="ri-mail-line"></i>
-          <input type="email" required>
-          <label>{{'Email' |transloco}}</label>
+
+        <!-- Password -->
+        <div class="form-group" [class.has-error]="isFieldInvalid('password')" [class.has-value]="hasValue('password')">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            autocomplete="new-password">
+          <label for="password">
+            {{ 'Password' | transloco }}
+            <span class="required">*</span>
+          </label>
+          <div class="input-line"></div>
+          <i
+            class="field-icon toggle-password"
+            [class.ri-eye-line]="!showPassword"
+            [class.ri-eye-off-line]="showPassword"
+            (click)="showPassword = !showPassword"></i>
+          @if (isFieldInvalid('password')) {
+            <span class="error-text">{{ 'Password must be at least 8 characters long and contain both letters and numbers' | transloco }}</span>
+          }
         </div>
-        <div class="input-box">
-          <i class="ri-lock-line"></i>
-          <input type="password" required>
-          <label>{{'Password' |transloco}}</label>
+
+        <!-- Error message -->
+        @if (registrationService.userExists()) {
+          <div class="auth-error">
+            <i class="ri-error-warning-line"></i>
+            {{ 'User already exists' | transloco }}
+          </div>
+        }
+
+        <!-- Submit -->
+        <button type="submit" class="auth-submit" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner"></span>
+            {{ 'Processing...' | transloco }}
+          } @else {
+            {{ 'registration.createAccount' | transloco }}
+            <i class="ri-arrow-right-line"></i>
+          }
+        </button>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+          <span>{{ 'registration.or' | transloco }}</span>
         </div>
-        <button>{{'Sing in' |transloco}} </button>
+
+        <!-- Login link -->
+        <div class="auth-footer">
+          <span>{{ 'registration.haveAccount' | transloco }}</span>
+          <a [routerLink]="['/', activeLang(), 'profile']" class="auth-link">{{ 'Login' | transloco }}</a>
+        </div>
       </form>
     </div>
-  </div>
-</section>
 
+    <!-- Back to home -->
+    <a [routerLink]="['/', activeLang()]" class="back-home">
+      <i class="ri-arrow-left-line"></i>
+      {{ 'registration.backToHome' | transloco }}
+    </a>
+  </div>
+</div>
