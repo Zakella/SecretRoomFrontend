@@ -168,6 +168,14 @@
                 <span class="spinner"></span>
                 {{ 'Loading...' | transloco }}
               </div>
+            } @else if (shippingError()) {
+              <div class="error-banner">
+                <i class="ri-error-warning-line"></i>
+                <span>{{ shippingError() | transloco }}</span>
+                <button type="button" class="btn-retry" (click)="retryLoadShipping()">
+                  <i class="ri-refresh-line"></i>
+                </button>
+              </div>
             } @else {
               <div class="shipping-options">
                 @for (option of shippingOptions; track option.id) {
@@ -280,6 +288,16 @@
               </span>
             </div>
           </div>
+
+          @if (orderError()) {
+            <div class="error-banner order-error">
+              <i class="ri-error-warning-line"></i>
+              <span>{{ orderError() | transloco }}</span>
+              <button type="button" class="btn-dismiss" (click)="dismissError()">
+                <i class="ri-close-line"></i>
+              </button>
+            </div>
+          }
 
           <div class="step-navigation">
             <button type="button" class="btn-back" (click)="goTo('shipping')">

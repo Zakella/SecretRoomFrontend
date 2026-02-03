@@ -20,6 +20,8 @@ import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
+import {PurchaseService} from '../../@core/api/purchase';
+import {Purchase} from '../../entities/purchase';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -56,11 +58,14 @@ export class Checkout implements OnInit, OnDestroy {
 
   isLoading = signal(false);
   isSubmitting = signal(false);
+  orderError = signal<string | null>(null);
+  shippingError = signal<string | null>(null);
 
   private fb = inject(FormBuilder);
   private cartService = inject(CartUi);
   private router = inject(Router);
   private shippingService = inject(Shipping);
+  private purchaseService = inject(PurchaseService);
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   private destroy$ = new Subject<void>();
@@ -138,6 +143,7 @@ export class Checkout implements OnInit, OnDestroy {
 
   private loadShippingOptions(): void {
     this.isLoading.set(true);
+    this.shippingError.set(null);
     this.shippingService.getShippingOptions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -151,6 +157,7 @@ export class Checkout implements OnInit, OnDestroy {
         },
         error: () => {
           this.isLoading.set(false);
+          this.shippingError.set('errors.serverError');
           this.cdr.markForCheck();
         }
       });
@@ -265,10 +272,9 @@ export class Checkout implements OnInit, OnDestroy {
 
     this.isSubmitting.set(true);
 
-    // Prepare purchase data
     const formValue = this.form.getRawValue();
 
-    const purchase = {
+    const purchase: Purchase = {
       customer: {
         firstName: formValue.name,
         lastName: formValue.lastname,
@@ -285,7 +291,7 @@ export class Checkout implements OnInit, OnDestroy {
       order: {
         id: null,
         placementDate: new Date(),
-        shippingOption: this.selectedShippingOption,
+        shippingOption: this.selectedShippingOption!,
         shippingCost: this.shippingCost,
         totalQuantity: this.totalQuantity,
         totalAmount: this.totalAmount,
@@ -302,21 +308,57 @@ export class Checkout implements OnInit, OnDestroy {
       payment: this.selectedPayment
     };
 
-    // For now, just log and show success
-    console.log('Purchase data:', purchase);
+    this.orderError.set(null);
 
-    // TODO: Call purchase API
-    // this.purchaseService.placeOrder(purchase).subscribe(...)
+    this.purchaseService.placeOrder(purchase)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting.set(false);
 
-    setTimeout(() => {
-      this.isSubmitting.set(false);
-      this.cartService.cartItems.next([]);
-      localStorage.removeItem('cartItems');
-      this.router.navigate([this.activeLang(), 'order-success']);
-    }, 2000);
+          if (response.ok === false) {
+            this.orderError.set('errors.serverError');
+            this.cdr.markForCheck();
+            return;
+          }
+
+          this.cartService.clearCart();
+
+          if (response.waitingForPayment && response.paymentUrl) {
+            window.location.href = response.paymentUrl;
+          } else {
+            this.router.navigate(['/', this.activeLang(), 'order-success', response.orderTrackingNumber]);
+          }
+        },
+        error: (error) => {
+          console.error('Order placement failed:', error);
+          this.isSubmitting.set(false);
+
+          if (error.status === 0) {
+            this.orderError.set('errors.serverError');
+          } else if (error.status >= 500) {
+            this.orderError.set('errors.serverError');
+          } else if (error.error?.message) {
+            this.orderError.set(error.error.message);
+          } else {
+            this.orderError.set('errors.serverError');
+          }
+
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   get grandTotal(): number {
     return this.totalAmount + this.shippingCost;
+  }
+
+  dismissError(): void {
+    this.orderError.set(null);
+  }
+
+  retryLoadShipping(): void {
+    this.shippingError.set(null);
+    this.loadShippingOptions();
   }
 }

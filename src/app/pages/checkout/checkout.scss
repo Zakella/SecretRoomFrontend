@@ -265,6 +265,59 @@
   }
 }
 
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #fff5f5, #fff);
+  border: 1.5px solid #e57373;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.3s ease;
+
+  i {
+    font-size: 1.25rem;
+    color: #c9544d;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #c9544d;
+    font-weight: 500;
+  }
+
+  .btn-retry,
+  .btn-dismiss {
+    background: transparent;
+    border: 1.5px solid rgba(201, 84, 77, 0.3);
+    border-radius: 6px;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 1rem;
+      color: #c9544d;
+    }
+
+    &:hover {
+      background: rgba(201, 84, 77, 0.1);
+      border-color: #c9544d;
+    }
+  }
+
+  &.order-error {
+    margin-bottom: 1rem;
+    margin-top: 0;
+  }
+}
+
 :host ::ng-deep .p-inputnumber {
   .p-inputtext { width: 40px !important; text-align: center !important; padding: .4rem !important; background: transparent !important; border: 1px solid rgba(181,133,95,.2) !important; border-radius: 4px !important; color: #2d2a26 !important; }
   .qty-btn { background: transparent !important; color: #4b3e2b !important; border: none !important; }

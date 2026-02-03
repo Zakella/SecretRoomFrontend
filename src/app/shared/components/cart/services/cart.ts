@@ -139,4 +139,15 @@ export class CartUi {
   close() {
     this._visible.set(false);
   }
+
+  clearCart() {
+    this.cartItems.next([]);
+    this.totalAmount.next(0);
+    this.totalQuantity.next(0);
+    this.cartCount.set(0);
+    if (this.isBrowser()) {
+      localStorage.removeItem(this.storageKey);
+    }
+    this.cartModified.next(true);
+  }
 }

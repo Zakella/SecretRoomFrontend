@@ -1,9 +1,101 @@
-<section class="order-success">
-  <div class="container">
-    <div class="icon" aria-hidden="true">✅</div>
-    <h1>Спасибо за ваш заказ!</h1>
-    <p>Ваш заказ успешно оформлен и скоро будет обработан.</p>
-    <p>Вы получите уведомление на электронную почту с деталями заказа.</p>
-    <button class="btn" routerLink="/">Вернуться на главную</button>
+д<div class="order-page">
+  <!-- Animated background -->
+  <div class="order-bg">
+    <div class="order-bg-gradient"></div>
+    <div class="order-bg-pattern"></div>
   </div>
-</section>
+
+  <div class="order-container">
+    <!-- Logo -->
+    <a [routerLink]="['/', activeLang()]" class="order-logo">Secret Room</a>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>{{ 'Loading...' | transloco }}</p>
+      </div>
+    } @else if (error()) {
+      <div class="error-state">
+        <i class="ri-error-warning-line"></i>
+        <p>{{ error() }}</p>
+        <a [routerLink]="['/', activeLang()]" class="btn-primary">{{ 'Go to the home page' | transloco }}</a>
+      </div>
+    } @else if (orderReview()) {
+      <!-- Success Icon -->
+      <div class="success-icon">
+        <i class="ri-checkbox-circle-line"></i>
+      </div>
+
+      <h1 class="order-title">{{ 'Thanks for your Order' | transloco }}</h1>
+      <p class="order-subtitle">{{ 'Order Number' | transloco }}: <strong>{{ orderReview()!.orderNumber }}</strong></p>
+
+      <!-- Order Card -->
+      <div class="order-card">
+        <!-- Order Items -->
+        <div class="order-section">
+          <h3 class="section-title">{{ 'Order Details' | transloco }}</h3>
+          <div class="order-items">
+            @for (item of orderReview()!.items; track item.product.id) {
+              <div class="order-item">
+                <div class="item-image">
+                  @if (item.product.imageURL) {
+                    <img [src]="item.product.imageURL" [alt]="item.product.name">
+                  }
+                </div>
+                <div class="item-details">
+                  <span class="item-name">{{ item.product.name }}</span>
+                  @if (item.sizeType) {
+                    <span class="item-size">{{ 'Size' | transloco }}: {{ item.sizeType }}</span>
+                  }
+                  <span class="item-qty">{{ 'Qty' | transloco }}: {{ item.quantity }}</span>
+                </div>
+                <div class="item-price">{{ item.amount | currency:'MDL ':'symbol':'1.0-0' }}</div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="order-section">
+          <h3 class="section-title">{{ 'Shipping address' | transloco }}</h3>
+          <div class="address-info">
+            <p>{{ orderReview()!.customer.firstName }} {{ orderReview()!.customer.lastName }}</p>
+            <p>{{ orderReview()!.shippingAddress.street }}</p>
+            <p>{{ orderReview()!.shippingAddress.city }}, {{ orderReview()!.shippingAddress.zipCode }}</p>
+            <p>{{ orderReview()!.shippingAddress.country }}</p>
+            <p>{{ orderReview()!.customer.phone }}</p>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-section order-totals">
+          <div class="total-row">
+            <span>{{ 'Subtotal' | transloco }}</span>
+            <span>{{ orderReview()!.subtotal | currency:'MDL ':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span>{{ 'Delivery' | transloco }}</span>
+            <span>{{ orderReview()!.shippingCost === 0 ? ('Free' | transloco) : (orderReview()!.shippingCost | currency:'MDL ':'symbol':'1.0-0') }}</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>{{ 'Total' | transloco }}</span>
+            <span>{{ orderReview()!.totalAmountOrder | currency:'MDL ':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+
+        @if (orderReview()!.comment) {
+          <div class="order-section">
+            <h3 class="section-title">{{ 'Comment' | transloco }}</h3>
+            <p class="order-comment">{{ orderReview()!.comment }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Back to home -->
+      <a [routerLink]="['/', activeLang()]" class="btn-primary">
+        {{ 'Go to the home page' | transloco }}
+        <i class="ri-arrow-right-line"></i>
+      </a>
+    }
+  </div>
+</div>

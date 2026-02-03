@@ -76,7 +76,7 @@ export const routes: Routes = [
           {path: 'profile', component: Login},
           {path: 'registration', component: Registration},
           {path: 'account-not-found', component: AccountNotFound},
-          {path: 'order-success', component: OrderSummary},
+          {path: 'order-success/:trackingNumber', component: OrderSummary},
           {path: '**', component: Notfound}
         ]
       }
