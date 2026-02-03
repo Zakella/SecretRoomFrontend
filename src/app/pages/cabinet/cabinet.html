@@ -1,36 +1,117 @@
-<section class="orders-page">
-  <h1>Мои заказы</h1>
-  <div class="order-list">
-    @for (order of orders; track $index) {
-      <div class="order-card">
-        <div class="order-header">
-          <div>
-            <strong>Заказ №{{ order.id }}</strong><br />
-            <small>{{ order.date | date: 'dd.MM.yyyy' }}</small>
-          </div>
-          <div class="status" [class.completed]="order.status === 'Доставлен'" [class.pending]="order.status === 'В обработке'">
-            {{ order.status }}
-          </div>
+<div class="cabinet-page">
+  <div class="cabinet-container">
+    <!-- Sidebar -->
+    <aside class="cabinet-sidebar">
+      <div class="user-card">
+        <div class="user-avatar">
+          <span>{{ userFirstName.charAt(0) }}{{ userLastName.charAt(0) }}</span>
         </div>
-
-        <div class="order-items">
-          @for (item of order.items; track $index){
-            <div class="order-item">
-              <img [src]="item.image" alt="{{ item.title }}" />
-              <div>
-                <p>{{ item.title }}</p>
-                <p class="qty">Кол-во: {{ item.quantity }}</p>
-              </div>
-              <div class="price">{{ item.price | currency:'USD' }}</div>
-            </div>
-
-          }
-        </div>
-        <div class="order-footer">
-          <div>Общая сумма: <strong>{{ order.total | currency:'USD' }}</strong></div>
-          <a href="#" class="order-details-link">Подробнее</a>
+        <div class="user-info">
+          <h3 class="user-name">{{ userFirstName }} {{ userLastName }}</h3>
+          <p class="user-email">{{ userEmail }}</p>
         </div>
       </div>
-    }
+
+      <nav class="cabinet-nav">
+        <a class="nav-item active">
+          <i class="pi pi-shopping-bag"></i>
+          <span>{{ 'cabinet.myOrders' | transloco }}</span>
+        </a>
+        <button class="nav-item logout" (click)="logout()">
+          <i class="pi pi-sign-out"></i>
+          <span>{{ 'cabinet.logout' | transloco }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="cabinet-content">
+      <div class="content-header">
+        <h1 class="page-title">{{ 'cabinet.myOrders' | transloco }}</h1>
+        <p class="page-subtitle">{{ 'cabinet.ordersSubtitle' | transloco }}</p>
+      </div>
+
+      <!-- Loading State -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>{{ 'cabinet.loading' | transloco }}</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error()) {
+        <div class="error-state">
+          <i class="pi pi-exclamation-circle"></i>
+          <p>{{ error() | transloco }}</p>
+          <button class="btn-retry" (click)="retryLoad()">
+            <i class="pi pi-refresh"></i>
+            {{ 'cabinet.retry' | transloco }}
+          </button>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!isLoading() && !error() && orders().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="pi pi-shopping-bag"></i>
+          </div>
+          <h3>{{ 'cabinet.noOrders' | transloco }}</h3>
+          <p>{{ 'cabinet.noOrdersDescription' | transloco }}</p>
+          <a [routerLink]="['/', activeLang(), 'catalog', 'all']" class="btn-shop">
+            {{ 'cabinet.startShopping' | transloco }}
+          </a>
+        </div>
+      }
+
+      <!-- Orders List -->
+      @if (!isLoading() && !error() && orders().length > 0) {
+        <div class="orders-list">
+          @for (order of orders(); track order.id) {
+            <div class="order-card" (click)="viewOrderDetails(order)">
+              <div class="order-header">
+                <div class="order-info">
+                  <span class="order-number">{{ 'cabinet.orderNumber' | transloco }} #{{ order.id }}</span>
+                  <span class="order-date">{{ order.placementDate | date: 'dd.MM.yyyy' }}</span>
+                </div>
+                <div class="order-status" [ngClass]="getStatusClass(order.status)">
+                  {{ getStatusLabel(order.status) | transloco }}
+                </div>
+              </div>
+
+              <div class="order-items-preview">
+                @for (item of order.items; track item.product.id; let i = $index) {
+                  @if (i < 3) {
+                    <div class="item-thumbnail">
+                      <img [src]="item.product.imageURL" [alt]="item.product.name">
+                      @if (item.quantity > 1) {
+                        <span class="item-qty">{{ item.quantity }}</span>
+                      }
+                    </div>
+                  }
+                }
+                @if (order.items && order.items.length > 3) {
+                  <div class="more-items">
+                    +{{ order.items.length - 3 }}
+                  </div>
+                }
+              </div>
+
+              <div class="order-footer">
+                <div class="order-summary">
+                  <span class="items-count">{{ order.totalQuantity }} {{ 'cabinet.items' | transloco }}</span>
+                  <span class="order-total">{{ order.totalAmountOrder }} MDL</span>
+                </div>
+                <button class="btn-view-details">
+                  {{ 'cabinet.viewDetails' | transloco }}
+                  <i class="pi pi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </main>
   </div>
-</section>
+</div>

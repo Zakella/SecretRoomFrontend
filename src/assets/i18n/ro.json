@@ -196,5 +196,48 @@
     "or": "sau",
     "haveAccount": "Ai deja un cont?",
     "backToHome": "Înapoi la pagina principală"
+  },
+  "cabinet": {
+    "myOrders": "Comenzile mele",
+    "ordersSubtitle": "Vizualizați și urmăriți comenzile dvs.",
+    "logout": "Deconectare",
+    "loading": "Se încarcă comenzile...",
+    "loadError": "Nu s-au putut încărca comenzile",
+    "retry": "Reîncercați",
+    "noOrders": "Nu aveți comenzi încă",
+    "noOrdersDescription": "Începeți cumpărăturile pentru a vedea comenzile aici",
+    "startShopping": "Începe cumpărăturile",
+    "orderNumber": "Comandă",
+    "items": "produse",
+    "viewDetails": "Detalii",
+    "status": {
+      "pending": "În așteptare",
+      "processing": "În procesare",
+      "shipped": "Expediat",
+      "delivered": "Livrat",
+      "cancelled": "Anulat"
+    }
+  },
+  "orderDetail": {
+    "backToOrders": "Înapoi la comenzi",
+    "loading": "Se încarcă comanda...",
+    "loadError": "Nu s-a putut încărca comanda",
+    "placedOn": "Plasată pe",
+    "orderItems": "Produse în comandă",
+    "size": "Mărime",
+    "quantity": "Cantitate",
+    "subtotal": "Subtotal",
+    "shipping": "Livrare",
+    "freeShipping": "Gratuit",
+    "total": "Total",
+    "shippingAddress": "Adresa de livrare",
+    "shippingMethod": "Metoda de livrare",
+    "paymentMethod": "Metoda de plată",
+    "comment": "Comentariu",
+    "payment": {
+      "online": "Plată online",
+      "cash": "Numerar la livrare",
+      "card": "Card la livrare"
+    }
   }
 }

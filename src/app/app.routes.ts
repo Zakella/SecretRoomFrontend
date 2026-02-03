@@ -22,6 +22,7 @@ import {ProductDetail} from './pages/products/product-detail/product-detail';
 import { ProductResolver } from './pages/products/product-detail/product.resolver';
 import {PaymentFail} from './pages/states/payment-fail/payment-fail';
 import {Notfound} from './pages/states/notfound/notfound';
+import {OrderDetail} from './pages/order-detail/order-detail';
 
 export const routes: Routes = [
   {
@@ -58,6 +59,11 @@ export const routes: Routes = [
             path: 'cabinet',
             canActivate: [AccessGuard],
             component: Cabinet
+          },
+          {
+            path: 'order/:trackingNumber',
+            canActivate: [AccessGuard],
+            component: OrderDetail
           },
           {
             path: 'checkout',

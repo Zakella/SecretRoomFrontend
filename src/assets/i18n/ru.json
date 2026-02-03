@@ -194,5 +194,48 @@
     "or": "или",
     "haveAccount": "Уже есть аккаунт?",
     "backToHome": "Вернуться на главную"
+  },
+  "cabinet": {
+    "myOrders": "Мои заказы",
+    "ordersSubtitle": "Просматривайте и отслеживайте свои заказы",
+    "logout": "Выйти",
+    "loading": "Загрузка заказов...",
+    "loadError": "Не удалось загрузить заказы",
+    "retry": "Повторить",
+    "noOrders": "У вас пока нет заказов",
+    "noOrdersDescription": "Начните покупки, чтобы увидеть здесь свои заказы",
+    "startShopping": "Начать покупки",
+    "orderNumber": "Заказ",
+    "items": "товаров",
+    "viewDetails": "Подробнее",
+    "status": {
+      "pending": "В ожидании",
+      "processing": "В обработке",
+      "shipped": "Отправлен",
+      "delivered": "Доставлен",
+      "cancelled": "Отменён"
+    }
+  },
+  "orderDetail": {
+    "backToOrders": "Назад к заказам",
+    "loading": "Загрузка заказа...",
+    "loadError": "Не удалось загрузить заказ",
+    "placedOn": "Оформлен",
+    "orderItems": "Товары в заказе",
+    "size": "Размер",
+    "quantity": "Кол-во",
+    "subtotal": "Подытог",
+    "shipping": "Доставка",
+    "freeShipping": "Бесплатно",
+    "total": "Итого",
+    "shippingAddress": "Адрес доставки",
+    "shippingMethod": "Способ доставки",
+    "paymentMethod": "Способ оплаты",
+    "comment": "Комментарий",
+    "payment": {
+      "online": "Онлайн оплата",
+      "cash": "Наличными при получении",
+      "card": "Картой при получении"
+    }
   }
 }

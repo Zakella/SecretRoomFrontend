@@ -9,7 +9,7 @@ export class TranslocateHttpLoader implements TranslocoLoader {
   private http = inject(HttpClient);
 
   getTranslation(lang: string) {
-    return this.http.get<Translation>(`/assets/i18n/${lang}.json`).pipe(
+    return this.http.get<Translation>(`assets/i18n/${lang}.json`).pipe(
       catchError(() => {
         console.error(`Error loading translation file for language: ${lang}`);
         return of({});

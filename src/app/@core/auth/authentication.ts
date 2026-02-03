@@ -23,7 +23,9 @@ export class Authentication {
         this.notifyLoggedInStatus(true, subscriber);
       } else {
         this.notifyLoggedInStatus(false, subscriber);
-        localStorage.removeItem('user');
+        if (this.isBrowser()) {
+          localStorage.removeItem('user');
+        }
       }
       subscriber.complete();
     });
@@ -77,7 +79,9 @@ export class Authentication {
             Authorization: `Bearer ${token}`
           }
         }).subscribe(() => {
-            localStorage.removeItem('user');
+            if (this.isBrowser()) {
+              localStorage.removeItem('user');
+            }
             this.loggedIn.next(false);
           });
       }

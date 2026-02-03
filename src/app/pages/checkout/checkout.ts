@@ -12,12 +12,12 @@ import {NgIf} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
-import {Subject, throwError, timer} from 'rxjs';
-import {takeUntil, switchMap} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
-import {TranslocoPipe} from '@ngneat/transloco';
+import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
 import {PurchaseService} from '../../@core/api/purchase';
@@ -61,9 +61,6 @@ export class Checkout implements OnInit, OnDestroy {
   orderError = signal<string | null>(null);
   shippingError = signal<string | null>(null);
 
-  // TODO: REMOVE - временная заглушка для тестирования ошибок
-  private SIMULATE_ERROR = true;
-
   private fb = inject(FormBuilder);
   private cartService = inject(CartUi);
   private router = inject(Router);
@@ -71,6 +68,7 @@ export class Checkout implements OnInit, OnDestroy {
   private purchaseService = inject(PurchaseService);
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
+  private translocoService = inject(TranslocoService);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -308,18 +306,13 @@ export class Checkout implements OnInit, OnDestroy {
         quantity: item.quantity
       })),
       comment: formValue.comment || '',
-      language: this.activeLang(),
+      language: this.translocoService.getActiveLang(),
       payment: this.selectedPayment
     };
 
     this.orderError.set(null);
 
-    // TODO: REMOVE - временная заглушка для тестирования ошибок
-    const orderRequest$ = this.SIMULATE_ERROR
-      ? timer(1500).pipe(switchMap(() => throwError(() => ({ status: 0 }))))
-      : this.purchaseService.placeOrder(purchase);
-
-    orderRequest$
+    this.purchaseService.placeOrder(purchase)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
