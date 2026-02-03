@@ -26,7 +26,11 @@
           @for (item of newArrivals(); track item.id; let i = $index) {
             <div class="product-card" [class.active]="i === currentIndex">
               <div class="image-wrapper">
-                <img [src]="item.imageURL" [alt]="item.name">
+                <img
+                  [src]="item.imageURL || 'assets/images/no-image.png'"
+                  [alt]="item.name"
+                  (error)="onImageError($event)"
+                >
                 <div class="overlay">
                   <button class="quick-view">Quick View</button>
                 </div>
