@@ -1,15 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   HostListener,
   Inject,
   inject,
-  OnInit,
-  PLATFORM_ID,
+  OnInit, PLATFORM_ID,
   signal
 } from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
-import {ChangeDetectionStrategy, Component, computed, HostListener, inject, OnInit, signal} from '@angular/core';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -17,10 +15,9 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
 import {Brand, Category} from '../../entities/category';
-import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
-import {NgIf, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, map} from 'rxjs/operators';
+import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 
 
 @Component({
@@ -32,7 +29,6 @@ import {filter, map} from 'rxjs/operators';
     UpperCasePipe,
     NgStyle,
     NgTemplateOutlet,
-    NgIf
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
