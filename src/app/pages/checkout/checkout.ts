@@ -12,8 +12,8 @@ import {NgIf} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {Subject, throwError, timer} from 'rxjs';
+import {takeUntil, switchMap} from 'rxjs/operators';
 import {Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
@@ -60,6 +60,9 @@ export class Checkout implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   orderError = signal<string | null>(null);
   shippingError = signal<string | null>(null);
+
+  // TODO: REMOVE - временная заглушка для тестирования ошибок
+  private SIMULATE_ERROR = true;
 
   private fb = inject(FormBuilder);
   private cartService = inject(CartUi);
@@ -144,6 +147,7 @@ export class Checkout implements OnInit, OnDestroy {
   private loadShippingOptions(): void {
     this.isLoading.set(true);
     this.shippingError.set(null);
+
     this.shippingService.getShippingOptions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -310,7 +314,12 @@ export class Checkout implements OnInit, OnDestroy {
 
     this.orderError.set(null);
 
-    this.purchaseService.placeOrder(purchase)
+    // TODO: REMOVE - временная заглушка для тестирования ошибок
+    const orderRequest$ = this.SIMULATE_ERROR
+      ? timer(1500).pipe(switchMap(() => throwError(() => ({ status: 0 }))))
+      : this.purchaseService.placeOrder(purchase);
+
+    orderRequest$
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
