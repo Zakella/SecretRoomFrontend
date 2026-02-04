@@ -26,13 +26,17 @@
 
 <div class="product-card" [class.bestseller]="isBestSeller()" [class.new-arrival]="isNew()" [class.on-sale]="hasDiscount()">
   <div class="image-wrapper">
+    <!-- Brand Badge -->
+
+
+    <!-- Status Badges (right side) -->
     @if (isBestSeller()) {
-      <div class="badge badge-bestseller">
+      <div class="badge badge-status badge-bestseller">
         <i class="ri-fire-fill"></i>
         <span>Bestseller</span>
       </div>
     } @else if (isNew()) {
-      <div class="badge badge-new">
+      <div class="badge badge-status badge-new">
         <i class="ri-sparkling-fill"></i>
         <span>New</span>
       </div>
@@ -51,6 +55,11 @@
   </div>
 
   <div class="info" (click)="navToProduct()">
+
+    <h2 class="brand-name">
+      <span>
+        {{ product()?.brandAlias }}</span>
+    </h2>
     <h3 class="name">{{ product()?.name }}</h3>
 
     <div class="price-block" [class.has-discount]="hasDiscount()">

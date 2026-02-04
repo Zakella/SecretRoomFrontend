@@ -1,6 +1,179 @@
-@mixin d-flex($justify, $align, $wrap) {
+// ═══════════════════════════════════════════════════════════════════════════
+// GLOBAL MIXINS
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// 🎨 Миксины для переиспользования стилей по всему проекту
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Flexbox helper
+@mixin d-flex($justify, $align, $wrap: nowrap) {
   display: flex;
   justify-content: $justify;
   align-items: $align;
   flex-wrap: $wrap;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔘 BUTTON MIXINS — Единый стиль кнопок
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Primary Button — Чёрный фон, золотой текст
+@mixin btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--text-black, #1a1a1a);
+  color: var(--gold, #b8956c);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  i {
+    font-size: 16px;
+    color: var(--gold, #b8956c);
+    transition: all 0.3s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: #000;
+    color: var(--gold-light, #d4b896);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+
+    i {
+      color: var(--gold-light, #d4b896);
+      transform: translateX(4px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Secondary Button — Прозрачный фон, золотая рамка
+@mixin btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--gold, #b8956c);
+  border: 1.5px solid var(--gold, #b8956c);
+  border-radius: 4px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  i {
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--text-black, #1a1a1a);
+    color: var(--gold-light, #d4b896);
+    border-color: var(--text-black, #1a1a1a);
+
+    i {
+      transform: translateX(4px);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Gold Gradient Button — Золотой градиент
+@mixin btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--gold-dark, #8B7355) 0%, var(--gold, #b8956c) 50%, var(--gold-light, #d4b896) 100%);
+  background-size: 200% 200%;
+  color: var(--bg-dark, #0a0a0c);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(139, 115, 85, 0.3);
+
+  i {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background-position: 100% 100%;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(139, 115, 85, 0.4);
+
+    i {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Small Button Variant
+@mixin btn-small {
+  padding: 10px 20px;
+  font-size: 11px;
+
+  i {
+    font-size: 14px;
+  }
+}
+
+// Large Button Variant
+@mixin btn-large {
+  padding: 18px 36px;
+  font-size: 14px;
+
+  i {
+    font-size: 18px;
+  }
+}
+
+// Full Width Button
+@mixin btn-full {
+  width: 100%;
 }

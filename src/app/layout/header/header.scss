@@ -18,7 +18,7 @@
   100% { background-position: 0% 50%; }
 }
 
-@keyframes roseGoldShimmer {
+@keyframes goldShimmer {
   0% { background-position: 0% 50%; }
   25% { background-position: 50% 75%; }
   50% { background-position: 100% 50%; }
@@ -60,7 +60,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes roseGoldShine {
+@keyframes goldShine {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
@@ -116,7 +116,7 @@
   transition: color 0.3s;
 
   &:hover {
-    color: #E6B3A8;
+    color: #b8956c;
   }
 }
 
@@ -167,7 +167,7 @@
   text-decoration: none;
 
   &:hover {
-    color: #E6B3A8;
+    color: #b8956c;
   }
 }
 
@@ -181,7 +181,7 @@
   position: absolute;
   top: -6px;
   right: -12px;
-  background: #E6B3A8;
+  background: #b8956c;
   color: #121216;
   font-size: 11px;
   font-weight: 600;
@@ -303,7 +303,7 @@
   }
 
   &.active {
-    background: #E6B3A8;
+    background: #b8956c;
     color: #121216;
     font-weight: 600;
   }
@@ -333,10 +333,10 @@
     font-size: 17px;
     background: linear-gradient(
         135deg,
-        #C4948F 0%,
-        #D9B5AC 40%,
-        #E8CCC4 60%,
-        #F5E4E0 100%
+        #8B7355 0%,
+        #b8956c 40%,
+        #d4b896 60%,
+        #f5e6d3 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -362,7 +362,7 @@
       background: linear-gradient(
           90deg,
           transparent,
-          #D9B5AC,
+          #b8956c,
           transparent
       );
       transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -425,7 +425,7 @@
   }
 
   input:focus + i {
-    color: #E6B3A8;
+    color: #b8956c;
   }
 }
 
@@ -448,18 +448,18 @@
     height: 2px;
     background: linear-gradient(
         90deg,
-        #C4948F 0%,
-        #D9B5AC 15%,
-        #E8CCC4 25%,
-        #F5E4E0 35%,
+        #8B7355 0%,
+        #b8956c 15%,
+        #d4b896 25%,
+        #f5e6d3 35%,
         #FFFFFF 50%,
-        #F5E4E0 65%,
-        #E8CCC4 75%,
-        #D9B5AC 85%,
-        #C4948F 100%
+        #f5e6d3 65%,
+        #d4b896 75%,
+        #b8956c 85%,
+        #8B7355 100%
     );
     background-size: 200% 100%;
-    animation: roseGoldShine 8s linear infinite;
+    animation: goldShine 8s linear infinite;
   }
 
   .nav-item {
@@ -503,16 +503,16 @@
     transform: translateX(-50%);
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #C4948F, #D9B5AC);
+    background: linear-gradient(90deg, #8B7355, #b8956c);
     transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   &:hover {
-    color: #9A7B74;
+    color: #b8956c;
   }
 
   &.active {
-    color: #9A7B74;
+    color: #b8956c;
 
     &::after {
       width: 100%;
@@ -576,7 +576,7 @@
   transition: color 0.3s;
 
   &:hover {
-    color: pink;
+    color: #b8956c;
   }
 }
 
@@ -675,12 +675,12 @@
       left: 0;
       width: 0;
       height: 1px;
-      background: #C4948F;
+      background: #8B7355;
       transition: width 0.3s ease;
     }
 
     &:hover {
-      color: #9A7B74;
+      color: #b8956c;
 
       &::before {
         width: 100%;
@@ -694,7 +694,7 @@
     gap: 10px;
     padding-top: 24px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    color: #9A7B74;
+    color: #b8956c;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -710,7 +710,7 @@
     }
 
     &:hover {
-      color: #7D5A5A;
+      color: #8B7355;
 
       i {
         transform: translateX(6px);

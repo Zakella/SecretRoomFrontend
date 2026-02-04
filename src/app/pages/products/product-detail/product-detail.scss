@@ -41,7 +41,7 @@
 }
 
 .thumbnails img:hover {
-  border-color: #e86ea8;
+  border-color: var(--gold, #b8956c);
 }
 
 .product-info {
@@ -150,7 +150,7 @@
 }
 
 .btn-secondary:hover {
-  color: #e86ea8;
+  color: var(--gold, #b8956c);
 }
 
 .product-tabs {
@@ -175,8 +175,8 @@
 }
 
 .tabs button.active {
-  color: #e86ea8;
-  border-bottom: 2px solid #e86ea8;
+  color: var(--gold, #b8956c);
+  border-bottom: 2px solid var(--gold, #b8956c);
 }
 
 .tab-content {

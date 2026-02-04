@@ -247,28 +247,34 @@
 
       .btn-checkout {
         width: 100%;
-        background: linear-gradient(135deg, #b5855f, #d4a574);
-        color: #fff;
+        background: var(--text-black, #1a1a1a);
+        color: var(--gold, #b8956c);
         border: none;
         padding: 0.9rem;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
         margin-top: 1rem;
-        transition: all 0.2s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         text-decoration: none;
 
         &:hover {
-          background: linear-gradient(135deg, #a07550, #c9956a);
+          background: #000;
+          color: var(--gold-light, #d4b896);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+          transform: translateY(-2px);
         }
 
         i {
           font-size: 1.1rem;
+          color: var(--gold, #b8956c);
         }
       }
 
@@ -345,17 +351,24 @@
   margin-top: 10px;
   padding: 12px 24px;
   border: none;
-  background: black;
-  color: white;
+  background: var(--text-black, #1a1a1a);
+  color: var(--gold, #b8956c);
   border-radius: 4px;
   cursor: pointer;
-  transition: 0.2s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .cart-empty .btn-shop:hover {
-  background: #333;
+  background: #000;
+  color: var(--gold-light, #d4b896);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
 
 :host ::ng-deep .p-inputtext:enabled:focus {
-  border-color: pink!important;
+  border-color: var(--gold, #b8956c) !important;
 }

@@ -65,7 +65,7 @@
     }
 
     &.active {
-      background: linear-gradient(135deg, #C4948F 0%, #D9B5AC 100%);
+      background: linear-gradient(135deg, #8B7355 0%, #b8956c 100%);
       color: #0a0a0c;
     }
   }
@@ -99,9 +99,9 @@
     position: absolute;
     inset: 0;
     background-image:
-      radial-gradient(circle at 20% 80%, rgba(196, 148, 143, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(217, 181, 172, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(232, 204, 196, 0.04) 0%, transparent 30%);
+      radial-gradient(circle at 20% 80%, rgba(139, 115, 85, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(184, 149, 108, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(212, 184, 150, 0.04) 0%, transparent 30%);
     animation: pulse 8s ease-in-out infinite;
   }
 }
@@ -131,17 +131,17 @@
 
   background: linear-gradient(
     90deg,
-    #C4948F 0%,
-    #C4948F 35%,
-    #D9B5AC 40%,
-    #E8CCC4 44%,
-    #F5E4E0 47%,
+    #8B7355 0%,
+    #8B7355 35%,
+    #b8956c 40%,
+    #d4b896 44%,
+    #f5e6d3 47%,
     #FFFFFF 50%,
-    #F5E4E0 53%,
-    #E8CCC4 56%,
-    #D9B5AC 60%,
-    #C4948F 65%,
-    #C4948F 100%
+    #f5e6d3 53%,
+    #d4b896 56%,
+    #b8956c 60%,
+    #8B7355 65%,
+    #8B7355 100%
   );
   background-size: 300% 100%;
   -webkit-background-clip: text;
@@ -218,7 +218,7 @@
     transition: border-color 0.3s ease;
 
     &:focus {
-      border-color: rgba(196, 148, 143, 0.6);
+      border-color: rgba(139, 115, 85, 0.6);
     }
 
     &:-webkit-autofill {
@@ -237,7 +237,7 @@
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     .required {
-      color: #C4948F;
+      color: #8B7355;
       margin-left: 2px;
     }
   }
@@ -248,7 +248,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #C4948F, #D9B5AC, #E8CCC4);
+    background: linear-gradient(90deg, #8B7355, #b8956c, #d4b896);
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -264,7 +264,7 @@
       cursor: pointer;
 
       &:hover {
-        color: #C4948F;
+        color: #8B7355;
       }
     }
   }
@@ -284,7 +284,7 @@
   input:-webkit-autofill ~ label {
     top: -0.5rem;
     font-size: 0.75rem;
-    color: #C4948F;
+    color: #8B7355;
   }
 
   input:focus ~ .input-line {
@@ -292,7 +292,7 @@
   }
 
   input:focus ~ .field-icon {
-    color: #C4948F;
+    color: #8B7355;
   }
 
   // Error state
@@ -335,7 +335,7 @@
   width: 100%;
   padding: 1rem 2rem;
   margin-top: 0.5rem;
-  background: linear-gradient(135deg, #C4948F 0%, #D9B5AC 50%, #E8CCC4 100%);
+  background: linear-gradient(135deg, #8B7355 0%, #b8956c 50%, #d4b896 100%);
   background-size: 200% 200%;
   border: none;
   border-radius: 12px;
@@ -349,7 +349,7 @@
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(196, 148, 143, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 115, 85, 0.3);
 
   i {
     font-size: 1.1rem;
@@ -368,7 +368,7 @@
   &:hover:not(:disabled) {
     background-position: 100% 100%;
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(196, 148, 143, 0.4);
+    box-shadow: 0 8px 30px rgba(139, 115, 85, 0.4);
 
     i {
       transform: translateX(4px);
@@ -411,14 +411,14 @@
   color: rgba(245, 243, 244, 0.5);
 
   .auth-link {
-    color: #C4948F;
+    color: #8B7355;
     text-decoration: none;
     font-weight: 500;
     margin-left: 0.5rem;
     transition: color 0.3s ease;
 
     &:hover {
-      color: #E8CCC4;
+      color: #d4b896;
       text-decoration: underline;
     }
   }
@@ -440,7 +440,7 @@
   }
 
   &:hover {
-    color: #C4948F;
+    color: #8B7355;
 
     i {
       transform: translateX(-4px);
@@ -492,7 +492,7 @@
     cursor: pointer;
 
     &:hover {
-      color: #C4948F;
+      color: #8B7355;
     }
   }
 }

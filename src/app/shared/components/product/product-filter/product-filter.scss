@@ -1,12 +1,12 @@
 :host ::ng-deep .p-button {
   background: none;
-  border: 1px solid pink;
+  border: 1px solid var(--gold, #b8956c);
 }
 :host ::ng-deep .p-button:not(:disabled):hover {
-  background: pink;
-  border: 1px solid pink;
+  background: var(--gold, #b8956c);
+  border: 1px solid var(--gold, #b8956c);
 }
 
 :host ::ng-deep .p-drawer {
-  background: #FAF5F8!important;
+  background: #faf8f5!important;
 }

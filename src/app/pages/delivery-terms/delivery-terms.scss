@@ -10,7 +10,7 @@
 
 nav.sidebar {
   width: 250px;
-  background-color: pink;
+  background-color: var(--gold, #b8956c);
   color: white;
   padding: 20px;
   display: flex;
@@ -30,7 +30,7 @@ nav.sidebar a {
 
 nav.sidebar a.active,
 nav.sidebar a:hover {
-  background-color: pink;
+  background-color: var(--gold, #b8956c);
   color: white;
 }
 
@@ -41,7 +41,7 @@ main.content {
 
 main.content h1 {
   margin-top: 0;
-  color: pink;
+  color: var(--gold, #b8956c);
 }
 
 main.content section {
@@ -50,7 +50,7 @@ main.content section {
 
 main.content h2 {
   margin-bottom: 15px;
-  color: pink;
+  color: var(--gold, #b8956c);
 }
 
 main.content p {

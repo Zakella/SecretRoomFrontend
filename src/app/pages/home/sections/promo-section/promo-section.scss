@@ -191,7 +191,7 @@
 }
 
 .promo-badge {
-  background: #ff1493;
+  background: #b8956c;
   color: white;
   padding: 6px 16px;
   border-radius: 20px;
@@ -226,7 +226,7 @@
 .promo-amount {
   font-size: 20px;
   font-weight: bold;
-  color: #ff69b4;
+  color: #d4b896;
   margin-top: 8px;
 }
 
@@ -257,11 +257,11 @@
   height: 150px;
 }
 
-.pink-sphere {
+.gold-sphere {
   position: absolute;
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle, #ff69b4 0%, #ff1493 100%);
+  background: radial-gradient(circle, #d4b896 0%, #b8956c 100%);
   border-radius: 50%;
   bottom: 20px;
   right: 40px;
@@ -272,7 +272,7 @@
   position: absolute;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+  background: linear-gradient(135deg, #d4b896 0%, #b8956c 100%);
   border-radius: 8px;
   bottom: 40px;
   right: 10px;

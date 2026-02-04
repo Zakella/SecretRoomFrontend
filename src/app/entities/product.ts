@@ -27,5 +27,7 @@ export interface Product {
   productImagesWebStore?: ProductImage[],
   productSizes?: Size[],
   discountPercent: number,
-  oldPrice: number
+  oldPrice: number,
+  isNew: boolean,
+  isBestSeller: boolean,
 }

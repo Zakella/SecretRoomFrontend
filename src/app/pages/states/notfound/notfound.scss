@@ -172,7 +172,7 @@ p {
     text-transform: uppercase;
     letter-spacing: 0.3em;
     font-size: 12px;
-    color: #e6b3a8;
+    color: #b8956c;
     display: block;
     margin-bottom: 15px;
   }
@@ -199,7 +199,7 @@ p {
   gap: 20px;
 
   .btn-primary {
-    background: linear-gradient(135deg, #e6b3a8 0%, #d79a92 100%);
+    background: linear-gradient(135deg, #b8956c 0%, #d79a92 100%);
     border: none;
     padding: 16px 40px;
     color: #121216;
@@ -226,7 +226,7 @@ p {
     padding-bottom: 4px;
     transition: all 0.3s;
 
-    &:hover { border-color: #e6b3a8; color: #e6b3a8; }
+    &:hover { border-color: #b8956c; color: #b8956c; }
   }
 }
 
