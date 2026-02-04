@@ -4,6 +4,68 @@
   align-items: $ai;
 }
 
+// Keyframes
+@keyframes logoShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes metallicRoseGold {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 75%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 25%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes goldShimmer {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 75%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 25%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes luxuryRoseGold {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 75%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 25%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes premiumShine {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes luxuryShimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes expandLine {
+  from { width: 0; }
+  to { width: 100%; max-width: 1200px; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes goldShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Header Top
 .header {
   position: fixed;
   top: 0;
@@ -54,7 +116,7 @@
   transition: color 0.3s;
 
   &:hover {
-    color: #E6B3A8;
+    color: #b8956c;
   }
 }
 
@@ -65,24 +127,20 @@
   margin: 0;
   font-size: 26px;
   font-weight: 500;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   text-transform: uppercase;
   text-decoration: none;
   font-family: 'Cinzel', 'Playfair Display', serif;
 
   background: linear-gradient(
       90deg,
-      #C4948F 0%,
-      #C4948F 35%,
-      #D9B5AC 40%,
-      #E8CCC4 44%,
-      #F5E4E0 47%,
-      #FFFFFF 50%,
-      #F5E4E0 53%,
-      #E8CCC4 56%,
-      #D9B5AC 60%,
-      #C4948F 65%,
-      #C4948F 100%
+      #8B7355 0%,
+      #b8956c 25%,
+      #d4b896 40%,
+      #f5e6d3 50%,
+      #d4b896 60%,
+      #b8956c 75%,
+      #8B7355 100%
   );
   background-size: 500% 100%;
 
@@ -90,191 +148,10 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 
-  animation: shineLeft 10s linear infinite;
-
-  filter: contrast(1.1) brightness(1.05);
+  animation: logoShine 6s linear infinite;
 
   &:hover {
-    animation-duration: 5s;
-  }
-}
-
-@keyframes shineLeft {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-@keyframes shineLeft {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-@keyframes shineLeft {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-@keyframes shineLeft {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-@keyframes shineLeft {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-@keyframes metallicRoseGold {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes metallicRoseGold {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes metallicRoseGold {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes metallicRoseGold {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-@keyframes roseGoldShimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes luxuryRoseGold {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 75%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 25%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-@keyframes premiumShine {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-@keyframes luxuryShimmer {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-@keyframes shimmer {
-  0% {
-    background-position: 100% 50%;
-  }
-  50% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
+    animation-duration: 3s;
   }
 }
 
@@ -290,7 +167,7 @@
   text-decoration: none;
 
   &:hover {
-    color: #E6B3A8;
+    color: #b8956c;
   }
 }
 
@@ -304,7 +181,7 @@
   position: absolute;
   top: -6px;
   right: -12px;
-  background: #E6B3A8;
+  background: #b8956c;
   color: #121216;
   font-size: 11px;
   font-weight: 600;
@@ -521,7 +398,6 @@
 
   .row-right {
     justify-self: end;
-    // сдвигаем чтобы правый край search совпал с правым краем иконок
     margin-right: -150px;
   }
 }
@@ -580,7 +456,7 @@
   }
 
   &.active {
-    background: #E6B3A8;
+    background: #b8956c;
     color: #121216;
     font-weight: 600;
   }
@@ -599,36 +475,6 @@
   }
 }
 
-/*// ========================================
-// Tablet (768px - 1024px)
-// ========================================
-
-@media (max-width: 1024px) and (min-width: 768px) {
-  .header-medium {
-    padding: 10px 20px;
-    gap: 10px;
-  }
-
-  .logo {
-    font-size: 32px;
-    margin: 0;
-  }
-
-  .nav-left,
-  .nav-right {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-  }
-
-  .dropdown-right {
-    width: 140px;
-    margin-left: 10px;
-  }
-}*/
-
 .nav-item--luxury {
   display: flex;
   align-items: center;
@@ -640,10 +486,10 @@
     font-size: 17px;
     background: linear-gradient(
         135deg,
-        #C4948F 0%,
-        #D9B5AC 40%,
-        #E8CCC4 60%,
-        #F5E4E0 100%
+        #8B7355 0%,
+        #b8956c 40%,
+        #d4b896 60%,
+        #f5e6d3 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -669,7 +515,7 @@
       background: linear-gradient(
           90deg,
           transparent,
-          #D9B5AC,
+          #b8956c,
           transparent
       );
       transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -692,37 +538,81 @@
   }
 }
 
-// ========================================
-// NAV MAIN
-// ========================================
+.search-bar {
+  position: relative;
+  width: 240px;
 
-// ========================================
-// NAV MAIN - с разделителем
-// ========================================
-
-
-@keyframes expandLine {
-  from {
-    width: 0;
-  }
-  to {
+  input {
     width: 100%;
-    max-width: 1200px;
+    padding: 10px 40px 10px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #F5F3F4;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    transition: background 0.25s ease, border 0.25s ease, box-shadow 0.25s ease;
+
+    &::placeholder {
+      color: rgba(245, 243, 244, 0.45);
+    }
+
+    &:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(230, 179, 168, 0.55);
+      box-shadow: 0 0 0 1px rgba(230, 179, 168, 0.35),
+      0 8px 24px rgba(230, 179, 168, 0.15);
+    }
+  }
+
+  i {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: rgba(245, 243, 244, 0.55);
+    pointer-events: none;
+    transition: color 0.25s ease;
+  }
+
+  input:focus + i {
+    color: #b8956c;
   }
 }
 
-// ========================================
-// NAV MAIN - с разделителем
-// ========================================
+// Nav Main
+.nav-main {
+  width: 100%;
+  background: #FFFFFF;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: black;
 
-
-@keyframes expandLine {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-    max-width: 1200px;
+  // Rose Gold Divider
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        #8B7355 0%,
+        #b8956c 15%,
+        #d4b896 25%,
+        #f5e6d3 35%,
+        #FFFFFF 50%,
+        #f5e6d3 65%,
+        #d4b896 75%,
+        #b8956c 85%,
+        #8B7355 100%
+    );
+    background-size: 200% 100%;
+    animation: goldShine 8s linear infinite;
   }
 }
 
@@ -769,16 +659,16 @@
     transform: translateX(-50%);
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #C4948F, #D9B5AC);
+    background: linear-gradient(90deg, #8B7355, #b8956c);
     transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   &:hover {
-    color: #9A7B74;
+    color: #b8956c;
   }
 
   &.active {
-    color: #9A7B74;
+    color: #b8956c;
 
     &::after {
       width: 100%;
@@ -786,12 +676,81 @@
   }
 }
 
+// Dropdowns
+.dropdown {
+  position: absolute;
+  display: block;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-top: none;
+  border-radius: 0 0 15px 15px;
+  padding: 20px;
+  color: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
 
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 
-// ========================================
-// MEGA DROPDOWN
-// ========================================
+.dropdown-content {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 40px;
+  max-width: 1160px;
+  align-items: flex-start;
+}
 
+.dropdown-section h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.dropdown-section p {
+  font-size: 12px;
+  color: black;
+  margin-bottom: 10px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  display: block;
+  padding: 5px 0;
+  color: black;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #b8956c;
+  }
+}
+
+.dropdown-left {
+  flex: 1;
+}
+
+.dropdown-right {
+  width: 200px;
+  flex-shrink: 0;
+  margin-left: 40px;
+
+  img {
+    border-radius: 12px;
+  }
+}
+
+// Mega Dropdown
 .mega-dropdown {
   position: absolute;
   top: 100%;
@@ -872,12 +831,12 @@
       left: 0;
       width: 0;
       height: 1px;
-      background: #C4948F;
+      background: #8B7355;
       transition: width 0.3s ease;
     }
 
     &:hover {
-      color: #9A7B74;
+      color: #b8956c;
 
       &::before {
         width: 100%;
@@ -891,7 +850,7 @@
     gap: 10px;
     padding-top: 24px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    color: #9A7B74;
+    color: #b8956c;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -907,7 +866,7 @@
     }
 
     &:hover {
-      color: #7D5A5A;
+      color: #8B7355;
 
       i {
         transform: translateX(6px);

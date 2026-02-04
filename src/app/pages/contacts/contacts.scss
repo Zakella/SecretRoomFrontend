@@ -1,12 +1,9 @@
 .store-page {
-  padding: 235px 50px 100px;
+  padding: 285px 50px 100px;
   min-height: 100vh;
   background: #FDFBFA;
 }
 
-// ========================================
-// HERO
-// ========================================
 
 .store-hero {
   text-align: center;
@@ -18,7 +15,7 @@
     font-weight: 500;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: #C4948F;
+    color: #8B7355;
     margin-bottom: 1rem;
   }
 
@@ -30,10 +27,10 @@
     margin-bottom: 1.5rem;
     background: linear-gradient(
         90deg,
-        #C4948F 0%,
-        #D9B5AC 40%,
-        #E8CCC4 60%,
-        #C4948F 100%
+        #8B7355 0%,
+        #b8956c 40%,
+        #d4b896 60%,
+        #8B7355 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
@@ -45,7 +42,7 @@
   &__divider {
     width: 60px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #D9B5AC, transparent);
+    background: linear-gradient(90deg, transparent, #b8956c, transparent);
     margin: 0 auto 1.5rem;
   }
 
@@ -64,10 +61,6 @@
   50% { background-position: 100% 50%; }
 }
 
-// ========================================
-// STORE LIST
-// ========================================
-
 .store-list {
   max-width: 1100px;
   margin: 0 auto;
@@ -75,10 +68,6 @@
   flex-direction: column;
   gap: 100px;
 }
-
-// ========================================
-// STORE ITEM
-// ========================================
 
 .store-item {
   display: grid;
@@ -164,7 +153,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background: #C4948F;
+      background: #8B7355;
       color: #FFFFFF;
       transform: scale(1.1);
     }
@@ -192,7 +181,7 @@
     font-size: 5rem;
     font-weight: 400;
     line-height: 1;
-    color: rgba(196, 148, 143, 0.12);
+    color: rgba(139, 115, 85, 0.12);
     pointer-events: none;
   }
 
@@ -210,7 +199,7 @@
 
     i {
       font-size: 18px;
-      color: #C4948F;
+      color: #8B7355;
       width: 24px;
     }
 
@@ -228,8 +217,8 @@
     gap: 12px;
     padding: 16px 32px;
     background: transparent;
-    border: 1px solid #D9B5AC;
-    color: #9A7B74;
+    border: 1px solid #b8956c;
+    color: var(--gold, #b8956c);
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -243,7 +232,7 @@
     }
 
     &:hover {
-      background: linear-gradient(135deg, #C4948F, #D9B5AC);
+      background: linear-gradient(135deg, #8B7355, #b8956c);
       border-color: transparent;
       color: #FFFFFF;
       padding-right: 28px;
@@ -255,13 +244,10 @@
   }
 }
 
-// ========================================
-// RESPONSIVE
-// ========================================
 
 @media (max-width: 900px) {
   .store-page {
-    padding: 140px 30px 80px;
+    padding: 280px 30px 80px;
   }
 
   .store-list {

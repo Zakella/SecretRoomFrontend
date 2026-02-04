@@ -95,17 +95,17 @@
 
   background: linear-gradient(
     90deg,
-    #C4948F 0%,
-    #C4948F 35%,
-    #D9B5AC 40%,
-    #E8CCC4 44%,
-    #F5E4E0 47%,
+    #8B7355 0%,
+    #8B7355 35%,
+    #b8956c 40%,
+    #d4b896 44%,
+    #f5e6d3 47%,
     #FFFFFF 50%,
-    #F5E4E0 53%,
-    #E8CCC4 56%,
-    #D9B5AC 60%,
-    #C4948F 65%,
-    #C4948F 100%
+    #f5e6d3 53%,
+    #d4b896 56%,
+    #b8956c 60%,
+    #8B7355 65%,
+    #8B7355 100%
   );
   background-size: 300% 100%;
   -webkit-background-clip: text;
@@ -154,7 +154,7 @@
   text-align: center;
 
   strong {
-    color: #C4948F;
+    color: #8B7355;
     font-weight: 600;
   }
 }
@@ -189,7 +189,7 @@
   font-family: 'Cinzel', serif;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #C4948F;
+  color: #8B7355;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0 0 1rem;
@@ -280,7 +280,7 @@
       color: #F5F3F4;
 
       span:last-child {
-        color: #C4948F;
+        color: #8B7355;
       }
     }
   }
@@ -300,7 +300,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #C4948F 0%, #D9B5AC 50%, #E8CCC4 100%);
+  background: linear-gradient(135deg, #8B7355 0%, #b8956c 50%, #d4b896 100%);
   background-size: 200% 200%;
   border: none;
   border-radius: 12px;
@@ -340,7 +340,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid rgba(196, 148, 143, 0.2);
-    border-top-color: #C4948F;
+    border-top-color: #8B7355;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }

@@ -1,5 +1,14 @@
 <div class="product-list">
   @for (product of products(); track product.id) {
-    <product-card [product]="product"/>
+    <product-card
+      [product]="product"
+      [imageUrl]="product.imageURL || ''"
+      [title]="product.name"
+      [price]="product.price"
+      [oldPrice]="product.oldPrice"
+      [discountPercent]="product.discountPercent"
+      [isBestSeller]="product.isBestSeller"
+      [isNew]="product.isNew"
+      [brand]="product.brand"/>
   }
 </div>

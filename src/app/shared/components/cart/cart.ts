@@ -15,7 +15,7 @@ import {NgTemplateOutlet} from '@angular/common';
 import {CartUi} from './services/cart'
 import {CartItem} from '../../../entities/cart-item';
 import {Subject} from 'rxjs';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
@@ -30,7 +30,6 @@ import {ShippingOption} from '../../../entities/shipping-options';
     NgTemplateOutlet,
     TranslocoPipe,
     InputNumber,
-    RouterLink
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',

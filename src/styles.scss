@@ -1,18 +1,32 @@
-@use 'styles/variables';
+// ═══════════════════════════════════════════════════════════════════════════
+// GLOBAL STYLES
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// 🎨 Для изменения цветовой схемы проекта редактируйте:
+//    src/styles/_variables.scss
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
+@use 'styles/variables' as *;
 @use 'styles/mixins';
+
+// Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
+
+// Third-party
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
 
+// PrimeNG overrides
 :root {
-  --font-title: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
-  --p-dataview-header-background : transparent!important;
-  --p-dataview-content-background : transparent!important;
+  --p-dataview-header-background: transparent !important;
+  --p-dataview-content-background: transparent !important;
 }
 
-:host,html {
+// Base HTML
+:host, html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   -moz-tab-size: 4;
@@ -21,19 +35,20 @@
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
-  --p-drawer-background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
-  --p-drawer-color: #000!important;
+  --p-drawer-background: linear-gradient(180deg, #{$bg-cream} 0%, #{$bg-white} 100%) !important;
+  --p-drawer-color: #000 !important;
 }
 
-body{
+body {
   box-sizing: border-box;
-  background-color: #FAF5F8;
+  background-color: $bg-cream;
   padding: 0;
   margin: 0;
   overflow-x: hidden;
+  font-family: $font-body;
 }
 
-
+// Decorative overlay
 body:after, body:before {
   position: fixed;
   left: 0;
@@ -44,10 +59,10 @@ body:after, body:before {
   z-index: 9999;
   pointer-events: none;
   opacity: 20%;
-  font-family: var(--font-title);
+  font-family: $font-title;
 }
 
-
+// Animations
 .fade-in {
   opacity: 0;
   transform: translateY(25px);
@@ -71,14 +86,14 @@ body:after, body:before {
   }
 }
 
+// PrimeNG Drawer override
 :host ::ng-deep p-drawer {
-  background: linear-gradient(180deg, #fff6f2 0%, #fff 100%)!important;
-  padding: 16px!important;
-  color: #000!important;
+  background: linear-gradient(180deg, #{$bg-cream} 0%, #{$bg-white} 100%) !important;
+  padding: 16px !important;
+  color: #000 !important;
 }
 
-
-
+// Local fonts
 @font-face {
   font-family: 'Public Sans';
   src: url('/assets/fonts/PublicSans-Light.woff') format('woff');

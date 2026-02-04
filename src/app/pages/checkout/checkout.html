@@ -1,10 +1,7 @@
 <div class="checkout-page" appFadeUp>
   <div class="checkout-container">
-    <!-- Left: Form -->
     <div class="checkout-form">
       <h1 class="checkout-title">{{ 'Checkout' | transloco }}</h1>
-
-      <!-- Steps Navigation -->
       <div class="steps">
         <span
           [class.active]="step === 'information'"
@@ -227,7 +224,6 @@
           </div>
         </div>
 
-        <!-- STEP 3: Payment -->
         <div *ngIf="step === 'payment'" class="form-step">
           <div class="form-section">
             <h2 class="section-title">{{ 'Payment Method' | transloco }}</h2>
