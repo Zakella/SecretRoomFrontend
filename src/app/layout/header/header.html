@@ -61,9 +61,9 @@
 
     <div class="brands-row">
       <nav class="nav-left">
-        @for (item of headerItems(); track item.id) {
-          <a class="nav-medium-item" [class.active]="activeBrand()?.id === item.id" (click)="setActive(item)">
-            {{ item.name }}
+        @for (brand of brands(); track brand) {
+          <a class="nav-medium-item" [class.active]="activeBrand()=== brand" (click)="goToBrandList(brand)">
+            {{ brand.brandAlias }}
           </a>
         }
       </nav>
@@ -73,37 +73,35 @@
   @if (!isCheckoutPage()) {
     <nav class="nav-main"  (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
       <div class="nav-inner">
-        @if (activeBrand()?.children) {
-          @for (category of activeBrand()!.children!; track category.id) {
-            <a class="category-text"
-               [class.active]="activeCategory()?.id === category.id"
+        @if (headerItems()) {
+          @for (category of headerItems(); track category.id) {
+            <a class="category-text" [class.active]="activeCategory()?.id === category.id"
                (mouseenter)="showDropdown(category)">
-              {{ category.name }}
+              {{ category?.name }}
             </a>
           }
         }
       </div>
 
-      <!-- Dropdown -->
-      @if (activeCategory()?.children?.length) {
+      @if (headerItems()?.length) {
         <div class="mega-dropdown" [class.visible]="activeCategory()">
           <div class="mega-dropdown__inner">
-            <h3 class="mega-dropdown__title">{{ activeCategory()!.name }}</h3>
+            <h3 class="mega-dropdown__title">{{ activeCategory()  }}</h3>
 
             <div class="mega-dropdown__list">
-              @for (sub of activeCategory()!.children!; track sub.id; let i = $index) {
+              @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {
                 <a class="mega-dropdown__item"
                    [style.animation-delay]="i * 0.05 + 's'"
                    [routerLink]="['/', activeLang(), 'catalog', sub.id]">
-                  {{ sub.name }}
+                  {{ sub?.name }}
                 </a>
               }
             </div>
 
-            <a class="mega-dropdown__all" [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.id]">
+      <!--      <a class="mega-dropdown__all" [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.id!]">
               Смотреть всё
               <i class="ri-arrow-right-line"></i>
-            </a>
+            </a>-->
           </div>
         </div>
       }

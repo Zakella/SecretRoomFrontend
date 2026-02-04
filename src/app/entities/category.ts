@@ -19,6 +19,13 @@ export interface CategoryDto {
 }
 
 
+/*
 export type Brand = CategoryDto;
+*/
 export type Category = CategoryDto;
 export type SubCategory = CategoryDto;
+
+export interface Brand{
+  brand: string;
+  brandAlias: string;
+}

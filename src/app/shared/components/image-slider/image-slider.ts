@@ -1,6 +1,6 @@
 import {
   AfterViewInit, ChangeDetectionStrategy,
-  Component,
+  Component, inject,
   Inject, input,
   OnChanges,
   OnDestroy,
@@ -11,16 +11,19 @@ import {
 import {isPlatformBrowser, NgClass,} from '@angular/common';
 import {CarouselImage} from '../../../entities/carousel-image';
 import {Router} from '@angular/router';
+import {Language} from '../../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
+import {HeroService} from '../../../@core/api/hero';
 
 @Component({
   selector: 'image-slider',
-  imports: [NgClass],
+  imports: [NgClass, TranslocoPipe],
   templateUrl: './image-slider.html',
   styleUrl: './image-slider.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
-  private router = Inject(Router);
+  private router = inject(Router);
   public images = input<CarouselImage[]>([]);
   public indicator = input<boolean>(true);
   public controls = input<boolean>(true);
@@ -32,6 +35,9 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
   private readonly isBrowser = signal<boolean>(false);
   startX = 0;
   endX = 0;
+  private languageService = inject(Language);
+  protected activeLang = this.languageService.currentLanguage
+  private heroService = inject(HeroService);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser.set(isPlatformBrowser(platformId));
@@ -106,8 +112,8 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  goToImage(image: CarouselImage) {
-    this.router.navigate(['/products', image.id]);
+  protected goToImage(image: CarouselImage): void {
+    this.router.navigate(['/', this.activeLang(), 'catalog', 'hero']);
+    this.heroService.heroId.set(image.id);
   }
-
 }

@@ -1,30 +1,10 @@
-<!--
-@if (open) {
-  <div class="modal-backdrop" (click)="close()">
-    <div class="modal">
-      <button class="close-btn" (click)="close()">×</button>
-      <h2>{{'Return policy'| transloco}}</h2>
-      <p>
-        {{'ReturnTermsText'| transloco}}
-      </p>
-    </div>
-  </div>
-}
--->
-
-
 <p-dialog
-  [header]="'Return policy'| transloco"
+  [header]="'Return policy' | transloco"
   [(visible)]="open"
+  (onHide)="close()"
   [modal]="true"
   [style]="{ width: '450px' }"
-  [draggable]="false"
-  [resizable]="true"
+  [appendTo]="'body'"
 >
-  <p>{{'ReturnTermsText'| transloco}}</p>
-
- <!-- <ng-template pTemplate="footer">
-    <button pButton label="Закрыть" class="p-button-text" (click)="visible = false"></button>
-    <button pButton label="OK" (click)="onConfirm()"></button>
-  </ng-template>-->
+  <p>{{'ReturnTermsText' | transloco}}</p>
 </p-dialog>

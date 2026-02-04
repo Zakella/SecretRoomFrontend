@@ -185,3 +185,10 @@
 .icon-prev {
   font-size: 35px;
 }
+
+
+@media (max-width: 767px) {
+  .slide-title {
+    display: none;
+  }
+}

@@ -23,7 +23,6 @@ import {Chat} from '../../widgets/chat/chat';
     MobileMenu,
     Breadcrumb,
     MobileHeader,
-    Chat,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'

@@ -18,6 +18,7 @@ import {Brand, Category} from '../../entities/category';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, map} from 'rxjs/operators';
 import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
+import {BrandService} from '../../@core/api/brand';
 
 
 @Component({
@@ -39,18 +40,19 @@ export class Header implements OnInit {
   private langService = inject(Language);
   private router = inject(Router);
   private categoryService = inject(CategoryService);
+  private brandService = inject(BrandService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ru', 'ro'];
-  headerItems = signal<Brand[] | null>([]);
+  headerItems = signal<any[] | null>([]);
   activeBrand = signal<Brand | null>(null);
   query = signal('');
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
   isHidden = false;
   isMinBrands = signal<boolean>(false)
+  brands = signal<Brand[]>([]);
 
-  // Check if current page is checkout
   private currentUrl = toSignal(
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
@@ -64,6 +66,7 @@ export class Header implements OnInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
+    this.getBrands();
     this.getCategories();
   }
 
@@ -96,8 +99,12 @@ export class Header implements OnInit {
     this.router.navigate([this.activeLang(), 'search', q]);
   }
 
-  setActive(brand: Brand) {
-    this.activeBrand.set(brand);
+
+  getBrands(){
+    this.brandService.gerAllBrands().subscribe(brands => {
+      this.brands.set(brands);
+      this.activeBrand.set(brands[0]);
+    })
   }
 
   getCategories() {
@@ -109,11 +116,17 @@ export class Header implements OnInit {
         return;
       }
 
-      this.headerItems.set(categories.slice(0, 5));
-      this.activeBrand.set(categories[0]);
+      this.headerItems.set(categories);
 
       this.isMinBrands.set(this.headerItems()!.length <= 5);
     });
+  }
+
+  goToBrandList(brand :Brand){
+/*
+    this.router.navigate()
+*/
+    this.activeBrand.set(brand);
   }
 
 

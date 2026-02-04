@@ -18,19 +18,19 @@
       <div class="column">
         <h4>{{ 'About us' | transloco }}</h4>
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
-        <a (click)="showPolicy()">Политика возврата</a>
+        <a (click)="showPolicy()" class="cursor-pointer">Политика возврата</a>
         <a [routerLink]="['/', activeLang(), 'delivery-terms']">Правила и условия</a>
       </div>
       <div class="column">
         <h4>О нас</h4>
-        <a [routerLink]="['/', activeLang(), 'about-us']">О компании</a>
+        <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">О компании</a>
       </div>
       <div class="column">
         <h4>Каталог</h4>
-        <a routerLink="/brands">Бренды</a>
-        <a routerLink="/new">Новинки</a>
-        <a routerLink="/offers">Скидки</a>
-        <a routerLink="/gift-cards">Подарочные карты</a>
+        <a [routerLink]="['/', activeLang(), 'brands']">Бренды</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">Новинки</a>
+        <a [routerLink]="['/', activeLang(),  'catalog', 'new-arrivals']">Скидки</a>
+        <a [routerLink]="['/', activeLang(), 'gift-cards']">Подарочные карты</a>
       </div>
     </div>
   </div>
@@ -39,10 +39,10 @@
     <div class="container">
       <span>© 2025 Secret Room. Все права защищены.</span>
       <div class="payment-icons">
-        <img src="assets/images/payment/visa.svg" alt="Visa" />
-        <img src="assets/images/payment/master-card.svg" alt="MasterCard" />
-        <img src="assets/images/payment/apple-pay.svg" alt="Apple Pay" />
-        <img src="assets/images/payment/google-gpay.svg" alt="Google Pay" />
+        <img src="assets/images/payment/visa.svg" alt="Visa"/>
+        <img src="assets/images/payment/master-card.svg" alt="MasterCard"/>
+        <img src="assets/images/payment/apple-pay.svg" alt="Apple Pay"/>
+        <img src="assets/images/payment/google-gpay.svg" alt="Google Pay"/>
       </div>
 
       <div class="policies">
@@ -52,4 +52,4 @@
     </div>
   </div>
 </footer>
-<app-return-policy [open]="isReturnPolicyVisible" (closed)="isReturnPolicyVisible = false"/>
+<return-policy [(open)]="isReturnPolicyVisible" />

@@ -1,49 +1,23 @@
 @if (images() && images().length > 0) {
-  <div class="carousel-container"
-       (touchstart)="onDragStart($event)"
-       (touchend)="onDragEnd($event)">
+  <div class="carousel-container" (touchstart)="onDragStart($event)" (touchend)="onDragEnd($event)">
     @for (image of images(); track image.id; let i = $index) {
-      <div
-        class="slide"
-        [class.image-active]="selectedIndex() === i"
-      >
-        <img
-          [src]="image.imageUrl"
-          [alt]="image.name"
-          class="fade"
-        >
-
+      <div class="slide" [class.image-active]="selectedIndex() === i">
+        <img [src]="image.imageUrl" [alt]="image.name" class="fade">
         <div class="slide-overlay">
           <h3 class="slide-title">
-            {{ image.name }}
+            {{ activeLang() === 'ro' ? image.nameRo : image.nameRu }}
           </h3>
-
           <button class="slide-cta" (click)="goToImage(image)">
-            Перейти
+            {{'seeAll'| transloco}}
           </button>
         </div>
       </div>
     }
 
-    <!--
-        @for (image of images(); track image; let i = $index) {
-          <img
-            [src]="image.imageUrl"
-            [alt]="image.name"
-            class="fade"
-            [ngClass]="{ 'image-active': selectedIndex() === i }"
-          >
-        }
-    -->
-
     @if (indicators()) {
       <div class="carousel-dot-container">
         @for (dot of images(); track $index; let i = $index) {
-          <span
-            class="dot"
-            [ngClass]="{ 'active': selectedIndex() === i }"
-            (click)="selectImage(i)"
-          ></span>
+          <span class="dot" [ngClass]="{ 'active': selectedIndex() === i }" (click)="selectImage(i)"></span>
         }
       </div>
     }

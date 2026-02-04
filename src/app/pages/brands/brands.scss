@@ -1,0 +1,150 @@
+.brands-page {
+  padding-top: 280px;
+  background: #FFF;
+  min-height: 100vh;
+}
+
+.brands-header {
+  text-align: center;
+  padding: 60px 20px;
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 12px;
+    color: #C4948F;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem;
+    font-weight: 400;
+    color: #121216;
+  }
+}
+
+.alphabet-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  position: sticky;
+  top: 80px; // Сразу под навигацией
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  border-bottom: 1px solid #f0f0f0;
+
+  button {
+    background: none;
+    border: none;
+    font-family: 'Public Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: #999;
+    padding: 5px 10px;
+    transition: color 0.3s;
+
+    &:hover:not(:disabled) { color: #C4948F; }
+    &:disabled { opacity: 0.2; cursor: default; }
+  }
+}
+
+.brand-group {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  gap: 40px;
+  border-bottom: 1px solid #f5f5f5;
+
+  .letter-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    color: #E8CCC4;
+    width: 60px;
+    flex-shrink: 0;
+  }
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  width: 100%;
+}
+
+.brand-card {
+  text-decoration: none;
+  text-align: center;
+
+  .brand-logo-wrapper {
+    aspect-ratio: 3/2;
+    background: #f9f9f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.4s ease;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: grayscale(1); // Эстетичный вид "в ряд"
+      transition: filter 0.4s ease;
+    }
+  }
+
+  .brand-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &:hover {
+    .brand-logo-wrapper {
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(196, 148, 143, 0.15);
+      transform: translateY(-5px);
+      img { filter: grayscale(0); }
+    }
+    .brand-name { color: #C4948F; }
+  }
+}
+
+// ========================================
+// TABLET ADAPTIVE (768px - 1024px)
+// ========================================
+@media screen and (max-width: 1024px) {
+  .brands-header h1 { font-size: 2.5rem; }
+
+  .brand-grid {
+    grid-template-columns: repeat(3, 1fr); // 3 колонки на планшете
+  }
+
+  .brand-group {
+    flex-direction: column;
+    gap: 20px;
+
+    .letter-badge {
+      font-size: 2rem;
+      border-bottom: 2px solid #E8CCC4;
+      display: inline-block;
+      width: auto;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .brand-grid {
+    grid-template-columns: repeat(2, 1fr); // 2 колонки на мобильном
+  }
+}

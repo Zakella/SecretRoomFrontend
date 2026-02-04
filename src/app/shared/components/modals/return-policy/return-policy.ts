@@ -3,16 +3,18 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {Dialog} from 'primeng/dialog';
 
 @Component({
-  selector: 'app-return-policy',
+  selector: 'return-policy',
   imports: [TranslocoPipe, Dialog],
   templateUrl: './return-policy.html',
   styleUrl: './return-policy.scss'
 })
 export class ReturnPolicy {
   @Input() open = false;
-  @Output() closed = new EventEmitter<void>();
+  // Название ОБЯЗАТЕЛЬНО должно быть openChange
+  @Output() openChange = new EventEmitter<boolean>();
 
   close() {
-    this.closed.emit();
+    this.open = false; // Меняем локально
+    this.openChange.emit(false); // Уведомляем родителя (Footer)
   }
 }
