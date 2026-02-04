@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
-  selector: 'app-categories',
+  selector: 'categories',
   imports: [],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
@@ -16,6 +16,7 @@ export class Categories {
     { id: 6, label: 'Beauty', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
     { id: 7, label: 'Swim', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' }
   ];
+  categories = input<any[]>([]);
 
   currentIndex = 0;
   translateX = 0;

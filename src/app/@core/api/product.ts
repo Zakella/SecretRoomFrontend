@@ -5,7 +5,11 @@ import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 
 export class ProductService {
   private http = inject(HttpClient);
@@ -47,7 +51,6 @@ export class ProductService {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size)
-      .set('sort', 'id,desc');
     return this.http.get<GetResponse>(`${this.baseUrL}/bestsellers`, {params});
   }
 
@@ -55,8 +58,7 @@ export class ProductService {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size)
-      .set('sort', 'id,desc');
-    return this.http.get<GetResponse>(`${this.baseUrL}/bestsellers`, {params});
+    return this.http.get<GetResponse>(`${this.baseUrL}/new-arrivals`, {params});
   }
 }
 

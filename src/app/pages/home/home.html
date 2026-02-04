@@ -1,9 +1,8 @@
 <main appFadeUp>
   <div class="image-wrapper">
-    <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="false" [controls]="false"/>
+    <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="true" [controls]="false"/>
   </div>
-  <app-text-slider/>
-  <app-categories/>
+  <categories [categories]="(categories$ | async) || []"/>
   <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
   <new-arrivals [newArrivals]="(newArrivals$| async) || []"/>
   <socials/>

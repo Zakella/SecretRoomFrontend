@@ -44,7 +44,6 @@ export class ShareLinkService {
     }
 
     const link = encodeURIComponent(this.createShareableLink());
-    console.log(link)
     window.open(`https://wa.me/?text=${link}`, '_blank');
   }
 

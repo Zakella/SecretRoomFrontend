@@ -1,7 +1,23 @@
 <div appFadeUp class="catalog-page">
   <custom-title [title]="'BEST-SELLERS'"/>
+
   <div class="product-list-panel">
     <product-list [products]="products()"/>
   </div>
-</div>
 
+  @if (!allLoaded()) {
+    <div class="load-more">
+      <button
+        class="load-more-btn"
+        [disabled]="isLoading()"
+        (click)="loadMore()"
+      >
+        @if (isLoading()) {
+          Загрузка...
+        } @else {
+          Показать ещё
+        }
+      </button>
+    </div>
+  }
+</div>

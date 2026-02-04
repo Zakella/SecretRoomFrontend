@@ -26,3 +26,35 @@ custom-title {
 .product-list-panel {
   width: 100%;
 }
+
+
+
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin: 48px 0;
+}
+
+.load-more-btn {
+  padding: 14px 32px;
+  font-size: 14px;
+  text-transform: uppercase;
+  border: 1px solid #000;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #000;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+
+
+
