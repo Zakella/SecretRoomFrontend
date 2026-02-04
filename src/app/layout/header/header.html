@@ -75,9 +75,8 @@
       <div class="nav-inner">
         @if (headerItems()) {
           @for (category of headerItems(); track category.id) {
-            <a class="category-text" [class.active]="activeCategory()?.id === category.id"
-               (mouseenter)="showDropdown(category)">
-              {{ category?.name }}
+            <a class="category-text" [class.active]="activeCategory()?.id === category.id" (mouseenter)="showDropdown(category)">
+              {{ category.name }}
             </a>
           }
         }
@@ -86,7 +85,7 @@
       @if (headerItems()?.length) {
         <div class="mega-dropdown" [class.visible]="activeCategory()">
           <div class="mega-dropdown__inner">
-            <h3 class="mega-dropdown__title">{{ activeCategory()  }}</h3>
+            <h3 class="mega-dropdown__title">{{ activeCategory()?.name  }}</h3>
 
             <div class="mega-dropdown__list">
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {

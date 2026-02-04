@@ -117,16 +117,18 @@ export class Header implements OnInit {
       }
 
       this.headerItems.set(categories);
+      console.log(categories.map(c => c.name));
+
 
       this.isMinBrands.set(this.headerItems()!.length <= 5);
     });
   }
 
   goToBrandList(brand :Brand){
-/*
-    this.router.navigate()
-*/
     this.activeBrand.set(brand);
+    this.brandService.brand.set(brand.brand)
+    this.router.navigate([this.activeLang(), 'catalog', 'brand']);
+
   }
 
 
