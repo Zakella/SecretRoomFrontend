@@ -1,12 +1,9 @@
 .store-page {
-  padding: 235px 50px 100px;
+  padding: 285px 50px 100px;
   min-height: 100vh;
   background: #FDFBFA;
 }
 
-// ========================================
-// HERO
-// ========================================
 
 .store-hero {
   text-align: center;
@@ -64,10 +61,6 @@
   50% { background-position: 100% 50%; }
 }
 
-// ========================================
-// STORE LIST
-// ========================================
-
 .store-list {
   max-width: 1100px;
   margin: 0 auto;
@@ -75,10 +68,6 @@
   flex-direction: column;
   gap: 100px;
 }
-
-// ========================================
-// STORE ITEM
-// ========================================
 
 .store-item {
   display: grid;
@@ -255,13 +244,10 @@
   }
 }
 
-// ========================================
-// RESPONSIVE
-// ========================================
 
 @media (max-width: 900px) {
   .store-page {
-    padding: 140px 30px 80px;
+    padding: 280px 30px 80px;
   }
 
   .store-list {

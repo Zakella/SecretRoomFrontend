@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe, NgClass} from '@angular/common';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
@@ -12,7 +12,6 @@ import {environment} from '../../../environments/environment';
   selector: 'app-order-detail',
   imports: [
     DatePipe,
-    RouterLink,
     TranslocoPipe,
     NgClass
   ],
