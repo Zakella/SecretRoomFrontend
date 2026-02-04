@@ -18,10 +18,6 @@ export interface CategoryDto {
   children: CategoryDto[] | null;
 }
 
-
-/*
-export type Brand = CategoryDto;
-*/
 export type Category = CategoryDto;
 export type SubCategory = CategoryDto;
 

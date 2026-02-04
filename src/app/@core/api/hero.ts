@@ -21,7 +21,7 @@ export class HeroService {
     return this.http.get<CarouselImage[]>(`${this.baseUrL}/active`);
   }
 
-  getHeroProductsById(): Observable<Products[]> {
-    return this.http.get<Product[]>(`${this.baseUrL}/${this.heroId()}/products`);
+  getHeroProductsById(): Observable<GetResponse> {
+    return this.http.get<GetResponse>(`${this.baseUrL}/${this.heroId()}/products`);
   }
 }
