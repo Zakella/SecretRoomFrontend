@@ -1,0 +1,38 @@
+<div class="brands-page">
+  <header class="brands-header">
+    <span class="eyebrow">World of Beauty</span>
+    <h1>Наши Бренды</h1>
+    <p>Мы собрали лучшие косметические дома со всего мира в одном месте.</p>
+  </header>
+
+  <nav class="alphabet-nav">
+    @for (letter of alphabet; track letter) {
+      <button
+        (click)="scrollToSection(letter)"
+        [disabled]="!hasBrandsForLetter(letter)">
+        {{ letter }}
+      </button>
+    }
+  </nav>
+
+  <div class="brands-container">
+    @for (group of groupedBrands; track group.letter) {
+      <section [id]="'section-' + group.letter" class="brand-group">
+        <div class="letter-badge">{{ group.letter }}</div>
+
+        <div class="brand-grid">
+          @for (brand of group.brands; track brand.id) {
+            <a [routerLink]="['/catalog', brand.id]" class="brand-card">
+              <div class="brand-logo-wrapper">
+                <img [src]="brand.logoUrl || 'assets/images/brand-placeholder.png'"
+                     [alt]="brand.name"
+                     #brandImg (error)="brandImg.src = 'assets/images/placeholder.png'">
+              </div>
+              <span class="brand-name">{{ brand.name }}</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

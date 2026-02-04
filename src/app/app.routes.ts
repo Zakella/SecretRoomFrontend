@@ -1,7 +1,6 @@
 import {Routes} from '@angular/router';
 import {Home} from './pages/home/home';
 import {Contacts} from './pages/contacts/contacts';
-import {AboutUs} from './pages/about-us/about-us';
 import {Login} from './pages/login/login';
 import {Cabinet} from './pages/cabinet/cabinet';
 import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
@@ -22,6 +21,7 @@ import {PaymentFail} from './pages/states/payment-fail/payment-fail';
 import {Notfound} from './pages/states/notfound/notfound';
 import {Catalog} from './pages/products/catalog/catalog';
 import {OrderDetail} from './pages/order-detail/order-detail';
+import {Brands} from './pages/brands/brands';
 
 export const routes: Routes = [
   {
@@ -43,6 +43,10 @@ export const routes: Routes = [
             data: {breadcrumb: 'Редактирование'}
           },
           {
+            path: 'brands',
+            component: Brands,
+          },
+          {
             path: 'product-detail/:id',
             component: ProductDetail,
             resolve: {
@@ -50,7 +54,6 @@ export const routes: Routes = [
             }
           },
           {path: 'contacts', component: Contacts},
-          {path: 'about-us', component: AboutUs},
           {path: 'payment-fail', component: PaymentFail},
           {path: 'delivery-terms', component: DeliveryTerms},
           {

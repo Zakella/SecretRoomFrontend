@@ -6,6 +6,7 @@ import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {ActivatedRoute} from '@angular/router';
 import {finalize, map} from 'rxjs';
+import {HeroService} from '../../../@core/api/hero';
 
 @Component({
   selector: 'app-catalog',
@@ -21,6 +22,7 @@ import {finalize, map} from 'rxjs';
 export class Catalog implements OnInit {
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
+  private heroService = inject(HeroService);
   protected category = signal<string | null>(null);
   protected products = signal<Product[]>([]);
   protected isLoading = signal(false);
@@ -89,6 +91,8 @@ export class Catalog implements OnInit {
         return this.productService.getBestSellers(page + 1, size);
       case 'new-arrivals':
         return this.productService.getNewArrivals(page + 1, size);
+/*      case 'hero':
+       return  console.log(this.heroService.heroId());*/
       default:
         return this.productService.getAllProductsByBrand('vs', page, size);
     }
