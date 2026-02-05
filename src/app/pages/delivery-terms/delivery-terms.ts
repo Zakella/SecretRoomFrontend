@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
-import {FadeUp} from '../../@core/directives/fade-up';
 
 @Component({
   selector: 'app-delivery-terms',
-  imports: [FadeUp],
+  imports: [],
   templateUrl: './delivery-terms.html',
   styleUrl: './delivery-terms.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

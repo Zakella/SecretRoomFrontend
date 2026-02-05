@@ -29,292 +29,318 @@
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <!-- STEP 1: Information -->
-        <div *ngIf="step === 'information'" class="form-step">
-          <div class="form-section">
-            <h2 class="section-title">{{ 'Contact Information' | transloco }}</h2>
+        @if (step === 'information') {
+          <div class="form-step">
+            <div class="form-section">
+              <h2 class="section-title">{{ 'Contact Information' | transloco }}</h2>
 
-            <!-- Auth prompt -->
-            <div class="auth-prompt">
-              <div class="auth-prompt-content">
-                <i class="ri-user-line"></i>
-                <span>{{ 'checkout.alreadyHaveAccount' | transloco }}</span>
-                <a [routerLink]="['/', activeLang(), 'profile']" class="auth-link">{{ 'Login' | transloco }}</a>
-                <span class="auth-divider">|</span>
-                <a [routerLink]="['/', activeLang(), 'registration']" class="auth-link">{{ 'checkout.createAccount' | transloco }}</a>
+              <!-- Auth prompt -->
+              <div class="auth-prompt">
+                <div class="auth-prompt-content">
+                  <i class="ri-user-line"></i>
+                  <span>{{ 'checkout.alreadyHaveAccount' | transloco }}</span>
+                  <a [routerLink]="['/', activeLang(), 'profile']" class="auth-link">{{ 'Login' | transloco }}</a>
+                  <span class="auth-divider">|</span>
+                  <a [routerLink]="['/', activeLang(), 'registration']" class="auth-link">{{ 'checkout.createAccount' | transloco }}</a>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  placeholder="your@email.com"
+                  [class.invalid]="isFieldInvalid('email')">
+                @if (isFieldInvalid('email')) {
+                  <span class="error-message">
+                    {{ 'Please enter a valid email address' | transloco }}
+                  </span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="phone">{{ 'Phone' | transloco }} *</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  formControlName="phone"
+                  placeholder="{{ 'checkout.phonePlaceholder' | transloco }}"
+                  [class.invalid]="isFieldInvalid('phone')">
+                @if (isFieldInvalid('phone')) {
+                  <span class="error-message">
+                    {{ 'Please enter a valid phone number' | transloco }}
+                  </span>
+                }
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="email">Email *</label>
-              <input
-                type="email"
-                id="email"
-                formControlName="email"
-                placeholder="your@email.com"
-                [class.invalid]="isFieldInvalid('email')">
-              <span class="error-message" *ngIf="isFieldInvalid('email')">
-                {{ 'Please enter a valid email address' | transloco }}
-              </span>
+            <div class="form-section">
+              <h2 class="section-title">{{ 'Shipping Address' | transloco }}</h2>
+
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="name">{{ 'First Name' | transloco }} *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    formControlName="name"
+                    [class.invalid]="isFieldInvalid('name')">
+                  @if (isFieldInvalid('name')) {
+                    <span class="error-message">
+                      {{ 'Required field' | transloco }}
+                    </span>
+                  }
+                </div>
+
+                <div class="form-group half">
+                  <label for="lastname">{{ 'Last Name' | transloco }} *</label>
+                  <input
+                    type="text"
+                    id="lastname"
+                    formControlName="lastname"
+                    [class.invalid]="isFieldInvalid('lastname')">
+                  @if (isFieldInvalid('lastname')) {
+                    <span class="error-message">
+                      {{ 'Required field' | transloco }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="country">{{ 'Country' | transloco }}</label>
+                <input
+                  type="text"
+                  id="country"
+                  formControlName="country"
+                  class="disabled">
+              </div>
+
+              <div class="form-group">
+                <label for="address">{{ 'Address' | transloco }} *</label>
+                <input
+                  type="text"
+                  id="address"
+                  formControlName="address"
+                  placeholder="{{ 'checkout.addressPlaceholder' | transloco }}"
+                  [class.invalid]="isFieldInvalid('address')">
+                @if (isFieldInvalid('address')) {
+                  <span class="error-message">
+                    {{ 'Please enter your address' | transloco }}
+                  </span>
+                }
+              </div>
+
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="city">{{ 'City' | transloco }} *</label>
+                  <input
+                    type="text"
+                    id="city"
+                    formControlName="city"
+                    [class.invalid]="isFieldInvalid('city')">
+                  @if (isFieldInvalid('city')) {
+                    <span class="error-message">
+                      {{ 'Required field' | transloco }}
+                    </span>
+                  }
+                </div>
+
+                <div class="form-group half">
+                  <label for="zip">{{ 'Postal Code' | transloco }} *</label>
+                  <input
+                    type="text"
+                    id="zip"
+                    formControlName="zip"
+                    [class.invalid]="isFieldInvalid('zip')">
+                  @if (isFieldInvalid('zip')) {
+                    <span class="error-message">
+                      {{ 'Please enter valid postal code' | transloco }}
+                    </span>
+                  }
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="phone">{{ 'Phone' | transloco }} *</label>
-              <input
-                type="tel"
-                id="phone"
-                formControlName="phone"
-                placeholder="{{ 'checkout.phonePlaceholder' | transloco }}"
-                [class.invalid]="isFieldInvalid('phone')">
-              <span class="error-message" *ngIf="isFieldInvalid('phone')">
-                {{ 'Please enter a valid phone number' | transloco }}
-              </span>
-            </div>
+            <button type="button" class="btn-continue" (click)="goTo('shipping')">
+              {{ 'Continue to Shipping' | transloco }}
+              <span class="btn-arrow">→</span>
+            </button>
           </div>
-
-          <div class="form-section">
-            <h2 class="section-title">{{ 'Shipping Address' | transloco }}</h2>
-
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="name">{{ 'First Name' | transloco }} *</label>
-                <input
-                  type="text"
-                  id="name"
-                  formControlName="name"
-                  [class.invalid]="isFieldInvalid('name')">
-                <span class="error-message" *ngIf="isFieldInvalid('name')">
-                  {{ 'Required field' | transloco }}
-                </span>
-              </div>
-
-              <div class="form-group half">
-                <label for="lastname">{{ 'Last Name' | transloco }} *</label>
-                <input
-                  type="text"
-                  id="lastname"
-                  formControlName="lastname"
-                  [class.invalid]="isFieldInvalid('lastname')">
-                <span class="error-message" *ngIf="isFieldInvalid('lastname')">
-                  {{ 'Required field' | transloco }}
-                </span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="country">{{ 'Country' | transloco }}</label>
-              <input
-                type="text"
-                id="country"
-                formControlName="country"
-                class="disabled">
-            </div>
-
-            <div class="form-group">
-              <label for="address">{{ 'Address' | transloco }} *</label>
-              <input
-                type="text"
-                id="address"
-                formControlName="address"
-                placeholder="{{ 'checkout.addressPlaceholder' | transloco }}"
-                [class.invalid]="isFieldInvalid('address')">
-              <span class="error-message" *ngIf="isFieldInvalid('address')">
-                {{ 'Please enter your address' | transloco }}
-              </span>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="city">{{ 'City' | transloco }} *</label>
-                <input
-                  type="text"
-                  id="city"
-                  formControlName="city"
-                  [class.invalid]="isFieldInvalid('city')">
-                <span class="error-message" *ngIf="isFieldInvalid('city')">
-                  {{ 'Required field' | transloco }}
-                </span>
-              </div>
-
-              <div class="form-group half">
-                <label for="zip">{{ 'Postal Code' | transloco }} *</label>
-                <input
-                  type="text"
-                  id="zip"
-                  formControlName="zip"
-                  [class.invalid]="isFieldInvalid('zip')">
-                <span class="error-message" *ngIf="isFieldInvalid('zip')">
-                  {{ 'Please enter valid postal code' | transloco }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <button type="button" class="btn-continue" (click)="goTo('shipping')">
-            {{ 'Continue to Shipping' | transloco }}
-            <span class="btn-arrow">→</span>
-          </button>
-        </div>
+        }
 
         <!-- STEP 2: Shipping -->
-        <div *ngIf="step === 'shipping'" class="form-step">
-          <div class="form-section">
-            <h2 class="section-title">{{ 'Shipping Method' | transloco }}</h2>
+        @if (step === 'shipping') {
+          <div class="form-step">
+            <div class="form-section">
+              <h2 class="section-title">{{ 'Shipping Method' | transloco }}</h2>
 
-            @if (isLoading()) {
-              <div class="loading-spinner">
-                <span class="spinner"></span>
-                {{ 'Loading...' | transloco }}
-              </div>
-            } @else if (shippingError()) {
-              <div class="error-banner">
-                <i class="ri-error-warning-line"></i>
-                <span>{{ shippingError() | transloco }}</span>
-                <button type="button" class="btn-retry" (click)="retryLoadShipping()">
-                  <i class="ri-refresh-line"></i>
-                </button>
-              </div>
-            } @else {
-              <div class="shipping-options">
-                @for (option of shippingOptions; track option.id) {
+              @if (isLoading()) {
+                <div class="loading-spinner">
+                  <span class="spinner"></span>
+                  {{ 'Loading...' | transloco }}
+                </div>
+              } @else if (shippingError()) {
+                <div class="error-banner">
+                  <i class="ri-error-warning-line"></i>
+                  <span>{{ shippingError() | transloco }}</span>
+                  <button type="button" class="btn-retry" (click)="retryLoadShipping()">
+                    <i class="ri-refresh-line"></i>
+                  </button>
+                </div>
+              } @else {
+                <div class="shipping-options">
+                  @for (option of shippingOptions; track option.id) {
+                    <div
+                      class="shipping-option"
+                      [class.selected]="selectedShippingOption?.id === option.id"
+                      (click)="selectShippingOption(option)">
+                      <div class="option-radio">
+                        @if (selectedShippingOption?.id === option.id) {
+                          <span class="radio-dot"></span>
+                        }
+                      </div>
+                      <div class="option-info">
+                        <span class="option-name">{{ option.name }}</span>
+                        <span class="option-description">{{ option.description }}</span>
+                        <span class="option-delivery">{{ option.expectedDeliveryDescription }}</span>
+                      </div>
+                      <div class="option-price">
+                        @if (totalAmount >= option.freeShippingFrom) {
+                          <span class="free-shipping">{{ 'Free' | transloco }}</span>
+                        } @else {
+                          <span>{{ option.cost }} MDL</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (selectedShippingOption && totalAmount < selectedShippingOption.freeShippingFrom) {
+                <div class="free-shipping-hint">
+                  <i class="pi pi-info-circle"></i>
+                  {{ 'Free shipping from' | transloco }} {{ selectedShippingOption.freeShippingFrom }} MDL
+                </div>
+              }
+            </div>
+
+            <div class="step-navigation">
+              <button type="button" class="btn-back" (click)="goTo('information')">
+                <span class="btn-arrow">←</span>
+                {{ 'Back' | transloco }}
+              </button>
+              <button
+                type="button"
+                class="btn-continue"
+                [disabled]="!selectedShippingOption"
+                (click)="goTo('payment')">
+                {{ 'Continue to Payment' | transloco }}
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (step === 'payment') {
+          <div class="form-step">
+            <div class="form-section">
+              <h2 class="section-title">{{ 'Payment Method' | transloco }}</h2>
+
+              <div class="payment-options">
+                @for (method of availablePaymentMethods; track method) {
                   <div
-                    class="shipping-option"
-                    [class.selected]="selectedShippingOption?.id === option.id"
-                    (click)="selectShippingOption(option)">
+                    class="payment-option"
+                    [class.selected]="selectedPayment === method"
+                    (click)="selectPaymentMethod(method)">
                     <div class="option-radio">
-                      <span class="radio-dot" *ngIf="selectedShippingOption?.id === option.id"></span>
+                      @if (selectedPayment === method) {
+                        <span class="radio-dot"></span>
+                      }
                     </div>
                     <div class="option-info">
-                      <span class="option-name">{{ option.name }}</span>
-                      <span class="option-description">{{ option.description }}</span>
-                      <span class="option-delivery">{{ option.expectedDeliveryDescription }}</span>
+                      <span class="option-name">{{ getPaymentLabel(method) | transloco }}</span>
                     </div>
-                    <div class="option-price">
-                      @if (totalAmount >= option.freeShippingFrom) {
-                        <span class="free-shipping">{{ 'Free' | transloco }}</span>
+                    <div class="payment-icon">
+                      @if (method === 'OnlinePayment') {
+                        <i class="pi pi-credit-card"></i>
+                      } @else if (method === 'CashOnDelivery') {
+                        <i class="pi pi-wallet"></i>
                       } @else {
-                        <span>{{ option.cost }} MDL</span>
+                        <i class="pi pi-credit-card"></i>
                       }
                     </div>
                   </div>
                 }
               </div>
-            }
+            </div>
 
-            @if (selectedShippingOption && totalAmount < selectedShippingOption.freeShippingFrom) {
-              <div class="free-shipping-hint">
-                <i class="pi pi-info-circle"></i>
-                {{ 'Free shipping from' | transloco }} {{ selectedShippingOption.freeShippingFrom }} MDL
+            <div class="form-section">
+              <h2 class="section-title">{{ 'Comment' | transloco }}</h2>
+              <div class="form-group">
+                <textarea
+                  formControlName="comment"
+                  rows="3"
+                  placeholder="{{ 'Leave a comment for your order' | transloco }}">
+                </textarea>
+              </div>
+            </div>
+
+            <div class="form-section agreement-section" [class.agreement-error]="isFieldInvalid('iAgree')">
+              <div class="agreement-box">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="iAgree">
+                  <span class="custom-checkbox">
+                    <i class="ri-check-line"></i>
+                  </span>
+                  <span class="label-text">
+                    {{ 'I agree' | transloco }}
+                    <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ 'With terms and conditions' | transloco }}</a>
+                    <span class="required-marker">*</span>
+                  </span>
+                </label>
+                @if (isFieldInvalid('iAgree')) {
+                  <span class="agreement-error-message">
+                    <i class="ri-error-warning-line"></i>
+                    {{ 'checkout.agreementRequired' | transloco }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            @if (orderError()) {
+              <div class="error-banner order-error">
+                <i class="ri-error-warning-line"></i>
+                <span>{{ orderError() | transloco }}</span>
+                <button type="button" class="btn-dismiss" (click)="dismissError()">
+                  <i class="ri-close-line"></i>
+                </button>
               </div>
             }
-          </div>
 
-          <div class="step-navigation">
-            <button type="button" class="btn-back" (click)="goTo('information')">
-              <span class="btn-arrow">←</span>
-              {{ 'Back' | transloco }}
-            </button>
-            <button
-              type="button"
-              class="btn-continue"
-              [disabled]="!selectedShippingOption"
-              (click)="goTo('payment')">
-              {{ 'Continue to Payment' | transloco }}
-              <span class="btn-arrow">→</span>
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="step === 'payment'" class="form-step">
-          <div class="form-section">
-            <h2 class="section-title">{{ 'Payment Method' | transloco }}</h2>
-
-            <div class="payment-options">
-              @for (method of availablePaymentMethods; track method) {
-                <div
-                  class="payment-option"
-                  [class.selected]="selectedPayment === method"
-                  (click)="selectPaymentMethod(method)">
-                  <div class="option-radio">
-                    <span class="radio-dot" *ngIf="selectedPayment === method"></span>
-                  </div>
-                  <div class="option-info">
-                    <span class="option-name">{{ getPaymentLabel(method) | transloco }}</span>
-                  </div>
-                  <div class="payment-icon">
-                    @if (method === 'OnlinePayment') {
-                      <i class="pi pi-credit-card"></i>
-                    } @else if (method === 'CashOnDelivery') {
-                      <i class="pi pi-wallet"></i>
-                    } @else {
-                      <i class="pi pi-credit-card"></i>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-
-          <div class="form-section">
-            <h2 class="section-title">{{ 'Comment' | transloco }}</h2>
-            <div class="form-group">
-              <textarea
-                formControlName="comment"
-                rows="3"
-                placeholder="{{ 'Leave a comment for your order' | transloco }}">
-              </textarea>
-            </div>
-          </div>
-
-          <div class="form-section agreement-section" [class.agreement-error]="isFieldInvalid('iAgree')">
-            <div class="agreement-box">
-              <label class="checkbox-label">
-                <input type="checkbox" formControlName="iAgree">
-                <span class="custom-checkbox">
-                  <i class="ri-check-line"></i>
-                </span>
-                <span class="label-text">
-                  {{ 'I agree' | transloco }}
-                  <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ 'With terms and conditions' | transloco }}</a>
-                  <span class="required-marker">*</span>
-                </span>
-              </label>
-              <span class="agreement-error-message" *ngIf="isFieldInvalid('iAgree')">
-                <i class="ri-error-warning-line"></i>
-                {{ 'checkout.agreementRequired' | transloco }}
-              </span>
-            </div>
-          </div>
-
-          @if (orderError()) {
-            <div class="error-banner order-error">
-              <i class="ri-error-warning-line"></i>
-              <span>{{ orderError() | transloco }}</span>
-              <button type="button" class="btn-dismiss" (click)="dismissError()">
-                <i class="ri-close-line"></i>
+            <div class="step-navigation">
+              <button type="button" class="btn-back" (click)="goTo('shipping')">
+                <span class="btn-arrow">←</span>
+                {{ 'Back' | transloco }}
+              </button>
+              <button
+                type="submit"
+                class="btn-submit"
+                [disabled]="!canSubmit()"
+                [class.loading]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner"></span>
+                  {{ 'Processing...' | transloco }}
+                } @else {
+                  {{ 'Place Order' | transloco }}
+                  <span class="btn-arrow">→</span>
+                }
               </button>
             </div>
-          }
-
-          <div class="step-navigation">
-            <button type="button" class="btn-back" (click)="goTo('shipping')">
-              <span class="btn-arrow">←</span>
-              {{ 'Back' | transloco }}
-            </button>
-            <button
-              type="submit"
-              class="btn-submit"
-              [disabled]="!canSubmit()"
-              [class.loading]="isSubmitting()">
-              @if (isSubmitting()) {
-                <span class="spinner"></span>
-                {{ 'Processing...' | transloco }}
-              } @else {
-                {{ 'Place Order' | transloco }}
-                <span class="btn-arrow">→</span>
-              }
-            </button>
           </div>
-        </div>
+        }
       </form>
     </div>
 

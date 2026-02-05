@@ -1,22 +1,30 @@
 <div class="promotion-list">
   <h2>Актуальные акции</h2>
   <ul>
-    <li *ngFor="let promo of promotions" class="promotion-item">
-      <div class="info">
-        <h3>{{ promo.title }}</h3>
-        <p>{{ promo.description }}</p>
-        <div class="price">
-          <span class="current">{{ promo.price | currency:'RUB':'symbol':'1.0-0' }}</span>
-          <span *ngIf="promo.oldPrice" class="old">{{ promo.oldPrice | currency:'RUB':'symbol':'1.0-0' }}</span>
-          <span *ngIf="promo.discount" class="discount">-{{ promo.discount }}%</span>
+    @for (promo of promotions; track promo) {
+      <li class="promotion-item">
+        <div class="info">
+          <h3>{{ promo.title }}</h3>
+          <p>{{ promo.description }}</p>
+          <div class="price">
+            <span class="current">{{ promo.price | currency:'RUB':'symbol':'1.0-0' }}</span>
+            @if (promo.oldPrice) {
+              <span class="old">{{ promo.oldPrice | currency:'RUB':'symbol':'1.0-0' }}</span>
+            }
+            @if (promo.discount) {
+              <span class="discount">-{{ promo.discount }}%</span>
+            }
+          </div>
+          @if (promo.endDate) {
+            <div class="end-date">
+              До {{ promo.endDate | date:'dd.MM.yyyy' }}
+            </div>
+          }
         </div>
-        <div *ngIf="promo.endDate" class="end-date">
-          До {{ promo.endDate | date:'dd.MM.yyyy' }}
+        <div class="actions">
+          <button class="buy-now">Подробнее</button>
         </div>
-      </div>
-      <div class="actions">
-        <button class="buy-now">Подробнее</button>
-      </div>
-    </li>
+      </li>
+    }
   </ul>
 </div>
