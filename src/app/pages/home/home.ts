@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {FadeUp} from '../../@core/directives/fade-up';
+import {ScrollReveal} from '../../@core/directives/scroll-reveal';
 import {ProductService} from '../../@core/api/product';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
@@ -18,12 +19,12 @@ import {CategoryService} from '../../@core/api/category';
     ImageSlider,
     BestSellers,
     FadeUp,
+    ScrollReveal,
     Socials,
     NewArrivals,
     Sales,
     Categories,
-    AsyncPipe,
-    Socials
+    AsyncPipe
   ],
   providers: [ProductService],
   templateUrl: './home.html',

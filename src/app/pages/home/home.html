@@ -1,10 +1,20 @@
-<main appFadeUp>
+<main>
   <div class="image-wrapper">
     <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="true" [controls]="false"/>
   </div>
-  <categories [categories]="(categories$ | async) || []"/>
-  <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
-  <new-arrivals [newArrivals]="(newArrivals$| async) || []"/>
-  <sales [sales]="(sales$ | async) || []"/>
-  <socials/>
+  <div scrollReveal="fade-up">
+    <categories [categories]="(categories$ | async) || []"/>
+  </div>
+  <div scrollReveal="fade-up">
+    <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
+  </div>
+  <div scrollReveal="fade-up">
+    <new-arrivals [newArrivals]="(newArrivals$| async) || []"/>
+  </div>
+  <div scrollReveal="fade-up">
+    <sales [sales]="(sales$ | async) || []"/>
+  </div>
+  <div scrollReveal="fade-up">
+    <socials/>
+  </div>
 </main>
