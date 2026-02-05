@@ -8,10 +8,25 @@
     </div>
     <div class="bestsellers-right">
       @for (product of bestSellers(); track product.id) {
-        <article class="product" [class.hero]="$first">
-          <img
-            src="https://api.victoriasecret.md/api/public/serveFile/MistLimitedCollection/FragranceMistBareVanillaBliss1.jpg"
-            [alt]="product.nameRu"/>
+        <article
+          class="product"
+          [class.hero]="$first"
+          [routerLink]="['/', currentLanguage(), 'product-detail', product.id]"
+        >
+          <div class="img-container">
+            <img
+              [src]="getProductImage(product)"
+              [alt]="product.nameRu"
+              class="main-img"
+            />
+            @if (getHoverImage(product)) {
+              <img
+                [src]="getHoverImage(product)"
+                [alt]="product.nameRu"
+                class="hover-img"
+              />
+            }
+          </div>
           <div class="meta">
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product.nameRu }}</span>

@@ -17,5 +17,18 @@ export class BestSellers {
   private languageService = inject(Language);
   currentLanguage = this.languageService.currentLanguage;
 
+  getProductImage(product: Product): string {
+    if (product.productImagesWebStore && product.productImagesWebStore.length > 0) {
+      return product.productImagesWebStore[0].imageUrl;
+    }
+    return product.imageURL || '';
+  }
 
+  getHoverImage(product: Product): string | null {
+    const images = product.productImagesWebStore;
+    if (images && images.length > 1) {
+      return images[1].imageUrl;
+    }
+    return null;
+  }
 }
