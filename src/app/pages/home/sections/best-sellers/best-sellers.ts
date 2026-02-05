@@ -31,4 +31,8 @@ export class BestSellers {
     }
     return null;
   }
+
+  hasDiscount(product: Product): boolean {
+    return product.oldPrice > 0 && product.price !== undefined && product.oldPrice > product.price;
+  }
 }

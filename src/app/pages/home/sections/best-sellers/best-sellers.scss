@@ -124,11 +124,31 @@
         transition: color 0.3s ease;
       }
 
+      .price-block {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .old-price {
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-muted, #999);
+        text-decoration: line-through;
+        text-decoration-thickness: 1.5px;
+      }
+
       .price {
         font-family: var(--font-title);
         font-size: 1rem;
         font-weight: 600;
         color: var(--text-dark, #2c2421);
+
+        &.sale-price {
+          color: var(--sale-red, #c41e3a);
+        }
       }
     }
   }

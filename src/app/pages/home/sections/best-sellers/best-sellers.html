@@ -30,7 +30,12 @@
           <div class="meta">
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product.nameRu }}</span>
-            <span class="price">{{ product.price }} MDL</span>
+            <div class="price-block">
+              @if (hasDiscount(product)) {
+                <span class="old-price">{{ product.oldPrice }} MDL</span>
+              }
+              <span class="price" [class.sale-price]="hasDiscount(product)">{{ product.price }} MDL</span>
+            </div>
           </div>
         </article>
       }
