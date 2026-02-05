@@ -16,7 +16,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
 
 // Third-party
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "primeicons/primeicons.css";
 
 // PrimeNG overrides
@@ -101,7 +104,3 @@ body:after, body:before {
   font-style: normal;
   font-display: swap;
 }
-
-
-
-
