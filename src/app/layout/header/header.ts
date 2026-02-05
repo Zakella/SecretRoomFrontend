@@ -115,11 +115,7 @@ export class Header implements OnInit {
         this.isMinBrands.set(true);
         return;
       }
-
       this.headerItems.set(categories);
-      console.log(categories.map(c => c.name));
-
-
       this.isMinBrands.set(this.headerItems()!.length <= 5);
     });
   }
