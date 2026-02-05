@@ -4,7 +4,6 @@
   align-items: $ai;
 }
 
-// Keyframes
 @keyframes logoShine {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
@@ -65,7 +64,6 @@
   100% { background-position: -200% 0; }
 }
 
-// Header Top
 .header {
   position: fixed;
   top: 0;
@@ -85,7 +83,7 @@
   max-width: 1200px;
   width: 100%;
   padding: 10px 20px;
-  @include flex-position();
+  @include flex-position(space-between, center); // Основной контейнер
 }
 
 .nav-left {
@@ -97,10 +95,17 @@
   padding-bottom: 4px;
   padding-top: 4px;
   align-items: center;
+  flex: 1;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.nav-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .nav-item {
@@ -1002,6 +1007,7 @@
 
 
 @media screen and (min-width: 768px) and (max-width: 1100px) {
+
   .header-medium {
     padding: 15px 20px !important;
   }
@@ -1089,5 +1095,31 @@
   .category-text {
     font-size: 12px;
     letter-spacing: 0.1em;
+  }
+  .header-top-inner {
+    display: flex;
+    justify-content: space-between; // Распределяем три блока
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav-left {
+    flex: 1 1 0%; // Заставляет блок занимать ровно столько же места, сколько правый
+    display: flex;
+    justify-content: flex-start;
+    white-space: nowrap; // Чтобы пункты не прыгали на вторую строку
+  }
+
+  .nav-right {
+    flex: 1 1 0%; // Занимает те же 1/3 ширины, что и левая часть
+    display: flex;
+    justify-content: flex-end;
+
+    .icons {
+      justify-content: flex-end;
+    }
+  }
+  .logo-search-row .row-right {
+    margin-right: 0 !important;
   }
 }

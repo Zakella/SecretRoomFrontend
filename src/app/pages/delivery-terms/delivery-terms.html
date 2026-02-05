@@ -1,19 +1,84 @@
-<div class="container" appFadeUp>
-  <nav class="sidebar">
-    @for(section of sections; track section.id){
-      <a [attr.href]="'#' + section.id"
-        [class.active]="activeSection === section.id"
-        (click)="scrollToSection(section.id, $event)">
-        {{ section.title }}</a>
-    }
-  </nav>
-  <main class="content" (window:scroll)="onWindowScroll()">
-    <h1>Правила и условия</h1>
-    @for (section of sections; track section.id) {
-      <section id="{{ section.id }}">
-        <h2>{{ section.number }}. {{ section.title }}</h2>
-        <p>{{ section.text }}</p>
-      </section>
-    }
-  </main>
+<div class="min-h-screen bg-[#F9F8F6] text-[#1A1A1A] font-light selection:bg-pink-100 pt-[290px]">
+  <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0 flex items-center justify-center overflow-hidden">
+    <span class="text-[40vw] font-serif italic rotate-12 select-none">Legal</span>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24">
+    <header class="max-w-3xl mb-24">
+      <nav class="text-[10px] uppercase tracking-[0.3em] mb-8 flex gap-4 opacity-50">
+        <a href="/" class="hover:text-pink-600 transition">Главная</a>
+        <span>/</span>
+        <span>Юридическая информация</span>
+      </nav>
+      <h1 class="text-6xl md:text-8xl font-serif italic tracking-tighter leading-tight">
+        Правила & <br> <span class="pl-20 text-pink-400">Условия</span>
+      </h1>
+      <p class="mt-12 text-lg text-gray-500 leading-relaxed font-light italic">
+        Последнее обновление: 5 февраля 2026. <br>
+        Пожалуйста, внимательно ознакомьтесь с данными правилами перед использованием сервисов Aura Beauty Lab.
+      </p>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-20">
+      <aside class="hidden lg:block w-64 sticky top-32 h-fit">
+        <div class="border-l border-black/10 py-2 space-y-6">
+          @for (section of sections; track section.id) {
+            <a [href]="'#' + section.id"
+               class="block pl-6 text-[10px] uppercase tracking-[0.2em] hover:text-pink-500 transition-all duration-300 hover:translate-x-2">
+              {{ section.title }}
+            </a>
+          }
+        </div>
+      </aside>
+
+      <article class="flex-1 max-w-3xl space-y-24">
+
+        <section id="general" class="scroll-mt-32">
+          <span class="text-xs font-mono opacity-30">01 /</span>
+          <h2 class="text-3xl font-medium mt-4 mb-8 tracking-tight">Общие положения</h2>
+          <div class="prose prose-lg text-gray-700 leading-relaxed space-y-6 font-light">
+            <p>Добро пожаловать в <strong>Aura Beauty Lab</strong>. Используя наш веб-сайт, вы соглашаетесь соблюдать
+              настоящие условия, которые регулируют отношения между вами и брендом.</p>
+            <p>Мы оставляем за собой право изменять данные условия в любое время без предварительного уведомления. Ваше
+              дальнейшее использование сайта означает принятие обновленных правил.</p>
+          </div>
+        </section>
+
+        <section id="orders" class="scroll-mt-32">
+          <span class="text-xs font-mono opacity-30">02 /</span>
+          <h2 class="text-3xl font-medium mt-4 mb-8 tracking-tight">Заказы и Оплата</h2>
+          <div class="bg-white p-12 border border-black/5 shadow-sm space-y-6 italic font-serif text-xl text-gray-600">
+            "Все заказы, размещенные на сайте, зависят от наличия товара на складе. Мы оставляем за собой право отказать
+            в обслуживании без объяснения причин."
+          </div>
+          <div class="mt-8 space-y-4 text-gray-700 font-light">
+            <p>Цены указаны в рублях и включают все применимые налоги. Оплата производится через защищенные шлюзы
+              партнеров.</p>
+          </div>
+        </section>
+
+        <section id="delivery" class="scroll-mt-32">
+          <span class="text-xs font-mono opacity-30">03 /</span>
+          <h2 class="text-3xl font-medium mt-4 mb-8 tracking-tight">Доставка и Возврат</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
+            <div class="space-y-4">
+              <h4 class="text-xs uppercase tracking-widest font-bold">Сроки доставки</h4>
+              <p class="text-sm text-gray-600 leading-relaxed">Москва и Санкт-Петербург: 1-2 рабочих дня. Регионы: от 3
+                до 7 рабочих дней.</p>
+            </div>
+            <div class="space-y-4">
+              <h4 class="text-xs uppercase tracking-widest font-bold">Политика возврата</h4>
+              <p class="text-sm text-gray-600 leading-relaxed">В соответствии с гигиеническими нормами, вскрытые
+                косметические средства возврату не подлежат.</p>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </div>
+
+  <footer class="mt-40 border-t border-black/5 py-20 text-center">
+    <p class="text-[10px] uppercase tracking-[0.5em] opacity-40">Secret Room — All Rights Reserved</p>
+  </footer>
 </div>

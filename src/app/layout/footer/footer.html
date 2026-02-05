@@ -18,8 +18,8 @@
       <div class="column">
         <h4>{{ 'About us' | transloco }}</h4>
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
-        <a (click)="showPolicy()" class="cursor-pointer">Политика возврата</a>
-        <a [routerLink]="['/', activeLang(), 'delivery-terms']">Правила и условия</a>
+        <a (click)="showPolicy()" class="cursor-pointer">{{'Return policy' | transloco}}</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{'DeliveryTerms' |transloco}}</a>
       </div>
       <div class="column">
         <h4>О нас</h4>
