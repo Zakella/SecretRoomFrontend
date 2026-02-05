@@ -1,194 +1,305 @@
-/*
-.carousel-container {
-  position: relative;
-  margin: auto;
-  text-align: center;
-  width: 100%;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px #dce1e1;
+// ═══════════════════════════════════════════════════════════════
+// HERO SLIDER — Luxury Boutique Style
+// ═══════════════════════════════════════════════════════════════
 
-  img {
-    display: none;
-    width: 100%;
-    height: auto;
-    object-fit: fill;
-    border-radius: 15px;
-  }
-
-  img.image-active {
-    display: block;
-    width: 100%;
-    height: auto;
-    max-height: 600px;
-  }
-}
-*/
 .carousel-container {
   position: relative;
   width: 100%;
-  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 6px 12px #dce1e1;
+  background: var(--bg-cream, #faf8f5);
 }
 
 .slide {
   display: none;
   position: relative;
+  height: 70vh;
+  min-height: 500px;
+  max-height: 700px;
 
   &.image-active {
     display: block;
   }
-
-  img {
-    width: 100%;
-    max-height: 600px;
-    object-fit: cover;
-    height: auto;
-
-    display: block;
-  }
-
 }
 
+// Blurred background — fills empty space elegantly
+.slide-bg {
+  position: absolute;
+  inset: -20px; // Extend beyond container to avoid blur edges
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px) saturate(1.2);
+  transform: scale(1.1);
+  opacity: 0.7;
+}
+
+// Main image — centered, maintains aspect ratio
+.slide-img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  z-index: 1;
+}
+
+// Gradient overlay
 .slide::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.55),
-      rgba(0, 0, 0, 0) 60%
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.15) 40%,
+      rgba(0, 0, 0, 0) 70%
   );
+  pointer-events: none;
+  z-index: 2;
 }
 
+// Content overlay
 .slide-overlay {
   position: absolute;
   left: 50%;
-  bottom: 40px;
+  bottom: 60px;
   transform: translateX(-50%);
   text-align: center;
   color: #fff;
-  z-index: 2;
+  z-index: 3;
   max-width: 80%;
 }
 
 .slide-title {
-  font-size: 28px;
-  font-weight: 300;
-  margin-bottom: 16px;
-  letter-spacing: 0.05em;
+  font-family: var(--font-title, 'Playfair Display', serif);
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 24px;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* CTA */
+// CTA Button — Black/Gold style
 .slide-cta {
-  padding: 10px 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 12px;
+  padding: 14px 36px;
+  border-radius: 2px;
+  border: none;
+  background: var(--text-black, #1a1a1a);
+  color: var(--gold, #b8956c);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: all 0.25s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover {
-    background: #fff;
-    color: #000;
+    background: #000;
+    color: var(--gold-light, #d4b896);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
 }
 
-
+// Indicators — Line style like new-arrivals
 .carousel-dot-container {
   position: absolute;
   right: 0;
   left: 0;
-  bottom: 0;
+  bottom: 20px;
   display: flex;
   justify-content: center;
+  gap: 12px;
   padding: 0;
-  margin-bottom: 1rem;
+  z-index: 3;
 }
 
 .dot {
   cursor: pointer;
-  height: 13px;
-  width: 13px;
-  margin: 0 5px;
+  height: 3px;
+  width: 40px;
   background-color: #fff;
-  border-radius: 50%;
+  border-radius: 2px;
   display: inline-block;
-  transition: opacity 0.6s ease;
-  opacity: 0.5;
+  transition: all 0.4s ease;
+  opacity: 0.4;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &.active {
+    opacity: 1;
+    width: 60px;
+  }
 }
 
-.active, .dot:hover {
-  opacity: 1;
-}
-
+// Fade animation
 .fade {
-  animation-name: fade;
-  animation: fade 2s ease-in-out;
+  animation: fade 1.5s ease-in-out;
 }
 
 @keyframes fade {
   from {
-    opacity: 0.7;
+    opacity: 0.5;
+    transform: scale(1.02);
   }
   to {
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-
+// Navigation buttons
 .btn-carousel {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  width: 15%;
+  width: 50px;
+  height: 50px;
   padding: 0;
   color: #fff;
-  background: 0 0;
-  border: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  z-index: 3;
+
+  &:hover {
+    background: var(--text-black, #1a1a1a);
+
+    .icon-carousel {
+      color: var(--gold, #b8956c);
+      opacity: 1;
+    }
+  }
 }
 
-
 .btn-prev {
-  left: 0;
+  left: 24px;
 }
 
 .btn-next {
-  right: 0;
+  right: 24px;
 }
 
 .icon-carousel {
   color: #fff;
-  opacity: 0.5;
-  transition: all 0.15s ease;
-}
-
-.icon-carousel:hover {
   opacity: 0.9;
-}
-
-.icon-carousel:active {
-  opacity: 0.5;
+  transition: all 0.3s ease;
 }
 
 .icon-next,
 .icon-prev {
-  font-size: 35px;
+  font-size: 24px;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// RESPONSIVE
+// ═══════════════════════════════════════════════════════════════
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
+  .slide {
+    height: 60vh;
+    min-height: 400px;
+    max-height: 550px;
+  }
+
   .slide-title {
+    font-size: 2rem;
+  }
+
+  .slide-overlay {
+    bottom: 50px;
+  }
+
+  .btn-carousel {
+    width: 44px;
+    height: 44px;
+  }
+
+  .btn-prev {
+    left: 16px;
+  }
+
+  .btn-next {
+    right: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .slide {
+    height: 50vh;
+    min-height: 350px;
+    max-height: 450px;
+  }
+
+  .slide-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .slide-overlay {
+    bottom: 40px;
+    max-width: 90%;
+  }
+
+  .slide-cta {
+    padding: 12px 28px;
+    font-size: 10px;
+  }
+
+  .btn-carousel {
     display: none;
+  }
+
+  .dot {
+    width: 30px;
+    height: 2px;
+
+    &.active {
+      width: 45px;
+    }
+  }
+
+  .carousel-dot-container {
+    bottom: 16px;
+    gap: 8px;
+  }
+
+  .slide-bg {
+    filter: blur(20px) saturate(1.1);
+  }
+}
+
+@media (max-width: 480px) {
+  .slide {
+    height: 45vh;
+    min-height: 300px;
+    max-height: 380px;
+  }
+
+  .slide-title {
+    font-size: 1.25rem;
+  }
+
+  .slide-overlay {
+    bottom: 30px;
+  }
+
+  .slide-cta {
+    padding: 10px 24px;
+    font-size: 9px;
+  }
+
+  .slide-bg {
+    filter: blur(15px) saturate(1.1);
   }
 }

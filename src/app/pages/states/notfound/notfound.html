@@ -11,31 +11,37 @@
 </section>
 -->
 <section class="error-page">
+  <!-- Decorative elements -->
+  <div class="deco-line deco-top-left"></div>
+  <div class="deco-line deco-top-right"></div>
+  <div class="deco-line deco-bottom-left"></div>
+  <div class="deco-line deco-bottom-right"></div>
+
   <div class="content-wrapper">
     <div class="visual-area">
-      <h1 class="glitch-text">404</h1>
-      <div class="mirror-shards">
-        <span class="shard s1"></span>
-        <span class="shard s2"></span>
-        <span class="shard s3"></span>
-      </div>
+      <span class="error-label">Error</span>
+      <h1 class="error-code">404</h1>
+      <div class="gold-ornament">✦ ✦ ✦</div>
     </div>
 
     <div class="text-area">
-      <span class="subtitle">Oops! Beauty sleep interrupted.</span>
       <h2 class="title">Страница не найдена</h2>
       <p class="description">
-        Похоже, это зеркало разбилось. Но не волнуйтесь, ваша истинная красота — в другом месте.
+        Похоже, эта страница решила взять отпуск. Но не волнуйтесь — наша коллекция ждёт вас.
       </p>
 
       <div class="actions">
-        <button class="btn-primary">
-          Вернуться на главную,
-        </button>
-        <a routerLink="/catalog" class="btn-link">Перейти в каталог</a>
+        <a routerLink="/" class="btn-primary">
+          <i class="ri-home-4-line"></i>
+          <span>На главную</span>
+        </a>
+        <a routerLink="/ru/catalog/all" class="btn-secondary">
+          <i class="ri-shopping-bag-line"></i>
+          <span>Перейти в каталог</span>
+        </a>
       </div>
     </div>
   </div>
 
-  <div class="decorative-powder"></div>
+  <div class="decorative-glow"></div>
 </section>
