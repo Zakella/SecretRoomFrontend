@@ -1,0 +1,51 @@
+@if (sales().length > 0) {
+  <section class="sales-section">
+    <div class="sales-header">
+      <span class="sale-tag">Special Offer</span>
+      <h2>Sale</h2>
+      <p>Успейте приобрести по выгодной цене</p>
+    </div>
+
+    <div class="sales-album">
+      @for (product of sales(); track product.id) {
+        <article
+          class="sale-card"
+          [routerLink]="['/', currentLanguage(), 'product-detail', product.id]"
+        >
+          <div class="discount-badge">-{{ getDiscountPercent(product) }}%</div>
+          <div class="card-image">
+            <img
+              [src]="getProductImage(product)"
+              [alt]="product.nameRu"
+              class="main-img"
+            />
+            @if (getHoverImage(product)) {
+              <img
+                [src]="getHoverImage(product)"
+                [alt]="product.nameRu"
+                class="hover-img"
+              />
+            }
+          </div>
+          <div class="card-info">
+            <span class="brand">{{ product.brandAlias }}</span>
+            <span class="name">{{ product.nameRu }}</span>
+            <div class="price-row">
+              <span class="old-price">{{ product.oldPrice }} MDL</span>
+              <span class="new-price">{{ product.price }} MDL</span>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="sales-footer">
+      <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'sales']">
+        Смотреть все
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+}

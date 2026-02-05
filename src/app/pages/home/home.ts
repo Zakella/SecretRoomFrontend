@@ -6,6 +6,7 @@ import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {BestSellers} from './sections/best-sellers/best-sellers';
 import {NewArrivals} from './sections/new-arrivals/new-arrivals';
+import {Sales} from './sections/sales/sales';
 import {Categories} from './sections/categories/categories';
 import {Socials} from './sections/socials/socials';
 import {HeroService} from '../../@core/api/hero';
@@ -19,6 +20,7 @@ import {CategoryService} from '../../@core/api/category';
     FadeUp,
     Socials,
     NewArrivals,
+    Sales,
     Categories,
     AsyncPipe,
     Socials
@@ -37,6 +39,9 @@ export class Home {
   );
   protected readonly newArrivals$ = this.productService.getNewArrivals(1, 10).pipe(
     map(res => res.content)
+  );
+  protected readonly sales$ = this.productService.getSales(0, 5).pipe(
+    map(res => res?.content ?? [])
   );
   protected readonly heroItems$ = this.heroService.getActiveHeroItems().pipe(
     map(res => res)
