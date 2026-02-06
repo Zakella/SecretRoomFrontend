@@ -11,6 +11,7 @@ import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
 import {MobileHeader} from '../mobile-header/mobile-header';
 import {Chat} from '../../widgets/chat/chat';
+import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
 
 @Component({
   selector: 'app-main-layout',
@@ -23,6 +24,7 @@ import {Chat} from '../../widgets/chat/chat';
     MobileMenu,
     Breadcrumb,
     MobileHeader,
+    ScrollToTop,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
