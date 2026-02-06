@@ -2,10 +2,11 @@ import {Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'new-arrivals',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './new-arrivals.html',
   styleUrl: './new-arrivals.scss',
 })

@@ -43,7 +43,7 @@ export class Header implements OnInit {
   private brandService = inject(BrandService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
-  public languages = ['ru', 'ro'];
+  public languages = ['ro', 'ru'];
   headerItems = signal<any[] | null>([]);
   activeBrand = signal<Brand | null>(null);
   query = signal('');

@@ -1,7 +1,19 @@
-<button class="back-btn-mobile" aria-label="Назад">
-  <img src="assets/images/back.svg" alt="Назад" />
-</button>
-<div class="product-title-mobile">Главная</div>
-<button class="add-to-cart-mobile" aria-label="Add to cart">
-  <i class="pi pi-shopping-bag"></i>
-</button>
+<!-- Unified Mobile Header (Always Visible) -->
+<div class="mobile-header-home">
+  <div class="lang-switch-header">
+    @for (lang of languages; track lang) {
+      <div class="lang-option" [class.active]="activeLang() === lang" (click)="setActiveLang(lang)">
+        {{ lang | uppercase }}
+      </div>
+    }
+  </div>
+
+  <a class="logo" [routerLink]="['/', activeLang()]">Secret Room</a>
+
+  <button class="cart-btn-home" (click)="openCart()">
+    <i class="pi pi-shopping-bag"></i>
+    @if (cartCount() > 0) {
+      <span class="cart-badge">{{ cartCount() }}</span>
+    }
+  </button>
+</div>

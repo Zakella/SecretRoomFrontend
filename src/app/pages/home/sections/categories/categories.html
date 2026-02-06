@@ -1,6 +1,6 @@
 <section class="more-to-love">
   <div class="header-container">
-    <h2>Shop by Category</h2>
+    <h2>{{ 'Shop by Category' | transloco }}</h2>
     <div class="nav-buttons">
       <button (click)="prev()" [class.disabled]="currentIndex === 0">←</button>
       <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">→</button>
@@ -12,22 +12,10 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
-      @for (item of categories(); track item.id) {
-        <div class="slide">
-
-<!--          <div class="collage">
-            <div class="cell">
-              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
-            </div>
-            <div class="cell">
-              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
-            </div>
-            <div class="cell">
-              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
-            </div>
-          </div>-->
-          <img [src]="item.image ||'https://api-sr.solterprise.com/api/public/serveFile/BodySprayMist/DreamBrightFineFragranceMist1.jpg'" alt="{{ item.label }}"/>
-          <span class="label">{{ item.name }}</span>
+      @for (item of categories(); track item.categoryId) {
+        <div class="slide" (click)="goToCategory(item)">
+          <img [src]="item.imageUrl || 'assets/images/no-image.png'" [alt]="item.name"/>
+          <span class="label">{{ currentLanguage() === 'ro' ? item.nameRo : item.nameRu }}</span>
         </div>
       }
     </div>

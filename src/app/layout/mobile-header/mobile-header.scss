@@ -1,3 +1,118 @@
+// ========================================
+// HOME HEADER (Black & Gold)
+// ========================================
+.mobile-header-home {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px;
+  background: linear-gradient(180deg, #0E0E11 0%, #121216 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  .logo {
+    font-family: 'Cinzel', 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    background: linear-gradient(
+        90deg,
+        #8B7355 0%,
+        #b8956c 25%,
+        #d4b896 40%,
+        #f5e6d3 50%,
+        #d4b896 60%,
+        #b8956c 75%,
+        #8B7355 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    animation: logoShine 6s linear infinite;
+  }
+
+  .cart-btn-home {
+    position: absolute;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #d4b896;
+    font-size: 24px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    .cart-badge {
+      position: absolute;
+      top: 4px;
+      right: 0;
+      background: #b8956c;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #121216;
+    }
+  }
+}
+
+.lang-switch-header {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .lang-option {
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: #b8956c;
+      color: #121216;
+      font-weight: 700;
+    }
+  }
+}
+
+@keyframes logoShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ========================================
+// INNER PAGES HEADER (Glass / Light)
+// ========================================
+
 .back-btn-mobile {
   position: fixed;
   top: 12px;
@@ -14,12 +129,12 @@
   border-radius: 50%;
 
   /* glass effect */
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 
   cursor: pointer;
 
@@ -45,25 +160,25 @@
   z-index: 999;
 
   max-width: calc(100% - 120px);
-  padding: 8px 14px;
+  padding: 10px 20px;
 
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  color: #4b3e2b;
+  color: #1a1a1a;
 
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 
   pointer-events: none;
 
@@ -86,19 +201,36 @@
   justify-content: center;
 
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 
-  color: #4b3e2b;
-  font-size: 1rem;
+  color: #1a1a1a;
+  font-size: 1.1rem;
 
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  .cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #c41e3a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fff;
+  }
 
   &:active {
     transform: scale(0.9);
