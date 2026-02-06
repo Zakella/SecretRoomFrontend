@@ -45,7 +45,4 @@ export class Home {
   protected readonly heroItems$ = this.heroService.getActiveHeroItems().pipe(
     map(res => res)
   )
-  protected readonly categories$ = this.categoryService.getParentsCategory().pipe(
-    map(res => res)
-  )
 }
