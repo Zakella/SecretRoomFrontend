@@ -1,5 +1,5 @@
-import {Component, OnInit, signal, inject, HostListener} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, OnInit, signal, inject, HostListener, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
+import {CommonModule, isPlatformBrowser} from '@angular/common';
 import {InstagramService, InstagramMedia} from '../../../../@core/api/instagram';
 
 @Component({
@@ -7,27 +7,28 @@ import {InstagramService, InstagramMedia} from '../../../../@core/api/instagram'
   standalone: true,
   imports: [CommonModule],
   templateUrl: './instagram-feed.html',
-  styleUrl: './instagram-feed.scss'
+  styleUrl: './instagram-feed.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class InstagramFeed implements OnInit {
   private instagramService = inject(InstagramService);
-
+  private readonly VIEWED_KEY = 'ig_viewed_posts';
+  viewedIds = signal<Set<string>>(new Set());
   posts = signal<InstagramMedia[]>([]);
   isLoading = signal(true);
-
-  // Viewer
   isViewerOpen = signal(false);
   currentIndex = signal(0);
 
   username = 'secretroom.md';
   profileUrl = 'https://instagram.com/secretroom.md';
+  private platformId = inject(PLATFORM_ID);
 
   get currentPost(): InstagramMedia | null {
     return this.posts()[this.currentIndex()] || null;
   }
 
   ngOnInit(): void {
-    this.instagramService.getFeed(6).subscribe({
+    this.instagramService.getFeed(10).subscribe({
       next: (data) => {
         this.posts.set(data);
         this.isLoading.set(false);
@@ -37,22 +38,33 @@ export class InstagramFeed implements OnInit {
         this.isLoading.set(false);
       }
     });
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const stored = JSON.parse(
+      localStorage.getItem(this.VIEWED_KEY) || '[]'
+    );
+
+    this.viewedIds.set(new Set(stored));
   }
 
   openViewer(index: number): void {
     this.currentIndex.set(index);
     this.isViewerOpen.set(true);
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflowY = 'hidden';
+    this.markViewed(this.currentPost?.id || '');
   }
 
   closeViewer(): void {
-    this.isViewerOpen.set(false);
     document.body.style.overflow = '';
+    this.isViewerOpen.set(false);
   }
 
   next(): void {
     if (this.currentIndex() < this.posts().length - 1) {
       this.currentIndex.update(i => i + 1);
+      this.markViewed(this.currentPost?.id || '');
     }
   }
 
@@ -84,4 +96,25 @@ export class InstagramFeed implements OnInit {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toString();
   }
+
+  markViewed(postId: string) {
+    this.viewedIds.update(set => {
+      if (set.has(postId)) return set;
+
+      const next = new Set(set);
+      next.add(postId);
+
+      localStorage.setItem(
+        this.VIEWED_KEY,
+        JSON.stringify([...next])
+      );
+
+      return next;
+    });
+  }
+
+  isViewed(id: string): boolean {
+    return this.viewedIds().has(id);
+  }
+
 }

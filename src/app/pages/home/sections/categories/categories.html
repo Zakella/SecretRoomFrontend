@@ -3,7 +3,7 @@
     <h2>Shop by Category</h2>
     <div class="nav-buttons">
       <button (click)="prev()" [class.disabled]="currentIndex === 0">←</button>
-      <button (click)="next()" [class.disabled]="currentIndex >= items.length - 1">→</button>
+      <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">→</button>
     </div>
   </div>
 
@@ -12,10 +12,22 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
-      @for (item of items; track item.id) {
+      @for (item of categories(); track item.id) {
         <div class="slide">
-          <img [src]="item.image" alt="{{ item.label }}"/>
-          <span class="label">{{ item.label }}</span>
+
+<!--          <div class="collage">
+            <div class="cell">
+              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
+            </div>
+            <div class="cell">
+              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
+            </div>
+            <div class="cell">
+              <img src="https://api-sr.solterprise.com/api/public/serveFile/Kiko/01-202508281.webp" alt="">
+            </div>
+          </div>-->
+          <img [src]="item.image ||'https://api-sr.solterprise.com/api/public/serveFile/BodySprayMist/DreamBrightFineFragranceMist1.jpg'" alt="{{ item.label }}"/>
+          <span class="label">{{ item.name }}</span>
         </div>
       }
     </div>
