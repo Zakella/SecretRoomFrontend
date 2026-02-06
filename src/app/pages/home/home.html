@@ -3,7 +3,7 @@
     <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="true" [controls]="false"/>
   </div>
   <div scrollReveal="fade-up">
-    <categories [categories]="(categories$ | async) || []"/>
+    <categories/>
   </div>
   <div scrollReveal="fade-up">
     <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
