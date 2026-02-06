@@ -1,8 +1,9 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, input, OnInit, signal} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CategoryService} from '../../../../@core/api/category';
+import {Category} from '../../../../entities/category';
 
 @Component({
   selector: 'categories',
@@ -18,7 +19,7 @@ export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
 
   currentLanguage = this.languageService.currentLanguage;
-  categories = signal<any[]>([]);
+  categories = input<Category[]>([]);
 
   currentIndex = 0;
   translateX = 0;
@@ -26,9 +27,7 @@ export class Categories implements OnInit {
   readonly gap = 32;
 
   ngOnInit() {
-    this.categoryService.getCategoriesWithPreview().subscribe(data => {
-      this.categories.set(data);
-    });
+    // Data is now passed via input, so no need to fetch here
   }
 
   next() {
@@ -50,12 +49,6 @@ export class Categories implements OnInit {
   }
 
   goToCategory(category: any) {
-    this.router.navigate([this.currentLanguage(), 'catalog', category.categoryId]);
-  }
-
-  getCollageImages(category: any): string[] {
-    if (!category.products || category.products.length === 0) return [];
-    // Take up to 3 images for collage
-    return category.products.slice(0, 3).map((p: any) => p.imageURL);
+    this.router.navigate([this.currentLanguage(), 'catalog', category.id]);
   }
 }

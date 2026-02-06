@@ -12,10 +12,10 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
-      @for (item of categories(); track item.categoryId) {
+      @for (item of categories(); track item.id) {
         <div class="slide" (click)="goToCategory(item)">
           <img [src]="item.imageUrl || 'assets/images/no-image.png'" [alt]="item.name"/>
-          <span class="label">{{ currentLanguage() === 'ro' ? item.nameRo : item.nameRu }}</span>
+          <span class="label">{{ item.name }}</span>
         </div>
       }
     </div>
