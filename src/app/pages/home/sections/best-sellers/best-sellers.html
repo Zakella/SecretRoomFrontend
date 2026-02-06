@@ -3,8 +3,8 @@
     <div class="bestsellers-left">
       <span class="eyebrow">Top Picks</span>
       <h2>Best<br/>Sellers</h2>
-      <p>Самые покупаемые продукты этого месяца</p>
-      <a class="cta desktop-only" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">Смотреть все</a>
+      <p>{{ 'bestSellers.description' | transloco }}</p>
+      <a class="cta desktop-only" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">{{ 'seeAll' | transloco }}</a>
     </div>
     <div class="bestsellers-right">
       @for (product of bestSellers(); track product.id) {
@@ -44,7 +44,7 @@
     <!-- Mobile Button -->
     <div class="mobile-footer">
       <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">
-        Смотреть все
+        {{ 'seeAll' | transloco }}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>

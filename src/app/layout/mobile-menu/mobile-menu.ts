@@ -34,7 +34,7 @@ export class MobileMenu  implements OnInit{
   public cartCount =  this.cartService.cartCount;
   visible: boolean = false;
   user = signal<any>(null)
-  languages = ['ru', 'ro'];
+  languages = ['ro', 'ru'];
 
   categories = [
     { label: 'Skincare', icon: 'https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg' },

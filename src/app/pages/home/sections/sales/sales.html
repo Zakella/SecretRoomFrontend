@@ -1,9 +1,9 @@
 @if (sales().length > 0) {
   <section class="sales-section">
     <div class="sales-header">
-      <span class="sale-tag">Special Offer</span>
+      <span class="sale-tag">{{ 'Special Offer' | transloco }}</span>
       <h2>Sale</h2>
-      <p>Успейте приобрести по выгодной цене</p>
+      <p>{{ 'sales.description' | transloco }}</p>
     </div>
 
     <div class="sales-album">
@@ -41,7 +41,7 @@
 
     <div class="sales-footer">
       <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'sales']">
-        Смотреть все
+        {{ 'seeAll' | transloco }}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>

@@ -1,6 +1,6 @@
 <section class="more-to-love">
   <div class="header-container">
-    <h2>Shop by Category</h2>
+    <h2>{{ 'Shop by Category' | transloco }}</h2>
     <div class="nav-buttons">
       <button (click)="prev()" [class.disabled]="currentIndex === 0">←</button>
       <button (click)="next()" [class.disabled]="currentIndex >= items.length - 1">→</button>

@@ -1,8 +1,11 @@
 import {Component, input} from '@angular/core';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'categories',
-  imports: [],
+  imports: [
+    TranslocoPipe
+  ],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })

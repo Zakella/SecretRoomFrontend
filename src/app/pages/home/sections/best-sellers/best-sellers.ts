@@ -2,11 +2,13 @@ import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'best-sellers',
   imports: [
-    RouterLink
+    RouterLink,
+    TranslocoPipe
   ],
   templateUrl: './best-sellers.html',
   styleUrl: './best-sellers.scss',

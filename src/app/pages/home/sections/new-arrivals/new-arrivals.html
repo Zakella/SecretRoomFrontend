@@ -4,7 +4,7 @@
       <header class="section-header">
         <div class="title-group">
           <span class="subtitle">Limited Collection</span>
-          <h2 class="title">Новинки сезона</h2>
+          <h2 class="title">{{ 'New' | transloco }}</h2>
         </div>
 
         <div class="nav-arrows">
@@ -66,8 +66,8 @@
           >
             <div class="view-all-content">
               <i class="ri-arrow-right-line"></i>
-              <span class="view-all-text">Смотреть все</span>
-              <span class="view-all-subtitle">новинки</span>
+              <span class="view-all-text">{{ 'seeAll' | transloco }}</span>
+              <span class="view-all-subtitle">{{ 'New' | transloco }}</span>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@
       <!-- Mobile View All Button -->
       <div class="mobile-footer">
         <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'new']">
-          Смотреть все
+          {{ 'seeAll' | transloco }}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>

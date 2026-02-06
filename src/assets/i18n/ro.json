@@ -148,7 +148,7 @@
   "Recommendation": "Vă recomandăm",
   "Price": "Preț",
   "Fill required fields": "Completați câmpurile obligatorii",
-  "New": "Nou",
+  "New": "Noutăți de sezon",
   "About us": "Despre noi",
   "Our stores": "Magazinele noastre",
   "Checkout": "Finalizare comandă",
@@ -241,5 +241,16 @@
       "card": "Card la livrare"
     }
   },
-  "Show more": "Vezi mai multe"
+  "Show more": "Vezi mai multe",
+  "Home": "Acasă",
+  "Catalog": "Catalog",
+  "Profile": "Profil",
+  "Shop by Category": "Categorii populare",
+  "Special Offer": "Ofertă specială",
+  "bestSellers": {
+    "description": "Cele mai vândute produse din această lună"
+  },
+  "sales": {
+    "description": "Grăbește-te să cumperi la un preț avantajos"
+  }
 }

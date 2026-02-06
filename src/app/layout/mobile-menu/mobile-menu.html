@@ -38,6 +38,14 @@
     </div>
     <span>{{ 'Profile' | transloco }}</span>
   </a>
+
+  <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']" routerLinkActive="active">
+    <div class="icon-wrapper">
+      <i class="ri-store-2-line"></i>
+      <i class="ri-store-2-fill active-icon"></i>
+    </div>
+    <span>{{ 'Stores' | transloco }}</span>
+  </a>
 </nav>
 
 <!-- Catalog Drawer (Full Screen) -->
