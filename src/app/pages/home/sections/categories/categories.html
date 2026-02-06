@@ -3,7 +3,7 @@
     <h2>{{ 'Shop by Category' | transloco }}</h2>
     <div class="nav-buttons">
       <button (click)="prev()" [class.disabled]="currentIndex === 0">←</button>
-      <button (click)="next()" [class.disabled]="currentIndex >= items.length - 1">→</button>
+      <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">→</button>
     </div>
   </div>
 
@@ -12,10 +12,10 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
-      @for (item of items; track item.id) {
-        <div class="slide">
-          <img [src]="item.image" alt="{{ item.label }}"/>
-          <span class="label">{{ item.label }}</span>
+      @for (item of categories(); track item.categoryId) {
+        <div class="slide" (click)="goToCategory(item)">
+          <img [src]="item.imageUrl || 'assets/images/no-image.png'" [alt]="item.name"/>
+          <span class="label">{{ currentLanguage() === 'ro' ? item.nameRo : item.nameRu }}</span>
         </div>
       }
     </div>

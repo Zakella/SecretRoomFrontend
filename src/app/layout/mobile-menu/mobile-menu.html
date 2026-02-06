@@ -76,6 +76,22 @@
         </div>
       </div>
 
+      <!-- Categories (Horizontal Scroll) -->
+      @if (categories().length > 0) {
+        <div class="categories-scroll-container">
+          <div class="categories-scroll">
+            @for (cat of categories(); track cat.id) {
+              <div class="category-item" (click)="goToCategory(cat)">
+                <div class="cat-icon-circle">
+                  <img [src]="cat.imageUrl || 'assets/images/no-image.png'" [alt]="cat.name" />
+                </div>
+                <span class="cat-name">{{ cat.name }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Brands List (Vertical Grid) -->
       @if (brands().length > 0) {
         <div class="brands-grid">

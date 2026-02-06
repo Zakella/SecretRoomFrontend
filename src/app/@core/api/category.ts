@@ -9,9 +9,14 @@ import {Category} from '../../entities/category';
 export class CategoryService {
   private http = inject(HttpClient);
   private apiUrl = 'https://api-sr.solterprise.com/api/web-categories/hierarchy/active'
+  private previewUrl = 'https://api-sr.solterprise.com/api/web-categories/parents/product-preview'
 
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.apiUrl);
+  }
+
+  getCategoriesWithPreview(): Observable<any[]> {
+    return this.http.get<any[]>(this.previewUrl);
   }
 
 }

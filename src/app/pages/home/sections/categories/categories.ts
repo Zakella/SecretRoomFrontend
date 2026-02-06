@@ -1,5 +1,8 @@
-import {Component, input} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {Router} from '@angular/router';
+import {Language} from '../../../../@core/services/language';
+import {CategoryService} from '../../../../@core/api/category';
 
 @Component({
   selector: 'categories',
@@ -9,25 +12,27 @@ import {TranslocoPipe} from '@ngneat/transloco';
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })
-export class Categories {
-  items = [
-    { id: 1, label: 'Panties', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 2, label: 'Sleep', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 3, label: 'Lingerie', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 4, label: 'VSX', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 5, label: 'Accessories', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 6, label: 'Beauty', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' },
-    { id: 7, label: 'Swim', image: 'https://www.victoriassecret.com/images/vsweb/feaaa496-4834-4109-9dda-4b93901d661b/012026-carousel-sexy-night-in.jpg' }
-  ];
-  categories = input<any[]>([]);
+export class Categories implements OnInit {
+  private router = inject(Router);
+  private languageService = inject(Language);
+  private categoryService = inject(CategoryService);
+
+  currentLanguage = this.languageService.currentLanguage;
+  categories = signal<any[]>([]);
 
   currentIndex = 0;
   translateX = 0;
   readonly slideWidth = 360;
   readonly gap = 32;
 
+  ngOnInit() {
+    this.categoryService.getCategoriesWithPreview().subscribe(data => {
+      this.categories.set(data);
+    });
+  }
+
   next() {
-    if (this.currentIndex < this.items.length - 1) {
+    if (this.currentIndex < this.categories().length - 1) {
       this.currentIndex++;
       this.updatePosition();
     }
@@ -41,7 +46,16 @@ export class Categories {
   }
 
   private updatePosition() {
-    // Считаем: (ширина + отступ) * индекс
     this.translateX = -(this.currentIndex * (this.slideWidth + this.gap));
+  }
+
+  goToCategory(category: any) {
+    this.router.navigate([this.currentLanguage(), 'catalog', category.categoryId]);
+  }
+
+  getCollageImages(category: any): string[] {
+    if (!category.products || category.products.length === 0) return [];
+    // Take up to 3 images for collage
+    return category.products.slice(0, 3).map((p: any) => p.imageURL);
   }
 }

@@ -9,7 +9,8 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {Authentication} from '../../@core/auth/authentication';
 import {UpperCasePipe} from '@angular/common';
 import {BrandService} from '../../@core/api/brand';
-import {Brand} from '../../entities/category';
+import {Brand, Category} from '../../entities/category';
+import {CategoryService} from '../../@core/api/category';
 
 @Component({
   selector: 'mobile-menu',
@@ -32,6 +33,7 @@ export class MobileMenu  implements OnInit{
   private cartService = inject(CartUi);
   private authService = inject(Authentication)
   private brandService = inject(BrandService);
+  private categoryService = inject(CategoryService);
 
   isAuth = this.authService.logged;
   public activeLang = this.langService.currentLanguage
@@ -40,19 +42,12 @@ export class MobileMenu  implements OnInit{
   user = signal<any>(null)
   languages = ['ro', 'ru'];
   brands = signal<Brand[]>([]);
-
-  categories = [
-    { label: 'Skincare', icon: 'https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg' },
-    { label: 'Make Up', icon: 'https://www.celinesbeautyrooms.ie/wp-content/uploads/2023/02/make-up.jpg' },
-    { label: 'Perfumes', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0dBLgwZB1yZ0vMt05UuUDXZ8SIEODYpJArQ&s' },
-    { label: 'Hair', icon: 'https://lovebeautyandplanet.in/cdn/shop/articles/Facts_abou_hair_growth_you_should_know_500.jpg?v=1708085249' },
-    { label: 'Hygiene', icon: 'https://www.purifas.com/cdn/shop/articles/salon_hygiene_600x1000_58c72a6c-b672-473c-a9bc-13cbb46ff27d_1000x.png?v=1710804691' },
-    { label: 'Accessories', icon: 'https://img.freepik.com/premium-photo/collection-fashion-accessories-like-sunglasses-watches-necklaces-white-background_1271419-10666.jpg?semt=ais_hybrid&w=740&q=80' },
-  ];
+  categories = signal<Category[]>([]);
 
   ngOnInit(): void {
     this.user.set( this.getUserInitials());
     this.getBrands();
+    this.getCategories();
   }
 
 
@@ -78,9 +73,24 @@ export class MobileMenu  implements OnInit{
     });
   }
 
+  getCategories() {
+    this.categoryService.getCategories().subscribe(categories => {
+      if (categories) {
+        this.categories.set(categories);
+      }
+    });
+  }
+
   goToBrandList(brand: Brand) {
     this.brandService.brand.set(brand.brand);
     this.router.navigate([this.activeLang(), 'catalog', 'brand']);
     this.visible = false; // Close drawer
+  }
+
+  goToCategory(category: Category) {
+    // If category has children, we might want to show them or navigate to parent
+    // For now, let's navigate to catalog with category id
+    this.router.navigate([this.activeLang(), 'catalog', category.id]);
+    this.visible = false;
   }
 }
