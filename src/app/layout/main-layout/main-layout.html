@@ -5,9 +5,12 @@
 @if (visible()) {
   <app-cart (close)="onClose()"/>
 }
-<div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 md:hidden z-50">
+
+<!-- Mobile Menu (Bottom Navigation) -->
+<div class="md:hidden">
   <mobile-menu/>
 </div>
+
 <app-footer/>
 <app-loader/>
 <scroll-to-top/>

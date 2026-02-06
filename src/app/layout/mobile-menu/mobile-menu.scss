@@ -1,174 +1,299 @@
-.button-container {
+// ========================================
+// BOTTOM NAVIGATION BAR
+// ========================================
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px; // Standard iOS tab bar height
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
-  width: 380px;
-  height: 48px;
-  align-items: center;
   justify-content: space-around;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-
-.button {
-  outline: 0 !important;
-  border: 0 !important;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: transparent;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  color: black;
-  transition: all ease-in-out 0.3s;
-  cursor: pointer;
-}
+  padding-bottom: 20px; // Safe area for iPhone home indicator
+  z-index: 9999;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
 
-.button:hover {
-  transform: translateY(-3px);
-}
-
-.icon {
-  font-size: 20px;
-}
-
-
-
-
-
-:host ::ng-deep .p-drawer {
-  background: linear-gradient(180deg, #faf8f5 0%, #fff 100%)!important;
-  padding: 16px!important;
-  color: #000!important;
-}
-
-.drawer-header {
-  margin-bottom: 16px;
-
-  h2 {
-    margin: 0 0 12px;
-    font-size: 22px;
-    font-weight: 600;
-  }
-
-  .search {
-    position: relative;
-
-    input {
-      width: 100%;
-      padding: 12px 40px 12px 14px;
-      border-radius: 14px;
-      border: none;
-      background: #fff;
-      font-size: 14px;
-      outline: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,.05);
-    }
-
-    i {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      opacity: .5;
-    }
+  @media (min-width: 768px) {
+    display: none;
   }
 }
 
-.categories {
+.nav-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.category {
-  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 16px;
-  background: black;
-  color: #fff;
-  /*
-  border-radius: 18px;
-  */
-  box-shadow: 0 6px 18px rgba(0,0,0,.05);
+  gap: 4px;
+  color: #999;
+  text-decoration: none;
   cursor: pointer;
-  transition: transform .2s ease;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:active {
-    transform: scale(.98);
-  }
-
-  .left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    img {
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-    }
-
-    span {
-      font-size: 15px;
-      font-weight: 500;
-    }
-  }
-
-  i {
-    opacity: .4;
-  }
-}
-
-.cart-btn {
-  position: relative;
-
-  .cart-badge {
-    position: absolute;
-    top: -4px;
-    right: -6px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-
-    background: #e11d48; // красный
-    color: #fff;
-
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 18px;
-    text-align: center;
-
+  .icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.35);
+    i {
+      font-size: 24px;
+      transition: opacity 0.2s ease;
+    }
+
+    .active-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      color: var(--gold, #b8956c);
+    }
+  }
+
+  span {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  &.active {
+    color: var(--gold, #b8956c);
+
+    .icon-wrapper {
+      i:not(.active-icon) {
+        opacity: 0;
+      }
+      .active-icon {
+        opacity: 1;
+      }
+    }
   }
 }
 
-.user-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-
-  background: #111;
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  background: #c41e3a;
   color: #fff;
-
-  font-size: 14px;
-  font-weight: 600;
-
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
-
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid #fff;
 }
 
+.user-avatar-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ========================================
+// CATALOG DRAWER
+// ========================================
+
+:host ::ng-deep .catalog-drawer {
+  background: #faf8f5 !important;
+  color: #1a1a1a !important;
+  border: none !important;
+
+  .p-drawer-header {
+    padding: 16px 20px !important;
+    background: #fff !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .p-drawer-content {
+    padding: 0 !important;
+  }
+}
+
+.drawer-custom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.drawer-title {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.lang-switch-mobile {
+  display: flex;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 2px;
+
+  .lang-option {
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &.active {
+      background: #fff;
+      color: #1a1a1a;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+  }
+}
+
+.drawer-content {
+  padding: 20px;
+}
+
+.search-container {
+  margin-bottom: 24px;
+}
+
+.search-input-wrapper {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 18px;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: var(--gold, #b8956c);
+      box-shadow: 0 0 0 3px rgba(184, 149, 108, 0.1);
+    }
+  }
+}
+
+// Categories Scroll (Horizontal)
+.categories-scroll-container {
+  margin-bottom: 32px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.categories-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 0 20px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    min-width: 72px;
+
+    .cat-icon-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #fff;
+      padding: 3px;
+      border: 1px solid rgba(0,0,0,0.08);
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+    }
+
+    .cat-name {
+      font-size: 11px;
+      font-weight: 500;
+      text-align: center;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+}
+
+// Brands Grid (Vertical)
+.brands-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+
+  .brand-item {
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::after {
+      content: '→';
+      font-family: monospace;
+      color: #ccc;
+      font-size: 18px;
+    }
+
+    &:active {
+      background: #faf8f5;
+      transform: scale(0.99);
+    }
+  }
+}
