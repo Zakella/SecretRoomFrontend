@@ -4,7 +4,7 @@
       <span class="eyebrow">Top Picks</span>
       <h2>Best<br/>Sellers</h2>
       <p>Самые покупаемые продукты этого месяца</p>
-      <a class="cta" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">Смотреть все</a>
+      <a class="cta desktop-only" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">Смотреть все</a>
     </div>
     <div class="bestsellers-right">
       @for (product of bestSellers(); track product.id) {
@@ -30,10 +30,25 @@
           <div class="meta">
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product.nameRu }}</span>
-            <span class="price">{{ product.price }} MDL</span>
+            <div class="price-block">
+              @if (hasDiscount(product)) {
+                <span class="old-price">{{ product.oldPrice }} MDL</span>
+              }
+              <span class="price" [class.sale-price]="hasDiscount(product)">{{ product.price }} MDL</span>
+            </div>
           </div>
         </article>
       }
+    </div>
+
+    <!-- Mobile Button -->
+    <div class="mobile-footer">
+      <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'bestsellers']">
+        Смотреть все
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
   </section>
 }

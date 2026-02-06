@@ -1,11 +1,8 @@
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-wishlist',
-  imports: [
-    NgForOf
-  ],
+  imports: [],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

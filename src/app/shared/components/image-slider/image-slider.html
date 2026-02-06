@@ -1,8 +1,17 @@
 @if (images() && images().length > 0) {
+  <!-- Mobile Logo Header -->
+  <div class="mobile-logo-overlay">
+    <a class="logo">Secret Room</a>
+  </div>
+
   <div class="carousel-container" (touchstart)="onDragStart($event)" (touchend)="onDragEnd($event)">
     @for (image of images(); track image.id; let i = $index) {
       <div class="slide" [class.image-active]="selectedIndex() === i">
-        <img [src]="image.imageUrl" [alt]="image.name" class="fade">
+        <!-- Blurred background for different image sizes -->
+        <div class="slide-bg" [style.backgroundImage]="'url(' + image.imageUrl + ')'"></div>
+        <!-- Main image -->
+        <img [src]="image.imageUrl" [alt]="image.name" class="slide-img fade"/>
+        <!-- Content overlay -->
         <div class="slide-overlay">
           <h3 class="slide-title">
             {{ activeLang() === 'ro' ? image.nameRo : image.nameRu }}

@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
+import {CurrencyPipe, DatePipe} from '@angular/common';
+
 interface Promotion {
   id: number;
   title: string;
@@ -14,9 +15,7 @@ interface Promotion {
 @Component({
   selector: 'app-list',
   imports: [
-    NgForOf,
     CurrencyPipe,
-    NgIf,
     DatePipe
   ],
   templateUrl: './list.html',

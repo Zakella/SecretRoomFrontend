@@ -60,5 +60,12 @@ export class ProductService {
       .set('size', size)
     return this.http.get<GetResponse>(`${this.baseUrL}/new-arrivals`, {params});
   }
+
+  getSales(page: number, size: number): Observable<GetResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+    return this.http.get<GetResponse>(`${this.baseUrL}/sales`, {params});
+  }
 }
 

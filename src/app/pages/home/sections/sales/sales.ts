@@ -1,19 +1,18 @@
-import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
+import {Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 
 @Component({
-  selector: 'best-sellers',
+  selector: 'sales',
   imports: [
     RouterLink
   ],
-  templateUrl: './best-sellers.html',
-  styleUrl: './best-sellers.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './sales.html',
+  styleUrl: './sales.scss'
 })
-export class BestSellers {
-  public bestSellers = input<Product[]>([]);
+export class Sales {
+  public sales = input<Product[]>([]);
   private languageService = inject(Language);
   currentLanguage = this.languageService.currentLanguage;
 
@@ -32,7 +31,10 @@ export class BestSellers {
     return null;
   }
 
-  hasDiscount(product: Product): boolean {
-    return product.oldPrice > 0 && product.price !== undefined && product.oldPrice > product.price;
+  getDiscountPercent(product: Product): number {
+    if (product.oldPrice && product.price && product.oldPrice > product.price) {
+      return Math.round((1 - product.price / product.oldPrice) * 100);
+    }
+    return 0;
   }
 }

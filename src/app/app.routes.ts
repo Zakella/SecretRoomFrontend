@@ -40,40 +40,73 @@ export const routes: Routes = [
           {
             path: 'catalog/:tag',
             component: Catalog,
-            data: {breadcrumb: 'Редактирование'}
+            data: {breadcrumb: 'Catalog'}
           },
           {
             path: 'brands',
             component: Brands,
+            data: {breadcrumb: 'Brands'}
           },
           {
             path: 'product-detail/:id',
             component: ProductDetail,
             resolve: {
               product: ProductResolver
-            }
+            },
+            data: {breadcrumb: 'Product Details'}
           },
-          {path: 'contacts', component: Contacts},
-          {path: 'payment-fail', component: PaymentFail},
-          {path: 'delivery-terms', component: DeliveryTerms},
+          {
+            path: 'contacts',
+            component: Contacts,
+            data: {breadcrumb: 'Contacts'}
+          },
+          {
+            path: 'payment-fail',
+            component: PaymentFail,
+            data: {breadcrumb: 'Payment Failed'}
+          },
+          {
+            path: 'delivery-terms',
+            component: DeliveryTerms,
+            data: {breadcrumb: 'Delivery Terms'}
+          },
           {
             path: 'cabinet',
             canActivate: [AccessGuard],
-            component: Cabinet
+            component: Cabinet,
+            data: {breadcrumb: 'Cabinet'}
           },
           {
             path: 'order/:trackingNumber',
             canActivate: [AccessGuard],
-            component: OrderDetail
+            component: OrderDetail,
+            data: {breadcrumb: 'Order Details'}
           },
           {
             path: 'checkout',
-            component: Checkout
+            component: Checkout,
+            data: {breadcrumb: 'Checkout'}
           },
-          {path: 'promotion', component: PromotionCard},
-          {path: 'promotion-list', component: List},
-          {path: 'about-the-secret-room', component: OurStory},
-          {path: 'search/:query', component: SearchResult}
+          {
+            path: 'promotion',
+            component: PromotionCard,
+            data: {breadcrumb: 'Promotion'}
+          },
+          {
+            path: 'promotion-list',
+            component: List,
+            data: {breadcrumb: 'Promotions'}
+          },
+          {
+            path: 'about-the-secret-room',
+            component: OurStory,
+            data: {breadcrumb: 'Our Story'}
+          },
+          {
+            path: 'search/:query',
+            component: SearchResult,
+            data: {breadcrumb: 'Search Results'}
+          }
         ],
       },
       {

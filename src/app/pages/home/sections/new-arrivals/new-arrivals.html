@@ -13,7 +13,7 @@
               <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
             </svg>
           </button>
-          <button (click)="next()" [disabled]="currentIndex >= newArrivals().length - 1" class="arrow-btn">
+          <button (click)="next()" [disabled]="currentIndex >= newArrivals().length" class="arrow-btn">
             <svg viewBox="0 0 24 24">
               <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
             </svg>
@@ -24,24 +24,52 @@
       <div class="slider-viewport">
         <div class="slider-track" [style.transform]="'translateX(' + translateX + 'px)'">
           @for (item of newArrivals(); track item.id; let i = $index) {
-            <div class="product-card" [class.active]="i === currentIndex">
+            <div
+              class="product-card"
+              [class.active]="i === currentIndex"
+              [routerLink]="['/', currentLanguage(), 'product-detail', item.id]"
+            >
               <div class="image-wrapper">
-                <img
-                  [src]="item.imageURL || 'assets/images/no-image.png'"
-                  [alt]="item.name"
-                  (error)="onImageError($event)"
-                >
-                <div class="overlay">
-                  <button class="quick-view">Quick View</button>
+                <div class="img-container">
+                  <img
+                    [src]="getProductImage(item)"
+                    [alt]="item.name"
+                    class="main-img"
+                    (error)="onImageError($event)"
+                  />
+                  @if (getHoverImage(item)) {
+                    <img
+                      [src]="getHoverImage(item)"
+                      [alt]="item.name"
+                      class="hover-img"
+                    />
+                  }
                 </div>
               </div>
-              <div class="product-info">
-                <span class="brand">VS</span>
+              <div class="meta">
+                <span class="brand">{{ item.brandAlias }}</span>
                 <h3 class="name">{{ item.name }}</h3>
-                <span class="price">{{ item.price }} MDL</span>
+                <div class="price-block">
+                  @if (hasDiscount(item)) {
+                    <span class="old-price">{{ item.oldPrice }} MDL</span>
+                  }
+                  <span class="price" [class.sale-price]="hasDiscount(item)">{{ item.price }} MDL</span>
+                </div>
               </div>
             </div>
           }
+
+          <!-- View All Card (Desktop only) -->
+          <div
+            class="view-all-card desktop-only"
+            [routerLink]="['/', currentLanguage(), 'catalog', 'new']"
+          >
+            <div class="view-all-content">
+              <i class="ri-arrow-right-line"></i>
+              <span class="view-all-text">Смотреть все</span>
+              <span class="view-all-subtitle">новинки</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -49,6 +77,16 @@
         @for (item of newArrivals(); track item.id; let i = $index) {
           <div class="dash" [class.active]="i === currentIndex" (click)="goTo(i)"></div>
         }
+      </div>
+
+      <!-- Mobile View All Button -->
+      <div class="mobile-footer">
+        <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'new']">
+          Смотреть все
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
       </div>
     </div>
   </section>

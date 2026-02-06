@@ -8,7 +8,6 @@ import {
   signal
 } from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
-import {NgIf} from '@angular/common';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
@@ -31,7 +30,6 @@ type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
   selector: 'app-checkout',
   imports: [
     FadeUp,
-    NgIf,
     FormsModule,
     ReactiveFormsModule,
     TranslocoPipe,
