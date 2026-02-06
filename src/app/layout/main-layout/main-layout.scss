@@ -1,0 +1,12 @@
+// Hide desktop header on mobile
+@media (max-width: 768px) {
+  app-header {
+    display: none;
+  }
+
+  // Add padding to bottom so content isn't hidden behind bottom nav
+  :host {
+    display: block;
+    padding-bottom: 90px; // 80px nav + 10px buffer
+  }
+}

@@ -89,13 +89,14 @@
 .nav-left {
   min-width: 0;
   display: flex;
-  gap: 8px;
+  gap: 20px; // Increased gap for better spacing
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 4px;
   padding-top: 4px;
   align-items: center;
   flex: 1;
+  justify-content: flex-start; // Ensure items start from left
 
   &::-webkit-scrollbar {
     display: none;
@@ -349,7 +350,7 @@
 
 @media (max-width: 768px) {
   .header {
-    display: none;
+    display: none !important;
   }
 }
 
