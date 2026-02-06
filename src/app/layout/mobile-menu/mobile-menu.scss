@@ -169,7 +169,7 @@
 }
 
 .search-container {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .search-input-wrapper {
@@ -197,6 +197,42 @@
     &:focus {
       border-color: var(--gold, #b8956c);
       box-shadow: 0 0 0 3px rgba(184, 149, 108, 0.1);
+    }
+  }
+}
+
+// Brands Grid (Vertical)
+.brands-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+
+  .brand-item {
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::after {
+      content: '→';
+      font-family: monospace;
+      color: #ccc;
+      font-size: 18px;
+    }
+
+    &:active {
+      background: #faf8f5;
+      transform: scale(0.99);
     }
   }
 }

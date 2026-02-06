@@ -10,10 +10,10 @@
 
   <a class="nav-item" (click)="visible = true" [class.active]="visible">
     <div class="icon-wrapper">
-      <i class="ri-search-line"></i>
-      <i class="ri-search-fill active-icon"></i>
+      <i class="ri-star-line"></i>
+      <i class="ri-star-fill active-icon"></i>
     </div>
-    <span>{{ 'Catalog' | transloco }}</span>
+    <span>{{ 'Brands' | transloco }}</span>
   </a>
 
   <a class="nav-item" (click)="openCart()">
@@ -48,16 +48,16 @@
   </a>
 </nav>
 
-<!-- Catalog Drawer (Full Screen) -->
+<!-- Brands Drawer (Full Screen) -->
 <div class="card flex justify-center">
-  <p-drawer header="Catalog"
+  <p-drawer header="Brands"
             [(visible)]="visible"
             [fullScreen]="true"
             styleClass="catalog-drawer">
 
     <ng-template pTemplate="header">
       <div class="drawer-custom-header">
-        <span class="drawer-title">Каталог</span>
+        <span class="drawer-title">{{ 'Brands' | transloco }}</span>
         <div class="lang-switch-mobile">
           @for (lang of languages; track lang) {
             <div class="lang-option" [class.active]="activeLang() === lang" (click)="setActiveLang(lang)">
@@ -76,16 +76,16 @@
         </div>
       </div>
 
-      <div class="categories-grid">
-        @for (item of categories; track item.label){
-          <div class="category-item">
-            <div class="cat-icon-circle">
-              <img [src]="item.icon" alt="" />
-            </div>
-            <span class="cat-name">{{ item.label }}</span>
-          </div>
-        }
-      </div>
+      <!-- Brands List (Vertical Grid) -->
+      @if (brands().length > 0) {
+        <div class="brands-grid">
+          @for (brand of brands(); track brand.brand) {
+            <button class="brand-item" (click)="goToBrandList(brand)">
+              {{ brand.brandAlias }}
+            </button>
+          }
+        </div>
+      }
     </div>
   </p-drawer>
 </div>

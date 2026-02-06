@@ -8,6 +8,8 @@ import {FormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Authentication} from '../../@core/auth/authentication';
 import {UpperCasePipe} from '@angular/common';
+import {BrandService} from '../../@core/api/brand';
+import {Brand} from '../../entities/category';
 
 @Component({
   selector: 'mobile-menu',
@@ -29,12 +31,15 @@ export class MobileMenu  implements OnInit{
   private langService = inject(Language)
   private cartService = inject(CartUi);
   private authService = inject(Authentication)
+  private brandService = inject(BrandService);
+
   isAuth = this.authService.logged;
   public activeLang = this.langService.currentLanguage
   public cartCount =  this.cartService.cartCount;
   visible: boolean = false;
   user = signal<any>(null)
   languages = ['ro', 'ru'];
+  brands = signal<Brand[]>([]);
 
   categories = [
     { label: 'Skincare', icon: 'https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg' },
@@ -47,7 +52,7 @@ export class MobileMenu  implements OnInit{
 
   ngOnInit(): void {
     this.user.set( this.getUserInitials());
-    console.log(this.user())
+    this.getBrands();
   }
 
 
@@ -65,5 +70,17 @@ export class MobileMenu  implements OnInit{
 
   setActiveLang(lang: string) {
     this.langService.setLanguage(lang);
+  }
+
+  getBrands() {
+    this.brandService.gerAllBrands().subscribe(brands => {
+      this.brands.set(brands);
+    });
+  }
+
+  goToBrandList(brand: Brand) {
+    this.brandService.brand.set(brand.brand);
+    this.router.navigate([this.activeLang(), 'catalog', 'brand']);
+    this.visible = false; // Close drawer
   }
 }

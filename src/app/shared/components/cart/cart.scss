@@ -49,7 +49,44 @@
           .title { color: #2d2a26; font-size: 0.95rem; font-weight: 500; line-height: 1.4; margin-bottom: 0.5rem; }
           .qty-controls { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem;
             span { color: #4b3e2b; font-weight: 500; }
-            // Removed desktop override to restore original look
+
+            // Desktop specific styles for p-inputNumber
+            ::ng-deep {
+              .p-inputnumber {
+                display: flex;
+                align-items: center;
+              }
+              .p-inputnumber-button {
+                width: 28px !important;
+                height: 28px !important;
+                padding: 0 !important;
+                min-width: 28px !important;
+                border: 1px solid rgba(181, 133, 95, 0.3) !important;
+                background: transparent !important;
+                color: #4b3e2b !important;
+                border-radius: 4px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                  background: rgba(181, 133, 95, 0.1) !important;
+                  border-color: #b5855f !important;
+                }
+
+                .pi { font-size: 10px; }
+              }
+              .p-inputnumber-input {
+                width: 40px !important;
+                height: 28px !important;
+                padding: 0 !important;
+                text-align: center;
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: #4b3e2b !important;
+              }
+            }
           }
         }
         .price { font-size: 1rem; font-weight: 600; color: #b5855f; padding-top: 0.25rem; }
@@ -82,7 +119,12 @@
     max-width: 100vw;
     height: 100vh;
     max-height: 100vh;
-    overflow-y: auto;
+    overflow-y: auto; // Scroll container
+    display: flex;
+
+    // Disable transform to fix position: fixed/sticky issues
+    transform: none !important;
+    animation: fadeIn 0.3s ease; // Use simple fade instead of slide
 
     .cart-suggestions {
       display: block;
@@ -92,6 +134,7 @@
       border-right: none;
       border-top: 1px solid rgba(181, 133, 95, 0.1);
       background: #faf7f5;
+      flex-shrink: 0;
 
       h3 { display: block; margin-bottom: 1rem; font-size: 0.9rem; }
 
@@ -117,9 +160,11 @@
     .cart-content {
       order: 1;
       width: 100%;
-      height: auto;
       padding: 1rem;
       overflow: visible;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%; // Ensure it fills screen
 
       .cart-header {
         position: sticky;
@@ -135,6 +180,7 @@
         border-top: none;
         padding-top: 0;
         overflow: visible;
+        flex: 1; // Take available space
 
         .cart-item {
           display: grid;
@@ -247,7 +293,7 @@
       }
 
       .cart-footer {
-        position: fixed;
+        position: sticky;
         bottom: 0;
         left: 0;
         right: 0;
@@ -255,10 +301,9 @@
         padding: 1rem 1.5rem 2rem;
         box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         z-index: 100;
+        margin-top: auto;
       }
     }
-
-    padding-bottom: 180px;
   }
 }
 
