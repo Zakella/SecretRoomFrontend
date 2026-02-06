@@ -59,10 +59,9 @@
             </div>
           }
 
-          <!-- View All Card -->
-
+          <!-- View All Card (Desktop only) -->
           <div
-            class="view-all-card"
+            class="view-all-card desktop-only"
             [routerLink]="['/', currentLanguage(), 'catalog', 'new']"
           >
             <div class="view-all-content">
@@ -78,6 +77,16 @@
         @for (item of newArrivals(); track item.id; let i = $index) {
           <div class="dash" [class.active]="i === currentIndex" (click)="goTo(i)"></div>
         }
+      </div>
+
+      <!-- Mobile View All Button -->
+      <div class="mobile-footer">
+        <a class="view-all-btn" [routerLink]="['/', currentLanguage(), 'catalog', 'new']">
+          Смотреть все
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
       </div>
     </div>
   </section>

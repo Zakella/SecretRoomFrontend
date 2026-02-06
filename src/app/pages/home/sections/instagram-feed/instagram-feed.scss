@@ -493,6 +493,10 @@
 
   .instagram-follow-btn {
     margin-top: 24px;
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    font-size: 1rem;
   }
 
   .modal-overlay {
@@ -500,21 +504,26 @@
   }
 
   .modal-close {
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
   }
 
   .modal-nav {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.9);
 
     svg {
-      width: 14px;
-      height: 14px;
+      width: 20px;
+      height: 20px;
     }
 
-    &.prev { left: 4px; }
-    &.next { right: 4px; }
+    &.prev { left: 12px; }
+    &.next { right: 12px; }
   }
 
   .ig-post {

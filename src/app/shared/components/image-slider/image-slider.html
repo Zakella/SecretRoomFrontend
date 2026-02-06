@@ -1,4 +1,9 @@
 @if (images() && images().length > 0) {
+  <!-- Mobile Logo Header -->
+  <div class="mobile-logo-overlay">
+    <a class="logo">Secret Room</a>
+  </div>
+
   <div class="carousel-container" (touchstart)="onDragStart($event)" (touchend)="onDragEnd($event)">
     @for (image of images(); track image.id; let i = $index) {
       <div class="slide" [class.image-active]="selectedIndex() === i">

@@ -153,175 +153,6 @@
 }
 
 
-
-.new-arrivals {
-  padding: 4rem 1rem;
-  background-color: #f9f9f9;
-}
-
-.new-arrivals__title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #222;
-}
-
-.new-arrivals__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-}
-
-.product-card {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-.product-card__image {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-}
-
-.product-card__name {
-  font-size: 1.1rem;
-  margin: 0.5rem 0;
-  color: #333;
-}
-
-.product-card__price {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e63946;
-  margin-bottom: 1rem;
-}
-
-.new-arrivals__more {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.btn {
-  display: inline-block;
-  padding: 0.8rem 2rem;
-  background-color: #222;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-}
-
-.btn:hover {
-  background-color: #e63946;
-}
-
-
-
-.new-arrivals-premium {
-  padding: 4rem 1rem;
-  background-color: #fafafa; /* мягкий светлый фон */
-  font-family: 'Libre Baskerville', serif; /* премиум шрифт */
-}
-
-.new-arrivals-premium .container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.new-arrivals-premium .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.new-arrivals-premium h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1c1c1c;
-}
-
-.new-arrivals-premium .view-all {
-  font-size: 1rem;
-  color: #8d8d8d;
-  text-decoration: none;
-  font-weight: 400;
-  transition: color 0.3s;
-}
-
-.new-arrivals-premium .view-all:hover {
-  color: #1c1c1c;
-}
-
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 2rem;
-}
-
-.product-card {
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-}
-
-.product-image {
-  width: 100%;
-  padding-top: 125%; /* портретный формат */
-  position: relative;
-  overflow: hidden;
-  background-color: #fefefe;
-}
-
-.product-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s, filter 0.3s;
-}
-
-.product-card:hover .product-image img {
-  transform: scale(1.03);
-  filter: brightness(1.05);
-}
-
-.product-info {
-  padding: 1rem 0.75rem;
-  text-align: center;
-}
-
-.product-info h3 {
-  font-size: 1.1rem;
-  margin: 0.5rem 0;
-  color: #1c1c1c;
-  font-weight: 500;
-}
-
-.product-info .price {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #8d8d8d;
-}
-
 /* =========================
    TABLET ≤ 1024px
 ========================= */
@@ -355,23 +186,21 @@
 ========================= */
 @media (max-width: 768px) {
   .more-to-love {
-    padding: 56px 20px 64px;
+    padding: 40px 0 40px; // Full width, less padding
+    background: #fff; // Clean white background for mobile
 
-    &::before {
-      width: 60px;
-    }
-
-    &::after {
-      font-size: 18px;
-      top: -9px;
+    &::before, &::after {
+      display: none; // Remove desktop decorations
     }
   }
 
   .header-container {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+    padding: 0 20px;
 
     h2 {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
     }
   }
 
@@ -382,10 +211,8 @@
   .slider {
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    margin: 0 -20px;
     padding: 0 20px;
 
     &::-webkit-scrollbar {
@@ -394,88 +221,74 @@
   }
 
   .slider-track {
-    gap: 16px;
-  }
-
-  .slide {
-    min-width: 85%;
-    height: 380px;
-    scroll-snap-align: center;
-    border-radius: 16px;
-  }
-
-  .slide .label {
-    font-size: 11px;
-    bottom: 20px;
-    left: 20px;
-  }
-
-  /* NEW ARRIVALS */
-  .new-arrivals {
-    padding: 3rem 1rem;
-  }
-
-  .new-arrivals__grid {
-    gap: 1.5rem;
-  }
-
-  .product-card {
-    border-radius: 10px;
-  }
-
-  /* PREMIUM */
-  .new-arrivals-premium {
-    padding: 3rem 1rem;
-  }
-
-  .new-arrivals-premium .header {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 12px;
+    transform: none !important;
   }
 
-  .new-arrivals-premium h2 {
-    font-size: 1.6rem;
-  }
-
-  .products {
-    gap: 1.5rem;
-  }
-}
-
-/* =========================
-   SMALL MOBILE ≤ 480px
-========================= */
-@media (max-width: 480px) {
-  .more-to-love {
-    padding: 48px 16px 56px;
-
-    &::before {
-      width: 50px;
-      height: 2px;
-    }
-
-    &::after {
-      font-size: 16px;
-      top: -8px;
-    }
-  }
-
-  .header-container h2 {
-    font-size: 1.5rem;
-  }
-
+  // TRANSFORM TO CIRCLE TEXT STYLE
   .slide {
-    min-width: 90%;
-    height: 340px;
-    border-radius: 14px;
-  }
+    min-width: 80px;
+    width: 80px;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: visible;
 
-  .product-info h3 {
-    font-size: 1rem;
-  }
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
 
-  .product-info .price {
-    font-size: 0.95rem;
+    // Hide image on mobile
+    img {
+      display: none;
+    }
+
+    // Remove desktop decorations
+    &::before, &::after {
+      display: none;
+    }
+
+    // The Label becomes the black circle
+    .label {
+      position: static;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: #1a1a1a; // Black background
+      color: var(--gold, #b8956c); // Gold text
+      border: 1px solid var(--gold, #b8956c); // Gold border
+
+      font-family: var(--font-body);
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      padding: 4px;
+      white-space: normal;
+      line-height: 1.2;
+      word-break: break-word;
+
+      // Reset desktop styles
+      bottom: auto;
+      left: auto;
+      z-index: auto;
+      border-bottom: none;
+      pointer-events: auto;
+      transition: transform 0.2s ease;
+    }
+
+    &:active .label {
+       transform: scale(0.95);
+    }
   }
 }

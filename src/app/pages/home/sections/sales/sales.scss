@@ -254,11 +254,12 @@
 
 @media (max-width: 768px) {
   .sales-section {
-    padding: 40px 20px;
+    padding: 40px 0; // Remove side padding to allow full width scroll
   }
 
   .sales-header {
     margin-bottom: 24px;
+    padding: 0 20px;
 
     h2 {
       font-size: 2.5rem;
@@ -267,42 +268,76 @@
 
   .sales-album {
     height: auto;
-    flex-direction: column;
-    align-items: center;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
     gap: 16px;
-    padding: 0;
+    padding: 20px 20px 20px; // Add top padding for badge
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    // Hide scrollbar
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .sale-card {
     position: relative;
-    width: 100%;
-    max-width: 300px;
+    width: auto;
+    flex: 0 0 85%; // Mobile card width
     left: auto !important;
+    transform: none !important;
+    margin: 0;
+    scroll-snap-align: center;
+    border-radius: 16px;
 
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5) {
+    &:nth-child(n) {
       transform: none;
       z-index: 1;
     }
 
-    &:nth-child(1):hover,
-    &:nth-child(2):hover,
-    &:nth-child(3):hover,
-    &:nth-child(4):hover,
-    &:nth-child(5):hover {
-      transform: translateY(-8px);
+    &:hover {
+      transform: none;
     }
 
     .card-image {
-      height: 260px;
+      height: 300px;
+    }
+
+    .discount-badge {
+      top: 16px; // Inside the card padding
+      right: 16px; // Inside the card padding
+      z-index: 20;
     }
   }
 
   .sales-footer {
-    margin-top: 24px;
+    display: block; // Show footer on mobile
+    margin-top: 10px;
+    padding: 0 20px;
+
+    .view-all-btn {
+      width: 100%;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.95rem;
+      background: #1a1a1a;
+      color: var(--gold, #b8956c);
+      border: 1px solid #1a1a1a;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      font-weight: 600;
+
+      &:active {
+        background: #000;
+        transform: scale(0.98);
+      }
+    }
   }
 }
 
