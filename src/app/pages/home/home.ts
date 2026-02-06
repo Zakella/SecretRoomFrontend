@@ -10,6 +10,7 @@ import {NewArrivals} from './sections/new-arrivals/new-arrivals';
 import {Sales} from './sections/sales/sales';
 import {Categories} from './sections/categories/categories';
 import {Socials} from './sections/socials/socials';
+import {InstagramFeed} from './sections/instagram-feed/instagram-feed';
 import {HeroService} from '../../@core/api/hero';
 import {CategoryService} from '../../@core/api/category';
 
@@ -24,6 +25,7 @@ import {CategoryService} from '../../@core/api/category';
     NewArrivals,
     Sales,
     Categories,
+    InstagramFeed,
     AsyncPipe
   ],
   providers: [ProductService],
