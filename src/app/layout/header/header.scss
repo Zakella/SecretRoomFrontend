@@ -374,6 +374,8 @@
   opacity: 1;
   height: auto;
   overflow: visible;
+  position: relative;
+  z-index: 101;
 
   &.hidden {
     transform: translateY(-100%);
