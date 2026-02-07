@@ -67,5 +67,13 @@ export class ProductService {
       .set('size', size)
     return this.http.get<GetResponse>(`${this.baseUrL}/sales`, {params});
   }
+
+  smartSearch(query: string, page: number, size: number): Observable<GetResponse> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<GetResponse>(`${this.baseUrL}/search`, {params});
+  }
 }
 

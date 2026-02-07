@@ -16,6 +16,14 @@
     <span>{{ 'Brands' | transloco }}</span>
   </a>
 
+  <a class="nav-item" (click)="openSearch()">
+    <div class="icon-wrapper">
+      <i class="ri-search-line"></i>
+      <i class="ri-search-fill active-icon"></i>
+    </div>
+    <span>{{ 'Search' | transloco }}</span>
+  </a>
+
   <a class="nav-item" (click)="openCart()">
     <div class="icon-wrapper">
       <i class="ri-shopping-bag-3-line"></i>
@@ -72,35 +80,78 @@
       <div class="search-container">
         <div class="search-input-wrapper">
           <i class="ri-search-line"></i>
-          <input type="text" [placeholder]="'Search'| transloco"/>
+          <input
+            type="text"
+            [placeholder]="'Search'| transloco"
+            [value]="mobileQuery()"
+            (input)="onMobileSearchInput($event)"
+            (keyup.enter)="onMobileSearch()"
+          />
         </div>
       </div>
 
-      <!-- Categories (Horizontal Scroll) -->
-      @if (categories().length > 0) {
-        <div class="categories-scroll-container">
-          <div class="categories-scroll">
-            @for (cat of categories(); track cat.id) {
-              <div class="category-item" (click)="goToCategory(cat)">
-                <div class="cat-icon-circle">
-                  <img [src]="cat.imageUrl || 'assets/images/no-image.png'" [alt]="cat.name" />
+      @if (mobileQuery().length >= 2) {
+        <!-- Search Results in Drawer -->
+        @if (searchService.loading()) {
+          <div class="mobile-search-loading">
+            <div class="mobile-search-spinner"></div>
+          </div>
+        } @else if (searchService.suggestions().length === 0) {
+          <div class="mobile-search-empty">
+            {{ 'NothingFound' | transloco }}
+          </div>
+        } @else {
+          <div class="mobile-search-results">
+            @for (product of searchService.suggestions(); track product.id) {
+              <div class="mobile-search-item" (click)="goToProductFromSearch(product)">
+                <div class="mobile-search-img">
+                  <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product.name"/>
                 </div>
-                <span class="cat-name">{{ cat.name }}</span>
+                <div class="mobile-search-info">
+                  <span class="mobile-search-brand">{{ product.brandAlias }}</span>
+                  <span class="mobile-search-name">{{ product.name }}</span>
+                  <div class="mobile-search-price-row">
+                    <span class="mobile-search-price">{{ product.price }} MDL</span>
+                    @if (product.oldPrice > product.price!) {
+                      <span class="mobile-search-old-price">{{ product.oldPrice }} MDL</span>
+                    }
+                  </div>
+                </div>
               </div>
             }
-          </div>
-        </div>
-      }
-
-      <!-- Brands List (Vertical Grid) -->
-      @if (brands().length > 0) {
-        <div class="brands-grid">
-          @for (brand of brands(); track brand.brand) {
-            <button class="brand-item" (click)="goToBrandList(brand)">
-              {{ brand.brandAlias }}
+            <button class="mobile-search-show-all" (click)="showAllMobileResults()">
+              {{ 'ShowAllResults' | transloco }}
+              <i class="ri-arrow-right-line"></i>
             </button>
-          }
-        </div>
+          </div>
+        }
+      } @else {
+        <!-- Categories (Horizontal Scroll) -->
+        @if (categories().length > 0) {
+          <div class="categories-scroll-container">
+            <div class="categories-scroll">
+              @for (cat of categories(); track cat.id) {
+                <div class="category-item" (click)="goToCategory(cat)">
+                  <div class="cat-icon-circle">
+                    <img [src]="cat.imageUrl || 'assets/images/no-image.png'" [alt]="cat.name" />
+                  </div>
+                  <span class="cat-name">{{ cat.name }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Brands List (Vertical Grid) -->
+        @if (brands().length > 0) {
+          <div class="brands-grid">
+            @for (brand of brands(); track brand.brand) {
+              <button class="brand-item" (click)="goToBrandList(brand)">
+                {{ brand.brandAlias }}
+              </button>
+            }
+          </div>
+        }
       }
     </div>
   </p-drawer>

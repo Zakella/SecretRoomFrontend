@@ -373,7 +373,7 @@
   transform: translateY(0);
   opacity: 1;
   height: auto;
-  overflow: hidden;
+  overflow: visible;
 
   &.hidden {
     transform: translateY(-100%);
@@ -381,6 +381,7 @@
     height: 0;
     padding-top: 0;
     padding-bottom: 0;
+    overflow: hidden;
   }
 
   .logo {

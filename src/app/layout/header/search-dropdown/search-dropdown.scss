@@ -1,0 +1,144 @@
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 380px;
+  max-height: 480px;
+  overflow-y: auto;
+  background: #1a1a1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: 32px;
+  }
+
+  &__spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(184, 149, 108, 0.3);
+    border-top-color: #b8956c;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  &__empty {
+    padding: 32px;
+    text-align: center;
+    color: rgba(245, 243, 244, 0.5);
+    font-size: 14px;
+  }
+
+  &__list {
+    padding: 8px 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  &__img {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__brand {
+    font-size: 11px;
+    color: rgba(245, 243, 244, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  &__name {
+    font-size: 14px;
+    color: #F5F3F4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__price {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b8956c;
+  }
+
+  &__old-price {
+    font-size: 12px;
+    color: rgba(245, 243, 244, 0.35);
+    text-decoration: line-through;
+  }
+
+  &__show-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    color: #b8956c;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(184, 149, 108, 0.08);
+    }
+
+    i {
+      font-size: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover i {
+      transform: translateX(4px);
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -19,6 +19,8 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, map} from 'rxjs/operators';
 import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 import {BrandService} from '../../@core/api/brand';
+import {SearchService} from '../../@core/services/search';
+import {SearchDropdown} from './search-dropdown/search-dropdown';
 
 
 @Component({
@@ -30,6 +32,7 @@ import {BrandService} from '../../@core/api/brand';
     UpperCasePipe,
     NgStyle,
     NgTemplateOutlet,
+    SearchDropdown,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -41,6 +44,7 @@ export class Header implements OnInit {
   private router = inject(Router);
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
+  public searchService = inject(SearchService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ro', 'ru'];
@@ -92,11 +96,34 @@ export class Header implements OnInit {
     this.langService.setLanguage(lang);
   }
 
+  onSearchInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.query.set(value);
+    this.searchService.search(value);
+  }
+
   onSearch() {
     const q = this.query().trim();
     if (!q) return;
-
+    this.searchService.clear();
     this.router.navigate([this.activeLang(), 'search', q]);
+  }
+
+  closeSearchDropdown() {
+    this.searchService.showDropdown.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-bar') && !target.closest('search-dropdown')) {
+      this.searchService.showDropdown.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.searchService.showDropdown.set(false);
   }
 
 
