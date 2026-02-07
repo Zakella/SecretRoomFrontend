@@ -10,10 +10,18 @@
 
   <a class="logo" [routerLink]="['/', activeLang()]">Secret Room</a>
 
-  <button class="cart-btn-home" (click)="openCart()">
-    <i class="pi pi-shopping-bag"></i>
-    @if (cartCount() > 0) {
-      <span class="cart-badge">{{ cartCount() }}</span>
-    }
-  </button>
+  <div class="header-right-icons">
+    <a class="header-icon-btn" [routerLink]="['/', activeLang(), 'favorites']">
+      <i class="ri-heart-line"></i>
+      @if (favoritesService.count() > 0) {
+        <span class="icon-badge">{{ favoritesService.count() }}</span>
+      }
+    </a>
+    <button class="header-icon-btn" (click)="openCart()">
+      <i class="ri-shopping-bag-3-line"></i>
+      @if (cartCount() > 0) {
+        <span class="icon-badge">{{ cartCount() }}</span>
+      }
+    </button>
+  </div>
 </div>

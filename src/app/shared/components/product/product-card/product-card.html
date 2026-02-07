@@ -42,8 +42,8 @@
       </div>
     }
 
-    <button class="wishlist-btn" (click)="$event.stopPropagation()">
-      <i class="ri-heart-line"></i>
+    <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">
+      <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
     <div class="img-container" (click)="navToProduct()">

@@ -12,6 +12,7 @@ import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
 import {ProductService} from '../../../@core/api/product';
+import {FavoritesService} from '../../../@core/services/favorites';
 
 @Component({
   selector: 'app-product-detail',
@@ -25,7 +26,8 @@ export class ProductDetail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private langService = inject(Language);
-  private cartService = inject(CartUi)
+  private cartService = inject(CartUi);
+  public favoritesService = inject(FavoritesService);
   protected selectedTab: string = 'description';
   protected tabs = [
     {key: 'description', label: 'Описание'},
@@ -63,7 +65,14 @@ export class ProductDetail {
     this.cartService.visible();
   }
 
-  protected addToWishlist(): void {
+  protected toggleWishlist(): void {
+    const id = this.product()?.id;
+    if (id) this.favoritesService.toggle(id);
+  }
+
+  protected isFavorite(): boolean {
+    const id = this.product()?.id;
+    return id ? this.favoritesService.isFavorite(id) : false;
   }
 
   protected navigateToList() {

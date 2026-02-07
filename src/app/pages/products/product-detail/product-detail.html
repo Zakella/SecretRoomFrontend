@@ -50,14 +50,14 @@
             </button>
 
             <div class="secondary-actions">
-              <button class="btn-secondary" (click)="addToWishlist()">
-                <i class="pi pi-heart"></i>
-                В избранное
+              <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()">
+                <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
+                {{ isFavorite() ? ('InFavorites' | transloco) : ('AddToFavorites' | transloco) }}
               </button>
 
               <button class="btn-secondary" (click)="shareModal.open()">
-                <i class="pi pi-share-alt"></i>
-                Поделиться
+                <i class="ri-share-line"></i>
+                {{ 'Share' | transloco }}
               </button>
             </div>
           </div>
@@ -85,7 +85,7 @@
     </div>
     <div class="related-products">
       <h2>{{ 'Recommendation' | transloco }}</h2>
-      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="addToWishlist()"/>
+      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
     </div>
   </section>
 }

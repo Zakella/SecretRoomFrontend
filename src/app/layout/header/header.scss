@@ -177,12 +177,12 @@
   }
 }
 
-.cart-icon {
+.cart-icon, .fav-icon {
   position: relative;
   display: inline-block;
 }
 
-.cart-badge {
+.cart-badge, .fav-badge {
   @include flex-position(center);
   position: absolute;
   top: -6px;

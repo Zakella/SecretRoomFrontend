@@ -12,6 +12,7 @@ import {BrandService} from '../../@core/api/brand';
 import {Brand, Category} from '../../entities/category';
 import {CategoryService} from '../../@core/api/category';
 import {SearchService} from '../../@core/services/search';
+import {FavoritesService} from '../../@core/services/favorites';
 import {Product} from '../../entities/product';
 
 @Component({
@@ -37,6 +38,7 @@ export class MobileMenu  implements OnInit{
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
   public searchService = inject(SearchService);
+  public favoritesService = inject(FavoritesService);
 
   isAuth = this.authService.logged;
   mobileQuery = signal('');

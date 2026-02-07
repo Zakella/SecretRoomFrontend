@@ -16,6 +16,12 @@
       </div>
       <div class="nav-right">
         <div class="icons">
+          <a class="icon fav-icon" [routerLink]="['/', activeLang(), 'favorites']">
+            <i class="ri-heart-line"></i>
+            @if (favoritesService.count() > 0) {
+              <span class="fav-badge">{{ favoritesService.count() }}</span>
+            }
+          </a>
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
           </a>

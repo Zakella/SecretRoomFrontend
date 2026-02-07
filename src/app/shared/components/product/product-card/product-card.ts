@@ -8,6 +8,7 @@ import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
 import { SkeletonModule } from 'primeng/skeleton';
 import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
+import {FavoritesService} from '../../../../@core/services/favorites';
 
 @Component({
   selector: 'product-card',
@@ -20,6 +21,7 @@ export class ProductCard {
   private route = inject(Router);
   private langService = inject(Language);
   private cartService = inject(CartUi);
+  public favoritesService = inject(FavoritesService);
   public activeLang = this.langService.currentLanguage
   product = input<Product>();
   readonly imageUrl = input<string>('');
@@ -55,6 +57,17 @@ export class ProductCard {
 
   protected navToProduct(): void {
      this.route.navigate([this.activeLang(), 'product-detail', this.product()!.id]);
+  }
+
+  toggleFavorite(event: Event) {
+    event.stopPropagation();
+    const id = this.product()?.id;
+    if (id) this.favoritesService.toggle(id);
+  }
+
+  isFavorite(): boolean {
+    const id = this.product()?.id;
+    return id ? this.favoritesService.isFavorite(id) : false;
   }
 
   addProductInCart() {

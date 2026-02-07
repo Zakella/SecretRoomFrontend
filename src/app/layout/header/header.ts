@@ -21,6 +21,7 @@ import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angu
 import {BrandService} from '../../@core/api/brand';
 import {SearchService} from '../../@core/services/search';
 import {SearchDropdown} from './search-dropdown/search-dropdown';
+import {FavoritesService} from '../../@core/services/favorites';
 
 
 @Component({
@@ -45,6 +46,7 @@ export class Header implements OnInit {
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
   public searchService = inject(SearchService);
+  public favoritesService = inject(FavoritesService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ro', 'ru'];

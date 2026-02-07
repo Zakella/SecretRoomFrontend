@@ -45,35 +45,43 @@
     animation: logoShine 6s linear infinite;
   }
 
-  .cart-btn-home {
+  .header-right-icons {
     position: absolute;
     right: 16px;
-    background: transparent;
-    border: none;
-    color: #d4b896;
-    font-size: 24px;
-    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.header-icon-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: #d4b896;
+  font-size: 22px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+
+  .icon-badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    background: #b8956c;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 15px;
+    height: 15px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-
-    .cart-badge {
-      position: absolute;
-      top: 4px;
-      right: 0;
-      background: #b8956c;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      min-width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #121216;
-    }
+    border: 1.5px solid #121216;
   }
 }
 

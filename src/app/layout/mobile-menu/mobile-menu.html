@@ -8,18 +8,10 @@
     <span>{{ 'Home' | transloco }}</span>
   </a>
 
-  <a class="nav-item" (click)="visible = true" [class.active]="visible">
-    <div class="icon-wrapper">
-      <i class="ri-star-line"></i>
-      <i class="ri-star-fill active-icon"></i>
-    </div>
-    <span>{{ 'Brands' | transloco }}</span>
-  </a>
-
   <a class="nav-item" (click)="openSearch()">
     <div class="icon-wrapper">
       <i class="ri-search-line"></i>
-      <i class="ri-search-fill active-icon"></i>
+      <i class="ri-search-2-fill active-icon"></i>
     </div>
     <span>{{ 'Search' | transloco }}</span>
   </a>
@@ -33,18 +25,6 @@
       }
     </div>
     <span>{{ 'Cart' | transloco }}</span>
-  </a>
-
-  <a class="nav-item" [routerLink]="['/', activeLang(), 'profile']" routerLinkActive="active">
-    <div class="icon-wrapper">
-      @if (isAuth()) {
-        <div class="user-avatar-small">{{user()}}</div>
-      } @else {
-        <i class="ri-user-line"></i>
-        <i class="ri-user-fill active-icon"></i>
-      }
-    </div>
-    <span>{{ 'Profile' | transloco }}</span>
   </a>
 
   <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']" routerLinkActive="active">

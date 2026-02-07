@@ -22,6 +22,7 @@ import {Notfound} from './pages/states/notfound/notfound';
 import {Catalog} from './pages/products/catalog/catalog';
 import {OrderDetail} from './pages/order-detail/order-detail';
 import {Brands} from './pages/brands/brands';
+import {Favorites} from './pages/favorites/favorites';
 
 export const routes: Routes = [
   {
@@ -101,6 +102,11 @@ export const routes: Routes = [
             path: 'about-the-secret-room',
             component: OurStory,
             data: {breadcrumb: 'Our Story'}
+          },
+          {
+            path: 'favorites',
+            component: Favorites,
+            data: {breadcrumb: 'Favorites'}
           },
           {
             path: 'search/:query',
