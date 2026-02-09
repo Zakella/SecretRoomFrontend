@@ -20,11 +20,9 @@ export class InstagramFeed implements OnInit {
   currentIndex = signal(0);
   private platformId = inject(PLATFORM_ID);
   isMuted = signal<boolean>(false);
+  private autoPlayTimer?: any;
+  private readonly IMAGE_DURATION = 5000;
 
-
-  get currentPost(): InstagramMedia | null {
-    return this.posts()[this.currentIndex()] || null;
-  }
 
   ngOnInit(): void {
     this.instagramService.getFeed(10).subscribe({
@@ -48,14 +46,19 @@ export class InstagramFeed implements OnInit {
     this.viewedIds.set(new Set(stored));
   }
 
+  get currentPost(): InstagramMedia | null {
+    return this.posts()[this.currentIndex()] || null;
+  }
   openViewer(index: number): void {
     this.currentIndex.set(index);
     this.isViewerOpen.set(true);
     document.body.style.overflowY = 'hidden';
     this.markViewed(this.currentPost?.id || '');
+    this.startAutoPlay();
   }
 
   closeViewer(): void {
+    this.clearTimer();
     document.body.style.overflow = '';
     this.isViewerOpen.set(false);
   }
@@ -64,6 +67,9 @@ export class InstagramFeed implements OnInit {
     if (this.currentIndex() < this.posts().length - 1) {
       this.currentIndex.update(i => i + 1);
       this.markViewed(this.currentPost?.id || '');
+      this.startAutoPlay(); // Перезапускаем таймер для следующего слайда
+    } else {
+      this.closeViewer(); // Если истории закончились — закрываем
     }
   }
 
@@ -115,5 +121,24 @@ export class InstagramFeed implements OnInit {
   toggleMute(event: Event) {
     event.stopPropagation();
     this.isMuted.update(v => !v);
+  }
+
+  private startAutoPlay(): void {
+    this.clearTimer();
+
+    const current = this.currentPost;
+    if (!current) return;
+
+    if (!this.isVideo(current)) {
+      this.autoPlayTimer = setTimeout(() => {
+        this.next();
+      }, this.IMAGE_DURATION);
+    }
+  }
+
+  private clearTimer(): void {
+    if (this.autoPlayTimer) {
+      clearTimeout(this.autoPlayTimer);
+    }
   }
 }
