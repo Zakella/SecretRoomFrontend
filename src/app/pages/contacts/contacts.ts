@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {MetaService} from '../../@core/services/meta.service';
 
 @Component({
   selector: 'contacts',
@@ -10,7 +11,10 @@ import {TranslocoPipe} from '@ngneat/transloco';
   styleUrl: './contacts.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Contacts {
+export class Contacts implements OnInit {
+  private metaService = inject(MetaService);
+  private sanitizer = inject(DomSanitizer);
+
   stores = [
     {
       id: 1,
@@ -36,7 +40,10 @@ export class Contacts {
     },
   ];
 
-  constructor(private sanitizer: DomSanitizer) {}
+  ngOnInit() {
+    this.metaService.updateTitle('Contacte | Secret Room');
+    this.metaService.updateDescription('Contacte Secret Room: adresele magazinelor, numere de telefon și program de lucru.');
+  }
 
   getGoogleMapsUrl(lat: number, lng: number): SafeResourceUrl {
     const url = `https://www.google.com/maps?q=${lat},${lng}&hl=ru&z=14&output=embed`;

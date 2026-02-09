@@ -2,15 +2,18 @@
   <div class="container">
     <div class="footer-brand">
       <div class="logo">Secret Room</div>
-      <p class="description">Кураторская косметика. Только проверенные бренды и чистые формулы.</p>
+      <p class="description">
+        Magazin online de cosmetice și lenjerie în Moldova. Victoria's Secret, Bath & Body Works și alte branduri originale.
+      </p>
       <div class="socials">
-        <a href="https://www.instagram.com/secret_room.moldova"
+        <a href="https://www.instagram.com/secretroom.md/"
            target="_blank"
-           rel="noopener noreferrer">
+           rel="noopener noreferrer"
+           aria-label="Instagram">
           <i class="ri-instagram-line"></i>
         </a>
-        <a href="#"><i class="ri-facebook-line"></i></a>
-        <a href="#"><i class="ri-tiktok-line"></i></a>
+        <a href="https://www.facebook.com/secretroom.md" target="_blank" aria-label="Facebook"><i class="ri-facebook-line"></i></a>
+        <a href="#" aria-label="TikTok"><i class="ri-tiktok-line"></i></a>
       </div>
     </div>
 
@@ -20,24 +23,28 @@
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
         <a (click)="showPolicy()" class="cursor-pointer">{{'Return policy' | transloco}}</a>
         <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{'DeliveryTerms' |transloco}}</a>
+        <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">Despre Noi</a>
       </div>
       <div class="column">
-        <h4>О нас</h4>
-        <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">О компании</a>
+        <h4>Catalog</h4>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'vs']">Victoria's Secret</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'bb']">Bath & Body Works</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">Noutăți Cosmetice</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'sales']">Reduceri Parfumuri</a>
       </div>
       <div class="column">
-        <h4>Каталог</h4>
-        <a [routerLink]="['/', activeLang(), 'brands']">Бренды</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">Новинки</a>
-        <a [routerLink]="['/', activeLang(),  'catalog', 'new-arrivals']">Скидки</a>
-        <a [routerLink]="['/', activeLang(), 'gift-cards']">Подарочные карты</a>
+        <h4>Popular</h4>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">Cele mai vândute</a>
+        <a [routerLink]="['/', activeLang(), 'brands']">Toate Brandurile</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'vs']">Lenjerie Intimă</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'bb']">Lumânări Parfumate</a>
       </div>
     </div>
   </div>
 
   <div class="footer-bottom">
     <div class="container">
-      <span>© 2025 Secret Room. Все права защищены.</span>
+      <span>© 2025 Secret Room. Toate drepturile rezervate.</span>
       <div class="payment-icons">
         <img src="assets/images/payment/visa.svg" alt="Visa"/>
         <img src="assets/images/payment/master-card.svg" alt="MasterCard"/>
@@ -46,8 +53,7 @@
       </div>
 
       <div class="policies">
-        <a routerLink="/privacy">Политика конфиденциальности</a>
-        <a routerLink="/terms">Условия использования</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">Politica de Confidențialitate</a>
       </div>
     </div>
   </div>

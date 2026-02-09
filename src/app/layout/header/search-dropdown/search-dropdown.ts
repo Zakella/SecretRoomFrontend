@@ -5,6 +5,7 @@ import {Language} from '../../../@core/services/language';
 import {Product} from '../../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
+import {Slugify} from '../../../@core/services/slugify';
 
 @Component({
   selector: 'search-dropdown',
@@ -18,6 +19,7 @@ export class SearchDropdown {
   searchService = inject(SearchService);
   private router = inject(Router);
   private langService = inject(Language);
+  private slugify = inject(Slugify);
   closed = output<void>();
 
   suggestions = this.searchService.suggestions;
@@ -27,7 +29,7 @@ export class SearchDropdown {
   goToProduct(product: Product) {
     this.searchService.clear();
     this.closed.emit();
-    this.router.navigate(['/', this.langService.currentLanguage(), 'product-detail', product.id]);
+    this.router.navigate(this.slugify.productUrl(this.langService.currentLanguage(), product.id!, product.name ?? ''));
   }
 
   showAll() {

@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit} from '@angular/core';
+import {MetaService} from '../../@core/services/meta.service';
 
 @Component({
   selector: 'app-delivery-terms',
@@ -7,7 +8,9 @@ import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
   styleUrl: './delivery-terms.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DeliveryTerms {
+export class DeliveryTerms implements OnInit {
+  private metaService = inject(MetaService);
+
   sections = [
     { id: 'general', title: 'Общие положения' },
     { id: 'orders', title: 'Заказы и Оплата' },
@@ -19,6 +22,8 @@ export class DeliveryTerms {
   activeSection: string = this.sections[0].id;
 
   ngOnInit() {
+    this.metaService.updateTitle('Termeni și Condiții | Secret Room');
+    this.metaService.updateDescription('Termeni și condiții de livrare, plată și retur pentru magazinul Secret Room.');
     this.onWindowScroll();
   }
 

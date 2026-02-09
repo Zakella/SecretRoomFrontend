@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ScrollReveal} from '../../@core/directives/scroll-reveal';
@@ -12,6 +12,8 @@ import {Categories} from './sections/categories/categories';
 import {Socials} from './sections/socials/socials';
 import {InstagramFeed} from './sections/instagram-feed/instagram-feed';
 import {HeroService} from '../../@core/api/hero';
+import {MetaService} from '../../@core/services/meta.service';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-home',
@@ -31,9 +33,12 @@ import {HeroService} from '../../@core/api/hero';
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Home {
+export class Home implements OnInit {
   private productService = inject(ProductService);
-  private heroService = inject(HeroService)
+  private heroService = inject(HeroService);
+  private metaService = inject(MetaService);
+  private langService = inject(Language);
+
   protected readonly bestSellers$ = this.productService.getBestSellers(1, 3).pipe(
     map(res => res.content)
   );
@@ -46,4 +51,62 @@ export class Home {
   protected readonly heroItems$ = this.heroService.getActiveHeroItems().pipe(
     map(res => res)
   )
+
+  ngOnInit() {
+    const isRo = this.langService.currentLanguage() === 'ro';
+
+    // Более агрессивный Title для общих запросов
+    const title = isRo
+      ? "Magazin de Cosmetice și Lenjerie în Moldova | Secret Room"
+      : "Магазин Косметики и Белья в Молдове | Secret Room";
+
+    const description = isRo
+      ? "Secret Room - destinația ta pentru cosmetice originale, parfumuri de lux și lenjerie intimă. Victoria's Secret, Bath & Body Works și alte branduri renumite. Livrare în Chișinău."
+      : "Secret Room - ваш выбор оригинальной косметики, элитной парфюмерии и нижнего белья. Victoria's Secret, Bath & Body Works и другие известные бренды. Доставка по Кишиневу.";
+
+    this.metaService.updateTitle(title);
+    this.metaService.updateDescription(description);
+    this.metaService.updateKeywords("cosmetica, parfumuri, lenjerie, cadouri, magazin online moldova, косметика, парфюмерия, белье, подарки, интернет магазин молдова");
+    this.metaService.updateImage("https://secretroom.md/assets/images/logo/secretroom.png");
+    this.metaService.updateUrl("https://secretroom.md/");
+
+    this.metaService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "Secret Room",
+      "image": "https://secretroom.md/assets/images/logo/secretroom.png",
+      "telephone": "+37369999999",
+      "url": "https://secretroom.md/",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strada Arborilor 21",
+        "addressLocality": "Chișinău",
+        "postalCode": "2025",
+        "addressCountry": "MD"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 47.0096,
+        "longitude": 28.8439
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "10:00",
+        "closes": "22:00"
+      },
+      "sameAs": [
+        "https://www.instagram.com/secretroom.md/",
+        "https://www.facebook.com/secretroom.md"
+      ]
+    });
+  }
 }

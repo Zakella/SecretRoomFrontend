@@ -15,6 +15,7 @@ import {SearchService} from '../../@core/services/search';
 import {FavoritesService} from '../../@core/services/favorites';
 import {Product} from '../../entities/product';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
+import {Slugify} from '../../@core/services/slugify';
 
 @Component({
   selector: 'mobile-menu',
@@ -41,6 +42,7 @@ export class MobileMenu  implements OnInit{
   private categoryService = inject(CategoryService);
   public searchService = inject(SearchService);
   public favoritesService = inject(FavoritesService);
+  private slugify = inject(Slugify);
 
   isAuth = this.authService.logged;
   mobileQuery = signal('');
@@ -98,9 +100,8 @@ export class MobileMenu  implements OnInit{
   }
 
   goToBrandList(brand: Brand) {
-    this.brandService.brand.set(brand.brand);
-    this.router.navigate([this.activeLang(), 'catalog', 'brand']);
-    this.visible = false; // Close drawer
+    this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+    this.visible = false;
   }
 
   goToCategory(category: Category) {
@@ -126,7 +127,7 @@ export class MobileMenu  implements OnInit{
     this.searchService.clear();
     this.mobileQuery.set('');
     this.visible = false;
-    this.router.navigate(['/', this.activeLang(), 'product-detail', product.id]);
+    this.router.navigate(this.slugify.productUrl(this.activeLang(), product.id!, product.name ?? ''));
   }
 
   showAllMobileResults() {

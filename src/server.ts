@@ -35,6 +35,14 @@ app.use(
   }),
 );
 
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(join(browserDistFolder, 'sitemap.xml'));
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.sendFile(join(browserDistFolder, 'robots.txt'));
+});
+
 /**
  * Handle all other requests by rendering the Angular application.
  */

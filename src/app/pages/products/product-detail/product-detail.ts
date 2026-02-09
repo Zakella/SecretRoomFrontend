@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
 import {NgClass} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
@@ -13,6 +13,8 @@ import {Size} from '../../../entities/size';
 import {ProductService} from '../../../@core/api/product';
 import {FavoritesService} from '../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
+import {MetaService} from '../../../@core/services/meta.service';
+import {Slugify} from '../../../@core/services/slugify';
 
 @Component({
   selector: 'app-product-detail',
@@ -27,6 +29,8 @@ export class ProductDetail {
   private router = inject(Router);
   private langService = inject(Language);
   private cartService = inject(CartUi);
+  private metaService = inject(MetaService);
+  private slugify = inject(Slugify);
   public favoritesService = inject(FavoritesService);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
@@ -37,7 +41,17 @@ export class ProductDetail {
   constructor() {
     const resolvedProduct = this.route.snapshot.data['product'] as Product | null;
     this.product.set(resolvedProduct);
-    this.mainImage = this.product()!.imageURL;
+    if (resolvedProduct) {
+      this.mainImage = resolvedProduct.imageURL;
+    }
+
+    effect(() => {
+      const p = this.product();
+      const lang = this.activeLang();
+      if (p) {
+        this.metaService.setProductMeta(p, lang, this.slugify);
+      }
+    });
   }
 
   hasDiscount(): boolean {

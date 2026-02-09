@@ -156,9 +156,7 @@ export class Header implements OnInit {
 
   goToBrandList(brand :Brand){
     this.activeBrand.set(brand);
-    this.brandService.brand.set(brand.brand)
-    this.router.navigate([this.activeLang(), 'catalog', 'brand']);
-
+    this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
   }
 
 

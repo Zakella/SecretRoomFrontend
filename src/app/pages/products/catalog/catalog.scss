@@ -55,6 +55,50 @@ custom-title {
   }
 }
 
+.seo-text-block {
+  margin-top: 80px;
+  padding-top: 40px;
+  border-top: 1px solid #eee;
+  color: #333;
+  line-height: 1.6;
 
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 
+  h3 {
+    font-size: 18px;
+    margin: 25px 0 15px;
+    font-weight: 500;
+  }
 
+  p {
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: #555;
+  }
+
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+      color: #555;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 40px;
+
+    h2 {
+      font-size: 20px;
+    }
+  }
+}

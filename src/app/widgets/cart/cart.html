@@ -45,7 +45,7 @@
               <img [src]="cartItem.product.imageURL ?? 'assets/images/unavailable.jpg'"
                    alt=""
                    class="cursor-pointer"
-                   (click)="navToProduct(cartItem.product.id);
+                   (click)="navToProduct(cartItem.product);
                      $event.stopPropagation()"/>
               <div class="item-info">
                 <p class="title">{{ cartItem.product.name }}</p>
