@@ -26,6 +26,22 @@ export class GoogleAnalytics {
       value: data.value
     });
   }
+
+  grantConsent() {
+    if (typeof gtag !== 'function') return;
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'analytics_storage': 'granted'
+    });
+  }
+
+  denyConsent() {
+    if (typeof gtag !== 'function') return;
+    gtag('consent', 'update', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied'
+    });
+  }
 }
 
 export interface GaEventData {
