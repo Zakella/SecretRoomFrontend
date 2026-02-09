@@ -282,5 +282,8 @@
     "message": "Acest site folosește cookie-uri pentru a vă oferi o experiență mai bună. Continuând navigarea, sunteți de acord cu utilizarea cookie-urilor.",
     "accept": "Acceptă",
     "decline": "Refuză"
-  }
+  },
+  "NewArrivals": "Noutăți",
+  "BestSellers": "Cele mai vândute",
+  "Sale": "Reduceri"
 }

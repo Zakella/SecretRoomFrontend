@@ -83,6 +83,13 @@
   @if (!isCheckoutPage()) {
     <nav class="nav-main"  (mouseenter)="navHovered.set(true)" (mouseleave)="closeDropdown()">
       <div class="nav-inner">
+        <a class="category-text" [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">
+          {{ 'NewArrivals' | transloco }}
+        </a>
+        <a class="category-text" [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">
+          {{ 'BestSellers' | transloco }}
+        </a>
+
         @if (headerItems()) {
           @for (category of headerItems(); track category.id) {
             <a class="category-text"
@@ -93,6 +100,10 @@
             </a>
           }
         }
+
+        <a class="category-text sale-link" [routerLink]="['/', activeLang(), 'catalog', 'sales']">
+          {{ 'Sale' | transloco }}
+        </a>
       </div>
 
       @if (headerItems()?.length) {
