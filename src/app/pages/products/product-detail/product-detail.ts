@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
-import {NgClass} from '@angular/common';
+import {NgClass, Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FadeUp} from '../../../@core/directives/fade-up';
@@ -31,6 +31,7 @@ export class ProductDetail {
   private cartService = inject(CartUi);
   private metaService = inject(MetaService);
   private slugify = inject(Slugify);
+  private location = inject(Location);
   public favoritesService = inject(FavoritesService);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
@@ -87,6 +88,6 @@ export class ProductDetail {
   }
 
   protected navigateToList() {
-    return this.router.navigate([this.activeLang(), 'vs']);
+    this.location.back();
   }
 }

@@ -397,16 +397,19 @@
 // ─────────────────────────────────────────────────────────────
 @media (max-width: 480px) {
   .product-page {
-    margin: 45px 5px 5px 5px;
-    padding: 1px;
+    margin: 80px 0 0 0;
+    padding: 0;
     background: transparent;
     box-shadow: none;
+    border-radius: 0;
   }
 
   .main-image img {
     width: 100%;
-    background: #FFFFFF;
+    background: transparent;
     max-height: 260px;
+    border: none;
+    outline: none;
   }
 
   .brand {
@@ -506,32 +509,5 @@
 }
 
 .add-to-cart-mobile {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-  color: #4b3e2b;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-
-  &:active {
-    transform: scale(0.9);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  @media (min-width: 768px) {
-    display: none;
-  }
+  display: none;
 }
