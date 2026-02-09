@@ -66,12 +66,13 @@ export class Header implements OnInit {
       filter(event => event instanceof NavigationEnd),
       map((event: NavigationEnd) => event.urlAfterRedirects)
     ),
-    { initialValue: this.router.url }
+    {initialValue: this.router.url}
   );
 
   isCheckoutPage = computed(() => this.currentUrl()?.includes('/checkout'));
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  }
 
   ngOnInit(): void {
     this.getBrands();
@@ -138,7 +139,7 @@ export class Header implements OnInit {
   }
 
 
-  getBrands(){
+  getBrands() {
     this.brandService.gerAllBrands().subscribe(brands => {
       this.brands.set(brands);
       this.activeBrand.set(brands[0]);
@@ -158,9 +159,15 @@ export class Header implements OnInit {
     });
   }
 
-  goToBrandList(brand :Brand){
+  goToBrandList(brand: Brand) {
     this.activeBrand.set(brand);
     this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+  }
+
+  goToCategoryList() {
+  }
+
+  goToSubCategory() {
   }
 
 
@@ -170,5 +177,5 @@ export class Header implements OnInit {
       const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
       this.isHidden = currentScroll > 0;
     }
-    }
+  }
 }

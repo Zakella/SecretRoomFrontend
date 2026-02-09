@@ -25,6 +25,38 @@ export class DeliveryTerms implements OnInit {
     this.metaService.updateTitle('Termeni și Condiții | Secret Room');
     this.metaService.updateDescription('Termeni și condiții de livrare, plată și retur pentru magazinul Secret Room.');
     this.onWindowScroll();
+
+    // FAQ Schema for Delivery Page
+    this.metaService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Cum pot plăti comanda?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Puteți achita comanda online cu cardul bancar (Visa, MasterCard) sau numerar la livrare."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Cât costă livrarea?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Livrarea în Chișinău este gratuită pentru comenzi de peste 1000 MDL. Pentru comenzi mai mici, costul este de 50 MDL."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Pot returna produsul?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Conform legislației, produsele cosmetice și lenjeria intimă nu pot fi returnate dacă au fost desigilate, din motive de igienă."
+          }
+        }
+      ]
+    });
   }
 
   scrollToSection(id: string, event: Event) {

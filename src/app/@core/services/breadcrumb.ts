@@ -1,6 +1,7 @@
-import {computed, Injectable, signal} from '@angular/core';
+import {computed, inject, Injectable, signal} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs';
+import {MetaService} from './meta.service';
 
 export interface BreadcrumbItem {
   label: string;
@@ -13,6 +14,7 @@ export interface BreadcrumbItem {
 export class BreadcrumbsService {
   private readonly _breadcrumbs = signal<BreadcrumbItem[]>([]);
   readonly breadcrumbs = computed(() => this._breadcrumbs());
+  private metaService = inject(MetaService);
 
   constructor(
     private router: Router,
@@ -23,6 +25,7 @@ export class BreadcrumbsService {
       .subscribe(() => {
         const breadcrumbs = this.build(this.route.root);
         this._breadcrumbs.set(breadcrumbs);
+        this.setSchema(breadcrumbs);
       });
   }
 
@@ -56,4 +59,20 @@ export class BreadcrumbsService {
     return this.build(child, url, acc);
   }
 
+  private setSchema(breadcrumbs: BreadcrumbItem[]) {
+    if (!breadcrumbs.length) return;
+
+    const itemListElement = breadcrumbs.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.label,
+      "item": `https://secretroom.md${item.url}`
+    }));
+
+    this.metaService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": itemListElement
+    });
+  }
 }

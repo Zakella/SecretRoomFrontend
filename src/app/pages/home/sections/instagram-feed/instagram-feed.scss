@@ -1,550 +1,434 @@
-.instagram-section {
-  padding: 60px 100px;
-  text-align: center;
-}
+.instagram-section {padding: 40px 0;}
 
-.instagram-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 40px;
+.story-item {
+  background: none; border: none; padding: 0; cursor: pointer;
 
-  .instagram-icon {
-    width: 32px;
-    height: 32px;
-    color: var(--gold, #b8956c);
-  }
-
-  h2 {
-    font-family: var(--font-title);
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #000;
-    margin: 0;
-  }
-}
-
-// ========================================
-// POSTS GRID - Instagram Style Cards
-// ========================================
-
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.post-card {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: #fafafa;
-  border-radius: 4px;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.2s ease;
-  }
-
-  &:hover {
-    .card-overlay {
-      opacity: 1;
-    }
-  }
-}
-
-.video-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: #fff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-
-  svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-  }
-}
-
-.card-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.card-stats {
-  display: flex;
-  gap: 24px;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-
-  span {
+  .ring {
+    width: 76px;
+    height: 76px;
+    padding: 3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-// Skeleton loading
-.post-card.skeleton {
-  background: linear-gradient(90deg, #efefef 25%, #e0e0e0 50%, #efefef 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-// ========================================
-// INSTAGRAM FOLLOW BUTTON
-// ========================================
-
-.instagram-follow-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 32px;
-  padding: 10px 24px;
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-
-  .instagram-logo {
-    width: 18px;
-    height: 18px;
-    fill: #fff;
+  .avatar {
+    width: 100%; height: 100%;
+    border-radius: 50%; border: 2px solid #fff;
+    overflow: hidden; background: #fafafa;
+    img { width: 100%; height: 100%; object-fit: cover; }
   }
 
-  &:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
-  }
+  &.viewed .ring { background: #e0e0e0; }
+  &.skeleton .ring { background: #eee; animation: pulse 1.5s infinite; }
 }
 
-// ========================================
-// MODAL OVERLAY - Instagram Style
-// ========================================
+// ГЛАВНОЕ: Исправление вьювера
+.viewer-overlay {
+  position: fixed !important;
+  inset: 0 !important; // Растягивает на весь экран (top, left, right, bottom: 0)
+  width: 100vw !important;
+  height: 100vh !important;
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  z-index: 10000;
+  // Ставим выше ваших глобальных оверлеев (9999)
+  z-index: 99999 !important;
+
+  background: rgba(0, 0, 0, 0.98);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
+  backdrop-filter: blur(10px);
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+  .viewer-content {
+    position: relative;
+    width: 100%;
+    max-width: 450px; // Размер мобильного телефона на десктопе
+    height: 90vh;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
 
-.modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: opacity 0.2s;
-
-  svg {
-    width: 28px;
-    height: 28px;
+    @media (max-width: 768px) {
+      height: 100vh;
+      max-width: 100vw;
+      border-radius: 0;
+    }
   }
 
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.modal-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #fff;
-  color: #262626;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease;
-
-  svg {
-    width: 18px;
-    height: 18px;
+  .media-box {
+    width: 100%; height: 100%;
+    img, video {
+      width: 100%; height: 100%;
+      object-fit: contain; // Чтобы контент не обрезался, как на скринах
+    }
   }
 
-  &:hover {
-    transform: translateY(-50%) scale(1.05);
+  .nav-zones {
+    position: absolute; inset: 0; z-index: 5; display: flex;
+    .zone-prev, .zone-next { flex: 1; cursor: pointer; }
   }
 
-  &.prev {
-    left: 16px;
+  .viewer-close {
+    position: absolute; top: 20px; right: 20px; z-index: 100;
+    background: none; border: none; color: #fff; cursor: pointer;
+    svg { width: 32px; height: 32px; filter: drop-shadow(0 0 4px rgba(0,0,0,0.5)); }
   }
 
-  &.next {
-    right: 16px;
+  .desktop-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    &:hover { background: rgba(255,255,255,0.2); }
+    &.prev { left: 40px; }
+    &.next { right: 40px; }
+    @media (max-width: 1100px) { display: none; }
   }
 }
 
-// ========================================
-// INSTAGRAM POST CARD
-// ========================================
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.story-view {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
 
-.ig-post {
-  display: flex;
-  background: #fff;
-  border-radius: 4px;
-  overflow: hidden;
-  max-width: 935px;
-  max-height: 90vh;
-  width: 90vw;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
+  z-index: 2147483647 !important;
 
-.ig-post-media {
-  flex: 1 1 600px;
-  max-width: 600px;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
-  img, video {
+  .story-view-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+  }
+
+  .story-view-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    max-height: 90vh;
+  }
+
+  .stories-block {
+    width: 430px;
+    height: 765px;
+    background: #000;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0,0,0,1);
+
+    @media (max-width: 767px) {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+    }
+  }
+
+  .media-content {
+    width: 100%;
+    height: 100%;
+    img, video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .buttons-container {
+    position: absolute;
+    z-index: 1001;
+    top: calc(50% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    cursor: pointer;
+
+    &.next-button { right: 40px; }
+    &.prev-button { left: 40px; }
+    @media (max-width: 1100px) { display: none; }
+  }
+
+  .close-button {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1002;
   }
 }
 
-.ig-post-info {
-  width: 335px;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #efefef;
-}
-
-// Post Header
-.ig-post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid #efefef;
-}
-
-.ig-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.ig-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  padding: 2px;
+.story-view {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 100000 !important;
+  backdrop-filter: blur(20px);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
 
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: #fff;
-  }
-}
-
-.ig-username {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #262626;
-}
-
-.ig-more {
-  background: transparent;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  color: #262626;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-// Post Body (Caption/Comments)
-.ig-post-body {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  min-height: 200px;
-}
-
-.ig-comment {
-  margin-bottom: 16px;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.ig-comment-user {
-  font-weight: 600;
-  color: #262626;
-  margin-right: 6px;
-}
-
-.ig-comment-text {
-  color: #262626;
-}
-
-// Post Actions
-.ig-post-actions {
-  padding: 8px 16px 16px;
-  border-top: 1px solid #efefef;
-}
-
-.ig-actions-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.ig-actions-left {
-  display: flex;
-  gap: 16px;
-}
-
-.ig-action-btn {
-  background: transparent;
-  border: none;
-  padding: 8px;
-  margin: -8px;
-  cursor: pointer;
-  color: #262626;
-  transition: opacity 0.15s;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  &:hover {
-    opacity: 0.6;
-  }
-}
-
-.ig-likes {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #262626;
-  margin-bottom: 8px;
-}
-
-.ig-view-original {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #8e8e8e;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: color 0.15s;
-
-  svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  &:hover {
-    color: #262626;
-  }
-}
-
-// ========================================
-// RESPONSIVE
-// ========================================
-
-@media (max-width: 935px) {
-  .ig-post {
-    flex-direction: column;
-    max-width: 500px;
-    max-height: 95vh;
-  }
-
-  .ig-post-media {
-    flex: none;
-    max-width: 100%;
-    max-height: 60vh;
-  }
-
-  .ig-post-info {
+  .stories-block {
     width: 100%;
-    border-left: none;
-    border-top: 1px solid #efefef;
-    max-height: 35vh;
+    max-width: 430px;
+    height: 765px;
+    position: relative;
+    z-index: 1000;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+
+    @media (max-width: 767px) {
+      height: 100vh;
+      max-width: 100vw;
+      border-radius: 0;
+    }
   }
 
-  .ig-post-body {
-    min-height: 80px;
+  .media-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img, video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
   }
 
-  .modal-nav {
-    &.prev {
-      left: 8px;
-    }
+  .buttons-container {
+    position: absolute;
+    z-index: 1001;
+    top: calc(50% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s;
 
-    &.next {
-      right: 8px;
+    &:hover { opacity: 0.7; }
+    &.next-button { right: 40px; }
+    &.prev-button { left: 40px; }
+
+    @media (max-width: 1024px) { display: none; }
+  }
+
+  .close-button {
+    position: absolute;
+    z-index: 1002;
+    top: 20px;
+    right: 40px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    @media (max-width: 767px) {
+      top: 10px;
+      right: 10px;
     }
+  }
+
+  .nav-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1002;
+    cursor: pointer;
+    // На мобайле работает как зона клика
+    @media (min-width: 1025px) { display: none; }
   }
 }
 
-@media (max-width: 900px) {
-  .posts-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    max-width: 100%;
+// Сетка (без изменений)
+.stories-grid {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+  .story-item {
+    background: none; border: none; cursor: pointer;
+    .ring {
+      width: 70px; height: 70px; border-radius: 50%; padding: 2px;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar {
+      width: 100%; height: 100%; border-radius: 50%; border: 2px solid white;
+      overflow: hidden; img { width: 100%; height: 100%; object-fit: cover; }
+    }
+    &.viewed .ring { background: #ccc; }
   }
 }
+
+
+
+
+.mute-control {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 101;
+
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s;
+
+  i {
+    font-size: 20px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+
+
+.stories-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15rem;
+  margin-bottom: 2rem;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.profile-info {
+  .name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333!important;
+  }
+
+}
+.subscribe-btn {
+  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(221, 42, 123, 0.35);
+  }
+}
+
 
 @media (max-width: 768px) {
-  .instagram-section {
-    padding: 40px 16px;
+  .stories-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+    text-align: center;
   }
 
-  .instagram-header {
-    margin-bottom: 24px;
-  }
-
-  .posts-grid {
-    gap: 2px;
-  }
-
-  .post-card {
-    border-radius: 2px;
-  }
-
-  .video-badge {
-    top: 6px;
-    right: 6px;
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  .card-stats {
-    font-size: 0.75rem;
-    gap: 12px;
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  .instagram-follow-btn {
-    margin-top: 24px;
-    width: 100%;
+  .profile {
     justify-content: center;
-    padding: 16px;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .profile-info .name {
     font-size: 1rem;
   }
 
-  .modal-overlay {
-    background: rgba(0, 0, 0, 0.95);
-  }
-
-  .modal-close {
-    top: 12px;
-    right: 12px;
-    width: 44px;
-    height: 44px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 50%;
-  }
-
-  .modal-nav {
-    width: 44px;
-    height: 44px;
-    background: rgba(255,255,255,0.9);
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    &.prev { left: 12px; }
-    &.next { right: 12px; }
-  }
-
-  .ig-post {
+  .subscribe-btn {
     width: 100%;
-    max-width: 100%;
-    height: 100%;
-    max-height: 100%;
-    border-radius: 0;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+  }
+  .stories-grid {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 0 1rem 1rem;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
-  .ig-post-media {
-    max-height: 55vh;
-  }
-
-  .ig-post-info {
-    max-height: 45vh;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1200px) {
-  .instagram-section {
-    padding: 50px 40px;
+  .story-item .ring {
+    width: 64px;
+    height: 64px;
   }
 }
