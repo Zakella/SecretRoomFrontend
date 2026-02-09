@@ -1,6 +1,8 @@
-import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, signal, DestroyRef} from '@angular/core';
 import {NgClass, Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ShareModal} from '../../../shared/components/modals/share-modal/share-modal';
@@ -16,10 +18,12 @@ import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Slugify} from '../../../@core/services/slugify';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
+import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
+import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass, LocalizedNamePipe],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -34,6 +38,7 @@ export class ProductDetail {
   private slugify = inject(Slugify);
   private location = inject(Location);
   private ga = inject(GoogleAnalytics);
+  private recentlyViewedService = inject(RecentlyViewedService);
   public favoritesService = inject(FavoritesService);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
@@ -41,13 +46,22 @@ export class ProductDetail {
   currentSize: string | undefined;
   mainImage: string | null = null;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor() {
-    const resolvedProduct = this.route.snapshot.data['product'] as Product | null;
-    this.product.set(resolvedProduct);
-    if (resolvedProduct) {
-      this.mainImage = resolvedProduct.imageURL;
-      this.trackViewItem(resolvedProduct);
-    }
+    // Synchronous initial load (snapshot available immediately)
+    const initialProduct = this.route.snapshot.data['product'] as Product | null;
+    this.setProduct(initialProduct);
+
+    // Subscribe for subsequent navigations (same route, different params)
+    this.route.data.pipe(
+      map(data => data['product'] as Product | null),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(resolvedProduct => {
+      if (resolvedProduct?.id !== this.product()?.id) {
+        this.setProduct(resolvedProduct);
+      }
+    });
 
     effect(() => {
       const p = this.product();
@@ -56,6 +70,17 @@ export class ProductDetail {
         this.metaService.setProductMeta(p, lang, this.slugify);
       }
     });
+  }
+
+  private setProduct(product: Product | null) {
+    this.product.set(product);
+    this.quantity = 1;
+    this.currentSize = undefined;
+    if (product) {
+      this.mainImage = product.imageURL;
+      this.trackViewItem(product);
+      this.recentlyViewedService.addProduct(product);
+    }
   }
 
   hasDiscount(): boolean {

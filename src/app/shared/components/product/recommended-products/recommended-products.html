@@ -1,4 +1,7 @@
 @if (products().length > 0) {
+  <div class="section-wrapper">
+    <h2 class="section-title">{{ 'Recommendation' | transloco }}</h2>
+  </div>
   <p-carousel
     [value]="products()"
     [numVisible]="products().length < 3 ? products().length : 3"

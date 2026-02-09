@@ -1,35 +1,39 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
 import {CarouselModule} from 'primeng/carousel';
-import {ButtonModule} from 'primeng/button';
-import {TagModule} from 'primeng/tag';
 import {Product} from '../../../../entities/product';
 import {CartItem} from '../../../../entities/cart-item';
 import {CartUi} from '../../cart/services/cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {RecentlyViewedService} from '../../../../@core/services/recently-viewed.service';
-import {TranslocoPipe} from '@ngneat/transloco';
-import {RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {Slugify} from '../../../../@core/services/slugify';
 import {Language} from '../../../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'recently-viewed',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, RouterLink],
+  imports: [CarouselModule, LocalizedNamePipe, TranslocoPipe],
   templateUrl: './recently-viewed.html',
   styleUrl: './recently-viewed.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RecentlyViewed implements OnInit {
+export class RecentlyViewed {
   private recentlyViewedService = inject(RecentlyViewedService);
   private cartService = inject(CartUi);
+  private router = inject(Router);
   public favoritesService = inject(FavoritesService);
   public slugify = inject(Slugify);
   public langService = inject(Language);
 
-  products = this.recentlyViewedService.products;
+  excludeProductId = input<string>('');
 
-  // Custom responsive options for smaller items
+  filteredProducts = computed(() => {
+    const excludeId = this.excludeProductId();
+    const all = this.recentlyViewedService.products();
+    return excludeId ? all.filter(p => p.id !== excludeId) : all;
+  });
+
   responsiveOptions = [
     {
       breakpoint: '1199px',
@@ -45,20 +49,18 @@ export class RecentlyViewed implements OnInit {
       breakpoint: '767px',
       numVisible: 2,
       numScroll: 1
-    },
-    {
-      breakpoint: '480px',
-      numVisible: 2,
-      numScroll: 1
     }
   ];
-
-  ngOnInit() {
-  }
 
   protected addToCart(product: Product) {
     const cartItem = new CartItem(product, 1);
     this.cartService.addToCart(cartItem);
+  }
+
+  protected goToProduct(product: Product) {
+    const lang = this.langService.currentLanguage();
+    const slug = this.slugify.transform(product.name || '');
+    this.router.navigate(['/', lang, 'product', product.id, slug]);
   }
 
   protected toggleFavorite(product: Product) {

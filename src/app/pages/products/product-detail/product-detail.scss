@@ -5,6 +5,7 @@
   padding: 60px 80px;
   color: var(--text-dark, #2c2421);
   background: var(--bg-white, #fff);
+  overflow: visible;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -319,37 +320,13 @@
 }
 
 // ─────────────────────────────────────────────────────────────
-// RELATED PRODUCTS
-// ─────────────────────────────────────────────────────────────
-.related-products {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 4rem;
-  padding-top: 3rem;
-  border-top: 1px solid rgba(184, 149, 108, 0.15);
-
-  h2 {
-    font-family: var(--font-title, 'Playfair Display', serif);
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-dark, #2c2421);
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.02em;
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
 // RESPONSIVE — Tablet
 // ─────────────────────────────────────────────────────────────
 @media (max-width: 768px) {
   .product-page {
     padding: 20px;
     margin: 150px 5px 5px 5px;
+    overflow: visible;
   }
 
   .product-grid {
@@ -387,9 +364,6 @@
     font-size: 1.3rem;
   }
 
-  .related-products h2 {
-    font-size: 1.2rem;
-  }
 }
 
 // ─────────────────────────────────────────────────────────────

@@ -80,10 +80,9 @@
         </div>
     </div>
 
-    <div class="related-products">
-      <h2>{{ 'Recommendation' | transloco }}</h2>
-      <recommended-products [productId]="product()?.id || ''" (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
-    </div>
+    <recommended-products [productId]="product()?.id || ''" (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
+
+    <recently-viewed [excludeProductId]="product()?.id || ''"/>
   </section>
 }
 <app-share-modal #shareModal/>

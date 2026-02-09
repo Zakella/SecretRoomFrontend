@@ -9,10 +9,11 @@ import {RecommendedProductService} from './recommended-product-service';
 import {CartUi} from '../../cart/services/cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'recommended-products',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

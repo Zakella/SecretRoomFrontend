@@ -1,3 +1,29 @@
+:host {
+  display: block;
+  width: 100%;
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(184, 149, 108, 0.15);
+  overflow: hidden;
+}
+
+.section-wrapper {
+  text-align: center;
+}
+
+.section-title {
+  font-family: var(--font-title, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark, #2c2421);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
+}
+
 .action-btn {
   display: inline-flex;
   align-items: center;

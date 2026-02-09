@@ -1,40 +1,44 @@
-@if (products().length > 0) {
-  <div class="recently-viewed-container">
+@if (filteredProducts().length > 0) {
+  <div class="section-header">
+    <h2 class="section-title">{{ 'RecentlyViewed' | transloco }}</h2>
+  </div>
+
+  <!-- Desktop: carousel -->
+  <div class="desktop-view">
     <p-carousel
-      [value]="products()"
-      [numVisible]="5"
+      [value]="filteredProducts()"
+      [numVisible]="filteredProducts().length < 5 ? filteredProducts().length : 5"
       [numScroll]="1"
-      [circular]="true"
-      [responsiveOptions]="responsiveOptions"
-      [autoplayInterval]="0">
-      <ng-template pTemplate="item" let-product>
-        <div class="product-item">
-          <div class="product-item-content">
-            <div class="product-image-wrapper">
-              <a [routerLink]="['/', langService.currentLanguage(), 'product', product.id, slugify.transform(product.name)]" class="product-image-link">
-                <img [src]="product.imageURL" [alt]="product.name" class="product-image" loading="lazy"/>
-              </a>
-              @if (product.oldPrice > product.price) {
-                <p-tag value="SALE" severity="danger" class="absolute" [style]="{'left.px': 5, 'top.px': 5, 'font-size': '0.7rem'}"/>
-              }
-              <button
-                pButton
-                type="button"
-                [icon]="isFavorite(product) ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                class="p-button-rounded p-button-text p-button-plain wishlist-btn absolute"
-                [style]="{'right.px': 0, 'top.px': 0, 'color': isFavorite(product) ? 'red' : 'inherit', 'width': '2rem', 'height': '2rem'}"
-                (click)="toggleFavorite(product)">
-              </button>
-            </div>
-            <div class="product-details">
-              <h4>{{ product | localizedName }}</h4>
-              <h6>{{ product.price }} MDL</h6>
-              <button pButton type="button" icon="pi pi-shopping-bag" class="cart-btn"
-                      (click)="addToCart(product)"></button>
-            </div>
+      [circular]="filteredProducts().length > 5"
+      [autoplayInterval]="0"
+      [showNavigators]="filteredProducts().length > 5"
+      [responsiveOptions]="responsiveOptions">
+      <ng-template let-product #item>
+        <div class="card" (click)="goToProduct(product)">
+          <div class="card-image">
+            <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
+          </div>
+          <div class="card-body">
+            <span class="card-name">{{ product | localizedName }}</span>
+            <span class="card-price">{{ product.price }} MDL</span>
           </div>
         </div>
       </ng-template>
     </p-carousel>
+  </div>
+
+  <!-- Mobile: swipeable scroll -->
+  <div class="mobile-view">
+    @for (product of filteredProducts(); track product.id) {
+      <div class="card" (click)="goToProduct(product)">
+        <div class="card-image">
+          <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
+        </div>
+        <div class="card-body">
+          <span class="card-name">{{ product | localizedName }}</span>
+          <span class="card-price">{{ product.price }} MDL</span>
+        </div>
+      </div>
+    }
   </div>
 }
