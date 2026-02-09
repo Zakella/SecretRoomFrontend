@@ -6,6 +6,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {CurrencyPipe} from '@angular/common';
 
 @Component({
@@ -13,7 +14,8 @@ import {CurrencyPipe} from '@angular/common';
   imports: [
     RouterLink,
     TranslocoPipe,
-    CurrencyPipe
+    CurrencyPipe,
+    LocalizedNamePipe
   ],
   templateUrl: './order-summary.html',
   styleUrl: './order-summary.scss',

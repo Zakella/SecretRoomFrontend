@@ -352,11 +352,11 @@
         @for (item of cartItems; track item.id; let i = $index) {
           <div class="cart-item">
             <div class="item-image">
-              <img [src]="item.product.imageURL ?? 'assets/images/unavailable.jpg'" [alt]="item.product.name">
+              <img [src]="item.product.imageURL ?? 'assets/images/unavailable.jpg'" [alt]="item.product | localizedName">
               <span class="item-quantity-badge">{{ item.quantity }}</span>
             </div>
             <div class="item-details">
-              <p class="item-name">{{ item.product.name }}</p>
+              <p class="item-name">{{ item.product | localizedName }}</p>
               @if (item.size) {
                 <p class="item-size">{{ 'Size' | transloco }}: {{ item.size.sizeType }}</p>
               }

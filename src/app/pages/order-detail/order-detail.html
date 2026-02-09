@@ -48,10 +48,10 @@
               @for (item of order()!.items; track item.product.id) {
                 <div class="order-item">
                   <div class="item-image">
-                    <img [src]="item.product.imageURL" [alt]="item.product.name">
+                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
                   </div>
                   <div class="item-details">
-                    <h4 class="item-name">{{ item.product.name }}</h4>
+                    <h4 class="item-name">{{ item.product | localizedName }}</h4>
                     @if (item.sizeType) {
                       <p class="item-size">{{ 'orderDetail.size' | transloco }}: {{ item.sizeType }}</p>
                     }

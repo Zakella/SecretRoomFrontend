@@ -85,11 +85,11 @@
             @for (product of searchService.suggestions(); track product.id) {
               <div class="mobile-search-item" (click)="goToProductFromSearch(product)">
                 <div class="mobile-search-img">
-                  <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product.name"/>
+                  <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product | localizedName"/>
                 </div>
                 <div class="mobile-search-info">
                   <span class="mobile-search-brand">{{ product.brandAlias }}</span>
-                  <span class="mobile-search-name">{{ product.name }}</span>
+                  <span class="mobile-search-name">{{ product | localizedName }}</span>
                   <div class="mobile-search-price-row">
                     <span class="mobile-search-price">{{ product.price }} MDL</span>
                     @if (product.oldPrice > product.price!) {

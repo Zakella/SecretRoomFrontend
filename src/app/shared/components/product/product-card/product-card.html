@@ -1,5 +1,35 @@
+<!--
+<div class="product-card">
+    @if (isBestSeller()){
+      <div class="limited-badge">
+        <span>LIMITED EDITION</span>
+      </div>
+    }
+
+    <div class="product-image-container">
+      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product() | localizedName" class="product-image"/>
+    </div>
+
+
+    <div class="product-info">
+      <h3 class="product-name">{{product() | localizedName}}</h3>
+      <p class="product-description">Lorem ipsum dolor sit.</p>
+      <p class="product-price">{{ price() }} MDL </p>
+
+      <button class="add-to-bag-btn" (click)="addProductInCart()" analyticEvent="buy_click">
+        {{ 'Add to Cart' | transloco }}
+      </button>
+    </div>
+</div>
+-->
+
+
 <div class="product-card" [class.bestseller]="isBestSeller()" [class.new-arrival]="isNew()" [class.on-sale]="hasDiscount()">
   <div class="image-wrapper">
+    <!-- Brand Badge -->
+
+
+    <!-- Status Badges (right side) -->
     @if (isBestSeller()) {
       <div class="badge badge-status badge-bestseller">
         <i class="ri-fire-fill"></i>
@@ -17,9 +47,9 @@
     </button>
 
     <div class="img-container" (click)="navToProduct()">
-      <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
+      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img"/>
       @if (hoverImageUrl()) {
-        <img [src]="hoverImageUrl()" [alt]="product()?.name" class="hover-img"/>
+        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img"/>
       }
     </div>
   </div>
@@ -30,7 +60,7 @@
       <span>
         {{ product()?.brandAlias }}</span>
     </h2>
-    <h3 class="name">{{ product()?.name }}</h3>
+    <h3 class="name">{{ product() | localizedName }}</h3>
 
     <div class="price-block" [class.has-discount]="hasDiscount()">
       @if (hasDiscount() && oldPrice()) {

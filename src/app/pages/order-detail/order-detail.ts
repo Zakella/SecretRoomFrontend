@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe, NgClass} from '@angular/common';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {Order} from '../../entities/order';
 import {Subject, takeUntil} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
@@ -13,7 +14,8 @@ import {environment} from '../../../environments/environment';
   imports: [
     DatePipe,
     TranslocoPipe,
-    NgClass
+    NgClass,
+    LocalizedNamePipe
   ],
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.scss',

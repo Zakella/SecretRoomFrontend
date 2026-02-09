@@ -14,6 +14,7 @@ import {CategoryService} from '../../@core/api/category';
 import {SearchService} from '../../@core/services/search';
 import {FavoritesService} from '../../@core/services/favorites';
 import {Product} from '../../entities/product';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'mobile-menu',
@@ -24,7 +25,8 @@ import {Product} from '../../entities/product';
     ButtonModule,
     FormsModule,
     TranslocoPipe,
-    UpperCasePipe
+    UpperCasePipe,
+    LocalizedNamePipe
   ],
   templateUrl: './mobile-menu.html',
   styleUrl: './mobile-menu.scss',

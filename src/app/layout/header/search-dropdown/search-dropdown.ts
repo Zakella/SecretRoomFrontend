@@ -4,11 +4,12 @@ import {SearchService} from '../../../@core/services/search';
 import {Language} from '../../../@core/services/language';
 import {Product} from '../../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'search-dropdown',
   standalone: true,
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, LocalizedNamePipe],
   templateUrl: './search-dropdown.html',
   styleUrl: './search-dropdown.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

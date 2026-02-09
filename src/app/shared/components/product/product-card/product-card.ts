@@ -9,10 +9,11 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import { SkeletonModule } from 'primeng/skeleton';
 import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
 import {FavoritesService} from '../../../../@core/services/favorites';
+import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 
 @Component({
   selector: 'product-card',
-  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent],
+  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

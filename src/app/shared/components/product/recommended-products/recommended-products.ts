@@ -8,10 +8,11 @@ import {RESPONSIVE_OPTIONS} from '../../../../@core/options/responsive-options';
 import {RecommendedProductService} from './recommended-product-service';
 import {CartUi} from '../../cart/services/cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
+import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 
 @Component({
   selector: 'recommended-products',
-  imports: [CarouselModule, ButtonModule, TagModule],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

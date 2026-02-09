@@ -12,10 +12,11 @@ import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
 import {ProductService} from '../../../@core/api/product';
 import {FavoritesService} from '../../../@core/services/favorites';
+import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
+  imports: [FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass, LocalizedNamePipe],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -37,15 +38,6 @@ export class ProductDetail {
     const resolvedProduct = this.route.snapshot.data['product'] as Product | null;
     this.product.set(resolvedProduct);
     this.mainImage = this.product()!.imageURL;
-  }
-
-  getDescription(): string {
-    const p = this.product();
-    if (!p) return '';
-    const lang = this.activeLang();
-    if (lang === 'ro' && p.descriptionRo) return p.descriptionRo;
-    if (lang === 'ru' && p.descriptionRu) return p.descriptionRu;
-    return p.description || '';
   }
 
   hasDiscount(): boolean {

@@ -10,9 +10,9 @@
     <ng-template let-product #item>
       <div class="carousel-item">
         <div class="image-container">
-          <img [src]="product.imageURL" [alt]="product.name"/>
+          <img [src]="product.imageURL" [alt]="product | localizedName"/>
         </div>
-        <div class="product-name">{{ product.name }}</div>
+        <div class="product-name">{{ product | localizedName }}</div>
         <div class="product-footer">
           <div class="product-price">{{ product.price }} MDL</div>
           <div class="buttons">
