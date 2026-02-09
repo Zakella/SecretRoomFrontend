@@ -43,7 +43,7 @@ export class CategoryService {
     return this.getCategories().pipe(
       map(categories => {
         const flatCategories = this.flattenCategories(categories);
-        const found = flatCategories.find(c => this.slugify.transform(c.name) === slug);
+        const found = flatCategories.find(c => c.slug === slug || this.slugify.transform(c.name) === slug);
         return found ? found.id : null;
       })
     );
@@ -53,7 +53,7 @@ export class CategoryService {
     return this.getCategories().pipe(
       map(categories => {
         const flatCategories = this.flattenCategories(categories);
-        return flatCategories.find(c => this.slugify.transform(c.name) === slug) || null;
+        return flatCategories.find(c => c.slug === slug || this.slugify.transform(c.name) === slug) || null;
       })
     );
   }

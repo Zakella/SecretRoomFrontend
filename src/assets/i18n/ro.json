@@ -192,7 +192,8 @@
     "addressPlaceholder": "Strada, numărul, apartamentul",
     "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda",
     "alreadyHaveAccount": "Aveți deja un cont?",
-    "createAccount": "Creează cont"
+    "createAccount": "Creează cont",
+    "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul."
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
@@ -274,5 +275,6 @@
   "Best Sellers": "Cele mai vândute",
   "Sales": "Reduceri",
   "Lingerie": "Lenjerie Intimă",
-  "Copyright": "© 2025 Secret Room. Toate drepturile rezervate."
+  "Copyright": "© 2025 Secret Room. Toate drepturile rezervate.",
+  "Cabinet": "Cabinet"
 }

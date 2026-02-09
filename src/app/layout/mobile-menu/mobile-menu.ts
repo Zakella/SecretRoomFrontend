@@ -105,7 +105,7 @@ export class MobileMenu  implements OnInit{
   }
 
   goToCategory(category: Category) {
-    this.router.navigate([this.activeLang(), 'catalog', category.id]);
+    this.router.navigate([this.activeLang(), 'catalog', category.slug]);
     this.visible = false;
   }
 

@@ -34,6 +34,14 @@
     </div>
     <span>{{ 'Stores' | transloco }}</span>
   </a>
+
+  <a class="nav-item" [routerLink]="['/', activeLang(), 'cabinet']" routerLinkActive="active">
+    <div class="icon-wrapper">
+      <i class="ri-user-line"></i>
+      <i class="ri-user-fill active-icon"></i>
+    </div>
+    <span>{{ 'Cabinet' | transloco }}</span>
+  </a>
 </nav>
 
 <!-- Brands Drawer (Full Screen) -->

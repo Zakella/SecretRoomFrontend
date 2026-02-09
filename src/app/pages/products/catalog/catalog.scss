@@ -1,15 +1,16 @@
 .catalog-page {
-  padding: 60px 80px 100px;
+  padding: 285px 80px 100px;
   max-width: 1600px;
   margin: 0 auto;
   background: transparent;
 
   @media (max-width: 1200px) {
-    padding: 50px 40px 80px;
+    padding: 285px 40px 80px;
   }
 
   @media (max-width: 768px) {
     padding: 30px 20px 60px;
+    padding-top: 100px;
   }
 }
 
@@ -100,5 +101,11 @@ custom-title {
     h2 {
       font-size: 20px;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog-page {
+    padding: 120px 20px 60px;
   }
 }

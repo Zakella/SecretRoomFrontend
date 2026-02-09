@@ -71,7 +71,7 @@
   "City should be at least 3 characters": "Город должен быть не менее 3 символов",
   "City should contain only letters": "Город должен содержать только латинские буквы",
   "Phone is required": "Телефон обязателен",
-  "Phone need to be format 06******* or 07*******": "Телефон должен быть в формате 06******* или 07*******",
+  "Phone need to be format 06******* или 07*******": "Телефон должен быть в формате 06******* или 07*******",
   "Sign up now": "Зарегистрируйтесь сейчас",
   "User already exists": "Пользователь уже существует",
   "Password must be at least 8 characters long and contain both letters and numbers": "Пароль должен быть не менее 8 символов и содержать как как латинские буквы, так и цифры",
@@ -190,7 +190,8 @@
     "addressPlaceholder": "Улица, дом, квартира",
     "agreementRequired": "Необходимо принять условия для оформления заказа",
     "alreadyHaveAccount": "Уже есть аккаунт?",
-    "createAccount": "Создать аккаунт"
+    "createAccount": "Создать аккаунт",
+    "productNotFoundInCart": "Один или несколько товаров в корзине больше недоступны. Пожалуйста, обновите корзину."
   },
   "cart": {
     "youMayAlsoLike": "Вам также понравится",
@@ -273,5 +274,6 @@
   "Best Sellers": "Хиты продаж",
   "Sales": "Скидки",
   "Lingerie": "Нижнее Белье",
-  "Copyright": "© 2025 Secret Room. Все права защищены."
+  "Copyright": "© 2025 Secret Room. Все права защищены.",
+  "Cabinet": "Кабинет"
 }

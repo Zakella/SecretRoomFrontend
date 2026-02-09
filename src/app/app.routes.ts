@@ -63,7 +63,7 @@ export const routes: Routes = [
           },
           {
             path: 'product-detail/:id',
-            redirectTo: 'product/:id',
+            redirectTo: 'product/:id/details',
             pathMatch: 'full'
           },
           {

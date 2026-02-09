@@ -11,8 +11,8 @@ import {FadeUp} from '../../@core/directives/fade-up';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {forkJoin, of, Subject} from 'rxjs';
+import {catchError, map, takeUntil} from 'rxjs/operators';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
@@ -22,6 +22,8 @@ import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {PurchaseService} from '../../@core/api/purchase';
 import {Purchase} from '../../entities/purchase';
+import {ProductService} from '../../@core/api/product';
+import {MessageService} from 'primeng/api';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -67,6 +69,8 @@ export class Checkout implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private shippingService = inject(Shipping);
   private purchaseService = inject(PurchaseService);
+  private productService = inject(ProductService);
+  private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   private translocoService = inject(TranslocoService);
@@ -86,6 +90,7 @@ export class Checkout implements OnInit, OnDestroy {
     this.initForm();
     this.loadCart();
     this.subscribeToCartChanges();
+    this.validateCart();
   }
 
   ngOnDestroy(): void {
@@ -117,6 +122,40 @@ export class Checkout implements OnInit, OnDestroy {
       return;
     }
     this.cartService.computeCartTotals();
+  }
+
+  private validateCart(): void {
+    if (this.cartItems.length === 0) return;
+
+    const checks = this.cartItems.map((item, index) =>
+      this.productService.getProductById(item.product.id!).pipe(
+        map(() => ({ index, valid: true })),
+        catchError(() => of({ index, valid: false }))
+      )
+    );
+
+    forkJoin(checks).pipe(takeUntil(this.destroy$)).subscribe(results => {
+      const invalidIndices = results
+        .filter(r => !r.valid)
+        .map(r => r.index)
+        .sort((a, b) => b - a); // Sort descending to delete from end
+
+      if (invalidIndices.length > 0) {
+        invalidIndices.forEach(index => {
+          this.cartService.deleteItemFromCart(index);
+        });
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: this.translocoService.translate('checkout.productNotFoundInCart'),
+          detail: ''
+        });
+
+        if (this.cartItems.length === 0) {
+          this.router.navigate([this.activeLang(), 'catalog', 'all']);
+        }
+      }
+    });
   }
 
   private subscribeToCartChanges(): void {
@@ -345,12 +384,18 @@ export class Checkout implements OnInit, OnDestroy {
           console.error('Order placement failed:', error);
           this.isSubmitting.set(false);
 
-          if (error.status === 0) {
+          const errorMessage = error.error?.message || '';
+
+          if (errorMessage.includes('Product with id')) {
+            this.orderError.set('checkout.productNotFoundInCart');
+            // Trigger validation again to remove the bad product
+            this.validateCart();
+          } else if (error.status === 0) {
             this.orderError.set('errors.serverError');
           } else if (error.status >= 500) {
             this.orderError.set('errors.serverError');
-          } else if (error.error?.message) {
-            this.orderError.set(error.error.message);
+          } else if (errorMessage) {
+            this.orderError.set(errorMessage);
           } else {
             this.orderError.set('errors.serverError');
           }
