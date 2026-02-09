@@ -1,5 +1,4 @@
 import {Component, effect, inject, OnInit, signal} from '@angular/core';
-import {CustomTitle} from '../../../shared/components/custom-title/custom-title';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
@@ -12,13 +11,14 @@ import {CategoryService} from '../../../@core/api/category';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
 import {of} from 'rxjs';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-catalog',
   imports: [
-    CustomTitle,
     FadeUp,
-    ProductList
+    ProductList,
+    TranslocoPipe
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',

@@ -11,9 +11,9 @@
         (click)="loadMore()"
       >
         @if (isLoading()) {
-          Загрузка...
+          {{ 'Loading...' | transloco }}
         } @else {
-          Показать ещё
+          {{ 'Load more' | transloco }}
         }
       </button>
     </div>

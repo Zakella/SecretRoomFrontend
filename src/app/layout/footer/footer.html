@@ -1,9 +1,9 @@
-<footer class="footer">
+<footer class="footer" *transloco="let t">
   <div class="container">
     <div class="footer-brand">
       <div class="logo">Secret Room</div>
       <p class="description">
-        Magazin online de cosmetice și lenjerie în Moldova. Victoria's Secret, Bath & Body Works și alte branduri originale.
+        {{ t('FooterDescription') }}
       </p>
       <div class="socials">
         <a href="https://www.instagram.com/secretroom.md/"
@@ -19,32 +19,34 @@
 
     <div class="footer-links">
       <div class="column">
-        <h4>{{ 'About us' | transloco }}</h4>
-        <a [routerLink]="['/', activeLang(), 'contacts']">{{ 'Stores' | transloco }}</a>
-        <a (click)="showPolicy()" class="cursor-pointer">{{'Return policy' | transloco}}</a>
-        <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{'DeliveryTerms' |transloco}}</a>
-        <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">Despre Noi</a>
+        <h4>{{ t('About us') }}</h4>
+        <a [routerLink]="['/', activeLang(), 'contacts']">{{ t('Stores') }}</a>
+        <a (click)="showPolicy()" class="cursor-pointer">{{ t('Return policy') }}</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ t('DeliveryTerms') }}</a>
+        <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">{{ t('About us') }}</a>
       </div>
+
       <div class="column">
-        <h4>Catalog</h4>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'vs']">Victoria's Secret</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'bb']">Bath & Body Works</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">Noutăți Cosmetice</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'sales']">Reduceri Parfumuri</a>
+        <h4>{{ t('Brands') }}</h4>
+        @for (brand of brands(); track brand.brand) {
+          <a (click)="goToBrand(brand)" class="cursor-pointer">{{ brand.brandAlias }}</a>
+        }
+        <a [routerLink]="['/', activeLang(), 'brands']" class="view-all">{{ t('All Brands') }} →</a>
       </div>
+
       <div class="column">
-        <h4>Popular</h4>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">Cele mai vândute</a>
-        <a [routerLink]="['/', activeLang(), 'brands']">Toate Brandurile</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'vs']">Lenjerie Intimă</a>
-        <a [routerLink]="['/', activeLang(), 'catalog', 'bb']">Lumânări Parfumate</a>
+        <h4>{{ t('Catalog') }}</h4>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'new-arrivals']">{{ t('News') }}</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">{{ t('Best Sellers') }}</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'sales']">{{ t('Sales') }}</a>
+        <a [routerLink]="['/', activeLang(), 'catalog', 'vs']">{{ t('Lingerie') }}</a>
       </div>
     </div>
   </div>
 
   <div class="footer-bottom">
     <div class="container">
-      <span>© 2025 Secret Room. Toate drepturile rezervate.</span>
+      <span class="copyright">{{ t('Copyright') }}</span>
       <div class="payment-icons">
         <img src="assets/images/payment/visa.svg" alt="Visa"/>
         <img src="assets/images/payment/master-card.svg" alt="MasterCard"/>
@@ -53,7 +55,7 @@
       </div>
 
       <div class="policies">
-        <a [routerLink]="['/', activeLang(), 'delivery-terms']">Politica de Confidențialitate</a>
+        <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ t('Return policy') }}</a>
       </div>
     </div>
   </div>

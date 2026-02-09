@@ -264,5 +264,14 @@
   },
   "sales": {
     "description": "Успейте приобрести по выгодной цене"
-  }
+  },
+  "Catalog": "Каталог",
+  "Load more": "Показать ещё",
+  "FooterDescription": "Интернет-магазин косметики и белья в Молдове. Victoria's Secret, Bath & Body Works и другие оригинальные бренды.",
+  "All Brands": "Все Бренды",
+  "News": "Новинки",
+  "Best Sellers": "Хиты продаж",
+  "Sales": "Скидки",
+  "Lingerie": "Нижнее Белье",
+  "Copyright": "© 2025 Secret Room. Все права защищены."
 }

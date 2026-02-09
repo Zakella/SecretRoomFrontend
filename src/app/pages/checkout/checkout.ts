@@ -13,7 +13,7 @@ import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
@@ -64,6 +64,7 @@ export class Checkout implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private cartService = inject(CartUi);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private shippingService = inject(Shipping);
   private purchaseService = inject(PurchaseService);
   private cdr = inject(ChangeDetectorRef);
@@ -74,6 +75,14 @@ export class Checkout implements OnInit, OnDestroy {
   activeLang = this.langService.currentLanguage;
 
   ngOnInit(): void {
+    // Ensure language is synced with URL
+    this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const lang = params['lang'];
+      if (lang && (lang === 'ro' || lang === 'ru') && this.activeLang() !== lang) {
+        this.langService.setLanguage(lang);
+      }
+    });
+
     this.initForm();
     this.loadCart();
     this.subscribeToCartChanges();

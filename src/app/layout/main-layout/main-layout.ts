@@ -1,17 +1,16 @@
 import {Component, computed, inject} from '@angular/core';
 import {Header} from '../header/header';
 import {Footer} from '../footer/footer';
-import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {Cart} from '../../shared/components/cart/cart';
 import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
-import {TranslocoService} from '@ngneat/transloco';
-import {distinctUntilChanged, filter, map} from 'rxjs';
+import {filter} from 'rxjs';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
 import {MobileHeader} from '../mobile-header/mobile-header';
-import {Chat} from '../../widgets/chat/chat';
 import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-main-layout',
@@ -32,31 +31,27 @@ import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
 export class MainLayout {
   private cartService = inject(CartUi);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private translateService = inject(TranslocoService);
-
+  private langService = inject(Language);
 
   public readonly visible = computed(() => this.cartService.visible());
 
-
   constructor() {
-    this.initializeMetaTags();
+    this.initializeLanguageSync();
   }
 
-  public initializeMetaTags() {
+  public initializeLanguageSync() {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd),
-        map(() => this.route.firstChild?.snapshot.paramMap.get('lang')),
-        distinctUntilChanged()
+        filter(event => event instanceof NavigationEnd)
       )
-      .subscribe(lang => {
-        const currentLang = (lang && ['ru', 'ro'].includes(lang)) ? lang : 'ru';
-        this.translateService.setActiveLang(currentLang);
-        /*        const meta = META_INFO[currentLang];
-                if (meta) {
-                  this.updateMetaTags(currentLang, meta.title, meta.description, meta.keywords);
-                }*/
+      .subscribe((event: NavigationEnd) => {
+        // Extract language from URL: /ro/checkout -> ro
+        const urlParts = event.urlAfterRedirects.split('/');
+        const lang = urlParts[1];
+
+        if (lang && (lang === 'ro' || lang === 'ru')) {
+          this.langService.syncLanguageFromUrl(lang);
+        }
       });
   }
 
