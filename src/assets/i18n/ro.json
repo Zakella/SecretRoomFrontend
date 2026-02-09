@@ -277,5 +277,10 @@
   "Sales": "Reduceri",
   "Lingerie": "Lenjerie Intimă",
   "Copyright": "© 2025 Secret Room. Toate drepturile rezervate.",
-  "Cabinet": "Cabinet"
+  "Cabinet": "Cabinet",
+  "cookie": {
+    "message": "Acest site folosește cookie-uri pentru a vă oferi o experiență mai bună. Continuând navigarea, sunteți de acord cu utilizarea cookie-urilor.",
+    "accept": "Acceptă",
+    "decline": "Refuză"
+  }
 }
