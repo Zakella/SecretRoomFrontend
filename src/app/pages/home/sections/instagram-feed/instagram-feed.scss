@@ -1,712 +1,4 @@
-/*
-!*
-.instagram-section {
-  padding: 60px 100px;
-  text-align: center;
-}
-
-.instagram-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 40px;
-
-  .instagram-icon {
-    width: 32px;
-    height: 32px;
-    color: var(--gold, #b8956c);
-  }
-
-  h2 {
-    font-family: var(--font-title);
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #000;
-    margin: 0;
-  }
-}
-
-// ========================================
-// POSTS GRID - Instagram Style Cards
-// ========================================
-
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.post-card {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: #fafafa;
-  border-radius: 4px;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.2s ease;
-  }
-
-  &:hover {
-    .card-overlay {
-      opacity: 1;
-    }
-  }
-}
-
-.video-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: #fff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-
-  svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-  }
-}
-
-.card-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.card-stats {
-  display: flex;
-  gap: 24px;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-
-  span {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-// Skeleton loading
-.post-card.skeleton {
-  background: linear-gradient(90deg, #efefef 25%, #e0e0e0 50%, #efefef 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-// ========================================
-// INSTAGRAM FOLLOW BUTTON
-// ========================================
-
-.instagram-follow-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 32px;
-  padding: 10px 24px;
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-
-  .instagram-logo {
-    width: 18px;
-    height: 18px;
-    fill: #fff;
-  }
-
-  &:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
-  }
-}
-
-// ========================================
-// MODAL OVERLAY - Instagram Style
-// ========================================
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: opacity 0.2s;
-
-  svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.modal-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #fff;
-  color: #262626;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  &:hover {
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  &.prev {
-    left: 16px;
-  }
-
-  &.next {
-    right: 16px;
-  }
-}
-
-// ========================================
-// INSTAGRAM POST CARD
-// ========================================
-
-.ig-post {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 90vw;
-  max-height: 90vh;
-}
-
-
-.ig-post-media {
-  flex: 0 0 auto; // убираем растяжение
-  max-width: 60vw;
-  max-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-
-  img,
-  video {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-}
-
-
-.ig-post-info {
-  width: 335px;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #efefef;
-}
-
-// Post Header
-.ig-post-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid #efefef;
-}
-
-.ig-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.ig-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: #fff;
-  }
-}
-
-.ig-username {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #262626;
-}
-
-.ig-more {
-  background: transparent;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  color: #262626;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-// Post Body (Caption/Comments)
-.ig-post-body {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  min-height: 200px;
-}
-
-.ig-comment {
-  margin-bottom: 16px;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.ig-comment-user {
-  font-weight: 600;
-  color: #262626;
-  margin-right: 6px;
-}
-
-.ig-comment-text {
-  color: #262626;
-}
-
-// Post Actions
-.ig-post-actions {
-  padding: 8px 16px 16px;
-  border-top: 1px solid #efefef;
-}
-
-.ig-actions-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.ig-actions-left {
-  display: flex;
-  gap: 16px;
-}
-
-.ig-action-btn {
-  background: transparent;
-  border: none;
-  padding: 8px;
-  margin: -8px;
-  cursor: pointer;
-  color: #262626;
-  transition: opacity 0.15s;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  &:hover {
-    opacity: 0.6;
-  }
-}
-
-.ig-likes {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #262626;
-  margin-bottom: 8px;
-}
-
-.ig-view-original {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #8e8e8e;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: color 0.15s;
-
-  svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  &:hover {
-    color: #262626;
-  }
-}
-
-
-
-.post-card.story {
-  aspect-ratio: 1 / 1!important;
-  border-radius: 50%;
-  padding: 3px;
-  background: linear-gradient(
-      45deg,
-      #feda75,
-      #fa7e1e,
-      #d62976,
-      #962fbf,
-      #4f5bd5
-  );
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  // отключаем overlay для сторис
-  .card-overlay {
-    display: none;
-  }
-
-  .story-inner {
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    border-radius: 50%;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    img {
-      border-radius: 50%;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-
-  &:hover {
-    transform: scale(1.04);
-    transition: transform 0.2s ease;
-  }
-
-  // ===============================
-  // VIEWED STATE
-  // ===============================
-  &.viewed {
-    background: #cfcfcf;
-
-    .story-inner {
-      background: #fff;
-    }
-  }
-}
-
-.modal-overlay.story-viewer {
-  .modal-overlay.story-viewer {
-    position: fixed; // Обязательно fixed
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.95);
-    // Увеличиваем до предела, чтобы перекрыть всё
-    z-index: 999999 !important;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0; // На мобилках лучше без падингов
-  }
-
-  .story-container {
-    position: relative;
-    width: 100%;
-    max-width: 420px;    // Оптимально для вертикального контента
-    height: 100%;       // Занимает всю доступную высоту внутри padding
-    max-height: 800px;   // Ограничиваем на очень больших мониторах
-    background: #000;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  }
-
-  // Скрытые зоны для клика
-  .story-tap-areas {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    display: flex;
-
-    .tap-left, .tap-right {
-      flex: 1;
-      cursor: pointer;
-    }
-  }
-
-  .story-media {
-    width: 100%;
-    height: 100%;
-
-    img, video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover; // Это важно, чтобы не было пустых полос внутри контейнера
-    }
-  }
-
-  // Кнопка закрытия — сделаем её заметнее
-  .modal-close {
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    backdrop-filter: blur(10px);
-
-    &:hover { background: rgba(255, 255, 255, 0.2); }
-  }
-
-  // Боковые стрелки (оставляем только для десктопа)
-  .modal-nav {
-    @media (max-width: 1024px) {
-      display: none; // На планшетах и телефонах юзаем зоны клика
-    }
-  }
-}
-.modal-overlay {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 100000 !important;
-}
-*!
-
-// Переменные для удобства
-$story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
-
-.instagram-section {
-  padding: 40px 20px;
-
-  .posts-grid {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-}
-
-// Карточка сторис в сетке
-.story-card {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:active { transform: scale(0.95); }
-
-  .story-ring {
-    width: 80px;
-    height: 80px;
-    padding: 3px;
-    border-radius: 50%;
-    background: $story-gradient;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .img-wrapper {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    overflow: hidden;
-    background: #eee;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-
-  &.viewed .story-ring { background: #dbdbdb; }
-
-  &.skeleton .story-ring {
-    background: #eee;
-    animation: pulse 1.5s infinite;
-  }
-}
-
-// Полноэкранный Вьювер
-.story-viewer-overlay {
-  position: fixed !important;
-  inset: 0 !important;
-  background: rgba(0, 0, 0, 0.96);
-  z-index: 1000000 !important; // Максимальный приоритет
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(5px);
-
-  .viewer-container {
-    position: relative;
-    height: 90vh;
-    aspect-ratio: 9 / 16;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
-
-    @media (max-width: 768px) {
-      height: 100vh;
-      width: 100vw;
-      border-radius: 0;
-    }
-  }
-
-  .tap-zones {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    .zone-left, .zone-right { flex: 1; cursor: pointer; }
-  }
-
-  .media-content {
-    width: 100%;
-    height: 100%;
-    img, video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; // Чтобы видеть всё фото целиком
-    }
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 20;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    svg { width: 32px; height: 32px; }
-  }
-
-  .nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255,255,255,0.2);
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &:hover { background: rgba(255,255,255,0.4); }
-    &.prev { left: 20px; }
-    &.next { right: 20px; }
-
-    @media (max-width: 1024px) { display: none; }
-  }
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-*/
-
-
-.instagram-section {
-  padding: 40px 0;
-
-  .stories-grid {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-}
+.instagram-section {padding: 40px 0;}
 
 .story-item {
   background: none; border: none; padding: 0; cursor: pointer;
@@ -800,7 +92,6 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 .story-view {
-  // ПРИНУДИТЕЛЬНЫЙ ВЫНОС НА ВЕСЬ ЭКРАН
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -809,7 +100,6 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
   width: 100vw !important;
   height: 100vh !important;
 
-  // Больше, чем 9999 в твоем styles.scss
   z-index: 2147483647 !important;
 
   display: flex !important;
@@ -820,7 +110,7 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(20px); // Как в примере
+    backdrop-filter: blur(20px);
   }
 
   .story-view-container {
@@ -834,7 +124,6 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
   }
 
   .stories-block {
-    // ЖЕСТКИЕ ПАРАМЕТРЫ ИЗ ПРИМЕРА
     width: 430px;
     height: 765px;
     background: #000;
@@ -856,11 +145,10 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
     img, video {
       width: 100%;
       height: 100%;
-      object-fit: contain; // Чтобы белье на фото было видно полностью
+      object-fit: contain;
     }
   }
 
-  // СТИЛИ КНОПОК ИЗ ТВОЕГО ПРИМЕРА
   .buttons-container {
     position: absolute;
     z-index: 1001;
@@ -898,12 +186,12 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
 }
 
 .story-view {
-  position: fixed !important; // Обязательно fixed
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 100000 !important; // Больше чем 9999 в глобальных стилях
+  z-index: 100000 !important;
   backdrop-filter: blur(20px);
   background: rgba(0, 0, 0, 0.8);
   display: flex;
@@ -912,8 +200,8 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
 
   .stories-block {
     width: 100%;
-    max-width: 430px; // Ширина телефона
-    height: 765px;    // Та самая высота из твоего примера
+    max-width: 430px;
+    height: 765px;
     position: relative;
     z-index: 1000;
     background: #000;
@@ -937,7 +225,7 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
     img, video {
       width: 100%;
       height: 100%;
-      object-fit: contain; // Гарантирует, что фото белья влезет целиком
+      object-fit: contain;
     }
   }
 
@@ -1097,5 +385,50 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(221, 42, 123, 0.35);
+  }
+}
+
+
+@media (max-width: 768px) {
+  .stories-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .profile {
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .profile-info .name {
+    font-size: 1rem;
+  }
+
+  .subscribe-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+  }
+  .stories-grid {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 0 1rem 1rem;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .story-item .ring {
+    width: 64px;
+    height: 64px;
   }
 }
