@@ -16,13 +16,13 @@
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
-          <img [src]="mainImage" alt="Product Image"/>
+          <img [src]="mainImage" [alt]="(product() | localizedName) + ' ' + (product()?.brandAlias || 'Secret Room') + ' Moldova'"/>
         </div>
         @defer {
           <div class="thumbnails">
             @for (image of product()!.productImagesWebStore; track image) {
               <img src="{{image.imageUrl}}"
-                   alt="Product Image"
+                   [alt]="(product() | localizedName) + ' ' + (product()?.brandAlias || 'Secret Room') + ' - ' + ($index + 1)"
                    loading="lazy"
                    [ngClass]="{'active': mainImage === image.imageUrl}"
                    (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"

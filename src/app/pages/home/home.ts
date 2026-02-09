@@ -23,7 +23,7 @@ import {Language} from '../../@core/services/language';
     Sales,
     Categories,
     InstagramFeed,
-    AsyncPipe,
+    AsyncPipe
   ],
   providers: [ProductService],
   templateUrl: './home.html',
