@@ -11,7 +11,7 @@ import {GetResponse} from '../../entities/get-response';
 export class CategoryService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl + "web-categories";
-  private previewUrl = 'https://api-sr.solterprise.com/api/web-categories/parents/product-preview'
+  private previewUrl = this.apiUrl + '/parents/product-preview';
 
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.apiUrl + '/hierarchy/active');

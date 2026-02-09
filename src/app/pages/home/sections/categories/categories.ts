@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
@@ -18,7 +18,12 @@ export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
 
   currentLanguage = this.languageService.currentLanguage;
-  categories = signal<any[]>([]);
+  private rawCategories = signal<any[]>([]);
+
+  // Filter out categories with no products
+  categories = computed(() =>
+    this.rawCategories().filter(c => c.products?.length > 0)
+  );
 
   currentIndex = 0;
   translateX = 0;
@@ -27,7 +32,7 @@ export class Categories implements OnInit {
 
   ngOnInit() {
     this.categoryService.getCategoriesWithPreview().subscribe(data => {
-      this.categories.set(data);
+      this.rawCategories.set(data);
     });
   }
 
@@ -55,7 +60,6 @@ export class Categories implements OnInit {
 
   getCollageImages(category: any): string[] {
     if (!category.products || category.products.length === 0) return [];
-    // Take up to 3 images for collage
     return category.products.slice(0, 3).map((p: any) => p.imageURL);
   }
 }
