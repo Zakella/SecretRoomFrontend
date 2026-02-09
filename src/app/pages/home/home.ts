@@ -72,43 +72,8 @@ export class Home implements OnInit {
     this.metaService.updateImage("https://secretroom.md/assets/images/logo/secretroom.png");
     this.metaService.updateUrl("https://secretroom.md/");
 
-    this.metaService.setJsonLd({
-      "@context": "https://schema.org",
-      "@type": "Store",
-      "name": "Secret Room",
-      "image": "https://secretroom.md/assets/images/logo/secretroom.png",
-      "telephone": "+37369999999",
-      "url": "https://secretroom.md/",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Strada Arborilor 21",
-        "addressLocality": "Chișinău",
-        "postalCode": "2025",
-        "addressCountry": "MD"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 47.0096,
-        "longitude": 28.8439
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday"
-        ],
-        "opens": "10:00",
-        "closes": "22:00"
-      },
-      "sameAs": [
-        "https://www.instagram.com/secretroom.md/",
-        "https://www.facebook.com/secretroom.md"
-      ]
-    });
+    // Добавляем разметку Organization и WebSite
+    this.metaService.setOrganizationJsonLd();
+    this.metaService.setWebSiteJsonLd();
   }
 }

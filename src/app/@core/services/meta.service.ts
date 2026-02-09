@@ -154,6 +154,78 @@ export class MetaService {
     });
   }
 
+  setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
+    const itemListElement = breadcrumbs.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.label,
+      "item": `https://secretroom.md${item.url}`
+    }));
+
+    this.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": itemListElement
+    });
+  }
+
+  setOrganizationJsonLd() {
+    this.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Secret Room",
+      "url": "https://secretroom.md",
+      "logo": "https://secretroom.md/assets/images/logo/secretroom.png",
+      "sameAs": [
+        "https://www.instagram.com/secretroom.md/",
+        "https://www.facebook.com/secretroom.md"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+37369999999",
+        "contactType": "customer service",
+        "areaServed": "MD",
+        "availableLanguage": ["ro", "ru"]
+      },
+      "location": [
+        {
+          "@type": "Store",
+          "name": "Secret Room - Atrium",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Strada Albișoara 4, CC Atrium, et. 2, but. 2018",
+            "addressLocality": "Chișinău",
+            "addressCountry": "MD"
+          }
+        },
+        {
+          "@type": "Store",
+          "name": "Secret Room - Eminescu",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Strada Mihai Eminescu 56",
+            "addressLocality": "Chișinău",
+            "addressCountry": "MD"
+          }
+        }
+      ]
+    });
+  }
+
+  setWebSiteJsonLd() {
+    this.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Secret Room",
+      "url": "https://secretroom.md",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://secretroom.md/ro/search/{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    });
+  }
+
   setJsonLd(data: any) {
     if (isPlatformBrowser(this.platformId)) {
       let script = this.document.querySelector('script[type="application/ld+json"]');
