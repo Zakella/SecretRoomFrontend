@@ -48,7 +48,7 @@
                    (click)="navToProduct(cartItem.product.id);
                      $event.stopPropagation()"/>
               <div class="item-info">
-                <p class="title">{{ cartItem.product.name }}</p>
+                <p class="title">{{ cartItem.product | localizedName }}</p>
                 <div class="qty-controls">
                   <p-inputNumber [showButtons]="true"
                                  buttonLayout="horizontal"

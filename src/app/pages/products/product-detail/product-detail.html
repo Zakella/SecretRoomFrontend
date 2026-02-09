@@ -3,7 +3,7 @@
     <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
     </button>
-    <div class="product-title-mobile">{{ product()?.name }}</div>
+    <div class="product-title-mobile">{{ product() | localizedName }}</div>
     <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
       <i class="pi pi-shopping-bag"></i>
     </button>
@@ -20,7 +20,7 @@
         </div>
         @defer {
           <div class="thumbnails">
-            @for (image of product()!.productImagesWebStore; let i = $index; track image) {
+            @for (image of product()!.productImagesWebStore; track image) {
               <img src="{{image.imageUrl}}"
                    alt="Product Image"
                    loading="lazy"
@@ -35,7 +35,7 @@
         <div class="product-info">
           <div class="product-header">
             <span class="brand">{{ product()?.brandAlias }}</span>
-            <h1>{{ product()?.name }}</h1>
+            <h1>{{ product() | localizedName }}</h1>
 
             <div class="price-block" [class.has-discount]="hasDiscount()">
               @if (hasDiscount()) {
@@ -52,8 +52,8 @@
             }
           </div>
 
-          @if (getDescription()) {
-            <p class="description">{{ getDescription() }}</p>
+          @if (product() | localizedName:'description') {
+            <div class="description" [innerHTML]="product() | localizedName:'description'"></div>
           }
 
           @if (product()?.size) {

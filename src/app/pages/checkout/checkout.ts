@@ -19,6 +19,7 @@ import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {PurchaseService} from '../../@core/api/purchase';
 import {Purchase} from '../../entities/purchase';
 
@@ -34,7 +35,8 @@ type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
     ReactiveFormsModule,
     TranslocoPipe,
     InputNumber,
-    RouterLink
+    RouterLink,
+    LocalizedNamePipe
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
