@@ -177,12 +177,12 @@
   }
 }
 
-.cart-icon {
+.cart-icon, .fav-icon {
   position: relative;
   display: inline-block;
 }
 
-.cart-badge {
+.cart-badge, .fav-badge {
   @include flex-position(center);
   position: absolute;
   top: -6px;
@@ -373,7 +373,9 @@
   transform: translateY(0);
   opacity: 1;
   height: auto;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 101;
 
   &.hidden {
     transform: translateY(-100%);
@@ -381,6 +383,7 @@
     height: 0;
     padding-top: 0;
     padding-bottom: 0;
+    overflow: hidden;
   }
 
   .logo {

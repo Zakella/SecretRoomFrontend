@@ -7,12 +7,12 @@
     }
 
     <div class="product-image-container">
-      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product()?.name" class="product-image"/>
+      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product() | localizedName" class="product-image"/>
     </div>
 
 
     <div class="product-info">
-      <h3 class="product-name">{{product()?.name}}</h3>
+      <h3 class="product-name">{{product() | localizedName}}</h3>
       <p class="product-description">Lorem ipsum dolor sit.</p>
       <p class="product-price">{{ price() }} MDL </p>
 
@@ -42,14 +42,14 @@
       </div>
     }
 
-    <button class="wishlist-btn" (click)="$event.stopPropagation()">
-      <i class="ri-heart-line"></i>
+    <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">
+      <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
     <div class="img-container" (click)="navToProduct()">
-      <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
+      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img"/>
       @if (hoverImageUrl()) {
-        <img [src]="hoverImageUrl()" [alt]="product()?.name" class="hover-img"/>
+        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img"/>
       }
     </div>
   </div>
@@ -60,7 +60,7 @@
       <span>
         {{ product()?.brandAlias }}</span>
     </h2>
-    <h3 class="name">{{ product()?.name }}</h3>
+    <h3 class="name">{{ product() | localizedName }}</h3>
 
     <div class="price-block" [class.has-discount]="hasDiscount()">
       @if (hasDiscount() && oldPrice()) {

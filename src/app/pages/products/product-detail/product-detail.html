@@ -3,9 +3,14 @@
     <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
     </button>
-    <div class="product-title-mobile">{{ product()?.name }}</div>
+    <div class="product-title-mobile">{{ product() | localizedName }}</div>
     <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
       <i class="pi pi-shopping-bag"></i>
+    </button>
+
+    <button class="back-btn-desktop" (click)="navigateToList()">
+      <i class="ri-arrow-left-line"></i>
+      <span>{{ 'Back' | transloco }}</span>
     </button>
 
     <div class="product-grid">
@@ -15,11 +20,11 @@
         </div>
         @defer {
           <div class="thumbnails">
-            @for (image of product()!.productImagesWebStore; let i = $index; track image) {
+            @for (image of product()!.productImagesWebStore; track image) {
               <img src="{{image.imageUrl}}"
                    alt="Product Image"
                    loading="lazy"
-                   [ngClass]="{'border-pink': mainImage === image.imageUrl}"
+                   [ngClass]="{'active': mainImage === image.imageUrl}"
                    (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
               />
             }
@@ -30,65 +35,56 @@
         <div class="product-info">
           <div class="product-header">
             <span class="brand">{{ product()?.brandAlias }}</span>
-            <h1>{{ product()?.name }}</h1>
-            <div class="price">{{ product()?.price }} MDL</div>
+            <h1>{{ product() | localizedName }}</h1>
+
+            <div class="price-block" [class.has-discount]="hasDiscount()">
+              @if (hasDiscount()) {
+                <span class="old-price">{{ product()?.oldPrice }} MDL</span>
+              }
+              <p class="price" [class.sale-price]="hasDiscount()">
+                <span class="amount">{{ product()?.price }}</span>
+                <span class="currency">MDL</span>
+              </p>
+            </div>
+
+            @if (product()?.article) {
+              <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>
+            }
           </div>
 
-          <p class="description">
-            {{ product()?.description }}
-          </p>
+          @if (product() | localizedName:'description') {
+            <div class="description" [innerHTML]="product() | localizedName:'description'"></div>
+          }
 
-          <ul class="features">
-            <li>✓ Веган и cruelty-free</li>
-            <li>✓ Без силиконов и парабенов</li>
-            <li>✓ Подходит для беременных</li>
-          </ul>
+          @if (product()?.size) {
+            <span class="article">{{ 'Size' | transloco }}: {{ product()?.size }}</span>
+          }
 
           <div class="actions">
             <button class="add-to-bag-btn" (click)="addProductInCart()">
-              {{ 'Add to Cart' | transloco }}
+              <i class="ri-shopping-bag-line"></i>
+              <span>{{ 'Add to Cart' | transloco }}</span>
             </button>
 
             <div class="secondary-actions">
-              <button class="btn-secondary" (click)="addToWishlist()">
-                <i class="pi pi-heart"></i>
-                В избранное
+              <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()">
+                <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
+                {{ isFavorite() ? ('InFavorites' | transloco) : ('AddToFavorites' | transloco) }}
               </button>
 
               <button class="btn-secondary" (click)="shareModal.open()">
-                <i class="pi pi-share-alt"></i>
-                Поделиться
+                <i class="ri-share-line"></i>
+                {{ 'Share' | transloco }}
               </button>
             </div>
           </div>
         </div>
     </div>
 
-    <div class="product-tabs">
-      <div class="tabs">
-        @for (tab of tabs; track $index) {
-          <button [class.active]="tab.key === selectedTab" (click)="selectedTab = tab.key">
-            {{ tab.label }}
-          </button>
-        }
-      </div>
-
-      <div class="tab-content">
-        @if (selectedTab === 'description') {
-          <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
-        } @else if (selectedTab === 'ingredients') {
-          <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
-        } @else if (selectedTab === 'reviews') {
-          <app-reviews/>
-        }
-      </div>
-    </div>
     <div class="related-products">
       <h2>{{ 'Recommendation' | transloco }}</h2>
-      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="addToWishlist()"/>
+      <recommended-products [productId]="product()?.id || ''" (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
     </div>
   </section>
 }
 <app-share-modal #shareModal/>
-
-

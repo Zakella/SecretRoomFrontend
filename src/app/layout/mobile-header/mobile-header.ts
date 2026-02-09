@@ -2,6 +2,7 @@ import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {Language} from '../../@core/services/language';
+import {FavoritesService} from '../../@core/services/favorites';
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
@@ -16,6 +17,7 @@ import {UpperCasePipe} from '@angular/common';
 export class MobileHeader {
   private cartService = inject(CartUi);
   private langService = inject(Language);
+  public favoritesService = inject(FavoritesService);
 
   cartCount = this.cartService.cartCount;
   activeLang = this.langService.currentLanguage;

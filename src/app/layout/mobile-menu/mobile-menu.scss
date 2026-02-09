@@ -262,6 +262,132 @@
   }
 }
 
+// Mobile Search Results
+.mobile-search-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.mobile-search-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--gold, #b8956c);
+  border-radius: 50%;
+  animation: mobileSpin 0.6s linear infinite;
+}
+
+@keyframes mobileSpin {
+  to { transform: rotate(360deg); }
+}
+
+.mobile-search-empty {
+  padding: 32px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.mobile-search-results {
+  margin-bottom: 24px;
+}
+
+.mobile-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+
+  &:active {
+    background: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.mobile-search-img {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f5f5f5;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.mobile-search-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mobile-search-brand {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mobile-search-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-search-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-search-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold, #b8956c);
+}
+
+.mobile-search-old-price {
+  font-size: 12px;
+  color: #ccc;
+  text-decoration: line-through;
+}
+
+.mobile-search-show-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--gold, #b8956c);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  i {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  &:active {
+    background: #faf8f5;
+  }
+}
+
 // Brands Grid (Vertical)
 .brands-grid {
   display: flex;

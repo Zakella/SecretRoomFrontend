@@ -39,11 +39,11 @@
               <div class="order-item">
                 <div class="item-image">
                   @if (item.product.imageURL) {
-                    <img [src]="item.product.imageURL" [alt]="item.product.name">
+                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
                   }
                 </div>
                 <div class="item-details">
-                  <span class="item-name">{{ item.product.name }}</span>
+                  <span class="item-name">{{ item.product | localizedName }}</span>
                   @if (item.sizeType) {
                     <span class="item-size">{{ 'Size' | transloco }}: {{ item.sizeType }}</span>
                   }

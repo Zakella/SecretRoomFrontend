@@ -1,0 +1,35 @@
+<div class="search-dropdown">
+  @if (loading()) {
+    <div class="search-dropdown__loading">
+      <div class="search-dropdown__spinner"></div>
+    </div>
+  } @else if (suggestions().length === 0) {
+    <div class="search-dropdown__empty">
+      {{ 'NothingFound' | transloco }}
+    </div>
+  } @else {
+    <div class="search-dropdown__list">
+      @for (product of suggestions(); track product.id) {
+        <div class="search-dropdown__item" (click)="goToProduct(product)">
+          <div class="search-dropdown__img">
+            <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product | localizedName"/>
+          </div>
+          <div class="search-dropdown__info">
+            <span class="search-dropdown__brand">{{ product.brandAlias }}</span>
+            <span class="search-dropdown__name">{{ product | localizedName }}</span>
+            <div class="search-dropdown__price-row">
+              <span class="search-dropdown__price">{{ product.price }} MDL</span>
+              @if (product.oldPrice > product.price!) {
+                <span class="search-dropdown__old-price">{{ product.oldPrice }} MDL</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    <button class="search-dropdown__show-all" (click)="showAll()">
+      {{ 'ShowAllResults' | transloco }}
+      <i class="ri-arrow-right-line"></i>
+    </button>
+  }
+</div>

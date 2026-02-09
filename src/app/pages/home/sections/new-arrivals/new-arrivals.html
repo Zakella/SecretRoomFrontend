@@ -33,14 +33,14 @@
                 <div class="img-container">
                   <img
                     [src]="getProductImage(item)"
-                    [alt]="item.name"
+                    [alt]="item | localizedName"
                     class="main-img"
                     (error)="onImageError($event)"
                   />
                   @if (getHoverImage(item)) {
                     <img
                       [src]="getHoverImage(item)"
-                      [alt]="item.name"
+                      [alt]="item | localizedName"
                       class="hover-img"
                     />
                   }
@@ -48,7 +48,7 @@
               </div>
               <div class="meta">
                 <span class="brand">{{ item.brandAlias }}</span>
-                <h3 class="name">{{ item.name }}</h3>
+                <h3 class="name">{{ item | localizedName }}</h3>
                 <div class="price-block">
                   @if (hasDiscount(item)) {
                     <span class="old-price">{{ item.oldPrice }} MDL</span>

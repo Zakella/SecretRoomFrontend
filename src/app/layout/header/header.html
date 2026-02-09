@@ -16,6 +16,12 @@
       </div>
       <div class="nav-right">
         <div class="icons">
+          <a class="icon fav-icon" [routerLink]="['/', activeLang(), 'favorites']">
+            <i class="ri-heart-line"></i>
+            @if (favoritesService.count() > 0) {
+              <span class="fav-badge">{{ favoritesService.count() }}</span>
+            }
+          </a>
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
           </a>
@@ -49,12 +55,16 @@
           <input
             type="text"
             maxlength="60"
+            (input)="onSearchInput($event)"
             (keyup.enter)="onSearch()"
             [(ngModel)]="query"
             [placeholder]="'Search' | transloco"
             aria-label="Поиск по продуктам"
           />
           <i class="ri-search-line" aria-hidden="true"></i>
+          @if (searchService.showDropdown()) {
+            <search-dropdown (closed)="closeSearchDropdown()"/>
+          }
         </div>
       </div>
     </div>
@@ -75,7 +85,10 @@
       <div class="nav-inner">
         @if (headerItems()) {
           @for (category of headerItems(); track category.id) {
-            <a class="category-text" [class.active]="activeCategory()?.id === category.id" (mouseenter)="showDropdown(category)">
+            <a class="category-text"
+               [class.active]="activeCategory()?.id === category.id"
+               (mouseenter)="showDropdown(category)"
+               (click)="goToCategory(category)">
               {{ category.name }}
             </a>
           }
@@ -91,16 +104,17 @@
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {
                 <a class="mega-dropdown__item"
                    [style.animation-delay]="i * 0.05 + 's'"
-                   [routerLink]="['/', activeLang(), 'catalog', sub.id]">
+                   [routerLink]="['/', activeLang(), 'catalog', sub.id]"
+                   (click)="closeDropdown()">
                   {{ sub?.name }}
                 </a>
               }
             </div>
 
-      <!--      <a class="mega-dropdown__all" [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.id!]">
-              Смотреть всё
+            <a class="mega-dropdown__all" (click)="goToCategory(activeCategory()!)">
+              {{ 'ViewAll' | transloco }}
               <i class="ri-arrow-right-line"></i>
-            </a>-->
+            </a>
           </div>
         </div>
       }

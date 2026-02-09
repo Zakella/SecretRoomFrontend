@@ -19,6 +19,9 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {filter, map} from 'rxjs/operators';
 import {isPlatformBrowser, NgStyle, NgTemplateOutlet, UpperCasePipe} from '@angular/common';
 import {BrandService} from '../../@core/api/brand';
+import {SearchService} from '../../@core/services/search';
+import {SearchDropdown} from './search-dropdown/search-dropdown';
+import {FavoritesService} from '../../@core/services/favorites';
 
 
 @Component({
@@ -30,6 +33,7 @@ import {BrandService} from '../../@core/api/brand';
     UpperCasePipe,
     NgStyle,
     NgTemplateOutlet,
+    SearchDropdown,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -41,6 +45,8 @@ export class Header implements OnInit {
   private router = inject(Router);
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
+  public searchService = inject(SearchService);
+  public favoritesService = inject(FavoritesService);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ro', 'ru'];
@@ -58,12 +64,13 @@ export class Header implements OnInit {
       filter(event => event instanceof NavigationEnd),
       map((event: NavigationEnd) => event.urlAfterRedirects)
     ),
-    { initialValue: this.router.url }
+    {initialValue: this.router.url}
   );
 
   isCheckoutPage = computed(() => this.currentUrl()?.includes('/checkout'));
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  }
 
   ngOnInit(): void {
     this.getBrands();
@@ -92,15 +99,43 @@ export class Header implements OnInit {
     this.langService.setLanguage(lang);
   }
 
+  goToCategory(category: Category) {
+    this.closeDropdown();
+    this.router.navigate(['/', this.activeLang(), 'catalog', category.id]);
+  }
+
+  onSearchInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.query.set(value);
+    this.searchService.search(value);
+  }
+
   onSearch() {
     const q = this.query().trim();
     if (!q) return;
-
+    this.searchService.clear();
     this.router.navigate([this.activeLang(), 'search', q]);
   }
 
+  closeSearchDropdown() {
+    this.searchService.showDropdown.set(false);
+  }
 
-  getBrands(){
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-bar') && !target.closest('search-dropdown')) {
+      this.searchService.showDropdown.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.searchService.showDropdown.set(false);
+  }
+
+
+  getBrands() {
     this.brandService.gerAllBrands().subscribe(brands => {
       this.brands.set(brands);
       this.activeBrand.set(brands[0]);
@@ -120,11 +155,17 @@ export class Header implements OnInit {
     });
   }
 
-  goToBrandList(brand :Brand){
+  goToBrandList(brand: Brand) {
     this.activeBrand.set(brand);
     this.brandService.brand.set(brand.brand)
     this.router.navigate([this.activeLang(), 'catalog', 'brand']);
 
+  }
+
+  goToCategoryList() {
+  }
+
+  goToSubCategory() {
   }
 
 
@@ -134,5 +175,5 @@ export class Header implements OnInit {
       const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
       this.isHidden = currentScroll > 0;
     }
-    }
+  }
 }

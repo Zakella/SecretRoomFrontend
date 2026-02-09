@@ -20,6 +20,7 @@ import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../../@core/services/language';
+import {LocalizedNamePipe} from '../../pipes/localized-name.pipe';
 import {Shipping} from '../../../@core/api/shipping';
 import {ShippingOption} from '../../../entities/shipping-options';
 
@@ -30,6 +31,7 @@ import {ShippingOption} from '../../../entities/shipping-options';
     NgTemplateOutlet,
     TranslocoPipe,
     InputNumber,
+    LocalizedNamePipe,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
