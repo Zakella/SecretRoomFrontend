@@ -46,8 +46,12 @@
 
       <div class="media-content">
         @if (isVideo(currentPost)) {
-          <video [src]="currentPost.mediaUrl" autoplay muted playsinline (ended)="next()" [muted]="isMuted()"
-          ></video>
+          <video [src]="currentPost.mediaUrl"
+                 autoplay
+                 muted
+                 playsinline
+                 (ended)="next()"
+                 [muted]="isMuted()"></video>
           <button class="mute-control" (click)="toggleMute($event)">
             @if (isMuted()) {
               <i class="ri-volume-mute-line"></i>
