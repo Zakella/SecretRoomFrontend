@@ -98,6 +98,11 @@ export class Header implements OnInit {
     this.langService.setLanguage(lang);
   }
 
+  goToCategory(category: Category) {
+    this.closeDropdown();
+    this.router.navigate(['/', this.activeLang(), 'catalog', category.id]);
+  }
+
   onSearchInput(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.query.set(value);

@@ -15,12 +15,7 @@ export class ProductService {
   private http = inject(HttpClient);
   private baseUrL = environment.apiUrl + "products";
 
-  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number): Observable<GetResponse> {
-    let params = new HttpParams()
-      .set('page', thePage.toString())
-      .set('size', thePageSize.toString());
-    return this.http.get<GetResponse>(`${this.baseUrL}/${categoryId}`, {params: params})
-  }
+
 
   getAllProductsByBrand(brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
     let params = new HttpParams()
