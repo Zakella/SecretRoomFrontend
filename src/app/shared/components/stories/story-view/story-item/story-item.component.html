@@ -27,7 +27,7 @@
         <source [src]="stories[0].video + '#t=0.1'" type="video/mp4">
       </video>
     } @else {
-      <img class="story-video" [src]="stories[0].image">
+      <img class="story-video" [src]="stories[0].image" [alt]="author">
     }
   }
 
@@ -48,7 +48,7 @@
 
   <div class="author-info item-z-index">
     <div class="avatar">
-      <img class="avatar-img" [src]="avatar">
+      <img class="avatar-img" [src]="avatar" [alt]="author">
     </div>
 
     <p class="author-name">{{ author }}

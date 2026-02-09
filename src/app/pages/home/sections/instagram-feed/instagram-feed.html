@@ -96,7 +96,7 @@
             playsinline
           ></video>
         } @else {
-          <img [src]="currentPost.mediaUrl" [alt]="currentPost.caption || ''"/>
+          <img [src]="currentPost.mediaUrl" [alt]="currentPost.caption || ''" loading="lazy"/>
         }
       </div>
 

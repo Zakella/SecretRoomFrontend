@@ -1,4 +1,5 @@
 <main>
+  <h1 class="visually-hidden">Secret Room — {{ 'home.seoH1' | transloco }}</h1>
   <div class="image-wrapper">
     <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="true" [controls]="false"/>
   </div>

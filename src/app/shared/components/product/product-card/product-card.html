@@ -47,9 +47,9 @@
     </button>
 
     <div class="img-container" (click)="navToProduct()">
-      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img"/>
+      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
       @if (hoverImageUrl()) {
-        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img"/>
+        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy"/>
       }
     </div>
   </div>

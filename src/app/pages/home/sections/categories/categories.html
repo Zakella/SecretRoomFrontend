@@ -19,7 +19,7 @@
           <div class="collage" [class]="'collage-' + getCollageImages(item).length">
             @for (img of getCollageImages(item); track img; let i = $index) {
               <div class="collage-cell" [class]="'cell-' + i">
-                <img [src]="img" [alt]="item.name"/>
+                <img [src]="img" [alt]="item.name" loading="lazy"/>
               </div>
             }
           </div>

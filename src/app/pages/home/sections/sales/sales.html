@@ -18,12 +18,14 @@
               [src]="getProductImage(product)"
               [alt]="product | localizedName"
               class="main-img"
+              loading="lazy"
             />
             @if (getHoverImage(product)) {
               <img
                 [src]="getHoverImage(product)"
                 [alt]="product | localizedName"
                 class="hover-img"
+                loading="lazy"
               />
             }
           </div>

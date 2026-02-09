@@ -1,4 +1,14 @@
 <div appFadeUp class="catalog-page">
+  <h1 class="visually-hidden">
+    @if (brandAlias() || brandName()) {
+      {{ brandAlias() || brandName() }}
+    } @else if (categoryName()) {
+      {{ categoryName() }}
+    } @else {
+      Catalog
+    }
+    — Secret Room Moldova
+  </h1>
   <div class="product-list-panel">
     <product-list [products]="products()"/>
   </div>

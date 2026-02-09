@@ -35,6 +35,7 @@
                     [src]="getProductImage(item)"
                     [alt]="item | localizedName"
                     class="main-img"
+                    loading="lazy"
                     (error)="onImageError($event)"
                   />
                   @if (getHoverImage(item)) {
@@ -42,6 +43,7 @@
                       [src]="getHoverImage(item)"
                       [alt]="item | localizedName"
                       class="hover-img"
+                      loading="lazy"
                     />
                   }
                 </div>

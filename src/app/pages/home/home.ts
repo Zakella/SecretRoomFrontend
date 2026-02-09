@@ -14,6 +14,7 @@ import {InstagramFeed} from './sections/instagram-feed/instagram-feed';
 import {HeroService} from '../../@core/api/hero';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +27,8 @@ import {Language} from '../../@core/services/language';
     Sales,
     Categories,
     InstagramFeed,
-    AsyncPipe
+    AsyncPipe,
+    TranslocoPipe
   ],
   providers: [ProductService],
   templateUrl: './home.html',

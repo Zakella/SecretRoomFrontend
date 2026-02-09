@@ -10,7 +10,7 @@
     <ng-template let-product #item>
       <div class="carousel-item">
         <div class="image-container">
-          <img [src]="product.imageURL" [alt]="product | localizedName"/>
+          <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
         </div>
         <div class="product-name">{{ product | localizedName }}</div>
         <div class="product-footer">
