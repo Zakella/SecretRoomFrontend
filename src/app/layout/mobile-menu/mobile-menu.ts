@@ -105,7 +105,14 @@ export class MobileMenu  implements OnInit{
   }
 
   goToCategory(category: Category) {
-    this.router.navigate([this.activeLang(), 'catalog', category.slug]);
+    const slug = this.slugify.transform(category.name);
+    const identifier = slug || category.id;
+    this.router.navigate([this.activeLang(), 'catalog', identifier]);
+    this.visible = false;
+  }
+
+  goToStaticCategory(tag: string) {
+    this.router.navigate([this.activeLang(), 'catalog', tag]);
     this.visible = false;
   }
 

@@ -65,6 +65,10 @@ export class Categories implements OnInit {
     this.router.navigate([this.currentLanguage(), 'catalog', identifier]);
   }
 
+  goToStatic(tag: string) {
+    this.router.navigate([this.currentLanguage(), 'catalog', tag]);
+  }
+
   getCollageImages(category: any): string[] {
     if (!category.products || category.products.length === 0) return [];
     return category.products.slice(0, 3).map((p: any) => p.imageURL);

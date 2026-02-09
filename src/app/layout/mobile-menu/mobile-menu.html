@@ -115,20 +115,36 @@
         }
       } @else {
         <!-- Categories (Horizontal Scroll) -->
-        @if (categories().length > 0) {
-          <div class="categories-scroll-container">
-            <div class="categories-scroll">
-              @for (cat of categories(); track cat.id) {
-                <div class="category-item" (click)="goToCategory(cat)">
-                  <div class="cat-icon-circle">
-                    <img [src]="cat.imageUrl || 'assets/images/no-image.png'" [alt]="cat.name" />
-                  </div>
-                  <span class="cat-name">{{ cat.name }}</span>
+        <div class="categories-scroll-container">
+          <div class="categories-scroll">
+            <!-- Static Links -->
+            <div class="category-item" (click)="goToStaticCategory('new-arrivals')">
+              <div class="cat-circle">
+                {{ 'NewArrivals' | transloco }}
+              </div>
+            </div>
+            <div class="category-item" (click)="goToStaticCategory('bestsellers')">
+              <div class="cat-circle">
+                {{ 'BestSellers' | transloco }}
+              </div>
+            </div>
+
+            <!-- Dynamic Categories -->
+            @for (cat of categories(); track cat.id) {
+              <div class="category-item" (click)="goToCategory(cat)">
+                <div class="cat-circle">
+                  {{ cat.name }}
                 </div>
-              }
+              </div>
+            }
+
+            <div class="category-item sale-item" (click)="goToStaticCategory('sales')">
+              <div class="cat-circle">
+                {{ 'Sale' | transloco }}
+              </div>
             </div>
           </div>
-        }
+        </div>
 
         <!-- Brands List (Vertical Grid) -->
         @if (brands().length > 0) {

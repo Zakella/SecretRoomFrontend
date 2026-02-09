@@ -15,7 +15,7 @@ import {Language} from '../../../../@core/services/language';
 
 @Component({
   selector: 'recently-viewed',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe, RouterLink],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, RouterLink],
   templateUrl: './recently-viewed.html',
   styleUrl: './recently-viewed.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

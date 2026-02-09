@@ -14,6 +14,32 @@
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(44, 36, 33, 0.08);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  height: 100%; // Ensure card takes full height of grid cell
+  display: flex;
+  flex-direction: column;
+
+  // --- SALE CARD STYLES ---
+  &.on-sale {
+    // Increase size slightly via scale (does not affect layout flow)
+    transform: scale(1.02);
+    z-index: 1; // Bring to front
+    border: 1px solid rgba(211, 47, 47, 0.1); // Subtle red border
+
+    &:hover {
+      transform: scale(1.05) translateY(-6px);
+      box-shadow: 0 25px 60px rgba(211, 47, 47, 0.15); // Reddish shadow
+    }
+
+    // Removed aspect-ratio change to keep alignment consistent
+    // .image-wrapper {
+    //   aspect-ratio: 4 / 5.2;
+    // }
+
+    .info .price.sale-price {
+      font-size: 1.5rem; // Bigger price
+      font-weight: 700;
+    }
+  }
 
   &:hover {
     transform: translateY(-6px);
@@ -49,6 +75,8 @@
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background: var(--bg-cream);
+    transition: aspect-ratio 0.3s ease;
+    flex-shrink: 0; // Prevent image from shrinking
 
     .img-container {
       height: 100%;
@@ -254,6 +282,9 @@
     text-align: center;
     background: var(--bg-white);
     cursor: pointer;
+    flex-grow: 1; // Allow info to grow to fill height
+    display: flex;
+    flex-direction: column;
 
     @media (max-width: 768px) {
       padding: 14px 10px 6px;
@@ -298,17 +329,17 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       // Фиксированная высота для 2 строк (font-size * line-height * 2)
-      min-height: calc(18px * 1.35 * 2);
+      height: calc(18px * 1.35 * 2); // Changed from min-height to height
 
       @media (max-width: 768px) {
         font-size: 15px;
         margin-bottom: 8px;
-        min-height: calc(15px * 1.35 * 2);
+        height: calc(15px * 1.35 * 2); // Changed from min-height to height
       }
 
       @media (max-width: 480px) {
         font-size: 14px;
-        min-height: calc(14px * 1.35 * 2);
+        height: calc(14px * 1.35 * 2); // Changed from min-height to height
       }
     }
 
@@ -320,7 +351,9 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      margin-top: 4px;
+      margin-top: auto; // Push to bottom of info section
+      min-height: 50px; // Reserve space for price block (old price + new price)
+      justify-content: flex-end; // Align content to bottom
     }
 
     // Старая цена — зачёркнутая
@@ -379,6 +412,7 @@
   .product-info {
     padding: 8px 16px 20px;
     background: var(--bg-white);
+    margin-top: auto; // Push to bottom
 
     @media (max-width: 768px) {
       padding: 6px 10px 14px;

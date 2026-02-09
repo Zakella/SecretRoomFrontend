@@ -12,6 +12,14 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
+      <!-- Static Links (Mobile Only) -->
+      <div class="slide mobile-only" (click)="goToStatic('new-arrivals')">
+        <span class="label">{{ 'NewArrivals' | transloco }}</span>
+      </div>
+      <div class="slide mobile-only" (click)="goToStatic('bestsellers')">
+        <span class="label">{{ 'BestSellers' | transloco }}</span>
+      </div>
+
       @for (item of categories(); track item.categoryId) {
         <div class="slide" (click)="goToCategory(item)">
 
@@ -28,6 +36,10 @@
           <span class="label">{{ currentLanguage() === 'ro' ? item.nameRo : item.nameRu }}</span>
         </div>
       }
+
+      <div class="slide mobile-only sale-slide" (click)="goToStatic('sales')">
+        <span class="label">{{ 'Sale' | transloco }}</span>
+      </div>
     </div>
   </div>
 </section>
