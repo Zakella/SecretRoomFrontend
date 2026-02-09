@@ -70,7 +70,7 @@
     </div>
 
     <div class="brands-row">
-      <nav class="nav-left">
+      <nav class="brands-nav">
         @for (brand of brands(); track brand) {
           <a class="nav-medium-item" [class.active]="activeBrand()=== brand" (click)="goToBrandList(brand)">
             {{ brand.brandAlias }}

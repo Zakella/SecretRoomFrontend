@@ -70,7 +70,7 @@
   "City should be at least 3 characters": "Orașul trebuie să aibă cel puțin 3 caractere",
   "City should contain only letters": "Orașul trebuie să conțină doar litere latină",
   "Phone is required": "Numărul de telefon este obligatoriu",
-  "Phone need to be format 06******* or 07*******": "Telefonul trebuie să fie în format 06******* sau 07*******",
+  "Phone need to be format 06******* sau 07*******": "Telefonul trebuie să fie în format 06******* sau 07*******",
   "Sign up now": "Înregistrează-te acum",
   "User already exists": "Utilizatorul există deja",
   "Password must be at least 8 characters long and contain both letters and numbers": "Parola trebuie să aibă cel puțin 8 caractere și să conțină atât litere latine, cât și cifre.",
@@ -285,5 +285,5 @@
   },
   "NewArrivals": "Noutăți",
   "BestSellers": "Cele mai vândute",
-  "Sale": "Reduceri"
+  "Sale": "Sale"
 }
