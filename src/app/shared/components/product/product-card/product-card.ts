@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CartUi} from '../../cart/services/cart';
@@ -27,9 +27,7 @@ export class ProductCard {
   product = input<Product>();
   readonly imageUrl = input<string>('');
   readonly title = input<string>();
-  readonly brand = input<string>();
   readonly price = input<number>();
-  readonly rating = input<number>(3);
   readonly isBestSeller = input<boolean>(false);
   readonly isNew = input<boolean>(false);
   readonly oldPrice = input<number | null>(null);
@@ -41,6 +39,7 @@ export class ProductCard {
     const current = this.price();
     return old !== null && old > 0 && current !== undefined && old > current;
   }
+
 
   hoverImageUrl(): string | null {
     const images = this.product()?.productImagesWebStore;
