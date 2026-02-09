@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {NgClass} from '@angular/common';
-import {Reviews} from './reviews/reviews';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ShareModal} from '../../../shared/components/modals/share-modal/share-modal';
 import {RecommendedProducts} from '../../../shared/components/product/recommended-products/recommended-products';
 import {Language} from '../../../@core/services/language';
-import {CartUi} from '../../../widgets/cart/services/cart';
+import {CartUi} from '../../../shared/components/cart/services/cart';
 import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
@@ -16,7 +15,7 @@ import {FavoritesService} from '../../../@core/services/favorites';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [Reviews, FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
+  imports: [FadeUp, ShareModal, RecommendedProducts, TranslocoPipe, NgClass],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -28,12 +27,6 @@ export class ProductDetail {
   private langService = inject(Language);
   private cartService = inject(CartUi);
   public favoritesService = inject(FavoritesService);
-  protected selectedTab: string = 'description';
-  protected tabs = [
-    {key: 'description', label: 'Описание'},
-    {key: 'ingredients', label: 'Состав'},
-    {key: 'reviews', label: 'Отзывы (12)'}
-  ];
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
   quantity: number = 1;
@@ -46,23 +39,35 @@ export class ProductDetail {
     this.mainImage = this.product()!.imageURL;
   }
 
+  getDescription(): string {
+    const p = this.product();
+    if (!p) return '';
+    const lang = this.activeLang();
+    if (lang === 'ro' && p.descriptionRo) return p.descriptionRo;
+    if (lang === 'ru' && p.descriptionRu) return p.descriptionRu;
+    return p.description || '';
+  }
+
+  hasDiscount(): boolean {
+    const p = this.product();
+    if (!p) return false;
+    return p.oldPrice > 0 && p.price !== undefined && p.oldPrice > p.price;
+  }
 
   addProductInCart() {
     let cartItem: CartItem;
-    if (this.product()!.productSizes && this.product()!.productSizes!.length > 0) {
-      if (!this.currentSize || this.currentSize === '') {
-        return;
-      }
+    const product = this.product()!;
+    if (product.productSizes && product.productSizes.length > 0) {
+      const sizeType = this.currentSize || product.productSizes.find(s => s.available)?.sizeType || product.productSizes[0].sizeType;
       const size: Size = {
-        sizeType: this.currentSize,
+        sizeType: sizeType,
         available: true
       };
-      cartItem = new CartItem(this.product()!, this.quantity, size);
+      cartItem = new CartItem(product, this.quantity, size);
     } else {
-      cartItem = new CartItem(this.product()!, this.quantity);
+      cartItem = new CartItem(product, this.quantity);
     }
     this.cartService.addToCart(cartItem);
-    this.cartService.visible();
   }
 
   protected toggleWishlist(): void {
@@ -79,5 +84,3 @@ export class ProductDetail {
     return this.router.navigate([this.activeLang(), 'vs']);
   }
 }
-
-

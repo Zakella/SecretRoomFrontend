@@ -1,21 +1,30 @@
-<p-carousel [value]="products!" [numVisible]="3" [numScroll]="1" [circular]="true" [autoplayInterval]="4000">
-  <ng-template let-product #item>
-    <div class="carousel-item">
-      <div class="image-container">
-        <img [src]="product.imageURL" [alt]="product.name"/>
-      </div>
-      <div class="product-name">{{ product.name }}</div>
-      <div class="product-footer">
-        <div class="product-price">{{ product.price + ' MDL' }}</div>
-        <div class="buttons">
-          <button class="vs-btn" (click)="addToWishlistHandler()">
-            <i class="pi pi-heart"></i>
-          </button>
-          <button class="vs-btn" (click)="addToCart()">
-            <i class="pi pi-shopping-cart"></i>
-          </button>
+@if (products().length > 0) {
+  <p-carousel
+    [value]="products()"
+    [numVisible]="products().length < 3 ? products().length : 3"
+    [numScroll]="1"
+    [circular]="products().length > 3"
+    [autoplayInterval]="products().length > 3 ? 4000 : 0"
+    [showNavigators]="products().length > 3"
+    [responsiveOptions]="responsiveOptions!">
+    <ng-template let-product #item>
+      <div class="carousel-item">
+        <div class="image-container">
+          <img [src]="product.imageURL" [alt]="product.name"/>
+        </div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-footer">
+          <div class="product-price">{{ product.price }} MDL</div>
+          <div class="buttons">
+            <button type="button" class="action-btn" [class.active]="isFavorite(product)" (pointerdown)="$event.stopPropagation()" (click)="toggleFavorite(product); $event.stopPropagation()">
+              <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
+            </button>
+            <button type="button" class="action-btn" (pointerdown)="$event.stopPropagation()" (click)="addToCart(product); $event.stopPropagation()">
+              <i class="ri-shopping-bag-line"></i>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </ng-template>
-</p-carousel>
+    </ng-template>
+  </p-carousel>
+}

@@ -20,7 +20,8 @@ export class ProductService {
   getAllProductsByBrand(brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
-      .set('size', thePageSize.toString());
+      .set('size', thePageSize.toString())
+
     return this.http.get<GetResponse>(`${this.baseUrL}/${brand}`, {params: params});
   }
 

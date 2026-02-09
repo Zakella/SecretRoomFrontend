@@ -8,6 +8,11 @@
       <i class="pi pi-shopping-bag"></i>
     </button>
 
+    <button class="back-btn-desktop" (click)="navigateToList()">
+      <i class="ri-arrow-left-line"></i>
+      <span>{{ 'Back' | transloco }}</span>
+    </button>
+
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
@@ -19,7 +24,7 @@
               <img src="{{image.imageUrl}}"
                    alt="Product Image"
                    loading="lazy"
-                   [ngClass]="{'border-pink': mainImage === image.imageUrl}"
+                   [ngClass]="{'active': mainImage === image.imageUrl}"
                    (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
               />
             }
@@ -31,22 +36,34 @@
           <div class="product-header">
             <span class="brand">{{ product()?.brandAlias }}</span>
             <h1>{{ product()?.name }}</h1>
-            <div class="price">{{ product()?.price }} MDL</div>
+
+            <div class="price-block" [class.has-discount]="hasDiscount()">
+              @if (hasDiscount()) {
+                <span class="old-price">{{ product()?.oldPrice }} MDL</span>
+              }
+              <p class="price" [class.sale-price]="hasDiscount()">
+                <span class="amount">{{ product()?.price }}</span>
+                <span class="currency">MDL</span>
+              </p>
+            </div>
+
+            @if (product()?.article) {
+              <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>
+            }
           </div>
 
-          <p class="description">
-            {{ product()?.description }}
-          </p>
+          @if (getDescription()) {
+            <p class="description">{{ getDescription() }}</p>
+          }
 
-          <ul class="features">
-            <li>✓ Веган и cruelty-free</li>
-            <li>✓ Без силиконов и парабенов</li>
-            <li>✓ Подходит для беременных</li>
-          </ul>
+          @if (product()?.size) {
+            <span class="article">{{ 'Size' | transloco }}: {{ product()?.size }}</span>
+          }
 
           <div class="actions">
             <button class="add-to-bag-btn" (click)="addProductInCart()">
-              {{ 'Add to Cart' | transloco }}
+              <i class="ri-shopping-bag-line"></i>
+              <span>{{ 'Add to Cart' | transloco }}</span>
             </button>
 
             <div class="secondary-actions">
@@ -64,31 +81,10 @@
         </div>
     </div>
 
-    <div class="product-tabs">
-      <div class="tabs">
-        @for (tab of tabs; track $index) {
-          <button [class.active]="tab.key === selectedTab" (click)="selectedTab = tab.key">
-            {{ tab.label }}
-          </button>
-        }
-      </div>
-
-      <div class="tab-content">
-        @if (selectedTab === 'description') {
-          <p>Это универсальное масло для лица делает кожу гладкой, сияющей и упругой.</p>
-        } @else if (selectedTab === 'ingredients') {
-          <p>Состав: аргановое масло, шиповниковое масло, витамин E, эфир нероли.</p>
-        } @else if (selectedTab === 'reviews') {
-          <app-reviews/>
-        }
-      </div>
-    </div>
     <div class="related-products">
       <h2>{{ 'Recommendation' | transloco }}</h2>
-      <recommended-products (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
+      <recommended-products [productId]="product()?.id || ''" (addTopBag)="addProductInCart()" (addToWishlist)="toggleWishlist()"/>
     </div>
   </section>
 }
 <app-share-modal #shareModal/>
-
-
