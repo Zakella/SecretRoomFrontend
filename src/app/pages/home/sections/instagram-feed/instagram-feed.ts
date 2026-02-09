@@ -18,10 +18,9 @@ export class InstagramFeed implements OnInit {
   isLoading = signal(true);
   isViewerOpen = signal(false);
   currentIndex = signal(0);
-
-  username = 'secretroom.md';
-  profileUrl = 'https://instagram.com/secretroom.md';
   private platformId = inject(PLATFORM_ID);
+  isMuted = signal<boolean>(false);
+
 
   get currentPost(): InstagramMedia | null {
     return this.posts()[this.currentIndex()] || null;
@@ -91,11 +90,6 @@ export class InstagramFeed implements OnInit {
     return post.thumbnailUrl || post.mediaUrl;
   }
 
-  formatNumber(num: number | null): string {
-    if (!num) return '0';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toString();
-  }
 
   markViewed(postId: string) {
     this.viewedIds.update(set => {
@@ -117,4 +111,9 @@ export class InstagramFeed implements OnInit {
     return this.viewedIds().has(id);
   }
 
+
+  toggleMute(event: Event) {
+    event.stopPropagation();
+    this.isMuted.update(v => !v);
+  }
 }

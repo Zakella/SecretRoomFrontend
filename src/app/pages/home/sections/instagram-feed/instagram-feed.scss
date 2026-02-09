@@ -1014,3 +1014,88 @@ $story-gradient: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5
     &.viewed .ring { background: #ccc; }
   }
 }
+
+
+
+
+.mute-control {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 101;
+
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s;
+
+  i {
+    font-size: 20px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+
+
+.stories-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15rem;
+  margin-bottom: 2rem;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.profile-info {
+  .name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333!important;
+  }
+
+}
+.subscribe-btn {
+  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(221, 42, 123, 0.35);
+  }
+}

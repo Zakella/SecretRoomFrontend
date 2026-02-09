@@ -1,3 +1,16 @@
+<div class="stories-header">
+  <div class="profile">
+    <img src="assets/images/demo/slider1.jpeg" alt="MoonGlow" class="avatar" />
+    <div class="profile-info">
+      <h2 class="name">secret_room.moldova</h2>
+    </div>
+  </div>
+
+  <button class="subscribe-btn">
+    <i class="ri-instagram-line"></i>
+    Подписаться!
+  </button>
+</div>
 <section class="instagram-section">
   <div class="stories-grid">
     @for (post of posts(); track post.id; let i = $index) {
@@ -29,7 +42,15 @@
 
       <div class="media-content">
         @if (isVideo(currentPost)) {
-          <video [src]="currentPost.mediaUrl" autoplay muted playsinline loop></video>
+          <video [src]="currentPost.mediaUrl" autoplay muted playsinline loop [muted]="isMuted()"
+          ></video>
+          <button class="mute-control" (click)="toggleMute($event)">
+            @if (isMuted()) {
+              <i class="ri-volume-mute-line"></i>
+            } @else {
+              <i class="ri-volume-up-line"></i>
+            }
+          </button>
         } @else {
           <img [src]="currentPost.mediaUrl" />
         }
