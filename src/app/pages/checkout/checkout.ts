@@ -24,6 +24,7 @@ import {PurchaseService} from '../../@core/api/purchase';
 import {Purchase} from '../../entities/purchase';
 import {ProductService} from '../../@core/api/product';
 import {MessageService} from 'primeng/api';
+import {GoogleAnalytics} from '../../@core/services/google-analytics';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -74,6 +75,7 @@ export class Checkout implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   private translocoService = inject(TranslocoService);
+  private ga = inject(GoogleAnalytics);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -91,6 +93,7 @@ export class Checkout implements OnInit, OnDestroy {
     this.loadCart();
     this.subscribeToCartChanges();
     this.validateCart();
+    this.trackBeginCheckout();
   }
 
   ngOnDestroy(): void {
@@ -416,5 +419,13 @@ export class Checkout implements OnInit, OnDestroy {
   retryLoadShipping(): void {
     this.shippingError.set(null);
     this.loadShippingOptions();
+  }
+
+  private trackBeginCheckout() {
+    this.ga.send({
+      event: 'begin_checkout',
+      category: 'ecommerce',
+      value: this.totalAmount
+    });
   }
 }

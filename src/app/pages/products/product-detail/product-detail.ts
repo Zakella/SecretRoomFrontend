@@ -15,6 +15,7 @@ import {FavoritesService} from '../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Slugify} from '../../../@core/services/slugify';
+import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 
 @Component({
   selector: 'app-product-detail',
@@ -32,6 +33,7 @@ export class ProductDetail {
   private metaService = inject(MetaService);
   private slugify = inject(Slugify);
   private location = inject(Location);
+  private ga = inject(GoogleAnalytics);
   public favoritesService = inject(FavoritesService);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
@@ -44,6 +46,7 @@ export class ProductDetail {
     this.product.set(resolvedProduct);
     if (resolvedProduct) {
       this.mainImage = resolvedProduct.imageURL;
+      this.trackViewItem(resolvedProduct);
     }
 
     effect(() => {
@@ -75,6 +78,7 @@ export class ProductDetail {
       cartItem = new CartItem(product, this.quantity);
     }
     this.cartService.addToCart(cartItem);
+    this.trackAddToCart(product);
   }
 
   protected toggleWishlist(): void {
@@ -89,5 +93,23 @@ export class ProductDetail {
 
   protected navigateToList() {
     this.location.back();
+  }
+
+  private trackViewItem(product: Product) {
+    this.ga.send({
+      event: 'view_item',
+      category: 'ecommerce',
+      label: product.name,
+      value: product.price
+    });
+  }
+
+  private trackAddToCart(product: Product) {
+    this.ga.send({
+      event: 'add_to_cart',
+      category: 'ecommerce',
+      label: product.name,
+      value: product.price
+    });
   }
 }

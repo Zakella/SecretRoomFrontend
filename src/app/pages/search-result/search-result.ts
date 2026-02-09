@@ -6,6 +6,7 @@ import {ProductService} from '../../@core/api/product';
 import {ProductList} from '../../shared/components/product/product-list/product-list';
 import {Product} from '../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {GoogleAnalytics} from '../../@core/services/google-analytics';
 
 @Component({
   selector: 'app-search-result',
@@ -21,6 +22,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 export class SearchResult implements OnInit {
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
+  private ga = inject(GoogleAnalytics);
 
   viewMode: 'grid' | 'list' = 'grid';
   products = signal<Product[]>([]);
@@ -39,6 +41,7 @@ export class SearchResult implements OnInit {
       this.products.set([]);
       if (q.trim()) {
         this.loadProducts();
+        this.trackSearch(q);
       }
     });
   }
@@ -65,5 +68,13 @@ export class SearchResult implements OnInit {
   loadMore() {
     this.page++;
     this.loadProducts();
+  }
+
+  private trackSearch(query: string) {
+    this.ga.send({
+      event: 'search',
+      category: 'engagement',
+      label: query
+    });
   }
 }
