@@ -22,6 +22,7 @@ import {BrandService} from '../../@core/api/brand';
 import {SearchService} from '../../@core/services/search';
 import {SearchDropdown} from './search-dropdown/search-dropdown';
 import {FavoritesService} from '../../@core/services/favorites';
+import {Slugify} from '../../@core/services/slugify';
 
 
 @Component({
@@ -47,6 +48,7 @@ export class Header implements OnInit {
   private brandService = inject(BrandService);
   public searchService = inject(SearchService);
   public favoritesService = inject(FavoritesService);
+  public slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
   public languages = ['ro', 'ru'];
@@ -100,7 +102,9 @@ export class Header implements OnInit {
 
   goToCategory(category: Category) {
     this.closeDropdown();
-    this.router.navigate(['/', this.activeLang(), 'catalog', category.id]);
+    const slug = this.slugify.transform(category.name);
+    const identifier = slug || category.id;
+    this.router.navigate(['/', this.activeLang(), 'catalog', identifier]);
   }
 
   onSearchInput(event: Event) {

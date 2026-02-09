@@ -11,6 +11,7 @@ import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
+import {of} from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
@@ -35,10 +36,12 @@ export class Catalog implements OnInit {
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
   protected brandAlias = signal<string | null>(null);
+  protected categoryName = signal<string | null>(null); // New signal for display name
   protected products = signal<Product[]>([]);
   protected isLoading = signal(false);
   protected allLoaded = signal(false);
 
+  private currentCategoryId: string | null = null;
   private currentPage = 0;
   private readonly itemsPerPage = 12;
 
@@ -47,10 +50,11 @@ export class Catalog implements OnInit {
       const cat = this.category();
       const brand = this.brandName();
       const alias = this.brandAlias();
+      const catName = this.categoryName();
       const lang = this.langService.currentLanguage();
 
       if (cat || brand) {
-        this.updateMeta(cat, brand, alias, lang);
+        this.updateMeta(cat, brand, alias, catName, lang);
       }
     });
   }
@@ -66,21 +70,43 @@ export class Catalog implements OnInit {
               return {
                 tag: 'brand',
                 brandName: original?.brand ?? slug,
-                brandAlias: original?.brandAlias ?? original?.brand ?? slug
+                brandAlias: original?.brandAlias ?? original?.brand ?? slug,
+                categoryId: null,
+                categoryName: null
               };
             })
           );
         }
-        return [{ tag: tag ?? 'vs', brandName: null, brandAlias: null }];
+
+        const staticCategories = ['vs', 'bb', 'bestsellers', 'new-arrivals', 'sales', 'hero'];
+        if (tag && staticCategories.includes(tag)) {
+          return of({ tag: tag, brandName: null, brandAlias: null, categoryId: null, categoryName: null });
+        }
+
+        if (tag) {
+          return this.categoryService.getCategoryBySlug(tag).pipe(
+            map(cat => ({
+              tag: tag,
+              brandName: null,
+              brandAlias: null,
+              categoryId: cat ? cat.id.toString() : tag,
+              categoryName: cat ? cat.name : null
+            }))
+          );
+        }
+
+        return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null });
       })
-    ).subscribe(({ tag, brandName, brandAlias }) => {
+    ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName }) => {
       this.brandName.set(brandName);
       this.brandAlias.set(brandAlias);
-      this.setCategory(tag);
+      this.categoryName.set(categoryName);
+      this.currentCategoryId = categoryId;
+      this.setCategory(tag!);
     });
   }
 
-  private updateMeta(category: string | null, brand: string | null, alias: string | null, lang: string) {
+  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, lang: string) {
     let title = 'Catalog | Secret Room';
     let description = 'Catalog de produse Secret Room';
     let keywords = 'cosmetice, lenjerie, moldova, chisinau';
@@ -89,63 +115,51 @@ export class Catalog implements OnInit {
     const displayBrand = alias || brand;
 
     if (displayBrand) {
-      // Dynamic Brand SEO Strategy using the provided template
       if (isRo) {
         title = `${displayBrand} Moldova - Lenjerie și Cosmetice Originale | Secret Room`;
-        description = `Descoperă colecția exclusivă ${displayBrand} la Secret Room. Suntem destinația ta de încredere pentru produse originale ${displayBrand} în Moldova. Fie că ești în căutarea celor mai noi lansări sau a produselor clasice, magazinul nostru îți oferă o gamă variată la prețuri competitive. Comandă online produse ${displayBrand} cu livrare rapidă în Chișinău și în toată țara. Garantăm autenticitatea fiecărui produs din portofoliul nostru.`;
+        description = `Descoperă colecția exclusivă ${displayBrand} la Secret Room. Suntem destinația ta de încredere pentru produse originale ${displayBrand} în Moldova.`;
       } else {
         title = `${displayBrand} Молдова - Оригинальное белье и косметика | Secret Room`;
-        description = `Откройте для себя эксклюзивную коллекцию ${displayBrand} в Secret Room. Мы — ваш надежный источник оригинальной продукции ${displayBrand} в Молдове. Ищете ли вы новинки или классику, наш магазин предлагает широкий ассортимент по конкурентным ценам. Заказывайте продукцию ${displayBrand} онлайн с быстрой доставкой по Кишиневу и всей стране. Мы гарантируем подлинность каждого товара в нашем ассортименте.`;
+        description = `Откройте для себя эксклюзивную коллекцию ${displayBrand} в Secret Room. Мы — ваш надежный источник оригинальной продукции ${displayBrand} в Молдове.`;
       }
       keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, ${displayBrand} online`;
     } else if (category) {
-      switch (category) {
-        case 'vs':
-          title = isRo
-            ? "Victoria's Secret Moldova - Lenjerie și Cosmetice Originale | Secret Room"
-            : "Victoria's Secret Молдова - Оригинальное белье и косметика | Secret Room";
-
-          description = isRo
-            ? "Descoperă colecția exclusivă Victoria's Secret la Secret Room. Suntem destinația ta de încredere pentru produse originale Victoria's Secret în Moldova. Fie că ești în căutarea celor mai noi lansări sau a produselor clasice, magazinul nostru îți oferă o gamă variată la prețuri competitive. Comandă online produse Victoria's Secret cu livrare rapidă în Chișinău și în toată țara. Garantăm autenticitatea fiecărui produs din portofoliul nostru."
-            : "Откройте для себя эксклюзивную коллекцию Victoria's Secret в Secret Room. Мы — ваш надежный источник оригинальной продукции Victoria's Secret в Молдове. Ищете ли вы новинки или классику, наш магазин предлагает широкий ассортимент по конкурентным ценам. Заказывайте продукцию Victoria's Secret онлайн с быстрой доставкой по Кишиневу и всей стране. Мы гарантируем подлинность каждого товара в нашем ассортименте.";
-
-          keywords = "victoria's secret moldova, victoria secret chisinau, lenjerie victoria secret, parfumuri victoria secret, виктория сикрет молдова, виктория сикрет кишинев";
-          break;
-
-        case 'bb':
-          title = isRo
-            ? "Bath & Body Works Moldova - Arome și Îngrijire Corp | Secret Room"
-            : "Bath & Body Works Молдова - Ароматы и уход за телом | Secret Room";
-
-          description = isRo
-            ? "Cumpără produse Bath & Body Works în Moldova. Lumânări parfumate, geluri de duș, loțiuni de corp și parfumuri pentru casă. Arome exclusive la Secret Room."
-            : "Купить продукцию Bath & Body Works в Молдове. Ароматические свечи, гели для душа, лосьоны для тела и ароматы для дома. Эксклюзивные ароматы в Secret Room.";
-
-          keywords = "bath and body works moldova, bath & body works chisinau, lumanari bath and body works, creme bath and body works";
-          break;
-
-        case 'bestsellers':
-          title = isRo ? "Cele mai vândute produse | Secret Room" : "Хиты продаж | Secret Room";
-          description = isRo ? "Descoperă cele mai populare produse cosmetice și lenjerie din magazinul nostru." : "Откройте для себя самые популярные косметические средства и белье в нашем магазине.";
-          break;
-
-        case 'new-arrivals':
-          title = isRo ? "Noutăți - Produse Noi | Secret Room" : "Новинки - Новые поступления | Secret Room";
-          description = isRo ? "Ultimele colecții de la Victoria's Secret și Bath & Body Works. Fii prima care le încearcă!" : "Последние коллекции от Victoria's Secret și Bath & Body Works. Будьте первыми, кто их попробует!";
-          break;
-
-        case 'sales':
-          title = isRo ? "Reduceri și Oferte Speciale | Secret Room" : "Скидки и Специальные Предложения | Secret Room";
-          description = isRo ? "Profită de reducerile la produsele tale preferate. Prețuri speciale la Secret Room." : "Воспользуйтесь скидками на ваши любимые товары. Специальные цены в Secret Room.";
-          break;
+      // Use real category name if available
+      if (catName) {
+        title = isRo
+          ? `${catName} - Cumpără Online în Moldova | Secret Room`
+          : `${catName} - Купить Онлайн в Молдове | Secret Room`;
+        description = isRo
+          ? `Comandă ${catName} la prețuri avantajoase. Livrare rapidă în Chișinău și toată țara.`
+          : `Заказывайте ${catName} по выгодным ценам. Быстрая доставка по Кишиневу и всей стране.`;
+      } else {
+        switch (category) {
+          case 'vs':
+            title = isRo
+              ? "Victoria's Secret Moldova - Lenjerie și Cosmetice Originale | Secret Room"
+              : "Victoria's Secret Молдова - Оригинальное белье и косметика | Secret Room";
+            break;
+          case 'bb':
+            title = isRo
+              ? "Bath & Body Works Moldova - Arome și Îngrijire Corp | Secret Room"
+              : "Bath & Body Works Молдова - Ароматы и уход за телом | Secret Room";
+            break;
+          case 'bestsellers':
+            title = isRo ? "Cele mai vândute produse | Secret Room" : "Хиты продаж | Secret Room";
+            break;
+          case 'new-arrivals':
+            title = isRo ? "Noutăți - Produse Noi | Secret Room" : "Новинки - Новые поступления | Secret Room";
+            break;
+          case 'sales':
+            title = isRo ? "Reduceri și Oferte Speciale | Secret Room" : "Скидки и Специальные Предложения | Secret Room";
+            break;
+        }
       }
     }
 
     this.metaService.updateTitle(title);
     this.metaService.updateDescription(description);
     this.metaService.updateKeywords(keywords);
-
-    // Важно: обновляем канонический URL, чтобы избежать дублей
     this.metaService.updateCanonicalUrl();
   }
 
@@ -161,12 +175,10 @@ export class Catalog implements OnInit {
     this.products.set([]);
   }
 
-
   loadMore(): void {
     this.currentPage++;
     this.fetchProducts(true);
   }
-
 
   fetchProducts(append = false) {
     if (this.isLoading() || this.allLoaded()) return;
@@ -175,8 +187,9 @@ export class Catalog implements OnInit {
 
     const page = append ? this.currentPage + 1 : 0;
     const category = this.category();
+    const categoryIdentifier = this.currentCategoryId || category;
 
-    this.loadByCategory(category!, page, this.itemsPerPage)
+    this.loadByCategory(categoryIdentifier!, page, this.itemsPerPage)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe(res => {
         const items = res?.content ?? [];

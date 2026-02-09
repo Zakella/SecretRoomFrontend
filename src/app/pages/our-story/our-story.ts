@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {MetaService} from '../../@core/services/meta.service';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-our-story',
@@ -9,6 +10,9 @@ import {MetaService} from '../../@core/services/meta.service';
 })
 export class OurStory implements OnInit {
   private metaService = inject(MetaService);
+  private langService = inject(Language);
+
+  protected activeLang = this.langService.currentLanguage;
 
   ngOnInit() {
     this.metaService.updateTitle('Despre Noi | Secret Room');

@@ -104,7 +104,7 @@
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {
                 <a class="mega-dropdown__item"
                    [style.animation-delay]="i * 0.05 + 's'"
-                   [routerLink]="['/', activeLang(), 'catalog', sub.id]"
+                   [routerLink]="['/', activeLang(), 'catalog', slugify.transform(sub.name) || sub.id]"
                    (click)="closeDropdown()">
                   {{ sub?.name }}
                 </a>

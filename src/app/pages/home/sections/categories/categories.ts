@@ -3,6 +3,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CategoryService} from '../../../../@core/api/category';
+import {Slugify} from '../../../../@core/services/slugify';
 
 @Component({
   selector: 'categories',
@@ -16,6 +17,7 @@ export class Categories implements OnInit {
   private router = inject(Router);
   private languageService = inject(Language);
   private categoryService = inject(CategoryService);
+  private slugify = inject(Slugify);
 
   currentLanguage = this.languageService.currentLanguage;
   private rawCategories = signal<any[]>([]);
@@ -55,7 +57,12 @@ export class Categories implements OnInit {
   }
 
   goToCategory(category: any) {
-    this.router.navigate([this.currentLanguage(), 'catalog', category.categoryId]);
+    // Use slug if available (generated from name), otherwise fallback to ID
+    const name = category.categoryName || '';
+    const slug = this.slugify.transform(name);
+    const identifier = slug || category.categoryId;
+
+    this.router.navigate([this.currentLanguage(), 'catalog', identifier]);
   }
 
   getCollageImages(category: any): string[] {
