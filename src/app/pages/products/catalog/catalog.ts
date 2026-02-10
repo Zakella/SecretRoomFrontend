@@ -225,11 +225,11 @@ export class Catalog implements OnInit {
       case 'bb':
         return this.productService.getAllProductsByBrand(category, page, size);
       case 'bestsellers':
-        return this.productService.getBestSellers(page + 1, size);
+        return this.productService.getBestSellers(page, size);
       case 'new-arrivals':
-        return this.productService.getNewArrivals(page + 1, size);
+        return this.productService.getNewArrivals(page, size);
       case 'sales':
-        return this.productService.getSales(page + 1, size);
+        return this.productService.getSales(page, size);
       case 'hero':
        return  this.heroService.getHeroProductsById();
      case 'brand':

@@ -3,7 +3,7 @@ import {ImageSlider} from '../../shared/components/image-slider/image-slider';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {ScrollReveal} from '../../@core/directives/scroll-reveal';
 import {ProductService} from '../../@core/api/product';
-import {map} from 'rxjs';
+import {catchError, map, of} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {BestSellers} from './sections/best-sellers/best-sellers';
 import {NewArrivals} from './sections/new-arrivals/new-arrivals';
@@ -41,14 +41,17 @@ export class Home implements OnInit {
   private metaService = inject(MetaService);
   private langService = inject(Language);
 
-  protected readonly bestSellers$ = this.productService.getBestSellers(1, 3).pipe(
-    map(res => res.content)
+  protected readonly bestSellers$ = this.productService.getBestSellers(0, 3).pipe(
+    map(res => res?.content ?? []),
+    catchError(() => of([]))
   );
-  protected readonly newArrivals$ = this.productService.getNewArrivals(1, 10).pipe(
-    map(res => res.content)
+  protected readonly newArrivals$ = this.productService.getNewArrivals(0, 10).pipe(
+    map(res => res?.content ?? []),
+    catchError(() => of([]))
   );
   protected readonly sales$ = this.productService.getSales(0, 5).pipe(
-    map(res => res?.content ?? [])
+    map(res => res?.content ?? []),
+    catchError(() => of([]))
   );
   protected readonly heroItems$ = this.heroService.getActiveHeroItems().pipe(
     map(res => res)
