@@ -71,6 +71,6 @@ export class Categories implements OnInit {
 
   getCollageImages(category: any): string[] {
     if (!category.products || category.products.length === 0) return [];
-    return category.products.slice(0, 3).map((p: any) => p.imageURL);
+    return category.products.map((p: any) => p.imageURL);
   }
 }
