@@ -12,6 +12,7 @@ import {CartUi} from '../../../shared/components/cart/services/cart';
 import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
+import {ProductVariant} from '../../../entities/product-variant';
 import {ProductService} from '../../../@core/api/product';
 import {FavoritesService} from '../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
@@ -43,6 +44,7 @@ export class ProductDetail {
   public favoritesService = inject(FavoritesService);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
+  protected selectedVariant = signal<ProductVariant | null>(null);
   quantity: number = 1;
   currentSize: string | undefined;
   mainImage: string | null = null;
@@ -77,22 +79,35 @@ export class ProductDetail {
     this.product.set(product);
     this.quantity = 1;
     this.currentSize = undefined;
+    this.selectedVariant.set(null);
     if (product) {
       this.mainImage = product.imageURL;
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
+      // Автоматически выбираем первый доступный вариант
+      if (product.variants && product.variants.length > 0) {
+        const firstAvailable = product.variants.find(v => v.available && v.inStock) || product.variants[0];
+        this.selectVariant(firstAvailable);
+      }
     }
+  }
+
+  selectVariant(variant: ProductVariant) {
+    this.selectedVariant.set(variant);
+    this.currentSize = variant.size;
   }
 
   addProductInCart() {
     let cartItem: CartItem;
     const product = this.product()!;
-    if (product.productSizes && product.productSizes.length > 0) {
+    const variant = this.selectedVariant();
+
+    if (variant) {
+      const size: Size = { sizeType: variant.size, available: true };
+      cartItem = new CartItem(product, this.quantity, size, variant.appId);
+    } else if (product.productSizes && product.productSizes.length > 0) {
       const sizeType = this.currentSize || product.productSizes.find(s => s.available)?.sizeType || product.productSizes[0].sizeType;
-      const size: Size = {
-        sizeType: sizeType,
-        available: true
-      };
+      const size: Size = { sizeType: sizeType, available: true };
       cartItem = new CartItem(product, this.quantity, size);
     } else {
       cartItem = new CartItem(product, this.quantity);

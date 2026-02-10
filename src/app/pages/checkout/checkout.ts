@@ -361,6 +361,7 @@ export class Checkout implements OnInit, OnDestroy {
       orderItems: this.cartItems.map(item => ({
         product: item.product,
         sizeType: item.size?.sizeType,
+        variantAppId: item.variantAppId,
         amount: item.amount,
         quantity: item.quantity
       })),

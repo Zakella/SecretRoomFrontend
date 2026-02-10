@@ -41,7 +41,8 @@ export class CartUi {
   private findExistingCartItemIndex(cartItems: CartItem[], newItem: CartItem): number {
     return cartItems.findIndex(item =>
       item.product.id === newItem.product.id &&
-      item.size?.sizeType === newItem.size?.sizeType
+      item.size?.sizeType === newItem.size?.sizeType &&
+      item.variantAppId === newItem.variantAppId
     );
   }
 

@@ -24,6 +24,7 @@ export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | '
 export interface OrderItem {
   product: Product;
   sizeType?: string;
+  variantAppId?: number;
   amount: number;
   quantity: number;
 }

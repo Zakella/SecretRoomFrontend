@@ -36,7 +36,10 @@
             <span class="brand">{{ product()?.brandAlias }}</span>
             <h1>{{ product() | localizedName }}</h1>
 
-            <product-price [price]="product()!.price" [oldPrice]="product()!.oldPrice" size="lg"/>
+            <product-price
+              [price]="selectedVariant()?.price ?? product()!.price"
+              [oldPrice]="selectedVariant()?.oldPrice ?? product()!.oldPrice"
+              size="lg"/>
 
             @if (product()?.article) {
               <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>
@@ -47,7 +50,23 @@
             <div class="description" [innerHTML]="product() | localizedName:'description'"></div>
           }
 
-          @if (product()?.size) {
+          @if (product()?.variants && product()!.variants!.length > 0) {
+            <div class="variant-selector">
+              <span class="variant-label">{{ 'Size' | transloco }}:</span>
+              <div class="variant-options">
+                @for (variant of product()!.variants; track variant.appId) {
+                  <button
+                    class="variant-btn"
+                    [class.active]="selectedVariant()?.appId === variant.appId"
+                    [class.unavailable]="variant.available === false"
+                    [disabled]="variant.available === false"
+                    (click)="selectVariant(variant)">
+                    {{ variant.size }}
+                  </button>
+                }
+              </div>
+            </div>
+          } @else if (product()?.size) {
             <span class="article">{{ 'Size' | transloco }}: {{ product()?.size }}</span>
           }
 
