@@ -56,63 +56,161 @@
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   will-change: transform;
 
-  // Cards spread like a fan
-  &:nth-child(1) {
-    transform: rotate(-12deg);
-    left: calc(50% - 440px);
-    z-index: 1;
-  }
-
-  &:nth-child(2) {
-    transform: rotate(-6deg);
-    left: calc(50% - 290px);
-    z-index: 2;
-  }
-
-  &:nth-child(3) {
+  // === 1 card — centered ===
+  &:only-child {
     transform: rotate(0deg);
     left: calc(50% - 150px);
     z-index: 3;
   }
-
-  &:nth-child(4) {
-    transform: rotate(6deg);
-    left: calc(50% - 10px);
-    z-index: 2;
-  }
-
-  &:nth-child(5) {
-    transform: rotate(12deg);
-    left: calc(50% + 140px);
-    z-index: 1;
-  }
-
-  // Hover - card comes forward, keeps its rotation
-  &:nth-child(1):hover {
-    transform: rotate(-12deg) translateY(-20px);
-    z-index: 10;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  }
-
-  &:nth-child(2):hover {
-    transform: rotate(-6deg) translateY(-20px);
-    z-index: 10;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  }
-
-  &:nth-child(3):hover {
+  &:only-child:hover {
     transform: rotate(0deg) translateY(-20px);
     z-index: 10;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   }
 
-  &:nth-child(4):hover {
+  // === 2 cards — symmetric from center ===
+  &:first-child:nth-last-child(2) {
+    transform: rotate(-6deg);
+    left: calc(50% - 230px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(2) ~ &:nth-child(2) {
+    transform: rotate(6deg);
+    left: calc(50% - 70px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(2):hover {
+    transform: rotate(-6deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(2) ~ &:nth-child(2):hover {
     transform: rotate(6deg) translateY(-20px);
     z-index: 10;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   }
 
-  &:nth-child(5):hover {
+  // === 3 cards — center + symmetric sides ===
+  &:first-child:nth-last-child(3) {
+    transform: rotate(-8deg);
+    left: calc(50% - 310px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(3) ~ &:nth-child(2) {
+    transform: rotate(0deg);
+    left: calc(50% - 150px);
+    z-index: 3;
+  }
+  &:first-child:nth-last-child(3) ~ &:nth-child(3) {
+    transform: rotate(8deg);
+    left: calc(50% + 10px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(3):hover {
+    transform: rotate(-8deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(3) ~ &:nth-child(2):hover {
+    transform: rotate(0deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(3) ~ &:nth-child(3):hover {
+    transform: rotate(8deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  // === 4 cards — symmetric from center ===
+  &:first-child:nth-last-child(4) {
+    transform: rotate(-9deg);
+    left: calc(50% - 375px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(2) {
+    transform: rotate(-3deg);
+    left: calc(50% - 225px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(3) {
+    transform: rotate(3deg);
+    left: calc(50% - 75px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(4) {
+    transform: rotate(9deg);
+    left: calc(50% + 75px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(4):hover {
+    transform: rotate(-9deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(2):hover {
+    transform: rotate(-3deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(3):hover {
+    transform: rotate(3deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(4) ~ &:nth-child(4):hover {
+    transform: rotate(9deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  // === 5 cards — full fan ===
+  &:first-child:nth-last-child(5) {
+    transform: rotate(-12deg);
+    left: calc(50% - 440px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(2) {
+    transform: rotate(-6deg);
+    left: calc(50% - 290px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(3) {
+    transform: rotate(0deg);
+    left: calc(50% - 150px);
+    z-index: 3;
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(4) {
+    transform: rotate(6deg);
+    left: calc(50% - 10px);
+    z-index: 2;
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(5) {
+    transform: rotate(12deg);
+    left: calc(50% + 140px);
+    z-index: 1;
+  }
+  &:first-child:nth-last-child(5):hover {
+    transform: rotate(-12deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(2):hover {
+    transform: rotate(-6deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(3):hover {
+    transform: rotate(0deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(4):hover {
+    transform: rotate(6deg) translateY(-20px);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  &:first-child:nth-last-child(5) ~ &:nth-child(5):hover {
     transform: rotate(12deg) translateY(-20px);
     z-index: 10;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
@@ -349,23 +447,58 @@
   .sale-card {
     width: 220px;
 
-    &:nth-child(1) {
-      left: calc(50% - 330px);
-    }
-
-    &:nth-child(2) {
-      left: calc(50% - 210px);
-    }
-
-    &:nth-child(3) {
+    // 1 card
+    &:only-child {
       left: calc(50% - 110px);
     }
 
-    &:nth-child(4) {
-      left: calc(50% - 10px);
+    // 2 cards
+    &:first-child:nth-last-child(2) {
+      left: calc(50% - 170px);
+    }
+    &:first-child:nth-last-child(2) ~ &:nth-child(2) {
+      left: calc(50% - 50px);
     }
 
-    &:nth-child(5) {
+    // 3 cards
+    &:first-child:nth-last-child(3) {
+      left: calc(50% - 230px);
+    }
+    &:first-child:nth-last-child(3) ~ &:nth-child(2) {
+      left: calc(50% - 110px);
+    }
+    &:first-child:nth-last-child(3) ~ &:nth-child(3) {
+      left: calc(50% + 10px);
+    }
+
+    // 4 cards
+    &:first-child:nth-last-child(4) {
+      left: calc(50% - 280px);
+    }
+    &:first-child:nth-last-child(4) ~ &:nth-child(2) {
+      left: calc(50% - 170px);
+    }
+    &:first-child:nth-last-child(4) ~ &:nth-child(3) {
+      left: calc(50% - 50px);
+    }
+    &:first-child:nth-last-child(4) ~ &:nth-child(4) {
+      left: calc(50% + 60px);
+    }
+
+    // 5 cards
+    &:first-child:nth-last-child(5) {
+      left: calc(50% - 330px);
+    }
+    &:first-child:nth-last-child(5) ~ &:nth-child(2) {
+      left: calc(50% - 210px);
+    }
+    &:first-child:nth-last-child(5) ~ &:nth-child(3) {
+      left: calc(50% - 110px);
+    }
+    &:first-child:nth-last-child(5) ~ &:nth-child(4) {
+      left: calc(50% - 10px);
+    }
+    &:first-child:nth-last-child(5) ~ &:nth-child(5) {
       left: calc(50% + 100px);
     }
 
