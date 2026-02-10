@@ -1,9 +1,11 @@
 import {ProductImage} from "./product-image";
 import {ProductCategory} from "./product-category";
 import {Size} from './size';
+import {ProductVariant} from './product-variant';
 
 export interface Product {
   id?: string,
+  appId?: string,
   sku?: string,
   article?: string,
   name?: string,
@@ -30,4 +32,5 @@ export interface Product {
   oldPrice: number,
   isNew: boolean,
   isBestSeller: boolean,
+  variants?: ProductVariant[],
 }

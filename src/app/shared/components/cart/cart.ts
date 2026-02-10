@@ -20,8 +20,13 @@ import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../../@core/services/language';
+import {Slugify} from '../../../@core/services/slugify';
+import {Product} from '../../../entities/product';
+import {LocalizedNamePipe} from '../../pipes/localized-name.pipe';
 import {Shipping} from '../../../@core/api/shipping';
 import {ShippingOption} from '../../../entities/shipping-options';
+import {ProductPrice} from '../product/product-price/product-price';
+import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
 
 @Component({
   selector: 'app-cart',
@@ -30,6 +35,8 @@ import {ShippingOption} from '../../../entities/shipping-options';
     NgTemplateOutlet,
     TranslocoPipe,
     InputNumber,
+    LocalizedNamePipe,
+    ProductPrice,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
@@ -39,6 +46,7 @@ export class Cart implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
   private shippingService = inject(Shipping);
+  private recommendedService = inject(RecommendedProductService);
   private cdr = inject(ChangeDetectorRef);
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
@@ -46,28 +54,13 @@ export class Cart implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   @Input() shippingCost: number = 0;
   private router = inject(Router);
-  suggestions = [
-    {
-      title: 'ESSENTIAL FACE WIPES - 5 PACK',
-      price: 120,
-      image: '/assets/images/demo/slider1.jpeg'
-    },
-    {
-      title: 'ACTIVE GLOW BLUEBERRY',
-      price: 351,
-      image: '/assets/images/demo/slider1.jpeg'
-    },
-    {
-      title: 'BUFF MASSAGING SCALP BRUSH',
-      price: 296,
-      image: '/assets/images/demo/slider1.jpeg'
-    }
-  ];
+  recommendations = signal<Product[]>([]);
 
   freeShippingThreshold = signal<number>(0);
   shippingOptionsLoaded = signal<boolean>(false);
 
   private langService = inject(Language);
+  private slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage
 
 
@@ -78,6 +71,7 @@ export class Cart implements OnInit, OnDestroy {
     this.subscribeToCartModification();
     this.cartService.computeCartTotals();
     this.loadShippingOptions();
+    this.loadRecommendations();
   }
 
   private loadShippingOptions(): void {
@@ -116,9 +110,39 @@ export class Cart implements OnInit, OnDestroy {
       (data) => {
         if (data) {
           this.cartService.computeCartTotals();
+          this.loadRecommendations();
         }
       }
     )
+  }
+
+  private loadRecommendations(): void {
+    const appIds = this.cartItems
+      .map(item => Number(item.product.id))
+      .filter(id => !isNaN(id) && id > 0);
+
+    if (appIds.length === 0) {
+      this.recommendations.set([]);
+      return;
+    }
+
+    this.recommendedService.getCartRecommendations(appIds)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (products) => {
+          this.recommendations.set(products);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.recommendations.set([]);
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  protected addRecommendationToCart(product: Product): void {
+    const cartItem = new CartItem(product, 1);
+    this.cartService.addToCart(cartItem);
   }
 
   private subscribeToTotalAmount() {
@@ -136,6 +160,10 @@ export class Cart implements OnInit, OnDestroy {
         this.totalQuantity = data;
       }
     )
+  }
+
+  protected getItemMaxStock(cartItem: CartItem): number {
+    return this.cartService.getMaxStock(cartItem) || 100;
   }
 
   protected deleteItemFromCart(index: number): void {
@@ -168,13 +196,10 @@ export class Cart implements OnInit, OnDestroy {
     return this.freeShippingRemaining === 0 && this.freeShippingThreshold() > 0;
   }
 
-  protected navToProduct(id: string| undefined): void {
-    if (!id)return
-
-    this.router.navigate([this.activeLang(), 'product-detail', id]).then(
-      () => {
-        this.closeDrawer();
-      }
+  protected navToProduct(product: Product): void {
+    if (!product.id) return;
+    this.router.navigate(this.slugify.productUrl(this.activeLang(), product.id, product.name ?? '')).then(
+      () => this.closeDrawer()
     );
   }
 

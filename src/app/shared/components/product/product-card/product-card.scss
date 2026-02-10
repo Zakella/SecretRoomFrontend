@@ -14,6 +14,28 @@
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(44, 36, 33, 0.08);
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  height: 100%; // Ensure card takes full height of grid cell
+  display: flex;
+  flex-direction: column;
+
+  // --- SALE CARD STYLES ---
+  &.on-sale {
+    // Increase size slightly via scale (does not affect layout flow)
+    transform: scale(1.02);
+    z-index: 1; // Bring to front
+    border: 1px solid rgba(211, 47, 47, 0.1); // Subtle red border
+
+    &:hover {
+      transform: scale(1.05) translateY(-6px);
+      box-shadow: 0 25px 60px rgba(211, 47, 47, 0.15); // Reddish shadow
+    }
+
+    // Removed aspect-ratio change to keep alignment consistent
+    // .image-wrapper {
+    //   aspect-ratio: 4 / 5.2;
+    // }
+
+  }
 
   &:hover {
     transform: translateY(-6px);
@@ -49,6 +71,8 @@
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background: var(--bg-cream);
+    transition: aspect-ratio 0.3s ease;
+    flex-shrink: 0; // Prevent image from shrinking
 
     .img-container {
       height: 100%;
@@ -103,6 +127,19 @@
         transform: scale(1.1);
       }
 
+      &.active {
+        opacity: 1;
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+        animation: heartPop 0.35s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+      }
+
+      &.active:hover {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--gold);
+      }
+
       @media (max-width: 768px) {
         opacity: 1;
         width: 36px;
@@ -111,6 +148,12 @@
         bottom: 10px;
         right: 10px;
       }
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
     }
   }
 
@@ -213,6 +256,34 @@
     }
   }
 
+  // Last item badge — красный, пульсирующий
+  .badge-last-item {
+    background: rgba(211, 47, 47, 0.95);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.35);
+    animation: stockPulse 2s ease-in-out infinite;
+
+    i {
+      color: #fff;
+    }
+  }
+
+  // Low stock badge — оранжевый/warning
+  .badge-low-stock {
+    background: rgba(230, 126, 34, 0.95);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+
+    i {
+      color: #fff;
+    }
+  }
+
+  @keyframes stockPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+  }
+
   // Sale badge — чёрно-золотой
   .badge-sale {
     background: var(--text-black);
@@ -235,6 +306,9 @@
     text-align: center;
     background: var(--bg-white);
     cursor: pointer;
+    flex-grow: 1; // Allow info to grow to fill height
+    display: flex;
+    flex-direction: column;
 
     @media (max-width: 768px) {
       padding: 14px 10px 6px;
@@ -279,78 +353,26 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       // Фиксированная высота для 2 строк (font-size * line-height * 2)
-      min-height: calc(18px * 1.35 * 2);
+      height: calc(18px * 1.35 * 2); // Changed from min-height to height
 
       @media (max-width: 768px) {
         font-size: 15px;
         margin-bottom: 8px;
-        min-height: calc(15px * 1.35 * 2);
+        height: calc(15px * 1.35 * 2); // Changed from min-height to height
       }
 
       @media (max-width: 480px) {
         font-size: 14px;
-        min-height: calc(14px * 1.35 * 2);
+        height: calc(14px * 1.35 * 2); // Changed from min-height to height
       }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // PRICE BLOCK WITH DISCOUNT — Premium Style
-    // ─────────────────────────────────────────────────────────────
-    .price-block {
+    product-price {
+      margin-top: auto; // Push to bottom of info section
+      min-height: 50px; // Reserve space for price block
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    // Старая цена — зачёркнутая
-    .old-price {
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-decoration: line-through;
-      text-decoration-thickness: 1.5px;
-      opacity: 0.8;
-
-      @media (max-width: 768px) {
-        font-size: 12px;
-      }
-    }
-
-    // Обычная цена — как в кабинете
-    .price {
-      font-family: var(--font-title);
-      font-size: 1.35rem;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      margin: 0;
-      color: var(--text-dark, #2c2421);
-
-      @media (max-width: 768px) {
-        font-size: 1.15rem;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 1rem;
-      }
-
-      .amount {
-        color: inherit;
-      }
-
-      .currency {
-        font-size: inherit;
-        font-weight: inherit;
-        color: inherit;
-        margin-left: 4px;
-      }
-
-      // Цена со скидкой — красная
-      &.sale-price {
-        color: var(--sale-red);
-      }
+      align-items: flex-end;
+      justify-content: center;
     }
   }
 
@@ -360,6 +382,7 @@
   .product-info {
     padding: 8px 16px 20px;
     background: var(--bg-white);
+    margin-top: auto; // Push to bottom
 
     @media (max-width: 768px) {
       padding: 6px 10px 14px;

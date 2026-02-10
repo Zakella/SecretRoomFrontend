@@ -1,90 +1,63 @@
 <section class="story">
   <div class="story-inner">
     <div class="story-text">
-      <h2>The Birthplace of<br />Transparent Beauty</h2>
-      <p>
-        The Secret Room began as a pop-up shop
-        in Chisinau, Moldova. That was back in 2020, when many people
-        weren’t aware of the kinds of ingredients or environmental footprint
-        of their personal care products.
-      </p>
-    </div>
-
-    <div class="story-image">
-      <img
-        src="https://cosmeticshop.md/content/userfiles/images/cosmetic%20shop%20store-min.webp"
-        alt="Store interior"
-      />
+      @if (activeLang() === 'ro') {
+        <h1>Magazin de Cosmetice și Parfumuri Originale în Moldova</h1>
+        <p>
+          Ești în căutarea acelui <strong>spray de corp</strong> perfect sau a unei <strong>loțiuni</strong> care să-ți hidrateze pielea întreaga zi?
+          La Secret Room, am selectat cele mai iubite produse de îngrijire: de la <strong>geluri de duș</strong> aromate și <strong>exfoliante</strong> delicate, până la <strong>parfumuri</strong> care întorc priviri.
+          Fiecare produs este 100% original și ales pentru a-ți oferi un ritual de frumusețe complet.
+        </p>
+        <p>
+          Dar experiența Secret Room nu se oprește la cosmetice. Redefinește confortul de acasă cu colecția noastră de <strong>pijamale Victoria's Secret</strong>, <strong>halate</strong> pufoase și <strong>papuci de casă</strong>.
+          Iar pentru momente speciale sau confort zilnic, alege
+          din gama noastră variată de <strong>lenjerie intimă</strong>: <strong>sutiene</strong> cu susținere perfectă și <strong>chiloți</strong> din materiale fine.
+        </p>
+        <p>
+          Indiferent dacă cauți un <strong>set cadou</strong> sau vrei să te răsfeți, oferim livrare rapidă în Chișinău și în toată Moldova, aducând brandurile tale preferate direct la ușa ta.
+        </p>
+      } @else {
+        <h1>Магазин Оригинальной Косметики и Парфюмерии в Молдове</h1>
+        <p>
+          Ищете тот самый <strong>спрей для тела</strong> или <strong>лосьон</strong>, который подарит коже увлажнение на весь день?
+          В Secret Room мы собрали самые любимые средства ухода: от ароматных <strong>гелей для душа</strong> и нежных <strong>скрабов</strong> до <strong>парфюма</strong>, который не оставит равнодушным.
+          Каждый продукт на 100% оригинален и подобран для вашего идеального ритуала красоты.
+        </p>
+        <p>
+          Но Secret Room — это не только косметика. Переосмыслите домашний уют с нашей коллекцией <strong>пижам Victoria's Secret</strong>, пушистых <strong>халатов</strong> и <strong>домашних тапочек</strong>.
+          А для особых случаев или на каждый день выберите из нашего ассортимента <strong>нижнего белья</strong>: <strong>бюстгальтеры</strong> с идеальной поддержкой и <strong>трусики</strong> из тончайших материалов.
+        </p>
+        <p>
+          Ищете ли вы <strong>подарочный набор</strong> или хотите побаловать себя, мы предлагаем быструю доставку по Кишиневу и всей Молдове, доставляя ваши любимые бренды прямо к двери.
+        </p>
+      }
     </div>
   </div>
 </section>
+
 <section class="standards">
   <div class="standards-inner">
-
     <!-- TOP METRICS -->
     <div class="standards-metrics">
       <div class="metric">
         <span class="icon">✿</span>
-        <strong>Pure Ingredients</strong>
+        <strong>{{ activeLang() === 'ro' ? 'Ingrediente Pure' : 'Чистые Ингредиенты' }}</strong>
       </div>
 
       <div class="metric">
-        <span class="number">800+</span>
-        <span class="label">Brands reviewed<br />per year</span>
+        <span class="number">100%</span>
+        <span class="label">{{ activeLang() === 'ro' ? 'Produse Originale' : 'Оригинальная Продукция' }}</span>
       </div>
 
       <div class="metric">
         <span class="icon">✓</span>
-        <strong>Exceptional Performance</strong>
+        <strong>{{ activeLang() === 'ro' ? 'Calitate Garantată' : 'Гарантия Качества' }}</strong>
       </div>
 
       <div class="metric">
-        <span class="number">1000+</span>
-        <span class="label">Products tested<br />per year</span>
-      </div>
-
-
-      <div class="metric">
-        <span class="number">&lt;2%</span>
-        <span class="label">Make the cut</span>
+        <span class="number">24h</span>
+        <span class="label">{{ activeLang() === 'ro' ? 'Livrare Rapidă' : 'Быстрая Доставка' }}</span>
       </div>
     </div>
-
-    <div class="standards-content">
-      <article>
-        <h3>Our Standards</h3>
-        <p>
-          We’ve got your back. Everything we carry has been meticulously vetted,
-          so instead of worrying about the nitty-gritty, you can enjoy what green
-          beauty is all about: finding new ways to support your well-being, and
-          having a great time along the way.
-        </p>
-        <a href="#">Learn more →</a>
-      </article>
-
-      <article>
-        <h3>Our Process</h3>
-        <p>
-          From the hundreds of submissions we receive each year, less than two
-          percent earn a spot in our curation. To pass the test, products have to
-          be unquestionably best in class, free from anything on our Banned
-          Ingredients List, and made by founders who share our passion for
-          transparency and authenticity.
-        </p>
-        <a href="#">Banned ingredients →</a>
-      </article>
-
-      <article>
-        <h3>Our Commitments</h3>
-        <p>
-          When it comes to equity, diversity, and inclusion in the beauty
-          industry, what matters most is not only awareness, but advocacy and
-          action. We are committed to leading by example and being the industry
-          change we want to see.
-        </p>
-        <a href="#">Learn more →</a>
-      </article>
-    </div>
-
   </div>
 </section>

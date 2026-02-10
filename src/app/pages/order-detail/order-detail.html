@@ -48,10 +48,10 @@
               @for (item of order()!.items; track item.product.id) {
                 <div class="order-item">
                   <div class="item-image">
-                    <img [src]="item.product.imageURL" [alt]="item.product.name">
+                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
                   </div>
                   <div class="item-details">
-                    <h4 class="item-name">{{ item.product.name }}</h4>
+                    <h4 class="item-name">{{ item.product | localizedName }}</h4>
                     @if (item.sizeType) {
                       <p class="item-size">{{ 'orderDetail.size' | transloco }}: {{ item.sizeType }}</p>
                     }
@@ -115,6 +115,19 @@
                 <p class="shipping-desc">{{ order()!.shippingOption?.description }}</p>
               </div>
             </div>
+
+            <!-- Tracking Number -->
+            @if (order()!.trackingNumber) {
+              <div class="info-card">
+                <h3 class="info-title">
+                  <i class="pi pi-box"></i>
+                  {{ 'orderDetail.trackingNumber' | transloco }}
+                </h3>
+                <div class="info-content">
+                  <p class="tracking-number">{{ order()!.trackingNumber }}</p>
+                </div>
+              </div>
+            }
 
             <!-- Payment Method -->
             <div class="info-card">

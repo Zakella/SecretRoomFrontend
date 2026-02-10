@@ -1,60 +1,138 @@
-.vs-btn {
+:host {
+  display: block;
+  width: 100%;
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(184, 149, 108, 0.15);
+  overflow: visible;
+}
+
+.section-wrapper {
+  text-align: center;
+
+  @media (max-width: 768px) {
+    text-align: left;
+    padding-left: 16px;
+  }
+}
+
+.section-title {
+  font-family: var(--font-title, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark, #2c2421);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #f7cfe3;
-  color: #e86ea8;
-  border-radius: 14px;
-  padding: 0.55rem 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(184, 149, 108, 0.3);
+  color: var(--gold, #b8956c);
+  border-radius: 50%;
+  font-size: 16px;
   cursor: pointer;
+  background: transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+
+  &:hover {
+    background: var(--text-black, #1a1a1a);
+    border-color: var(--text-black, #1a1a1a);
+    color: var(--gold, #b8956c);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    background: var(--gold, #b8956c);
+    border-color: var(--gold, #b8956c);
+    color: #fff;
+  }
+
+  &.active:hover {
+    background: transparent;
+    color: var(--gold, #b8956c);
+  }
 }
 
-.vs-btn:hover {
-  background: #ffe9f2;
-  border-color: #e86ea8;
-  color: #d9589a;
-  box-shadow: 0 6px 16px rgba(233, 140, 175, 0.3);
+:host ::ng-deep .p-carousel-indicator-active .p-carousel-indicator-button {
+  background-color: var(--gold, #b8956c) !important;
 }
 
-.vs-btn:active {
-  transform: scale(0.95);
+// ─────────────────────────────────────────────────────────────
+// DESKTOP — carousel
+// ─────────────────────────────────────────────────────────────
+.desktop-view {
+  width: 100%;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
-
-
-:host ::ng-deep .p-carousel-indicator-active .p-carousel-indicator-button{
-  background-color: #e86ea8;
-}
-
-
-
-
 
 .carousel-item {
   max-width: 300px;
   margin: 0 auto;
   padding: 1rem;
-  background: #fff;
+  background: var(--bg-white, #fff);
   display: flex;
   flex-direction: column;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
 }
 
 .image-container {
   width: 100%;
   text-align: center;
-}
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--bg-cream, #faf8f5);
 
-.image-container img {
-  max-width: 100%;
-  border-radius: 1rem;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: transform 0.5s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
 }
 
 .product-name {
+  font-family: var(--font-title, 'Playfair Display', serif);
   font-weight: 500;
-  margin: 0.5rem 0;
+  font-size: 15px;
+  margin: 12px 0 8px;
   text-align: center;
+  color: var(--text-dark, #2c2421);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .product-footer {
@@ -63,12 +141,91 @@
   align-items: center;
 }
 
-.buttons button {
-  margin-left: 0.5rem;
+
+.buttons {
+  display: flex;
+  gap: 8px;
 }
 
-@media (max-width: 768px) {
-  .carousel-item {
-    background: transparent;
+// ─────────────────────────────────────────────────────────────
+// MOBILE — horizontal swipe scroll
+// ─────────────────────────────────────────────────────────────
+.mobile-view {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px 4px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.mobile-card {
+  flex: 0 0 150px;
+  min-width: 150px;
+  scroll-snap-align: start;
+  background: var(--bg-white, #fff);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.mobile-card-image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--bg-cream, #faf8f5);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.mobile-card-body {
+  padding: 8px 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-card-name {
+  font-family: var(--font-title, 'Playfair Display', serif);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dark, #2c2421);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+.mobile-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px 8px;
+
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
   }
 }

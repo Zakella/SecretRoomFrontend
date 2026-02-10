@@ -7,12 +7,12 @@
     }
 
     <div class="product-image-container">
-      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product()?.name" class="product-image"/>
+      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product() | localizedName" class="product-image"/>
     </div>
 
 
     <div class="product-info">
-      <h3 class="product-name">{{product()?.name}}</h3>
+      <h3 class="product-name">{{product() | localizedName}}</h3>
       <p class="product-description">Lorem ipsum dolor sit.</p>
       <p class="product-price">{{ price() }} MDL </p>
 
@@ -40,16 +40,26 @@
         <i class="ri-sparkling-fill"></i>
         <span>New</span>
       </div>
+    } @else if (!product()?.variants?.length && product()?.unitsInStock === 1) {
+      <div class="badge badge-status badge-last-item">
+        <i class="ri-error-warning-fill"></i>
+        <span>{{ 'LastItem' | transloco }}</span>
+      </div>
+    } @else if (!product()?.variants?.length && product()?.unitsInStock !== undefined && product()!.unitsInStock! <= 3 && product()!.unitsInStock! > 0) {
+      <div class="badge badge-status badge-low-stock">
+        <i class="ri-fire-fill"></i>
+        <span>{{ 'LowInStock' | transloco }}</span>
+      </div>
     }
 
-    <button class="wishlist-btn" (click)="$event.stopPropagation()">
-      <i class="ri-heart-line"></i>
+    <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">
+      <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
     <div class="img-container" (click)="navToProduct()">
-      <img [src]="imageUrl()" [alt]="product()?.name" class="main-img"/>
+      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
       @if (hoverImageUrl()) {
-        <img [src]="hoverImageUrl()" [alt]="product()?.name" class="hover-img"/>
+        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy"/>
       }
     </div>
   </div>
@@ -60,17 +70,9 @@
       <span>
         {{ product()?.brandAlias }}</span>
     </h2>
-    <h3 class="name">{{ product()?.name }}</h3>
+    <h3 class="name">{{ product() | localizedName }}</h3>
 
-    <div class="price-block" [class.has-discount]="hasDiscount()">
-      @if (hasDiscount() && oldPrice()) {
-        <span class="old-price">{{ oldPrice() }} MDL</span>
-      }
-      <p class="price" [class.sale-price]="hasDiscount()">
-        <span class="amount">{{ price() }}</span>
-        <span class="currency">MDL</span>
-      </p>
-    </div>
+    <product-price [price]="price()!" [oldPrice]="oldPrice()"/>
   </div>
 
   <div class="product-info">

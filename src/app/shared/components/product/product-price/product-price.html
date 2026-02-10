@@ -1,0 +1,6 @@
+<div class="price-block" [class.has-discount]="hasDiscount()">
+  @if (hasDiscount()) {
+    <span class="old-price">{{ oldPrice() }} MDL</span>
+  }
+  <span class="price" [class.sale-price]="hasDiscount()">{{ price() }} MDL</span>
+</div>

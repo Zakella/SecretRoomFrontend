@@ -3,12 +3,16 @@ import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {LocalizedNamePipe} from '../../../../shared/pipes/localized-name.pipe';
+import {ProductPrice} from '../../../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'best-sellers',
   imports: [
     RouterLink,
-    TranslocoPipe
+    TranslocoPipe,
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './best-sellers.html',
   styleUrl: './best-sellers.scss',
@@ -34,7 +38,4 @@ export class BestSellers {
     return null;
   }
 
-  hasDiscount(product: Product): boolean {
-    return product.oldPrice > 0 && product.price !== undefined && product.oldPrice > product.price;
-  }
 }

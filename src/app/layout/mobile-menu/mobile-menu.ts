@@ -11,6 +11,12 @@ import {UpperCasePipe} from '@angular/common';
 import {BrandService} from '../../@core/api/brand';
 import {Brand, Category} from '../../entities/category';
 import {CategoryService} from '../../@core/api/category';
+import {SearchService} from '../../@core/services/search';
+import {FavoritesService} from '../../@core/services/favorites';
+import {Product} from '../../entities/product';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
+import {Slugify} from '../../@core/services/slugify';
+import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'mobile-menu',
@@ -21,7 +27,9 @@ import {CategoryService} from '../../@core/api/category';
     ButtonModule,
     FormsModule,
     TranslocoPipe,
-    UpperCasePipe
+    UpperCasePipe,
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './mobile-menu.html',
   styleUrl: './mobile-menu.scss',
@@ -34,8 +42,12 @@ export class MobileMenu  implements OnInit{
   private authService = inject(Authentication)
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
+  public searchService = inject(SearchService);
+  public favoritesService = inject(FavoritesService);
+  private slugify = inject(Slugify);
 
   isAuth = this.authService.logged;
+  mobileQuery = signal('');
   public activeLang = this.langService.currentLanguage
   public cartCount =  this.cartService.cartCount;
   visible: boolean = false;
@@ -53,6 +65,14 @@ export class MobileMenu  implements OnInit{
 
   openCart() {
     this.cartService.open();
+  }
+
+  openSearch() {
+    this.visible = true;
+    setTimeout(() => {
+      const input = document.querySelector('.search-input-wrapper input') as HTMLInputElement;
+      input?.focus();
+    }, 300);
   }
 
   getUserInitials(): string {
@@ -82,15 +102,49 @@ export class MobileMenu  implements OnInit{
   }
 
   goToBrandList(brand: Brand) {
-    this.brandService.brand.set(brand.brand);
-    this.router.navigate([this.activeLang(), 'catalog', 'brand']);
-    this.visible = false; // Close drawer
+    this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+    this.visible = false;
   }
 
   goToCategory(category: Category) {
-    // If category has children, we might want to show them or navigate to parent
-    // For now, let's navigate to catalog with category id
-    this.router.navigate([this.activeLang(), 'catalog', category.id]);
+    const slug = this.slugify.transform(category.name);
+    const identifier = slug || category.id;
+    this.router.navigate([this.activeLang(), 'catalog', identifier]);
     this.visible = false;
+  }
+
+  goToStaticCategory(tag: string) {
+    this.router.navigate([this.activeLang(), 'catalog', tag]);
+    this.visible = false;
+  }
+
+  onMobileSearchInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.mobileQuery.set(value);
+    this.searchService.search(value);
+  }
+
+  onMobileSearch() {
+    const q = this.mobileQuery().trim();
+    if (!q) return;
+    this.searchService.clear();
+    this.visible = false;
+    this.router.navigate([this.activeLang(), 'search', q]);
+  }
+
+  goToProductFromSearch(product: Product) {
+    this.searchService.clear();
+    this.mobileQuery.set('');
+    this.visible = false;
+    this.router.navigate(this.slugify.productUrl(this.activeLang(), product.id!, product.name ?? ''));
+  }
+
+  showAllMobileResults() {
+    const q = this.mobileQuery().trim();
+    if (!q) return;
+    this.searchService.clear();
+    this.mobileQuery.set('');
+    this.visible = false;
+    this.router.navigate(['/', this.activeLang(), 'search', q]);
   }
 }

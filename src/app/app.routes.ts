@@ -22,6 +22,7 @@ import {Notfound} from './pages/states/notfound/notfound';
 import {Catalog} from './pages/products/catalog/catalog';
 import {OrderDetail} from './pages/order-detail/order-detail';
 import {Brands} from './pages/brands/brands';
+import {Favorites} from './pages/favorites/favorites';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,11 @@ export const routes: Routes = [
         children: [
           {path: '', component: Home},
           {
+            path: 'catalog/brand/:brandName',
+            component: Catalog,
+            data: {breadcrumb: 'Catalog'}
+          },
+          {
             path: 'catalog/:tag',
             component: Catalog,
             data: {breadcrumb: 'Catalog'}
@@ -48,12 +54,17 @@ export const routes: Routes = [
             data: {breadcrumb: 'Brands'}
           },
           {
-            path: 'product-detail/:id',
+            path: 'product/:id/:slug',
             component: ProductDetail,
             resolve: {
               product: ProductResolver
             },
             data: {breadcrumb: 'Product Details'}
+          },
+          {
+            path: 'product-detail/:id',
+            redirectTo: 'product/:id/details',
+            pathMatch: 'full'
           },
           {
             path: 'contacts',
@@ -101,6 +112,11 @@ export const routes: Routes = [
             path: 'about-the-secret-room',
             component: OurStory,
             data: {breadcrumb: 'Our Story'}
+          },
+          {
+            path: 'favorites',
+            component: Favorites,
+            data: {breadcrumb: 'Favorites'}
           },
           {
             path: 'search/:query',

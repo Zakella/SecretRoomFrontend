@@ -1,31 +1,36 @@
-<div
-  class="min-h-screen  text-[#121212] font-sans antialiased selection:bg-black selection:text-white  pt-[290px]">
-
-  <div
-    class="sticky top-0 z-50 mix-blend-difference text-white p-6 border-b border-white/10 flex justify-between items-center backdrop-blur-md">
-    <div class="text-[10px] tracking-[0.3em] uppercase">Search  Result: {{ products.length }}</div>
-
-    <div class="flex items-center gap-8 shadow-2xl rounded-full px-6 py-2 border border-white/20">
-      <button (click)="viewMode = 'grid'" [class.text-pink-400]="viewMode === 'grid'"
-              class="text-[10px] uppercase tracking-widest transition-colors cursor-pointer">Cells
-      </button>
-      <div class="w-[1px] h-3 bg-white/20"></div>
-      <button (click)="viewMode = 'list'" [class.text-pink-400]="viewMode === 'list'"
-              class="text-[10px] uppercase tracking-widest transition-colors cursor-pointer">Rows
-      </button>
-    </div>
+<div class="search-result-header">
+  <div class="search-result-info">
+    {{ 'SearchResult' | transloco }}: "{{ query() }}" — {{ totalElements() }} {{ 'Items' | transloco }}
   </div>
 
-  <main class="p-6 md:p-12">
+  <div class="view-toggle">
+    <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">Cells</button>
+    <div class="divider"></div>
+    <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">Rows</button>
+  </div>
+</div>
+
+<main class="p-6 md:p-12">
+  @if (loading() && products().length === 0) {
+    <div class="flex justify-center py-20">
+      <div class="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+    </div>
+  } @else if (products().length === 0) {
+    <div class="text-center py-20 text-gray-400 text-sm uppercase tracking-widest">
+      {{ 'NothingFound' | transloco }}
+    </div>
+  } @else {
     @if (viewMode === 'grid') {
-      <product-list [products]="products"/>
+      <product-list [products]="products()"/>
     } @else {
       <div class="space-y-2">
-        @for (item of products; track item.id) {
+        @for (item of products(); track item.id) {
           <div
             class="group flex items-center p-4 bg-white/40 border border-black/5 hover:bg-white hover:shadow-2xl transition-all duration-300">
             <div class="w-24 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
               <img [src]="item.imageURL || 'assets/images/no-image.png'"
+                   [alt]="item.name"
+                   loading="lazy"
                    class="w-full h-full object-cover mix-blend-multiply grayscale group-hover:grayscale-0 transition-all">
             </div>
 
@@ -39,17 +44,27 @@
                 <p class="italic text-sm font-serif">{{ item.brand }}</p>
               </div>
               <div class="text-right">
-                <span class="text-2xl font-light">{{ item.price }} ₽</span>
+                <span class="text-2xl font-light">{{ item.price }} MDL</span>
               </div>
             </div>
-
-            <button
-              class="w-12 h-12 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-all transform group-hover:rotate-90">
-              +
-            </button>
           </div>
         }
       </div>
     }
-  </main>
-</div>
+
+    @if (hasMore()) {
+      <div class="flex justify-center mt-12">
+        <button
+          (click)="loadMore()"
+          [disabled]="loading()"
+          class="px-10 py-3 border border-black text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all duration-300 disabled:opacity-50">
+          @if (loading()) {
+            <span class="inline-block w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin"></span>
+          } @else {
+            {{ 'LoadMore' | transloco }}
+          }
+        </button>
+      </div>
+    }
+  }
+</main>

@@ -1,4 +1,5 @@
 {
+  "home.seoH1": "Magazin de Cosmetice, Parfumuri și Lenjerie în Moldova",
   "Your Order": "Comanda ta",
   "Order Summary": "Rezumatul comenzii",
   "Subtotal": "Subtotal",
@@ -8,11 +9,28 @@
   "Quantity": "Cantitate",
   "Product Name": "Nume produs",
   "Size": "Mărime",
+  "Article": "Articol",
   "Amount": "Sumă",
   "Trash": "Coș de gunoi",
   "Search": "Căutare",
+  "Menu": "Meniu",
+  "Favorites": "Favorite",
+  "FavoritesEmpty": "Nimic aici deocamdată. Apasă pe inimioară pentru a adăuga un produs la favorite.",
+  "AddToFavorites": "La favorite",
+  "InFavorites": "În favorite",
+  "Share": "Distribuie",
+  "ViewAll": "Vezi tot",
+  "SearchResult": "Rezultatele căutării",
+  "NothingFound": "Nimic nu a fost găsit",
+  "ShowAllResults": "Afișează toate rezultatele",
+  "LoadMore": "Încarcă mai mult",
+  "Items": "produse",
   "Check out": "Finalizare comandă",
   "Add to Cart": "Adaugă în coș",
+  "LastItem": "Ultimul articol",
+  "LowInStock": "Stoc limitat",
+  "LastItemHurry": "Ultimul articol — grăbește-te!",
+  "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
   "Continue Shopping": "Continuă cumpărăturile",
   "Product description": "Descriere produs",
   "Back to list": "Înapoi",
@@ -56,7 +74,7 @@
   "City should be at least 3 characters": "Orașul trebuie să aibă cel puțin 3 caractere",
   "City should contain only letters": "Orașul trebuie să conțină doar litere latină",
   "Phone is required": "Numărul de telefon este obligatoriu",
-  "Phone need to be format 06******* or 07*******": "Telefonul trebuie să fie în format 06******* sau 07*******",
+  "Phone need to be format 06******* sau 07*******": "Telefonul trebuie să fie în format 06******* sau 07*******",
   "Sign up now": "Înregistrează-te acum",
   "User already exists": "Utilizatorul există deja",
   "Password must be at least 8 characters long and contain both letters and numbers": "Parola trebuie să aibă cel puțin 8 caractere și să conțină atât litere latine, cât și cifre.",
@@ -179,7 +197,10 @@
     "addressPlaceholder": "Strada, numărul, apartamentul",
     "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda",
     "alreadyHaveAccount": "Aveți deja un cont?",
-    "createAccount": "Creează cont"
+    "createAccount": "Creează cont",
+    "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul.",
+    "outOfStock": "Produsele {{products}} nu sunt disponibile în stoc. Vă rugăm să le eliminați din coș.",
+    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc."
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
@@ -235,6 +256,7 @@
     "shippingMethod": "Metoda de livrare",
     "paymentMethod": "Metoda de plată",
     "comment": "Comentariu",
+    "trackingNumber": "Numărul de urmărire",
     "payment": {
       "online": "Plată online",
       "cash": "Numerar la livrare",
@@ -252,5 +274,24 @@
   },
   "sales": {
     "description": "Grăbește-te să cumperi la un preț avantajos"
-  }
+  },
+  "Catalog": "Catalog",
+  "Load more": "Încarcă mai mult",
+  "FooterDescription": "Magazin online de cosmetice și lenjerie în Moldova. Victoria's Secret, Bath & Body Works și alte branduri originale.",
+  "All Brands": "Toate Brandurile",
+  "News": "Noutăți",
+  "Best Sellers": "Cele mai vândute",
+  "Sales": "Reduceri",
+  "Lingerie": "Lenjerie Intimă",
+  "Copyright": "© 2025 Secret Room. Toate drepturile rezervate.",
+  "Cabinet": "Cabinet",
+  "cookie": {
+    "message": "Acest site folosește cookie-uri pentru a vă oferi o experiență mai bună. Continuând navigarea, sunteți de acord cu utilizarea cookie-urilor.",
+    "accept": "Acceptă",
+    "decline": "Refuză"
+  },
+  "NewArrivals": "Noutăți",
+  "BestSellers": "Cele mai vândute",
+  "Sale": "Sale",
+  "RecentlyViewed": "Vizualizate recent"
 }

@@ -16,24 +16,23 @@
           <div class="card-image">
             <img
               [src]="getProductImage(product)"
-              [alt]="product.nameRu"
+              [alt]="product | localizedName"
               class="main-img"
+              loading="lazy"
             />
             @if (getHoverImage(product)) {
               <img
                 [src]="getHoverImage(product)"
-                [alt]="product.nameRu"
+                [alt]="product | localizedName"
                 class="hover-img"
+                loading="lazy"
               />
             }
           </div>
           <div class="card-info">
             <span class="brand">{{ product.brandAlias }}</span>
-            <span class="name">{{ product.nameRu }}</span>
-            <div class="price-row">
-              <span class="old-price">{{ product.oldPrice }} MDL</span>
-              <span class="new-price">{{ product.price }} MDL</span>
-            </div>
+            <span class="name">{{ product | localizedName }}</span>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
           </div>
         </article>
       }

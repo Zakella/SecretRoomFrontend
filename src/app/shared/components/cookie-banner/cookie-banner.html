@@ -1,0 +1,11 @@
+@if (isVisible) {
+  <div class="cookie-banner">
+    <div class="cookie-content">
+      <p>{{ 'cookie.message' | transloco }}</p>
+      <div class="cookie-actions">
+        <button class="accept-btn" (click)="acceptCookies()">{{ 'cookie.accept' | transloco }}</button>
+        <button class="decline-btn" (click)="declineCookies()">{{ 'cookie.decline' | transloco }}</button>
+      </div>
+    </div>
+  </div>
+}
