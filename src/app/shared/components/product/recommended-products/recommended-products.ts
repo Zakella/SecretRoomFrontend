@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
+import {toObservable, takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {switchMap, of, filter} from 'rxjs';
 import {CarouselModule} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
 import {TagModule} from 'primeng/tag';
@@ -18,30 +20,28 @@ import {TranslocoPipe} from '@ngneat/transloco';
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RecommendedProducts implements OnInit {
+export class RecommendedProducts {
   private recommendedService = inject(RecommendedProductService);
   private cartService = inject(CartUi);
   public favoritesService = inject(FavoritesService);
   products = signal<Product[]>([]);
-  responsiveOptions: any[] | undefined;
+  responsiveOptions = RESPONSIVE_OPTIONS;
   protected relatedProducts = input<Product[]>([]);
   productId = input<string>('');
   protected addTopBag = output<Product>();
   protected addToWishlist = output<Product>();
 
-  ngOnInit() {
-    this.responsiveOptions = RESPONSIVE_OPTIONS;
-    const id = this.productId();
-    if (id) {
-      this.recommendedService.getRecommendedProducts(id).subscribe({
-        next: (recommended) => {
-          const mapped = recommended
-            .map(r => r.product)
-            .filter((p): p is Product => p !== null);
-          this.products.set(mapped);
-        }
-      });
-    }
+  constructor() {
+    toObservable(this.productId).pipe(
+      filter(id => !!id),
+      switchMap(id => this.recommendedService.getRecommendedProducts(id)),
+      takeUntilDestroyed()
+    ).subscribe(recommended => {
+      const mapped = recommended
+        .map(r => r.product)
+        .filter((p): p is Product => p !== null);
+      this.products.set(mapped);
+    });
   }
 
   protected addToCart(product: Product) {
