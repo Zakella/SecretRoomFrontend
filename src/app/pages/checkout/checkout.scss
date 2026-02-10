@@ -236,7 +236,7 @@
     .item-actions { display: flex; align-items: center; gap: .5rem; }
     .btn-remove { background: none; border: none; color: #c9544d; cursor: pointer; padding: .4rem; opacity: .7; &:hover { opacity: 1; } }
   }
-  .item-price { font-weight: 600; color: #b5855f; flex-shrink: 0; font-size: .9rem; }
+  .item-price { flex-shrink: 0; }
 }
 
 .summary-totals { padding-top: 1rem; border-top: 1px solid rgba(181,133,95,.15);

@@ -36,15 +36,7 @@
             <span class="brand">{{ product()?.brandAlias }}</span>
             <h1>{{ product() | localizedName }}</h1>
 
-            <div class="price-block" [class.has-discount]="hasDiscount()">
-              @if (hasDiscount()) {
-                <span class="old-price">{{ product()?.oldPrice }} MDL</span>
-              }
-              <p class="price" [class.sale-price]="hasDiscount()">
-                <span class="amount">{{ product()?.price }}</span>
-                <span class="currency">MDL</span>
-              </p>
-            </div>
+            <product-price [price]="product()!.price" [oldPrice]="product()!.oldPrice" size="lg"/>
 
             @if (product()?.article) {
               <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>

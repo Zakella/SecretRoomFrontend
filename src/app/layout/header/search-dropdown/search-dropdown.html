@@ -17,12 +17,7 @@
           <div class="search-dropdown__info">
             <span class="search-dropdown__brand">{{ product.brandAlias }}</span>
             <span class="search-dropdown__name">{{ product | localizedName }}</span>
-            <div class="search-dropdown__price-row">
-              <span class="search-dropdown__price">{{ product.price }} MDL</span>
-              @if (product.oldPrice > product.price!) {
-                <span class="search-dropdown__old-price">{{ product.oldPrice }} MDL</span>
-              }
-            </div>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
           </div>
         </div>
       }

@@ -104,13 +104,6 @@
   transition: color 0.3s ease;
 }
 
-.card-price {
-  font-family: var(--font-body, 'Inter', sans-serif);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gold, #b8956c);
-  letter-spacing: 0.02em;
-}
 
 // ─────────────────────────────────────────────────────────────
 // DESKTOP — carousel
@@ -236,10 +229,6 @@
     .card-name {
       font-size: 11px;
       -webkit-line-clamp: 1;
-    }
-
-    .card-price {
-      font-size: 11px;
     }
   }
 }

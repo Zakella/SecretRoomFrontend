@@ -25,6 +25,7 @@ import {Purchase} from '../../entities/purchase';
 import {ProductService} from '../../@core/api/product';
 import {MessageService} from 'primeng/api';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
+import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -39,7 +40,8 @@ type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
     TranslocoPipe,
     InputNumber,
     RouterLink,
-    LocalizedNamePipe
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',

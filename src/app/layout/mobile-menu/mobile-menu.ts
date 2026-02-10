@@ -16,6 +16,7 @@ import {FavoritesService} from '../../@core/services/favorites';
 import {Product} from '../../entities/product';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {Slugify} from '../../@core/services/slugify';
+import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'mobile-menu',
@@ -27,7 +28,8 @@ import {Slugify} from '../../@core/services/slugify';
     FormsModule,
     TranslocoPipe,
     UpperCasePipe,
-    LocalizedNamePipe
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './mobile-menu.html',
   styleUrl: './mobile-menu.scss',

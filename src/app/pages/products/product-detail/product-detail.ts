@@ -20,10 +20,11 @@ import {Slugify} from '../../../@core/services/slugify';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
+import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, ProductPrice],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -81,12 +82,6 @@ export class ProductDetail {
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
     }
-  }
-
-  hasDiscount(): boolean {
-    const p = this.product();
-    if (!p) return false;
-    return p.oldPrice > 0 && p.price !== undefined && p.oldPrice > p.price;
   }
 
   addProductInCart() {

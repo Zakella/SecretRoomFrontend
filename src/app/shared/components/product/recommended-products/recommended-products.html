@@ -20,7 +20,7 @@
           </div>
           <div class="product-name">{{ product | localizedName }}</div>
           <div class="product-footer">
-            <div class="product-price">{{ product.price }} MDL</div>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
             <div class="buttons">
               <button type="button" class="action-btn" [class.active]="isFavorite(product)" (pointerdown)="$event.stopPropagation()" (click)="toggleFavorite(product); $event.stopPropagation()">
                 <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
@@ -44,7 +44,7 @@
         </div>
         <div class="mobile-card-body">
           <span class="mobile-card-name">{{ product | localizedName }}</span>
-          <span class="mobile-card-price">{{ product.price }} MDL</span>
+          <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
         </div>
         <div class="mobile-card-actions">
           <button type="button" class="action-btn" [class.active]="isFavorite(product)" (click)="toggleFavorite(product); $event.stopPropagation()">

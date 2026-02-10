@@ -195,24 +195,9 @@
       text-overflow: ellipsis;
     }
 
-    .price-row {
+    product-price {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .old-price {
-      font-size: 0.8rem;
-      color: #999;
-      text-decoration: line-through;
-    }
-
-    .new-price {
-      font-family: var(--font-title);
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--sale-red, #c41e3a);
     }
   }
 }

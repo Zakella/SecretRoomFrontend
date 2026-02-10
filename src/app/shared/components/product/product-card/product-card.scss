@@ -35,10 +35,6 @@
     //   aspect-ratio: 4 / 5.2;
     // }
 
-    .info .price.sale-price {
-      font-size: 1.5rem; // Bigger price
-      font-weight: 700;
-    }
   }
 
   &:hover {
@@ -343,66 +339,12 @@
       }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // PRICE BLOCK WITH DISCOUNT — Premium Style
-    // ─────────────────────────────────────────────────────────────
-    .price-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+    product-price {
       margin-top: auto; // Push to bottom of info section
-      min-height: 50px; // Reserve space for price block (old price + new price)
-      justify-content: flex-end; // Align content to bottom
-    }
-
-    // Старая цена — зачёркнутая
-    .old-price {
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-decoration: line-through;
-      text-decoration-thickness: 1.5px;
-      opacity: 0.8;
-
-      @media (max-width: 768px) {
-        font-size: 12px;
-      }
-    }
-
-    // Обычная цена — как в кабинете
-    .price {
-      font-family: var(--font-title);
-      font-size: 1.35rem;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      margin: 0;
-      color: var(--text-dark, #2c2421);
-
-      @media (max-width: 768px) {
-        font-size: 1.15rem;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 1rem;
-      }
-
-      .amount {
-        color: inherit;
-      }
-
-      .currency {
-        font-size: inherit;
-        font-weight: inherit;
-        color: inherit;
-        margin-left: 4px;
-      }
-
-      // Цена со скидкой — красная
-      &.sale-price {
-        color: var(--sale-red);
-      }
+      min-height: 50px; // Reserve space for price block
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
   }
 

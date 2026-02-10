@@ -6,11 +6,12 @@ import {Product} from '../../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {Slugify} from '../../../@core/services/slugify';
+import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'search-dropdown',
   standalone: true,
-  imports: [TranslocoPipe, LocalizedNamePipe],
+  imports: [TranslocoPipe, LocalizedNamePipe, ProductPrice],
   templateUrl: './search-dropdown.html',
   styleUrl: './search-dropdown.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

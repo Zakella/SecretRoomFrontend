@@ -20,7 +20,7 @@
           </div>
           <div class="card-body">
             <span class="card-name">{{ product | localizedName }}</span>
-            <span class="card-price">{{ product.price }} MDL</span>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
           </div>
         </div>
       </ng-template>

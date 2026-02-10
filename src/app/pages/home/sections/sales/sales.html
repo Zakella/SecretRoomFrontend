@@ -32,10 +32,7 @@
           <div class="card-info">
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product | localizedName }}</span>
-            <div class="price-row">
-              <span class="old-price">{{ product.oldPrice }} MDL</span>
-              <span class="new-price">{{ product.price }} MDL</span>
-            </div>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
           </div>
         </article>
       }

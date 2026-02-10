@@ -98,12 +98,7 @@
                 <div class="mobile-search-info">
                   <span class="mobile-search-brand">{{ product.brandAlias }}</span>
                   <span class="mobile-search-name">{{ product | localizedName }}</span>
-                  <div class="mobile-search-price-row">
-                    <span class="mobile-search-price">{{ product.price }} MDL</span>
-                    @if (product.oldPrice > product.price!) {
-                      <span class="mobile-search-old-price">{{ product.oldPrice }} MDL</span>
-                    }
-                  </div>
+                  <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
                 </div>
               </div>
             }

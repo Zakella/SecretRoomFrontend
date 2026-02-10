@@ -6,7 +6,7 @@
         <div class="suggested-item">
           <img [src]="item.image" [alt]="item.title" loading="lazy"/>
           <p class="title">{{ item.title }}</p>
-          <p class="price">{{ item.price }} MDL</p>
+          <product-price [price]="item.price" size="sm"/>
           <button class="btn-add">{{ 'Add to Cart' | transloco }}</button>
         </div>
       }
@@ -65,7 +65,7 @@
                                  decrementButtonIcon="pi pi-minus"/>
                 </div>
               </div>
-              <div class="price">{{ cartItem.amount }} MDL</div>
+              <product-price [price]="cartItem.product.price" [oldPrice]="cartItem.product.oldPrice" size="sm"/>
               <button class="btn-remove" (click)="deleteItemFromCart(i);
                                          $event.stopPropagation()">×
               </button>

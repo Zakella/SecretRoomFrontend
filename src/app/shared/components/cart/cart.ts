@@ -25,6 +25,7 @@ import {Product} from '../../../entities/product';
 import {LocalizedNamePipe} from '../../pipes/localized-name.pipe';
 import {Shipping} from '../../../@core/api/shipping';
 import {ShippingOption} from '../../../entities/shipping-options';
+import {ProductPrice} from '../product/product-price/product-price';
 
 @Component({
   selector: 'app-cart',
@@ -34,6 +35,7 @@ import {ShippingOption} from '../../../entities/shipping-options';
     TranslocoPipe,
     InputNumber,
     LocalizedNamePipe,
+    ProductPrice,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',

@@ -141,12 +141,6 @@
   align-items: center;
 }
 
-.product-price {
-  font-family: var(--font-title, 'Playfair Display', serif);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-dark, #2c2421);
-}
 
 .buttons {
   display: flex;
@@ -223,12 +217,6 @@
   overflow: hidden;
 }
 
-.mobile-card-price {
-  font-family: var(--font-body, 'Inter', sans-serif);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gold, #b8956c);
-}
 
 .mobile-card-actions {
   display: flex;

@@ -51,12 +51,7 @@
               <div class="meta">
                 <span class="brand">{{ item.brandAlias }}</span>
                 <h3 class="name">{{ item | localizedName }}</h3>
-                <div class="price-block">
-                  @if (hasDiscount(item)) {
-                    <span class="old-price">{{ item.oldPrice }} MDL</span>
-                  }
-                  <span class="price" [class.sale-price]="hasDiscount(item)">{{ item.price }} MDL</span>
-                </div>
+                <product-price [price]="item.price" [oldPrice]="item.oldPrice"/>
               </div>
             </div>
           }

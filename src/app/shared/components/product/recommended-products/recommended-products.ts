@@ -15,10 +15,11 @@ import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {Slugify} from '../../../../@core/services/slugify';
 import {Language} from '../../../../@core/services/language';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'recommended-products',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe, ProductPrice],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

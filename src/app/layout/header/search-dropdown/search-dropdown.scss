@@ -89,22 +89,11 @@
     text-overflow: ellipsis;
   }
 
-  &__price-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  &__price {
-    font-size: 13px;
-    font-weight: 600;
-    color: #b8956c;
-  }
-
-  &__old-price {
-    font-size: 12px;
-    color: rgba(245, 243, 244, 0.35);
-    text-decoration: line-through;
+  // Override product-price colors for dark theme
+  product-price {
+    --text-dark: #F5F3F4;
+    --text-muted: rgba(245, 243, 244, 0.35);
+    --sale-red: #e57373;
   }
 
   &__show-all {

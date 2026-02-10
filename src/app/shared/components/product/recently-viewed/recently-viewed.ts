@@ -10,10 +10,11 @@ import {Router} from '@angular/router';
 import {Slugify} from '../../../../@core/services/slugify';
 import {Language} from '../../../../@core/services/language';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'recently-viewed',
-  imports: [CarouselModule, LocalizedNamePipe, TranslocoPipe],
+  imports: [CarouselModule, LocalizedNamePipe, TranslocoPipe, ProductPrice],
   templateUrl: './recently-viewed.html',
   styleUrl: './recently-viewed.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

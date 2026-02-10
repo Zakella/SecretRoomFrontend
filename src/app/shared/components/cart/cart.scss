@@ -11,7 +11,7 @@
     .suggested-item { margin-bottom: 2rem; text-align: center;
       img { width: 70px; height: 90px; object-fit: cover; margin: 0 auto 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: transform 0.3s; &:hover { transform: scale(1.05); } }
       .title { font-size: 0.75rem; font-weight: 500; color: #4b3e2b; line-height: 1.4; margin-bottom: 0.25rem; }
-      .price { font-size: 0.85rem; color: #b5855f; font-weight: 600; margin: 0.5rem 0; }
+      product-price { display: block; margin: 0.5rem 0; }
       .btn-add { background: var(--text-black, #1a1a1a); color: var(--gold, #b8956c); padding: 0.5rem 1rem; border: none; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 4px; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); text-transform: uppercase;
         &:hover { background: #000; color: var(--gold-light, #d4b896); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); transform: translateY(-2px); }
       }
@@ -89,7 +89,7 @@
             }
           }
         }
-        .price { font-size: 1rem; font-weight: 600; color: #b5855f; padding-top: 0.25rem; }
+        product-price { padding-top: 0.25rem; }
         .btn-remove { color: #8a7a6b; background: none; border: none; width: 28px; height: 28px; font-size: 1.4rem; position: absolute; top: 0.5rem; right: 0.5rem; cursor: pointer; border-radius: 50%; transition: all 0.3s; display: flex; align-items: center; justify-content: center;
           &:hover { background: rgba(181, 133, 95, 0.1); color: #b5855f; }
         }
@@ -268,7 +268,7 @@
             }
           }
 
-          .price {
+          product-price {
             grid-column: 3;
             grid-row: 2;
             align-self: end;
@@ -277,7 +277,6 @@
             margin: 0;
             padding: 0;
             text-align: right;
-            font-size: 0.95rem;
             white-space: nowrap;
           }
 

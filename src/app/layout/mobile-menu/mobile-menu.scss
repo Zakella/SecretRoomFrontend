@@ -293,23 +293,6 @@
       line-height: 1.2;
     }
 
-    .mobile-search-price-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-
-      .mobile-search-price {
-        font-size: 13px;
-        font-weight: 600;
-        color: #000;
-      }
-
-      .mobile-search-old-price {
-        font-size: 11px;
-        text-decoration: line-through;
-        color: #999;
-      }
-    }
   }
 }
 
