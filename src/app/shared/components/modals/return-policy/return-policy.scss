@@ -1,121 +1,41 @@
-/*
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+// Пробиваемся к стилям PrimeNG
+::ng-deep .luxury-dialog {
+  .p-dialog-header {
+    padding: 2rem 2rem 1rem;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 
-.modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  border: 1px solid var(--gold, #b8956c);
-  max-width: 500px;
-  width: 100%;
-  position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.close-btn {
-  color: var(--gold, #b8956c);
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-.modal h2 {
-  text-align: center;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1)
-}
-
-.modal p {
-  text-align: start;
-  letter-spacing: 1.2px;
-  line-height: 1.6
-}
-*/
-
-
-
-:host ::ng-deep {
-  .p-dialog {
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(232, 204, 196, 0.3); // Светлый Rose Gold бортик
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-    background: #ffffff;
-
-    // Шапка диалога
-    .p-dialog-header {
-      background: #ffffff;
-      padding: 2rem 2rem 1rem;
-      color: #121216;
-      border-bottom: none;
-
-      .p-dialog-title {
-        font-family: 'Cinzel', serif; // Ваш заголовочный шрифт
-        font-weight: 500;
-        font-size: 1.5rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        background: linear-gradient(90deg, #C4948F, #D9B5AC);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      // Кнопка закрытия
-      .p-dialog-header-icon {
-        color: #C4948F;
-        transition: all 0.3s ease;
-        border-radius: 50%;
-
-        &:hover {
-          background: rgba(230, 179, 168, 0.1);
-          color: #9A7B74;
-          transform: rotate(90deg);
-        }
-
-        &:focus {
-          box-shadow: 0 0 0 2px rgba(230, 179, 168, 0.4);
-        }
-      }
+    span {
+      color: #8B7355 !important;
+      letter-spacing: 2px !important;
     }
 
-    // Контентная часть
-    .p-dialog-content {
-      padding: 0 2rem 2.5rem;
-      background: #ffffff;
-      color: #4D4D4D;
-      font-family: 'Public Sans', sans-serif;
-      line-height: 1.6;
-      font-size: 0.95rem;
 
-      p {
-        margin: 0;
-        white-space: pre-line; // Чтобы учитывались переносы строк из переводов
-      }
-    }
-
-    // Анимация появления
-    &.p-dialog-enter {
-      transform: scale(0.9);
-      opacity: 0;
+    .p-dialog-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: #2D2D2D;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
   }
 
-  // Затемнение фона (Overlay)
-  .p-component-overlay {
-    background-color: rgba(14, 14, 17, 0.7);
-    backdrop-filter: blur(4px); // Эффект матового стекла
+}
+
+.policy-container {
+  .policy-section {
+    margin-bottom: 1.5rem;
+
+    p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
   }
+}
+
+.policy-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4b896, transparent);
+  margin: 1.5rem 0;
 }
