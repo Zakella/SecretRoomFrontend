@@ -132,34 +132,27 @@
 
     .cart-suggestions {
       display: flex;
-      flex-wrap: nowrap;
-      order: 2;
+      flex-wrap: wrap;
       width: 100%;
-      padding: 1.5rem 1rem;
+      padding: 1rem;
       border-right: none;
-      border-top: 1px solid rgba(181, 133, 95, 0.1);
+      border-bottom: 1px solid rgba(181, 133, 95, 0.1);
       background: #faf7f5;
       flex-shrink: 0;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      gap: 12px;
-      scrollbar-width: none;
-
-      &::-webkit-scrollbar { display: none; }
+      gap: 10px;
 
       h3 {
         display: block;
         margin-bottom: 0;
         font-size: 0.9rem;
         width: 100%;
-        flex-shrink: 0;
         flex-basis: 100%;
       }
 
       .suggested-item {
-        flex: 0 0 150px;
-        min-width: 150px;
+        flex: 1 1 calc(50% - 10px);
+        min-width: 120px;
+        max-width: calc(50% - 5px);
         box-sizing: border-box;
         background: #fff;
         padding: 10px;
@@ -175,13 +168,12 @@
     }
 
     .cart-content {
-      order: 1;
       width: 100%;
       padding: 1rem;
       overflow: visible;
       display: flex;
       flex-direction: column;
-      min-height: 100%; // Ensure it fills screen
+      flex: 1 0 auto;
 
       .cart-header {
         position: sticky;
@@ -314,7 +306,7 @@
         left: 0;
         right: 0;
         background: #fff;
-        padding: 1rem 1.5rem 2rem;
+        padding: 1rem 1.5rem calc(2rem + 60px + env(safe-area-inset-bottom, 0px));
         box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         z-index: 100;
         margin-top: auto;

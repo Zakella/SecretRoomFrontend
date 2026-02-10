@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, inject, signal, DestroyRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, DestroyRef} from '@angular/core';
 import {NgClass, Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -45,6 +45,13 @@ export class ProductDetail {
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
   protected selectedVariant = signal<ProductVariant | null>(null);
+  protected effectiveStock = computed(() => {
+    const variant = this.selectedVariant();
+    if (variant?.unitsInStock !== undefined) {
+      return variant.unitsInStock;
+    }
+    return this.product()?.unitsInStock;
+  });
   quantity: number = 1;
   currentSize: string | undefined;
   mainImage: string | null = null;

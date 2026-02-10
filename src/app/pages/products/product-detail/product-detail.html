@@ -41,6 +41,18 @@
               [oldPrice]="selectedVariant()?.oldPrice ?? product()!.oldPrice"
               size="lg"/>
 
+            @if (effectiveStock() === 1) {
+              <div class="stock-warning stock-critical">
+                <i class="ri-error-warning-fill"></i>
+                <span>{{ 'LastItemHurry' | transloco }}</span>
+              </div>
+            } @else if (effectiveStock() !== undefined && effectiveStock()! <= 3 && effectiveStock()! > 0) {
+              <div class="stock-warning stock-low">
+                <i class="ri-fire-fill"></i>
+                <span>{{ 'LowInStockDetail' | transloco }}</span>
+              </div>
+            }
+
             @if (product()?.article) {
               <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>
             }

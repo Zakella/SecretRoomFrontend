@@ -40,6 +40,16 @@
         <i class="ri-sparkling-fill"></i>
         <span>New</span>
       </div>
+    } @else if (!product()?.variants?.length && product()?.unitsInStock === 1) {
+      <div class="badge badge-status badge-last-item">
+        <i class="ri-error-warning-fill"></i>
+        <span>{{ 'LastItem' | transloco }}</span>
+      </div>
+    } @else if (!product()?.variants?.length && product()?.unitsInStock !== undefined && product()!.unitsInStock! <= 3 && product()!.unitsInStock! > 0) {
+      <div class="badge badge-status badge-low-stock">
+        <i class="ri-fire-fill"></i>
+        <span>{{ 'LowInStock' | transloco }}</span>
+      </div>
     }
 
     <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">

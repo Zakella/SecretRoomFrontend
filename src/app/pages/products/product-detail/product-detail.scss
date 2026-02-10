@@ -131,6 +131,43 @@ product-price {
 }
 
 // ─────────────────────────────────────────────────────────────
+// STOCK WARNING
+// ─────────────────────────────────────────────────────────────
+.stock-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.stock-critical {
+  background: rgba(211, 47, 47, 0.08);
+  color: #d32f2f;
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  animation: stockPulse 2s ease-in-out infinite;
+}
+
+.stock-low {
+  background: rgba(230, 126, 34, 0.08);
+  color: #e67e22;
+  border: 1px solid rgba(230, 126, 34, 0.2);
+}
+
+@keyframes stockPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+// ─────────────────────────────────────────────────────────────
 // ARTICLE
 // ─────────────────────────────────────────────────────────────
 .article {

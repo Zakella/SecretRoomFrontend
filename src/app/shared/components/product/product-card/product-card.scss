@@ -256,6 +256,34 @@
     }
   }
 
+  // Last item badge — красный, пульсирующий
+  .badge-last-item {
+    background: rgba(211, 47, 47, 0.95);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.35);
+    animation: stockPulse 2s ease-in-out infinite;
+
+    i {
+      color: #fff;
+    }
+  }
+
+  // Low stock badge — оранжевый/warning
+  .badge-low-stock {
+    background: rgba(230, 126, 34, 0.95);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+
+    i {
+      color: #fff;
+    }
+  }
+
+  @keyframes stockPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+  }
+
   // Sale badge — чёрно-золотой
   .badge-sale {
     background: var(--text-black);

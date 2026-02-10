@@ -301,6 +301,10 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   // Cart management
+  getItemMaxStock(item: CartItem): number {
+    return this.cartService.getMaxStock(item) || 100;
+  }
+
   updateCartItemQuantity(item: CartItem, index: number): void {
     this.cartService.recalculateCartItem(item, index);
     this.updateShippingCost();
@@ -398,9 +402,17 @@ export class Checkout implements OnInit, OnDestroy {
 
           const errorMessage = error.error?.message || '';
 
-          if (errorMessage.includes('Product with id')) {
+          if (error.status === 409 && error.error?.error === 'OUT_OF_STOCK') {
+            const details = error.error?.details;
+            if (details?.length) {
+              const names = details.map((d: any) => d.productName).join(', ');
+              this.orderError.set(this.translocoService.translate('checkout.outOfStock', { products: names }));
+            } else {
+              this.orderError.set('checkout.outOfStockGeneric');
+            }
+            this.validateCart();
+          } else if (errorMessage.includes('Product with id')) {
             this.orderError.set('checkout.productNotFoundInCart');
-            // Trigger validation again to remove the bad product
             this.validateCart();
           } else if (error.status === 0) {
             this.orderError.set('errors.serverError');

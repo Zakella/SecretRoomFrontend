@@ -6,5 +6,6 @@ export interface ProductVariant {
   discountPercent?: number;
   discountAmount?: number;
   inStock?: boolean;
+  unitsInStock?: number;
   available?: boolean;
 }

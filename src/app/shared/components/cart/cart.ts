@@ -162,6 +162,10 @@ export class Cart implements OnInit, OnDestroy {
     )
   }
 
+  protected getItemMaxStock(cartItem: CartItem): number {
+    return this.cartService.getMaxStock(cartItem) || 100;
+  }
+
   protected deleteItemFromCart(index: number): void {
     this.cartService.deleteItemFromCart(index);
   }

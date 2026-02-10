@@ -27,6 +27,10 @@
   "Items": "produse",
   "Check out": "Finalizare comandă",
   "Add to Cart": "Adaugă în coș",
+  "LastItem": "Ultimul articol",
+  "LowInStock": "Stoc limitat",
+  "LastItemHurry": "Ultimul articol — grăbește-te!",
+  "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
   "Continue Shopping": "Continuă cumpărăturile",
   "Product description": "Descriere produs",
   "Back to list": "Înapoi",
@@ -194,7 +198,9 @@
     "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda",
     "alreadyHaveAccount": "Aveți deja un cont?",
     "createAccount": "Creează cont",
-    "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul."
+    "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul.",
+    "outOfStock": "Produsele {{products}} nu sunt disponibile în stoc. Vă rugăm să le eliminați din coș.",
+    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc."
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
@@ -250,6 +256,7 @@
     "shippingMethod": "Metoda de livrare",
     "paymentMethod": "Metoda de plată",
     "comment": "Comentariu",
+    "trackingNumber": "Numărul de urmărire",
     "payment": {
       "online": "Plată online",
       "cash": "Numerar la livrare",

@@ -116,6 +116,19 @@
               </div>
             </div>
 
+            <!-- Tracking Number -->
+            @if (order()!.trackingNumber) {
+              <div class="info-card">
+                <h3 class="info-title">
+                  <i class="pi pi-box"></i>
+                  {{ 'orderDetail.trackingNumber' | transloco }}
+                </h3>
+                <div class="info-content">
+                  <p class="tracking-number">{{ order()!.trackingNumber }}</p>
+                </div>
+              </div>
+            }
+
             <!-- Payment Method -->
             <div class="info-card">
               <h3 class="info-title">

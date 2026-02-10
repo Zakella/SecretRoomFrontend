@@ -17,6 +17,7 @@ export interface Order {
   items?: OrderItem[];
   comment?: string;
   payment?: string;
+  trackingNumber?: string;
 }
 
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
