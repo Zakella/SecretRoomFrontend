@@ -11,9 +11,9 @@ import {FadeUp} from '../../@core/directives/fade-up';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {Router, RouterLink} from '@angular/router';
+import {forkJoin, of, Subject} from 'rxjs';
+import {catchError, map, takeUntil} from 'rxjs/operators';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
@@ -22,6 +22,10 @@ import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {PurchaseService} from '../../@core/api/purchase';
 import {Purchase} from '../../entities/purchase';
+import {ProductService} from '../../@core/api/product';
+import {MessageService} from 'primeng/api';
+import {GoogleAnalytics} from '../../@core/services/google-analytics';
+import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -36,7 +40,8 @@ type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
     TranslocoPipe,
     InputNumber,
     RouterLink,
-    LocalizedNamePipe
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
@@ -64,19 +69,33 @@ export class Checkout implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private cartService = inject(CartUi);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private shippingService = inject(Shipping);
   private purchaseService = inject(PurchaseService);
+  private productService = inject(ProductService);
+  private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   private translocoService = inject(TranslocoService);
+  private ga = inject(GoogleAnalytics);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
 
   ngOnInit(): void {
+    // Ensure language is synced with URL
+    this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const lang = params['lang'];
+      if (lang && (lang === 'ro' || lang === 'ru') && this.activeLang() !== lang) {
+        this.langService.setLanguage(lang);
+      }
+    });
+
     this.initForm();
     this.loadCart();
     this.subscribeToCartChanges();
+    this.validateCart();
+    this.trackBeginCheckout();
   }
 
   ngOnDestroy(): void {
@@ -110,6 +129,40 @@ export class Checkout implements OnInit, OnDestroy {
     this.cartService.computeCartTotals();
   }
 
+  private validateCart(): void {
+    if (this.cartItems.length === 0) return;
+
+    const checks = this.cartItems.map((item, index) =>
+      this.productService.getProductById(item.product.id!).pipe(
+        map(() => ({ index, valid: true })),
+        catchError(() => of({ index, valid: false }))
+      )
+    );
+
+    forkJoin(checks).pipe(takeUntil(this.destroy$)).subscribe(results => {
+      const invalidIndices = results
+        .filter(r => !r.valid)
+        .map(r => r.index)
+        .sort((a, b) => b - a); // Sort descending to delete from end
+
+      if (invalidIndices.length > 0) {
+        invalidIndices.forEach(index => {
+          this.cartService.deleteItemFromCart(index);
+        });
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: this.translocoService.translate('checkout.productNotFoundInCart'),
+          detail: ''
+        });
+
+        if (this.cartItems.length === 0) {
+          this.router.navigate([this.activeLang(), 'catalog', 'all']);
+        }
+      }
+    });
+  }
+
   private subscribeToCartChanges(): void {
     this.cartService.cartItems
       .pipe(takeUntil(this.destroy$))
@@ -123,7 +176,7 @@ export class Checkout implements OnInit, OnDestroy {
       .subscribe(amount => {
         this.totalAmount = amount;
         this.updateShippingCost();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       });
 
     this.cartService.totalQuantity
@@ -138,6 +191,8 @@ export class Checkout implements OnInit, OnDestroy {
       .subscribe(modified => {
         if (modified) {
           this.cartService.computeCartTotals();
+          this.updateShippingCost();
+          this.cdr.detectChanges();
         }
       });
   }
@@ -246,12 +301,20 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   // Cart management
+  getItemMaxStock(item: CartItem): number {
+    return this.cartService.getMaxStock(item) || 100;
+  }
+
   updateCartItemQuantity(item: CartItem, index: number): void {
     this.cartService.recalculateCartItem(item, index);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
   }
 
   removeCartItem(index: number): void {
     this.cartService.deleteItemFromCart(index);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
     if (this.cartItems.length === 0) {
       this.router.navigate([this.activeLang(), 'catalog', 'all']);
     }
@@ -302,6 +365,7 @@ export class Checkout implements OnInit, OnDestroy {
       orderItems: this.cartItems.map(item => ({
         product: item.product,
         sizeType: item.size?.sizeType,
+        variantAppId: item.variantAppId,
         amount: item.amount,
         quantity: item.quantity
       })),
@@ -336,12 +400,26 @@ export class Checkout implements OnInit, OnDestroy {
           console.error('Order placement failed:', error);
           this.isSubmitting.set(false);
 
-          if (error.status === 0) {
+          const errorMessage = error.error?.message || '';
+
+          if (error.status === 409 && error.error?.error === 'OUT_OF_STOCK') {
+            const details = error.error?.details;
+            if (details?.length) {
+              const names = details.map((d: any) => d.productName).join(', ');
+              this.orderError.set(this.translocoService.translate('checkout.outOfStock', { products: names }));
+            } else {
+              this.orderError.set('checkout.outOfStockGeneric');
+            }
+            this.validateCart();
+          } else if (errorMessage.includes('Product with id')) {
+            this.orderError.set('checkout.productNotFoundInCart');
+            this.validateCart();
+          } else if (error.status === 0) {
             this.orderError.set('errors.serverError');
           } else if (error.status >= 500) {
             this.orderError.set('errors.serverError');
-          } else if (error.error?.message) {
-            this.orderError.set(error.error.message);
+          } else if (errorMessage) {
+            this.orderError.set(errorMessage);
           } else {
             this.orderError.set('errors.serverError');
           }
@@ -362,5 +440,13 @@ export class Checkout implements OnInit, OnDestroy {
   retryLoadShipping(): void {
     this.shippingError.set(null);
     this.loadShippingOptions();
+  }
+
+  private trackBeginCheckout() {
+    this.ga.send({
+      event: 'begin_checkout',
+      category: 'ecommerce',
+      value: this.totalAmount
+    });
   }
 }

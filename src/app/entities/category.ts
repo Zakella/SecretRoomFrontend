@@ -10,6 +10,7 @@ export interface CategoryDto {
   descriptionRo: string;
 
   imageUrl: string;
+  slug: string;
 
   active: boolean;
   deleted: boolean;

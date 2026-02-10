@@ -17,6 +17,7 @@ export interface Order {
   items?: OrderItem[];
   comment?: string;
   payment?: string;
+  trackingNumber?: string;
 }
 
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
@@ -24,6 +25,7 @@ export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | '
 export interface OrderItem {
   product: Product;
   sizeType?: string;
+  variantAppId?: number;
   amount: number;
   quantity: number;
 }

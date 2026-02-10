@@ -1,0 +1,73 @@
+:host {
+  display: inline-block;
+}
+
+.price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price {
+  font-family: var(--font-title, 'Playfair Display', serif);
+  font-weight: 600;
+  color: var(--text-dark, #2c2421);
+  margin: 0;
+
+  &.sale-price {
+    color: var(--sale-red, #c0392b);
+  }
+}
+
+.old-price {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-weight: 500;
+  color: var(--text-muted, #8c8279);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  opacity: 0.8;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Size: sm — mini cards (recently-viewed, recommended, search)
+// ─────────────────────────────────────────────────────────────
+:host(.host-sm) {
+  .price { font-size: 0.85rem; }
+  .old-price { font-size: 0.75rem; }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Size: md — catalog cards (product-card, best-sellers, etc.)
+// ─────────────────────────────────────────────────────────────
+:host(.host-md) {
+  .price { font-size: 1rem; }
+  .old-price { font-size: 0.85rem; }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Size: lg — product detail page
+// ─────────────────────────────────────────────────────────────
+:host(.host-lg) {
+  .price { font-size: 1.6rem; }
+  .old-price { font-size: 15px; }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Mobile responsive
+// ─────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  :host(.host-sm) {
+    .price { font-size: 11px; }
+    .old-price { font-size: 10px; }
+  }
+
+  :host(.host-md) {
+    .price { font-size: 0.9rem; }
+    .old-price { font-size: 0.75rem; }
+  }
+
+  :host(.host-lg) {
+    .price { font-size: 1.3rem; }
+    .old-price { font-size: 13px; }
+  }
+}

@@ -4,13 +4,15 @@ import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../../shared/pipes/localized-name.pipe';
+import {ProductPrice} from '../../../../shared/components/product/product-price/product-price';
 
 @Component({
   selector: 'sales',
   imports: [
     RouterLink,
     TranslocoPipe,
-    LocalizedNamePipe
+    LocalizedNamePipe,
+    ProductPrice
   ],
   templateUrl: './sales.html',
   styleUrl: './sales.scss'

@@ -10,10 +10,12 @@ import { SkeletonModule } from 'primeng/skeleton';
 import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
+import {Slugify} from '../../../../@core/services/slugify';
+import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'product-card',
-  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe],
+  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe, ProductPrice],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,6 +24,7 @@ export class ProductCard {
   private route = inject(Router);
   private langService = inject(Language);
   private cartService = inject(CartUi);
+  private slugify = inject(Slugify);
   public favoritesService = inject(FavoritesService);
   public activeLang = this.langService.currentLanguage
   product = input<Product>();
@@ -56,7 +59,8 @@ export class ProductCard {
   loading  = signal<boolean>(false);
 
   protected navToProduct(): void {
-     this.route.navigate([this.activeLang(), 'product-detail', this.product()!.id]);
+    const p = this.product()!;
+    this.route.navigate(this.slugify.productUrl(this.activeLang(), p.id!, p.name ?? ''));
   }
 
   toggleFavorite(event: Event) {

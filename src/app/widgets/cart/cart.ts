@@ -19,6 +19,8 @@ import {takeUntil} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
+import {Slugify} from '../../@core/services/slugify';
+import {Product} from '../../entities/product';
 import {CartItem} from '../../entities/cart-item';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
@@ -69,6 +71,7 @@ export class Cart implements OnInit, OnDestroy {
   shippingOptionsLoaded = signal<boolean>(false);
 
   private langService = inject(Language);
+  private slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage
 
 
@@ -169,13 +172,10 @@ export class Cart implements OnInit, OnDestroy {
     return this.freeShippingRemaining === 0 && this.freeShippingThreshold() > 0;
   }
 
-  protected navToProduct(id: string| undefined): void {
-    if (!id)return
-
-    this.router.navigate([this.activeLang(), 'product-detail', id]).then(
-      () => {
-        this.closeDrawer();
-      }
+  protected navToProduct(product: Product): void {
+    if (!product.id) return;
+    this.router.navigate(this.slugify.productUrl(this.activeLang(), product.id, product.name ?? '')).then(
+      () => this.closeDrawer()
     );
   }
 }

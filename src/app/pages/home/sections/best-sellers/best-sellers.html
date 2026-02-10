@@ -18,24 +18,21 @@
               [src]="getProductImage(product)"
               [alt]="product | localizedName"
               class="main-img"
+              loading="lazy"
             />
             @if (getHoverImage(product)) {
               <img
                 [src]="getHoverImage(product)"
                 [alt]="product | localizedName"
                 class="hover-img"
+                loading="lazy"
               />
             }
           </div>
           <div class="meta">
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product | localizedName }}</span>
-            <div class="price-block">
-              @if (hasDiscount(product)) {
-                <span class="old-price">{{ product.oldPrice }} MDL</span>
-              }
-              <span class="price" [class.sale-price]="hasDiscount(product)">{{ product.price }} MDL</span>
-            </div>
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
           </div>
         </article>
       }

@@ -1,30 +1,60 @@
 @if (products().length > 0) {
-  <p-carousel
-    [value]="products()"
-    [numVisible]="products().length < 3 ? products().length : 3"
-    [numScroll]="1"
-    [circular]="products().length > 3"
-    [autoplayInterval]="products().length > 3 ? 4000 : 0"
-    [showNavigators]="products().length > 3"
-    [responsiveOptions]="responsiveOptions!">
-    <ng-template let-product #item>
-      <div class="carousel-item">
-        <div class="image-container">
-          <img [src]="product.imageURL" [alt]="product | localizedName"/>
-        </div>
-        <div class="product-name">{{ product | localizedName }}</div>
-        <div class="product-footer">
-          <div class="product-price">{{ product.price }} MDL</div>
-          <div class="buttons">
-            <button type="button" class="action-btn" [class.active]="isFavorite(product)" (pointerdown)="$event.stopPropagation()" (click)="toggleFavorite(product); $event.stopPropagation()">
-              <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
-            </button>
-            <button type="button" class="action-btn" (pointerdown)="$event.stopPropagation()" (click)="addToCart(product); $event.stopPropagation()">
-              <i class="ri-shopping-bag-line"></i>
-            </button>
+  <div class="section-wrapper">
+    <h2 class="section-title">{{ 'Recommendation' | transloco }}</h2>
+  </div>
+
+  <!-- Desktop: carousel -->
+  <div class="desktop-view">
+    <p-carousel
+      [value]="products()"
+      [numVisible]="products().length < 3 ? products().length : 3"
+      [numScroll]="1"
+      [circular]="products().length > 3"
+      [autoplayInterval]="products().length > 3 ? 4000 : 0"
+      [showNavigators]="products().length > 3"
+      [responsiveOptions]="responsiveOptions!">
+      <ng-template let-product #item>
+        <div class="carousel-item" (click)="goToProduct(product)">
+          <div class="image-container">
+            <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
+          </div>
+          <div class="product-name">{{ product | localizedName }}</div>
+          <div class="product-footer">
+            <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
+            <div class="buttons">
+              <button type="button" class="action-btn" [class.active]="isFavorite(product)" (pointerdown)="$event.stopPropagation()" (click)="toggleFavorite(product); $event.stopPropagation()">
+                <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
+              </button>
+              <button type="button" class="action-btn" (pointerdown)="$event.stopPropagation()" (click)="addToCart(product); $event.stopPropagation()">
+                <i class="ri-shopping-bag-line"></i>
+              </button>
+            </div>
           </div>
         </div>
+      </ng-template>
+    </p-carousel>
+  </div>
+
+  <!-- Mobile: swipeable scroll -->
+  <div class="mobile-view">
+    @for (product of products(); track product.id) {
+      <div class="mobile-card" (click)="goToProduct(product)">
+        <div class="mobile-card-image">
+          <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
+        </div>
+        <div class="mobile-card-body">
+          <span class="mobile-card-name">{{ product | localizedName }}</span>
+          <product-price [price]="product.price" [oldPrice]="product.oldPrice" size="sm"/>
+        </div>
+        <div class="mobile-card-actions">
+          <button type="button" class="action-btn" [class.active]="isFavorite(product)" (click)="toggleFavorite(product); $event.stopPropagation()">
+            <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
+          </button>
+          <button type="button" class="action-btn" (click)="addToCart(product); $event.stopPropagation()">
+            <i class="ri-shopping-bag-line"></i>
+          </button>
+        </div>
       </div>
-    </ng-template>
-  </p-carousel>
+    }
+  </div>
 }

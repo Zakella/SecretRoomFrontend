@@ -26,6 +26,7 @@
               <div class="brand-logo-wrapper">
                 <img [src]="brand.logoUrl || 'assets/images/brand-placeholder.png'"
                      [alt]="brand.name"
+                     loading="lazy"
                      #brandImg (error)="brandImg.src = 'assets/images/placeholder.png'">
               </div>
               <span class="brand-name">{{ brand.name }}</span>

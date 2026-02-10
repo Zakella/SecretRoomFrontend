@@ -1,16 +1,22 @@
-<div class="drawer-backdrop" (click)="closeDrawer()">
+а <div class="drawer-backdrop" (click)="closeDrawer()">
   <div class="cart-drawer" (click)="$event.stopPropagation()">
-    <aside class="cart-suggestions">
-      <h3>{{ 'cart.youMayAlsoLike' | transloco }}</h3>
-      @for (item of suggestions; track $index) {
-        <div class="suggested-item">
-          <img [src]="item.image" alt=""/>
-          <p class="title">{{ item.title }}</p>
-          <p class="price">{{ item.price }} MDL</p>
-          <button class="btn-add">{{ 'Add to Cart' | transloco }}</button>
-        </div>
-      }
-    </aside>
+    @if (recommendations().length > 0) {
+      <aside class="cart-suggestions">
+        <h3>{{ 'cart.youMayAlsoLike' | transloco }}</h3>
+        @for (item of recommendations(); track item.id) {
+          <div class="suggested-item">
+            <img [src]="item.imageURL ?? 'assets/images/unavailable.jpg'"
+                 [alt]="item | localizedName"
+                 class="cursor-pointer"
+                 loading="lazy"
+                 (click)="navToProduct(item); $event.stopPropagation()"/>
+            <p class="title">{{ item | localizedName }}</p>
+            <product-price [price]="item.price" [oldPrice]="item.oldPrice" size="sm"/>
+            <button class="btn-add" (click)="addRecommendationToCart(item)">{{ 'Add to Cart' | transloco }}</button>
+          </div>
+        }
+      </aside>
+    }
     <div class="cart-content">
       <div class="cart-header">
         <h2>{{ 'Your Order' | transloco }} ({{ totalQuantity }})</h2>
@@ -43,9 +49,10 @@
           @for (cartItem of cartItems; track cartItem.id; let i = $index) {
             <div class="cart-item">
               <img [src]="cartItem.product.imageURL ?? 'assets/images/unavailable.jpg'"
-                   alt=""
+                   [alt]="cartItem.product | localizedName"
                    class="cursor-pointer"
-                   (click)="navToProduct(cartItem.product.id);
+                   loading="lazy"
+                   (click)="navToProduct(cartItem.product);
                      $event.stopPropagation()"/>
               <div class="item-info">
                 <p class="title">{{ cartItem.product | localizedName }}</p>
@@ -54,7 +61,7 @@
                                  buttonLayout="horizontal"
                                  spinnerMode="horizontal"
                                  [min]="1"
-                                 [max]="100"
+                                 [max]="getItemMaxStock(cartItem)"
                                  [(ngModel)]="cartItem.quantity"
                                  (ngModelChange)="recalculateCartItem(cartItem, i)"
                                  inputStyleClass="text-center w-20 !bg-transparent !text-black"
@@ -64,7 +71,7 @@
                                  decrementButtonIcon="pi pi-minus"/>
                 </div>
               </div>
-              <div class="price">{{ cartItem.amount }} MDL</div>
+              <product-price [price]="cartItem.product.price" [oldPrice]="cartItem.product.oldPrice" size="sm"/>
               <button class="btn-remove" (click)="deleteItemFromCart(i);
                                          $event.stopPropagation()">×
               </button>

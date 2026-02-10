@@ -21,13 +21,33 @@ export class CartUi {
   }
 
 
+  getMaxStock(cartItem: CartItem): number | undefined {
+    if (cartItem.variantAppId && cartItem.product.variants?.length) {
+      const variant = cartItem.product.variants.find(v => v.appId === cartItem.variantAppId);
+      if (variant?.unitsInStock != null) {
+        return variant.unitsInStock;
+      }
+    }
+    return cartItem.product.unitsInStock;
+  }
+
   addToCart(theCartItem: CartItem) {
     const currentItems = [...this.cartItems.value];
     const existingCartItemIndex = this.findExistingCartItemIndex(currentItems, theCartItem);
+    const maxStock = this.getMaxStock(theCartItem);
 
     if (existingCartItemIndex !== -1) {
-      this.updateExistingCartItem(currentItems, existingCartItemIndex, theCartItem.quantity);
+      const existing = currentItems[existingCartItemIndex];
+      const newQty = existing.quantity + theCartItem.quantity;
+      if (maxStock != null && maxStock > 0) {
+        this.updateExistingCartItem(currentItems, existingCartItemIndex, Math.min(newQty, maxStock) - existing.quantity);
+      } else {
+        this.updateExistingCartItem(currentItems, existingCartItemIndex, theCartItem.quantity);
+      }
     } else {
+      if (maxStock != null && maxStock > 0) {
+        theCartItem.quantity = Math.min(theCartItem.quantity, maxStock);
+      }
       currentItems.push(theCartItem);
     }
 
@@ -41,7 +61,8 @@ export class CartUi {
   private findExistingCartItemIndex(cartItems: CartItem[], newItem: CartItem): number {
     return cartItems.findIndex(item =>
       item.product.id === newItem.product.id &&
-      item.size?.sizeType === newItem.size?.sizeType
+      item.size?.sizeType === newItem.size?.sizeType &&
+      item.variantAppId === newItem.variantAppId
     );
   }
 
@@ -119,6 +140,10 @@ export class CartUi {
   }
 
   recalculateCartItem(cartItem: CartItem, index: number) {
+    const maxStock = this.getMaxStock(cartItem);
+    if (maxStock != null && maxStock > 0 && cartItem.quantity > maxStock) {
+      cartItem.quantity = maxStock;
+    }
     const currentValue = this.cartItems.value;
     currentValue[index] = cartItem;
     this.cartItems.next(currentValue);

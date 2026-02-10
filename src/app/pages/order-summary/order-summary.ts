@@ -8,6 +8,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {CurrencyPipe} from '@angular/common';
+import {GoogleAnalytics} from '../../@core/services/google-analytics';
 
 @Component({
   selector: 'app-order-summary',
@@ -26,6 +27,7 @@ export class OrderSummary implements OnInit, OnDestroy {
   private purchaseService = inject(PurchaseService);
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
+  private ga = inject(GoogleAnalytics);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -54,6 +56,7 @@ export class OrderSummary implements OnInit, OnDestroy {
       .subscribe({
         next: (order) => {
           this.orderReview.set(order);
+          this.trackPurchase(order);
           this.isLoading.set(false);
           this.cdr.markForCheck();
         },
@@ -64,5 +67,14 @@ export class OrderSummary implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  private trackPurchase(order: OrderReview) {
+    this.ga.send({
+      event: 'purchase',
+      category: 'ecommerce',
+      label: order.orderNumber,
+      value: order.totalAmountOrder
+    });
   }
 }

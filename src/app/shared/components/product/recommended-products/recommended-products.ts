@@ -1,4 +1,7 @@
-import {ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
+import {toObservable, takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {switchMap, of, filter} from 'rxjs';
+import {Router} from '@angular/router';
 import {CarouselModule} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
 import {TagModule} from 'primeng/tag';
@@ -9,38 +12,40 @@ import {RecommendedProductService} from './recommended-product-service';
 import {CartUi} from '../../cart/services/cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
+import {Slugify} from '../../../../@core/services/slugify';
+import {Language} from '../../../../@core/services/language';
+import {TranslocoPipe} from '@ngneat/transloco';
+import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'recommended-products',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe, ProductPrice],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RecommendedProducts implements OnInit {
+export class RecommendedProducts {
   private recommendedService = inject(RecommendedProductService);
   private cartService = inject(CartUi);
+  private router = inject(Router);
+  private slugify = inject(Slugify);
+  private langService = inject(Language);
   public favoritesService = inject(FavoritesService);
   products = signal<Product[]>([]);
-  responsiveOptions: any[] | undefined;
+  responsiveOptions = RESPONSIVE_OPTIONS;
   protected relatedProducts = input<Product[]>([]);
   productId = input<string>('');
   protected addTopBag = output<Product>();
   protected addToWishlist = output<Product>();
 
-  ngOnInit() {
-    this.responsiveOptions = RESPONSIVE_OPTIONS;
-    const id = this.productId();
-    if (id) {
-      this.recommendedService.getRecommendedProducts(id).subscribe({
-        next: (recommended) => {
-          const mapped = recommended
-            .map(r => r.product)
-            .filter((p): p is Product => p !== null);
-          this.products.set(mapped);
-        }
-      });
-    }
+  constructor() {
+    toObservable(this.productId).pipe(
+      filter(id => !!id),
+      switchMap(id => this.recommendedService.getSmartRecommendations(id)),
+      takeUntilDestroyed()
+    ).subscribe(products => {
+      this.products.set(products);
+    });
   }
 
   protected addToCart(product: Product) {
@@ -56,5 +61,11 @@ export class RecommendedProducts implements OnInit {
 
   protected isFavorite(product: Product): boolean {
     return product.id ? this.favoritesService.isFavorite(product.id) : false;
+  }
+
+  protected goToProduct(product: Product) {
+    const id = product.appId || product.id;
+    if (!id) return;
+    this.router.navigate(this.slugify.productUrl(this.langService.currentLanguage(), id, product.name ?? ''));
   }
 }

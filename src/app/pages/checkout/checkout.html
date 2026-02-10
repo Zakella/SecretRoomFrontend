@@ -365,7 +365,7 @@
                   [showButtons]="true"
                   buttonLayout="horizontal"
                   [min]="1"
-                  [max]="100"
+                  [max]="getItemMaxStock(item)"
                   [(ngModel)]="item.quantity"
                   (ngModelChange)="updateCartItemQuantity(item, i)"
                   inputStyleClass="quantity-input"
@@ -379,7 +379,7 @@
                 </button>
               </div>
             </div>
-            <div class="item-price">{{ item.amount }} MDL</div>
+            <product-price class="item-price" [price]="item.product.price" [oldPrice]="item.product.oldPrice" size="sm"/>
           </div>
         }
       </div>

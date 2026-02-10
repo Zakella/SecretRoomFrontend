@@ -29,6 +29,8 @@
             class="group flex items-center p-4 bg-white/40 border border-black/5 hover:bg-white hover:shadow-2xl transition-all duration-300">
             <div class="w-24 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
               <img [src]="item.imageURL || 'assets/images/no-image.png'"
+                   [alt]="item.name"
+                   loading="lazy"
                    class="w-full h-full object-cover mix-blend-multiply grayscale group-hover:grayscale-0 transition-all">
             </div>
 

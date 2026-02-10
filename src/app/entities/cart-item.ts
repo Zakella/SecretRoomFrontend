@@ -7,12 +7,13 @@ export class CartItem {
   amount: number;
   product:Product;
   size?: Size;
+  variantAppId?: number;
 
-  constructor(product: Product, quantity:number, size?:Size) {
+  constructor(product: Product, quantity:number, size?:Size, variantAppId?: number) {
     this.product = product;
     this.size = size;
+    this.variantAppId = variantAppId;
     this.quantity = quantity;
     this.amount = this.quantity * (this.product.price || 0);
-
   }
 }

@@ -1,6 +1,7 @@
-import {computed, Injectable, signal} from '@angular/core';
+import {computed, inject, Injectable, signal} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs';
+import {MetaService} from './meta.service';
 
 export interface BreadcrumbItem {
   label: string;
@@ -13,6 +14,7 @@ export interface BreadcrumbItem {
 export class BreadcrumbsService {
   private readonly _breadcrumbs = signal<BreadcrumbItem[]>([]);
   readonly breadcrumbs = computed(() => this._breadcrumbs());
+  private metaService = inject(MetaService);
 
   constructor(
     private router: Router,
@@ -23,6 +25,7 @@ export class BreadcrumbsService {
       .subscribe(() => {
         const breadcrumbs = this.build(this.route.root);
         this._breadcrumbs.set(breadcrumbs);
+        this.metaService.setBreadcrumbJsonLd(breadcrumbs);
       });
   }
 

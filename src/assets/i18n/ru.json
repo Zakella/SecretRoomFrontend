@@ -1,4 +1,5 @@
 {
+  "home.seoH1": "Магазин Косметики, Парфюмерии и Белья в Молдове",
   "Your Order": "Ваш заказ",
   "Order Summary": "Итог заказа",
   "Subtotal": "В корзине",
@@ -26,6 +27,10 @@
   "Check out": "Оформить заказ",
   "Your cart is empty": "Ваша корзина пуста",
   "Add to Cart": "Добавить в корзину",
+  "LastItem": "Последний",
+  "LowInStock": "Мало на складе",
+  "LastItemHurry": "Последний товар — спешите!",
+  "LowInStockDetail": "Товар заканчивается — спешите!",
   "Product": "Продукт",
   "Price": "Цена",
   "Continue Shopping": "Продолжить покупки",
@@ -71,7 +76,7 @@
   "City should be at least 3 characters": "Город должен быть не менее 3 символов",
   "City should contain only letters": "Город должен содержать только латинские буквы",
   "Phone is required": "Телефон обязателен",
-  "Phone need to be format 06******* or 07*******": "Телефон должен быть в формате 06******* или 07*******",
+  "Phone need to be format 06******* или 07*******": "Телефон должен быть в формате 06******* или 07*******",
   "Sign up now": "Зарегистрируйтесь сейчас",
   "User already exists": "Пользователь уже существует",
   "Password must be at least 8 characters long and contain both letters and numbers": "Пароль должен быть не менее 8 символов и содержать как как латинские буквы, так и цифры",
@@ -190,7 +195,10 @@
     "addressPlaceholder": "Улица, дом, квартира",
     "agreementRequired": "Необходимо принять условия для оформления заказа",
     "alreadyHaveAccount": "Уже есть аккаунт?",
-    "createAccount": "Создать аккаунт"
+    "createAccount": "Создать аккаунт",
+    "productNotFoundInCart": "Один или несколько товаров в корзине больше недоступны. Пожалуйста, обновите корзину.",
+    "outOfStock": "Товары {{products}} отсутствуют на складе. Пожалуйста, удалите их из корзины.",
+    "outOfStockGeneric": "Некоторые товары в корзине больше не доступны на складе."
   },
   "cart": {
     "youMayAlsoLike": "Вам также понравится",
@@ -246,6 +254,7 @@
     "shippingMethod": "Способ доставки",
     "paymentMethod": "Способ оплаты",
     "comment": "Комментарий",
+    "trackingNumber": "Номер отслеживания",
     "payment": {
       "online": "Онлайн оплата",
       "cash": "Наличными при получении",
@@ -264,5 +273,24 @@
   },
   "sales": {
     "description": "Успейте приобрести по выгодной цене"
-  }
+  },
+  "Catalog": "Каталог",
+  "Load more": "Показать ещё",
+  "FooterDescription": "Интернет-магазин косметики и белья в Молдове. Victoria's Secret, Bath & Body Works и другие оригинальные бренды.",
+  "All Brands": "Все Бренды",
+  "News": "Новинки",
+  "Best Sellers": "Хиты продаж",
+  "Sales": "Скидки",
+  "Lingerie": "Нижнее Белье",
+  "Copyright": "© 2025 Secret Room. Все права защищены.",
+  "Cabinet": "Кабинет",
+  "cookie": {
+    "message": "Этот сайт использует файлы cookie для улучшения вашего опыта. Продолжая просмотр, вы соглашаетесь с использованием файлов cookie.",
+    "accept": "Принять",
+    "decline": "Отклонить"
+  },
+  "NewArrivals": "Новинки",
+  "BestSellers": "Хиты продаж",
+  "Sale": "Sale",
+  "RecentlyViewed": "Недавно просмотренные"
 }

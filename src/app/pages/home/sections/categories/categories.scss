@@ -145,6 +145,10 @@
     pointer-events: none;
     transition: border-color 0.3s ease;
   }
+
+  &.mobile-only {
+    display: none;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -320,6 +324,10 @@
       display: none;
     }
 
+    &.mobile-only {
+      display: flex;
+    }
+
     .label {
       position: static;
       display: flex;
@@ -349,6 +357,11 @@
       border-bottom: none;
       pointer-events: auto;
       transition: transform 0.2s ease;
+    }
+
+    &.sale-slide .label {
+      border-color: #d32f2f;
+      color: #d32f2f;
     }
 
     &:active .label {

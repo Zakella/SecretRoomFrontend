@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /cabinet
+Disallow: /checkout
+Disallow: /profile
+Disallow: /order-success
+Disallow: /account-not-found
+Disallow: /payment-fail
+
+Sitemap: https://secretroom.md/sitemap.xml
