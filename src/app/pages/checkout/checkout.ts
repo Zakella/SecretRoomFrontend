@@ -176,7 +176,7 @@ export class Checkout implements OnInit, OnDestroy {
       .subscribe(amount => {
         this.totalAmount = amount;
         this.updateShippingCost();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       });
 
     this.cartService.totalQuantity
@@ -191,6 +191,8 @@ export class Checkout implements OnInit, OnDestroy {
       .subscribe(modified => {
         if (modified) {
           this.cartService.computeCartTotals();
+          this.updateShippingCost();
+          this.cdr.detectChanges();
         }
       });
   }
@@ -301,10 +303,14 @@ export class Checkout implements OnInit, OnDestroy {
   // Cart management
   updateCartItemQuantity(item: CartItem, index: number): void {
     this.cartService.recalculateCartItem(item, index);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
   }
 
   removeCartItem(index: number): void {
     this.cartService.deleteItemFromCart(index);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
     if (this.cartItems.length === 0) {
       this.router.navigate([this.activeLang(), 'catalog', 'all']);
     }
