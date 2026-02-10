@@ -4,6 +4,7 @@ import {Size} from './size';
 
 export interface Product {
   id?: string,
+  appId?: string,
   sku?: string,
   article?: string,
   name?: string,
