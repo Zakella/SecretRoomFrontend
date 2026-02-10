@@ -1,16 +1,22 @@
 <div class="drawer-backdrop" (click)="closeDrawer()">
   <div class="cart-drawer" (click)="$event.stopPropagation()">
-    <aside class="cart-suggestions">
-      <h3>{{ 'cart.youMayAlsoLike' | transloco }}</h3>
-      @for (item of suggestions; track $index) {
-        <div class="suggested-item">
-          <img [src]="item.image" [alt]="item.title" loading="lazy"/>
-          <p class="title">{{ item.title }}</p>
-          <product-price [price]="item.price" size="sm"/>
-          <button class="btn-add">{{ 'Add to Cart' | transloco }}</button>
-        </div>
-      }
-    </aside>
+    @if (recommendations().length > 0) {
+      <aside class="cart-suggestions">
+        <h3>{{ 'cart.youMayAlsoLike' | transloco }}</h3>
+        @for (item of recommendations(); track item.id) {
+          <div class="suggested-item">
+            <img [src]="item.imageURL ?? 'assets/images/unavailable.jpg'"
+                 [alt]="item | localizedName"
+                 class="cursor-pointer"
+                 loading="lazy"
+                 (click)="navToProduct(item); $event.stopPropagation()"/>
+            <p class="title">{{ item | localizedName }}</p>
+            <product-price [price]="item.price" [oldPrice]="item.oldPrice" size="sm"/>
+            <button class="btn-add" (click)="addRecommendationToCart(item)">{{ 'Add to Cart' | transloco }}</button>
+          </div>
+        }
+      </aside>
+    }
     <div class="cart-content">
       <div class="cart-header">
         <h2>{{ 'Your Order' | transloco }} ({{ totalQuantity }})</h2>

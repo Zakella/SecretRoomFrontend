@@ -26,6 +26,7 @@ import {LocalizedNamePipe} from '../../pipes/localized-name.pipe';
 import {Shipping} from '../../../@core/api/shipping';
 import {ShippingOption} from '../../../entities/shipping-options';
 import {ProductPrice} from '../product/product-price/product-price';
+import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
 
 @Component({
   selector: 'app-cart',
@@ -45,6 +46,7 @@ export class Cart implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
   private shippingService = inject(Shipping);
+  private recommendedService = inject(RecommendedProductService);
   private cdr = inject(ChangeDetectorRef);
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
@@ -52,23 +54,7 @@ export class Cart implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   @Input() shippingCost: number = 0;
   private router = inject(Router);
-  suggestions = [
-    {
-      title: 'ESSENTIAL FACE WIPES - 5 PACK',
-      price: 120,
-      image: '/assets/images/demo/slider1.jpeg'
-    },
-    {
-      title: 'ACTIVE GLOW BLUEBERRY',
-      price: 351,
-      image: '/assets/images/demo/slider1.jpeg'
-    },
-    {
-      title: 'BUFF MASSAGING SCALP BRUSH',
-      price: 296,
-      image: '/assets/images/demo/slider1.jpeg'
-    }
-  ];
+  recommendations = signal<Product[]>([]);
 
   freeShippingThreshold = signal<number>(0);
   shippingOptionsLoaded = signal<boolean>(false);
@@ -85,6 +71,7 @@ export class Cart implements OnInit, OnDestroy {
     this.subscribeToCartModification();
     this.cartService.computeCartTotals();
     this.loadShippingOptions();
+    this.loadRecommendations();
   }
 
   private loadShippingOptions(): void {
@@ -123,9 +110,39 @@ export class Cart implements OnInit, OnDestroy {
       (data) => {
         if (data) {
           this.cartService.computeCartTotals();
+          this.loadRecommendations();
         }
       }
     )
+  }
+
+  private loadRecommendations(): void {
+    const appIds = this.cartItems
+      .map(item => Number(item.product.id))
+      .filter(id => !isNaN(id) && id > 0);
+
+    if (appIds.length === 0) {
+      this.recommendations.set([]);
+      return;
+    }
+
+    this.recommendedService.getCartRecommendations(appIds)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (products) => {
+          this.recommendations.set(products);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.recommendations.set([]);
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  protected addRecommendationToCart(product: Product): void {
+    const cartItem = new CartItem(product, 1);
+    this.cartService.addToCart(cartItem);
   }
 
   private subscribeToTotalAmount() {

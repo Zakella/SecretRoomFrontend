@@ -41,13 +41,10 @@ export class RecommendedProducts {
   constructor() {
     toObservable(this.productId).pipe(
       filter(id => !!id),
-      switchMap(id => this.recommendedService.getRecommendedProducts(id)),
+      switchMap(id => this.recommendedService.getSmartRecommendations(id)),
       takeUntilDestroyed()
-    ).subscribe(recommended => {
-      const mapped = recommended
-        .map(r => r.product)
-        .filter((p): p is Product => p !== null);
-      this.products.set(mapped);
+    ).subscribe(products => {
+      this.products.set(products);
     });
   }
 
