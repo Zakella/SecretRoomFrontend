@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {ImageSlider} from '../../shared/components/image-slider/image-slider';
-import {FadeUp} from '../../@core/directives/fade-up';
 import {ScrollReveal} from '../../@core/directives/scroll-reveal';
 import {ProductService} from '../../@core/api/product';
 import {catchError, map, of} from 'rxjs';
@@ -9,7 +8,6 @@ import {BestSellers} from './sections/best-sellers/best-sellers';
 import {NewArrivals} from './sections/new-arrivals/new-arrivals';
 import {Sales} from './sections/sales/sales';
 import {Categories} from './sections/categories/categories';
-import {Socials} from './sections/socials/socials';
 import {InstagramFeed} from './sections/instagram-feed/instagram-feed';
 import {HeroService} from '../../@core/api/hero';
 import {MetaService} from '../../@core/services/meta.service';
@@ -22,7 +20,6 @@ import {TranslocoPipe} from '@ngneat/transloco';
     ImageSlider,
     BestSellers,
     ScrollReveal,
-    Socials,
     NewArrivals,
     Sales,
     Categories,

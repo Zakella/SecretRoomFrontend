@@ -2,8 +2,8 @@
   <div class="header-container">
     <h2>{{ 'Shop by Category' | transloco }}</h2>
     <div class="nav-buttons">
-      <button (click)="prev()" [class.disabled]="currentIndex === 0">←</button>
-      <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">→</button>
+      <button (click)="prev()" [class.disabled]="currentIndex === 0">&#8592;</button>
+      <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">&#8594;</button>
     </div>
   </div>
 
@@ -12,12 +12,34 @@
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"
     >
-      @for (item of categories(); track item.id) {
+      <!-- Static Links (Mobile Only) -->
+      <div class="slide mobile-only" (click)="goToStatic('new-arrivals')">
+        <span class="label">{{ 'NewArrivals' | transloco }}</span>
+      </div>
+      <div class="slide mobile-only" (click)="goToStatic('bestsellers')">
+        <span class="label">{{ 'BestSellers' | transloco }}</span>
+      </div>
+
+      @for (item of categories(); track item.categoryId) {
         <div class="slide" (click)="goToCategory(item)">
-          <img [src]="item.imageUrl || 'assets/images/no-image.png'" [alt]="item.name"/>
-          <span class="label">{{ item.name }}</span>
+
+          <!-- Desktop: photo collage -->
+          <div class="collage" [class]="'collage-' + getCollageImages(item).length">
+            @for (img of getCollageImages(item); track img; let i = $index) {
+              <div class="collage-cell" [class]="'cell-' + i">
+                <img [src]="img" [alt]="item.name" loading="lazy"/>
+              </div>
+            }
+          </div>
+
+          <!-- Label -->
+          <span class="label">{{ currentLanguage() === 'ro' ? item.nameRo : item.nameRu }}</span>
         </div>
       }
+
+      <div class="slide mobile-only sale-slide" (click)="goToStatic('sales')">
+        <span class="label">{{ 'Sale' | transloco }}</span>
+      </div>
     </div>
   </div>
 </section>

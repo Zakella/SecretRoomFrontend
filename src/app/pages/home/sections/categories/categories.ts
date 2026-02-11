@@ -1,9 +1,9 @@
-import {Component, inject, input, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CategoryService} from '../../../../@core/api/category';
-import {Category} from '../../../../entities/category';
+import {Slugify} from '../../../../@core/services/slugify';
 
 @Component({
   selector: 'categories',
@@ -17,9 +17,15 @@ export class Categories implements OnInit {
   private router = inject(Router);
   private languageService = inject(Language);
   private categoryService = inject(CategoryService);
+  private slugify = inject(Slugify);
 
   currentLanguage = this.languageService.currentLanguage;
-  categories = input<Category[]>([]);
+  private rawCategories = signal<any[]>([]);
+
+  // Filter out categories with no products
+  categories = computed(() =>
+    this.rawCategories().filter(c => c.products?.length > 0)
+  );
 
   currentIndex = 0;
   translateX = 0;
@@ -27,7 +33,9 @@ export class Categories implements OnInit {
   readonly gap = 32;
 
   ngOnInit() {
-    // Data is now passed via input, so no need to fetch here
+    this.categoryService.getCategoriesWithPreview().subscribe(data => {
+      this.rawCategories.set(data);
+    });
   }
 
   next() {
@@ -49,6 +57,20 @@ export class Categories implements OnInit {
   }
 
   goToCategory(category: any) {
-    this.router.navigate([this.currentLanguage(), 'catalog', category.id]);
+    // Use slug if available (generated from name), otherwise fallback to ID
+    const name = category.categoryName || '';
+    const slug = this.slugify.transform(name);
+    const identifier = slug || category.categoryId;
+
+    this.router.navigate([this.currentLanguage(), 'catalog', identifier]);
+  }
+
+  goToStatic(tag: string) {
+    this.router.navigate([this.currentLanguage(), 'catalog', tag]);
+  }
+
+  getCollageImages(category: any): string[] {
+    if (!category.products || category.products.length === 0) return [];
+    return category.products.map((p: any) => p.imageURL);
   }
 }

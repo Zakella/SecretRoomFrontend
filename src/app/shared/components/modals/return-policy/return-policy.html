@@ -3,8 +3,18 @@
   [(visible)]="open"
   (onHide)="close()"
   [modal]="true"
-  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '500px' }"
+  styleClass="luxury-dialog"
   [appendTo]="'body'"
 >
-  <p>{{'ReturnTermsText' | transloco}}</p>
+  <div class="policy-container">
+    <div class="policy-section">
+      <p>{{ 'ReturnTermsText' | transloco }}</p>
+    </div>
+
+    <div class="policy-divider"></div>
+
+  </div>
 </p-dialog>

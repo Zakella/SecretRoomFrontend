@@ -3,16 +3,54 @@
     @for (image of images(); track image.id; let i = $index) {
       <div class="slide" [class.image-active]="selectedIndex() === i">
         <!-- Blurred background for different image sizes -->
-        <div class="slide-bg" [style.backgroundImage]="'url(' + image.imageUrl + ')'"></div>
+        <div class="slide-bg" [style.backgroundImage]="'url(' + getImageUrl(image) + ')'"></div>
         <!-- Main image -->
-        <img [src]="image.imageUrl" [alt]="image.name" class="slide-img fade"/>
+        <img [src]="getImageUrl(image)" [alt]="image.name" class="slide-img fade"
+             [style.filter]="getImageFilterStyle(image)"/>
+        <!-- Dynamic gradient overlay -->
+        <div class="slide-gradient" [style.background]="getOverlayStyle(image)"></div>
+        <!-- Badge -->
+        @if (getBadgeText(image)) {
+          <div class="slide-badge" [ngClass]="getBadgePositionClass(image)"
+               [style.background]="image.badgeColor || '#e53e3e'"
+               [style.color]="image.badgeTextColor || '#ffffff'"
+               [style.opacity]="(image.badgeOpacity ?? 100) / 100">
+            {{ getBadgeText(image) }}
+          </div>
+        }
         <!-- Content overlay -->
-        <div class="slide-overlay">
-          <h3 class="slide-title">
+        <div class="slide-overlay" [ngClass]="getOverlayPositionClass(image)"
+             [ngStyle]="getOverlayPositionStyle(image)"
+             [style.text-align]="image.titleTextAlign || 'center'"
+             [style.gap.px]="image.contentGap ?? 24">
+          <h3 class="slide-title"
+              [style.color]="image.titleColor || '#ffffff'"
+              [style.font-size.px]="getTitleFontSize(image)"
+              [style.font-family]="getTitleFontFamily(image)"
+              [style.font-weight]="image.titleFontWeight || 400"
+              [style.letter-spacing.px]="image.titleLetterSpacing || 0"
+              [style.text-transform]="image.titleTextTransform || 'none'"
+              [style.line-height]="image.titleLineHeight || 1.2">
             {{ activeLang() === 'ro' ? image.nameRo : image.nameRu }}
           </h3>
-          <button class="slide-cta" (click)="goToImage(image)">
-            {{'seeAll'| transloco}}
+          @if (getSubtitleText(image)) {
+            <p class="slide-subtitle"
+               [style.color]="image.subtitleColor || '#ffffffcc'"
+               [style.font-size.px]="getSubtitleFontSize(image)"
+               [style.font-family]="getSubtitleFontFamily(image)">
+              {{ getSubtitleText(image) }}
+            </p>
+          }
+          <button [ngClass]="getCtaClasses(image)" (click)="goToImage(image)"
+                  [style.background]="(image.ctaStyle || 'solid') === 'ghost' ? 'transparent' : (image.ctaStyle === 'outline' ? 'transparent' : (image.ctaButtonColor || '#1a1a1a'))"
+                  [style.color]="(image.ctaStyle === 'outline' || image.ctaStyle === 'ghost') ? (image.ctaButtonTextColor || '#ffffff') : (image.ctaButtonTextColor || '#b8956c')"
+                  [style.border-radius.px]="image.ctaBorderRadius ?? 2"
+                  [style.border-color]="image.ctaStyle === 'outline' ? (image.ctaButtonTextColor || '#ffffff') : 'transparent'">
+            @if (getCtaText(image)) {
+              {{ getCtaText(image) }}
+            } @else {
+              {{ 'seeAll' | transloco }}
+            }
           </button>
         </div>
       </div>
