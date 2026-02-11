@@ -36,7 +36,6 @@
     </div>
   </div>
   <div class="header-medium" [class.hidden]="isHidden" [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
-
     <div class="logo-search-row">
       <div class="row-left">
         <div class="lang-switch">
@@ -68,7 +67,6 @@
         </div>
       </div>
     </div>
-
     <div class="brands-row">
       <nav class="brands-nav">
         @for (brand of brands(); track brand) {
@@ -116,9 +114,6 @@
                    [routerLink]="['/', activeLang(), 'catalog', slugify.transform(sub.name) || sub.id]"
                    (click)="closeDropdown()">
                   {{ activeLang() === 'ro' ? sub.nameRo : sub.nameRu }}
-<!--
-                  {{ sub?.name }}
--->
                 </a>
               }
             </div>
