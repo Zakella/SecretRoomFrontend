@@ -67,7 +67,30 @@ export class MobileMenu  implements OnInit{
     this.cartService.open();
   }
 
+  toggleCart() {
+    // If search drawer is open, close it first
+    if (this.visible) {
+      this.visible = false;
+    }
+
+    if (this.cartService.visible()) {
+      this.cartService.close();
+    } else {
+      this.cartService.open();
+    }
+  }
+
+  closeCart() {
+    this.cartService.close();
+  }
+
+  handleNavClick() {
+    this.closeCart();
+    this.visible = false;
+  }
+
   openSearch() {
+    this.closeCart();
     this.visible = true;
     setTimeout(() => {
       const input = document.querySelector('.search-input-wrapper input') as HTMLInputElement;

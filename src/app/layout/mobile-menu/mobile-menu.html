@@ -1,6 +1,6 @@
 <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
-  <a class="nav-item" [routerLink]="['/', activeLang()]" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+  <a class="nav-item" [routerLink]="['/', activeLang()]" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="handleNavClick()">
     <div class="icon-wrapper">
       <i class="ri-home-4-line"></i>
       <i class="ri-home-4-fill active-icon"></i>
@@ -16,7 +16,7 @@
     <span>{{ 'Search' | transloco }}</span>
   </a>
 
-  <a class="nav-item" (click)="openCart()">
+  <a class="nav-item" (click)="toggleCart()">
     <div class="icon-wrapper">
       <i class="ri-shopping-bag-3-line"></i>
       <i class="ri-shopping-bag-3-fill active-icon"></i>
@@ -27,7 +27,7 @@
     <span>{{ 'Cart' | transloco }}</span>
   </a>
 
-  <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']" routerLinkActive="active">
+  <a class="nav-item" [routerLink]="['/', activeLang(), 'contacts']" routerLinkActive="active" (click)="handleNavClick()">
     <div class="icon-wrapper">
       <i class="ri-store-2-line"></i>
       <i class="ri-store-2-fill active-icon"></i>
@@ -35,7 +35,7 @@
     <span>{{ 'Stores' | transloco }}</span>
   </a>
 
-  <a class="nav-item" [routerLink]="['/', activeLang(), 'cabinet']" routerLinkActive="active">
+  <a class="nav-item" [routerLink]="['/', activeLang(), 'cabinet']" routerLinkActive="active" (click)="handleNavClick()">
     <div class="icon-wrapper">
       <i class="ri-user-line"></i>
       <i class="ri-user-fill active-icon"></i>

@@ -11,7 +11,7 @@
   align-items: center;
   padding: 8px 0;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-  z-index: 1000;
+  z-index: 20000; // High z-index to be above PrimeNG drawers/sidebars
   height: 60px;
 
   // Hide on desktop
@@ -86,6 +86,7 @@
 ::ng-deep .catalog-drawer {
   width: 100% !important;
   background: #fff;
+  // We let PrimeNG handle z-index, but bottom-nav is higher (20000)
 
   .p-drawer-header {
     padding: 1rem;
@@ -94,6 +95,7 @@
 
   .p-drawer-content {
     padding: 0;
+    padding-bottom: 80px !important; // Add padding so content is not hidden behind bottom-nav
   }
 }
 
