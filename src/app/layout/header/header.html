@@ -89,18 +89,16 @@
         <a class="category-text" [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">
           {{ 'BestSellers' | transloco }}
         </a>
-
         @if (headerItems()) {
           @for (category of headerItems(); track category.id) {
             <a class="category-text"
                [class.active]="activeCategory()?.id === category.id"
                (mouseenter)="showDropdown(category)"
                (click)="goToCategory(category)">
-              {{ category.name }}
+              {{ activeLang() === 'ro' ? category.nameRo : category.nameRu }}
             </a>
           }
         }
-
         <a class="category-text sale-link" [routerLink]="['/', activeLang(), 'catalog', 'sales']">
           {{ 'Sale' | transloco }}
         </a>
@@ -117,7 +115,10 @@
                    [style.animation-delay]="i * 0.05 + 's'"
                    [routerLink]="['/', activeLang(), 'catalog', slugify.transform(sub.name) || sub.id]"
                    (click)="closeDropdown()">
+                  {{ activeLang() === 'ro' ? sub.nameRo : sub.nameRu }}
+<!--
                   {{ sub?.name }}
+-->
                 </a>
               }
             </div>

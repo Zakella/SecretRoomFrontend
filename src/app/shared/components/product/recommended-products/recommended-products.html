@@ -2,8 +2,6 @@
   <div class="section-wrapper">
     <h2 class="section-title">{{ 'Recommendation' | transloco }}</h2>
   </div>
-
-  <!-- Desktop: carousel -->
   <div class="desktop-view">
     <p-carousel
       [value]="products()"
@@ -16,7 +14,7 @@
       <ng-template let-product #item>
         <div class="carousel-item" (click)="goToProduct(product)">
           <div class="image-container">
-            <img [src]="product.imageURL" [alt]="product | localizedName" loading="lazy"/>
+            <img [src]="product.imageURL|| 'assets/images/no-image.png'" [alt]="product | localizedName" loading="lazy"/>
           </div>
           <div class="product-name">{{ product | localizedName }}</div>
           <div class="product-footer">

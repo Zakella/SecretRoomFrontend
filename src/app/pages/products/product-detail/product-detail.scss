@@ -1,6 +1,6 @@
 .product-page {
   border-radius: 15px;
-  margin: 160px 100px 100px 100px;
+  margin: 240px 100px 100px 100px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   padding: 60px 80px;
   color: var(--text-dark, #2c2421);
@@ -8,9 +8,7 @@
   overflow: visible;
 }
 
-// ─────────────────────────────────────────────────────────────
-// BACK BUTTON — Desktop
-// ─────────────────────────────────────────────────────────────
+
 .back-btn-desktop {
   display: inline-flex;
   align-items: center;
@@ -48,9 +46,7 @@
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// PRODUCT GRID
-// ─────────────────────────────────────────────────────────────
+
 .product-grid {
   display: flex;
   flex-wrap: wrap;
@@ -92,9 +88,7 @@
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// PRODUCT INFO
-// ─────────────────────────────────────────────────────────────
+
 .product-info {
   flex: 1 1 45%;
   display: flex;
@@ -130,9 +124,7 @@ product-price {
   margin-top: 4px;
 }
 
-// ─────────────────────────────────────────────────────────────
-// STOCK WARNING
-// ─────────────────────────────────────────────────────────────
+
 .stock-warning {
   display: inline-flex;
   align-items: center;
@@ -167,9 +159,7 @@ product-price {
   50% { opacity: 0.7; }
 }
 
-// ─────────────────────────────────────────────────────────────
-// ARTICLE
-// ─────────────────────────────────────────────────────────────
+
 .article {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 12px;
@@ -178,9 +168,7 @@ product-price {
   margin-top: 4px;
 }
 
-// ─────────────────────────────────────────────────────────────
-// DESCRIPTION
-// ─────────────────────────────────────────────────────────────
+
 .description {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 14px;
@@ -218,9 +206,7 @@ product-price {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// VARIANT SELECTOR
-// ─────────────────────────────────────────────────────────────
+
 .variant-selector {
   display: flex;
   flex-direction: column;
@@ -274,9 +260,7 @@ product-price {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// ACTIONS
-// ─────────────────────────────────────────────────────────────
+
 .actions {
   display: flex;
   flex-direction: column;
@@ -285,7 +269,6 @@ product-price {
   margin-top: 0.5rem;
 }
 
-// Add to Cart — Black with gold text (matches catalog)
 .add-to-bag-btn {
   width: 100%;
   padding: 16px 24px;
@@ -412,6 +395,7 @@ product-price {
   }
 
   .product-info {
+    padding: 20px;
     flex: 1 1 100%;
     gap: 1rem;
   }
@@ -422,9 +406,6 @@ product-price {
 
 }
 
-// ─────────────────────────────────────────────────────────────
-// RESPONSIVE — Mobile
-// ─────────────────────────────────────────────────────────────
 @media (max-width: 480px) {
   .product-page {
     margin: 80px 0 0 0;
