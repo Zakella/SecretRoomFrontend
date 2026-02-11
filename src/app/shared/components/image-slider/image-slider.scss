@@ -1,3 +1,7 @@
+// ═══════════════════════════════════════════════════════════════
+// HERO SLIDER — Luxury Boutique Style
+// ═══════════════════════════════════════════════════════════════
+
 .carousel-container {
   position: relative;
   width: 100%;
@@ -6,7 +10,7 @@
 }
 
 .mobile-logo-overlay {
-  display: none;
+  display: none; // Hidden by default on desktop
 }
 
 .slide {
@@ -21,9 +25,10 @@
   }
 }
 
+// Blurred background — fills empty space elegantly
 .slide-bg {
   position: absolute;
-  inset: -20px;
+  inset: -20px; // Extend beyond container to avoid blur edges
   background-size: cover;
   background-position: center;
   filter: blur(30px) saturate(1.2);
@@ -31,6 +36,7 @@
   opacity: 0.7;
 }
 
+// Main image — centered, maintains aspect ratio
 .slide-img {
   position: relative;
   width: 100%;
@@ -41,41 +47,107 @@
   z-index: 1;
 }
 
-.slide::after {
-  content: '';
+// Dynamic gradient overlay (controlled via admin)
+.slide-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.6) 0%,
-      rgba(0, 0, 0, 0.15) 40%,
-      rgba(0, 0, 0, 0) 70%
-  );
   pointer-events: none;
   z-index: 2;
 }
 
+// Badge
+.slide-badge {
+  position: absolute;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  z-index: 4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &.badge-top-right {
+    top: 20px;
+    right: 20px;
+  }
+
+  &.badge-top-left {
+    top: 20px;
+    left: 20px;
+  }
+
+  &.badge-bottom-right {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  &.badge-bottom-left {
+    bottom: 20px;
+    left: 20px;
+  }
+}
+
+// Content overlay — position is controlled by inline styles from component
 .slide-overlay {
   position: absolute;
-  left: 50%;
-  bottom: 60px;
   transform: translateX(-50%);
   text-align: center;
   color: #fff;
   z-index: 3;
-  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+
+  &.overlay-center {
+    transform: translate(-50%, -50%);
+  }
+
+  // Left/right aligned — no horizontal centering transform
+  &.align-left {
+    transform: none;
+    text-align: left;
+    align-items: flex-start;
+
+    &.overlay-center {
+      transform: translateY(-50%);
+    }
+  }
+
+  &.align-right {
+    transform: none;
+    text-align: right;
+    align-items: flex-end;
+
+    &.overlay-center {
+      transform: translateY(-50%);
+    }
+  }
+}
+
+// Subtitle
+.slide-subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  line-height: 1.4;
+  margin: 0;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
 .slide-title {
   font-family: var(--font-title, 'Playfair Display', serif);
   font-size: 2.5rem;
   font-weight: 400;
-  margin-bottom: 24px;
   letter-spacing: 0.02em;
   line-height: 1.2;
+  margin: 0;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
+// CTA Button — Black/Gold style
 .slide-cta {
   padding: 14px 36px;
   border-radius: 2px;
@@ -96,8 +168,35 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
+
+  // CTA Style Variants
+  &.cta-outline {
+    background: transparent !important;
+    border: 1.5px solid;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      transform: translateY(-2px);
+    }
+  }
+
+  &.cta-ghost {
+    background: transparent !important;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    padding: 10px 20px;
+
+    &:hover {
+      background: transparent !important;
+      opacity: 0.8;
+      transform: translateY(-2px);
+    }
+  }
 }
 
+// Indicators — Line style like new-arrivals
 .carousel-dot-container {
   position: absolute;
   right: 0;
@@ -130,6 +229,7 @@
   }
 }
 
+// Fade animation
 .fade {
   animation: fade 1.5s ease-in-out;
 }
@@ -145,6 +245,7 @@
   }
 }
 
+// Navigation buttons
 .btn-carousel {
   position: absolute;
   top: 50%;
@@ -193,6 +294,9 @@
   font-size: 24px;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// RESPONSIVE
+// ═══════════════════════════════════════════════════════════════
 
 @media (max-width: 1024px) {
   .slide {
@@ -203,10 +307,6 @@
 
   .slide-title {
     font-size: 2rem;
-  }
-
-  .slide-overlay {
-    bottom: 50px;
   }
 
   .btn-carousel {
@@ -230,52 +330,55 @@
 
 @media (max-width: 768px) {
   .mobile-logo-overlay {
-    display: none;
+    display: none; // Hide this one, we use the global mobile header
   }
 
   .slide {
-    height: 65vh;
+    height: 65vh; // Taller on mobile for impact
     min-height: 400px;
     max-height: none;
+  }
 
-    &::after {
-      background: linear-gradient(
-          to top,
-          rgba(0, 0, 0, 0.8) 0%,
-          rgba(0, 0, 0, 0.4) 30%,
-          rgba(0, 0, 0, 0) 60%
-      );
-    }
+  .slide-badge {
+    font-size: 10px;
+    padding: 4px 12px;
+
+    &.badge-top-right { top: 12px; right: 12px; }
+    &.badge-top-left { top: 12px; left: 12px; }
+    &.badge-bottom-right { bottom: 12px; right: 12px; }
+    &.badge-bottom-left { bottom: 12px; left: 12px; }
   }
 
   .slide-img {
-    object-fit: contain;
+    object-fit: contain; // Ensure full image is visible
   }
 
   .slide-title {
     font-size: 1.75rem;
-    margin-bottom: 20px;
     line-height: 1.1;
   }
 
+  .slide-subtitle {
+    font-size: 14px;
+  }
+
   .slide-overlay {
-    bottom: 60px;
-    width: 100%;
     max-width: 100%;
-    padding: 0 20px;
-    left: 0;
-    transform: none;
-    text-align: left;
+    transform: none !important; // Override desktop centering transforms on mobile
+
+    &.overlay-center {
+      transform: translateY(-50%) !important;
+    }
   }
 
   .slide-cta {
     padding: 16px 32px;
     font-size: 12px;
-    width: 100%;
+    width: 100%; // Full width button
     display: block;
     text-align: center;
-    background: #1a1a1a;
-    color: var(--gold, #b8956c);
+    background: #1a1a1a; // Black background
+    color: var(--gold, #b8956c); // Gold text
     font-weight: 700;
     border-radius: 4px;
     border: 1px solid #1a1a1a;
@@ -288,7 +391,7 @@
   .dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: 50%; // Round dots on mobile
     margin: 0 4px;
     background: rgba(255,255,255,0.5);
 
@@ -305,7 +408,7 @@
   }
 
   .slide-bg {
-    display: block;
+    display: block; // Show blur bg to fill space
     filter: blur(20px) saturate(1.1);
   }
 }
