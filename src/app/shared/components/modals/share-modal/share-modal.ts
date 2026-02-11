@@ -4,6 +4,7 @@ import {ButtonModule} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
 import {TooltipModule} from 'primeng/tooltip';
 import {ShareLinkService} from '../../../../@core/services/share-link-service';
+import {Language} from '../../../../@core/services/language';
 
 @Component({
   selector: 'app-share-modal',
@@ -21,6 +22,8 @@ import {ShareLinkService} from '../../../../@core/services/share-link-service';
 export class ShareModal {
   visible = false;
   shareService = inject(ShareLinkService);
+  private langService = inject(Language)
+  activeLang = this.langService.currentLanguage;
   shareUrl = this.shareService.createShareableLink();
 
   public open(): void {

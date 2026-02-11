@@ -1,6 +1,7 @@
 import {Component, OnInit, signal, inject, HostListener, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
 import {CommonModule, isPlatformBrowser} from '@angular/common';
 import {InstagramService, InstagramMedia} from '../../../../@core/api/instagram';
+import {Language} from '../../../../@core/services/language';
 
 @Component({
   selector: 'instagram-feed',
@@ -22,6 +23,8 @@ export class InstagramFeed implements OnInit {
   isMuted = signal<boolean>(false);
   private autoPlayTimer?: any;
   private readonly IMAGE_DURATION = 5000;
+  private langService = inject(Language);
+  activeLang = this.langService.currentLanguage;
 
 
   ngOnInit(): void {

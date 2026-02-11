@@ -283,7 +283,7 @@
   "Best Sellers": "Cele mai vândute",
   "Sales": "Reduceri",
   "Lingerie": "Lenjerie Intimă",
-  "Copyright": "© 2025 Secret Room. Toate drepturile rezervate.",
+  "Copyright": "© 2026 Secret Room. Toate drepturile rezervate.",
   "Cabinet": "Cabinet",
   "cookie": {
     "message": "Acest site folosește cookie-uri pentru a vă oferi o experiență mai bună. Continuând navigarea, sunteți de acord cu utilizarea cookie-urilor.",
@@ -293,5 +293,6 @@
   "NewArrivals": "Noutăți",
   "BestSellers": "Cele mai vândute",
   "Sale": "Sale",
-  "RecentlyViewed": "Vizualizate recent"
+  "RecentlyViewed": "Vizualizate recent",
+  "Filters" : "Filtre"
 }

@@ -9,8 +9,6 @@ import {BlankLayout} from './layout/blank-layout/blank-layout';
 import {Registration} from './pages/registration/registration';
 import {Checkout} from './pages/checkout/checkout';
 import {OrderSummary} from './pages/order-summary/order-summary';
-import {PromotionCard} from './pages/promotion/promotion-card/promotion-card';
-import {List} from './pages/promotion/list/list';
 import {SearchResult} from './pages/search-result/search-result';
 import {AccessGuard} from './@core/guards/acces-guard';
 import {OurStory} from './pages/our-story/our-story';
@@ -97,16 +95,6 @@ export const routes: Routes = [
             path: 'checkout',
             component: Checkout,
             data: {breadcrumb: 'Checkout'}
-          },
-          {
-            path: 'promotion',
-            component: PromotionCard,
-            data: {breadcrumb: 'Promotion'}
-          },
-          {
-            path: 'promotion-list',
-            component: List,
-            data: {breadcrumb: 'Promotions'}
           },
           {
             path: 'about-the-secret-room',

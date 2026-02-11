@@ -1,11 +1,3 @@
-/*
-export interface User {
-  email: string;
-  password: string;
-  firstname?: string;
-  lastName?: string;
-}
-*/
 export class User {
   email: string;
   password: string;

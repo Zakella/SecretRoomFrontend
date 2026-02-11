@@ -13,13 +13,15 @@ import {Language} from '../../../@core/services/language';
 import {of} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {isPlatformBrowser} from '@angular/common';
+import {EmptyState} from '../../states/empty-state/empty-state';
 
 @Component({
   selector: 'app-catalog',
   imports: [
     FadeUp,
     ProductList,
-    TranslocoPipe
+    TranslocoPipe,
+    EmptyState
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',

@@ -282,7 +282,7 @@
   "Best Sellers": "Хиты продаж",
   "Sales": "Скидки",
   "Lingerie": "Нижнее Белье",
-  "Copyright": "© 2025 Secret Room. Все права защищены.",
+  "Copyright": "© 2026 Secret Room. Все права защищены.",
   "Cabinet": "Кабинет",
   "cookie": {
     "message": "Этот сайт использует файлы cookie для улучшения вашего опыта. Продолжая просмотр, вы соглашаетесь с использованием файлов cookie.",
@@ -292,5 +292,6 @@
   "NewArrivals": "Новинки",
   "BestSellers": "Хиты продаж",
   "Sale": "Sale",
-  "RecentlyViewed": "Недавно просмотренные"
+  "RecentlyViewed": "Недавно просмотренные",
+  "Filters" : "Фильтры"
 }

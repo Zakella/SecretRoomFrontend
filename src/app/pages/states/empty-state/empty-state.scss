@@ -1,0 +1,69 @@
+.empty-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+  padding: 40px;
+
+  .content-wrapper {
+    text-align: center;
+    max-width: 400px;
+  }
+
+  .illustration {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+
+
+    .emoji {
+      font-size: 60px;
+      position: relative;
+      z-index: 2;
+      img{
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .text-group {
+    margin-bottom: 32px;
+
+    h2 {
+      font-family: 'Playfair Display', serif; // Если есть такой шрифт, если нет — просто serif
+      font-size: 24px;
+      color: #222;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 15px;
+      color: #888;
+      line-height: 1.6;
+    }
+  }
+
+  .action-button {
+    background: #000; // Черная минималистичная кнопка — база для бьюти-брендов
+    color: #fff;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 0; // Прямые углы выглядят более премиально
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+  }
+}

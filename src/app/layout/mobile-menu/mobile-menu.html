@@ -1,4 +1,3 @@
-<!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
   <a class="nav-item" [routerLink]="['/', activeLang()]" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
     <div class="icon-wrapper">
@@ -44,23 +43,15 @@
   </a>
 </nav>
 
-<!-- Brands Drawer (Full Screen) -->
 <div class="card flex justify-center">
-  <p-drawer header="Brands"
+  <p-drawer
             [(visible)]="visible"
             [fullScreen]="true"
             styleClass="catalog-drawer">
 
     <ng-template pTemplate="header">
       <div class="drawer-custom-header">
-        <span class="drawer-title">{{ 'Brands' | transloco }}</span>
-        <div class="lang-switch-mobile">
-          @for (lang of languages; track lang) {
-            <div class="lang-option" [class.active]="activeLang() === lang" (click)="setActiveLang(lang)">
-              {{ lang | uppercase }}
-            </div>
-          }
-        </div>
+        <span class="drawer-title">{{ 'Filters' | transloco }}</span>
       </div>
     </ng-template>
 
@@ -79,7 +70,6 @@
       </div>
 
       @if (mobileQuery().length >= 2) {
-        <!-- Search Results in Drawer -->
         @if (searchService.loading()) {
           <div class="mobile-search-loading">
             <div class="mobile-search-spinner"></div>
@@ -109,10 +99,8 @@
           </div>
         }
       } @else {
-        <!-- Categories (Horizontal Scroll) -->
         <div class="categories-scroll-container">
           <div class="categories-scroll">
-            <!-- Static Links -->
             <div class="category-item" (click)="goToStaticCategory('new-arrivals')">
               <div class="cat-circle">
                 {{ 'NewArrivals' | transloco }}
@@ -124,7 +112,6 @@
               </div>
             </div>
 
-            <!-- Dynamic Categories -->
             @for (cat of categories(); track cat.id) {
               <div class="category-item" (click)="goToCategory(cat)">
                 <div class="cat-circle">
@@ -141,12 +128,12 @@
           </div>
         </div>
 
-        <!-- Brands List (Vertical Grid) -->
         @if (brands().length > 0) {
           <div class="brands-grid">
             @for (brand of brands(); track brand.brand) {
               <button class="brand-item" (click)="goToBrandList(brand)">
                 {{ brand.brandAlias }}
+                <i class="ri-arrow-right-s-line"></i>
               </button>
             }
           </div>
