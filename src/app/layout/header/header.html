@@ -16,7 +16,7 @@
       </div>
       <div class="nav-right">
         <div class="icons">
-          <a class="icon fav-icon" [routerLink]="['/', activeLang(), 'favorites']">
+          <a class="icon" [routerLink]="['/', activeLang(), 'favorites']">
             <i class="ri-heart-line"></i>
             @if (favoritesService.count() > 0) {
               <span class="fav-badge">{{ favoritesService.count() }}</span>
@@ -25,7 +25,7 @@
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
           </a>
-          <a class="icon cart-icon" (click)="openCart()">
+          <a class="icon" (click)="openCart()">
             <i class="ri-shopping-bag-line"></i>
             @if (cartCount() > 0) {
               <span class="cart-badge">{{ cartCount() }}</span>
