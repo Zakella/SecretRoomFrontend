@@ -51,7 +51,7 @@
 
     <ng-template pTemplate="header">
       <div class="drawer-custom-header">
-        <span class="drawer-title">{{ 'Brands' | transloco }}</span>
+        <span class="drawer-title">{{ 'Filters' | transloco }}</span>
       </div>
     </ng-template>
 
@@ -133,6 +133,7 @@
             @for (brand of brands(); track brand.brand) {
               <button class="brand-item" (click)="goToBrandList(brand)">
                 {{ brand.brandAlias }}
+                <i class="ri-arrow-right-s-line"></i>
               </button>
             }
           </div>
