@@ -1,3 +1,4 @@
+<!--
 <p-dialog [(visible)]="visible"
           [modal]="true"
           [dismissableMask]="true"
@@ -22,5 +23,44 @@
   <div class="copy-link">
     <input pInputText type="text" [value]="shareUrl" readonly>
       <i class="ri-file-copy-line copy-btn" (click)="copyLink()"></i>
+  </div>
+</p-dialog>
+-->
+<p-dialog [(visible)]="visible"
+          [modal]="true"
+          [dismissableMask]="true"
+          [closable]="true"
+          [draggable]="false"
+          [resizable]="false"
+          [style]="{ width: '400px' }"
+          styleClass="beauty-share-dialog"
+          [header]="activeLang() === 'ro' ? 'Distribuie' : 'Поделиться'">
+
+  <div class="share-container">
+    <div class="share-grid">
+      <div class="share-item" (click)="shareToTelegram()">
+        <div class="icon-wrapper tg">
+          <i class="ri-telegram-line"></i>
+        </div>
+        <span>Telegram</span>
+      </div>
+
+      <div class="share-item" (click)="shareToWhatsApp()">
+        <div class="icon-wrapper wa">
+          <i class="ri-whatsapp-line"></i>
+        </div>
+        <span>WhatsApp</span>
+      </div>
+    </div>
+
+    <div class="copy-section">
+      <label>{{ activeLang() === 'ro' ? 'Linkul produsului' : 'Ссылка на товар' }}</label>
+      <div class="input-wrapper">
+        <input type="text" [value]="shareUrl" readonly>
+        <button class="copy-icon-btn" (click)="copyLink()" [pTooltip]="activeLang() === 'ro' ? 'Copiază' : 'Копировать'">
+          <i class="ri-file-copy-line"></i>
+        </button>
+      </div>
+    </div>
   </div>
 </p-dialog>
