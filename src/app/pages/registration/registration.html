@@ -1,11 +1,9 @@
 <div class="auth-page">
-  <!-- Animated background -->
   <div class="auth-bg">
     <div class="auth-bg-gradient"></div>
     <div class="auth-bg-pattern"></div>
   </div>
 
-  <!-- Language Switcher -->
   <div class="lang-switcher">
     <button
       class="lang-btn"
@@ -22,10 +20,7 @@
   </div>
 
   <div class="auth-container">
-    <!-- Logo -->
     <a [routerLink]="['/', activeLang()]" class="auth-logo">Secret Room</a>
-
-    <!-- Form Card -->
     <div class="auth-card">
       <div class="auth-card-header">
         <h1>{{ 'registration.title' | transloco }}</h1>
@@ -33,7 +28,6 @@
       </div>
 
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="auth-form">
-        <!-- Name Row -->
         <div class="form-row">
           <div class="form-group" [class.has-error]="isFieldInvalid('firstName')" [class.has-value]="hasValue('firstName')">
             <input
@@ -70,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Email -->
         <div class="form-group" [class.has-error]="isFieldInvalid('email')" [class.has-value]="hasValue('email')">
           <input
             type="email"
@@ -88,7 +81,6 @@
           }
         </div>
 
-        <!-- Password -->
         <div class="form-group" [class.has-error]="isFieldInvalid('password')" [class.has-value]="hasValue('password')">
           <input
             [type]="showPassword ? 'text' : 'password'"
@@ -110,7 +102,6 @@
           }
         </div>
 
-        <!-- Error message -->
         @if (registrationService.userExists()) {
           <div class="auth-error">
             <i class="ri-error-warning-line"></i>
@@ -118,7 +109,6 @@
           </div>
         }
 
-        <!-- Submit -->
         <button type="submit" class="auth-submit" [disabled]="isSubmitting()">
           @if (isSubmitting()) {
             <span class="spinner"></span>
@@ -129,12 +119,10 @@
           }
         </button>
 
-        <!-- Divider -->
         <div class="auth-divider">
           <span>{{ 'registration.or' | transloco }}</span>
         </div>
 
-        <!-- Login link -->
         <div class="auth-footer">
           <span>{{ 'registration.haveAccount' | transloco }}</span>
           <a [routerLink]="['/', activeLang(), 'profile']" class="auth-link">{{ 'Login' | transloco }}</a>
@@ -142,7 +130,6 @@
       </form>
     </div>
 
-    <!-- Back to home -->
     <a [routerLink]="['/', activeLang()]" class="back-home">
       <i class="ri-arrow-left-line"></i>
       {{ 'registration.backToHome' | transloco }}
