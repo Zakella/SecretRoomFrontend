@@ -29,8 +29,8 @@
 
         <div class="product-info">
           <div class="product-header">
-            <span class="brand">{{ product()?.brandAlias }}</span>
-            <h1>{{ product() | localizedName }}</h1>
+            <span class="brand">{{ product()?.brandAlias | capitalize }}</span>
+            <h1>{{ product() | localizedName | capitalize }}</h1>
 
             <product-price
               [price]="selectedVariant()?.price ?? product()!.price"
@@ -60,7 +60,7 @@
           </div>
 
           @if (product() | localizedName:'description') {
-            <div class="description" [innerHTML]="product() | localizedName:'description'"></div>
+            <div class="description" [innerHTML]="(product() | localizedName:'description') | capitalize"></div>
           }
 
           @if (product()?.variants && product()!.variants!.length > 0) {

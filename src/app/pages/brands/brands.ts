@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {MetaService} from '../../@core/services/meta.service';
@@ -20,10 +21,29 @@ export class Brands implements OnInit {
   private metaService = inject(MetaService);
   private langService = inject(Language);
   private brandService = inject(BrandService);
+  private platformId = inject(PLATFORM_ID);
 
   activeLang = this.langService.currentLanguage;
   brands = signal<Brand[]>([]);
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+  groupedBrands = computed(() =>
+    this.alphabet
+      .map(letter => ({
+        letter,
+        brands: this.brands().filter(b => this.displayName(b).toUpperCase().startsWith(letter))
+      }))
+      .filter(group => group.brands.length > 0)
+  );
+
+  brandsPerLetter = computed(() => {
+    const set = new Set<string>();
+    for (const b of this.brands()) {
+      const first = this.displayName(b).charAt(0).toUpperCase();
+      set.add(first);
+    }
+    return set;
+  });
 
   ngOnInit() {
     const isRo = this.activeLang() === 'ro';
@@ -54,20 +74,12 @@ export class Brands implements OnInit {
     return this.brandService.toSlug(brand.brand);
   }
 
-  get groupedBrands() {
-    return this.alphabet
-      .map(letter => ({
-        letter,
-        brands: this.brands().filter(b => this.displayName(b).toUpperCase().startsWith(letter))
-      }))
-      .filter(group => group.brands.length > 0);
-  }
-
   hasBrandsForLetter(letter: string): boolean {
-    return this.brands().some(b => this.displayName(b).toUpperCase().startsWith(letter));
+    return this.brandsPerLetter().has(letter);
   }
 
   scrollToSection(letter: string) {
+    if (!isPlatformBrowser(this.platformId)) return;
     const element = document.getElementById('section-' + letter);
     if (element) {
       element.scrollIntoView({behavior: 'smooth', block: 'start'});

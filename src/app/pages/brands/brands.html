@@ -16,7 +16,7 @@
   </nav>
 
   <div class="brands-container">
-    @for (group of groupedBrands; track group.letter) {
+    @for (group of groupedBrands(); track group.letter) {
       <section [id]="'section-' + group.letter" class="brand-group">
         <div class="letter-badge">{{ group.letter }}</div>
 

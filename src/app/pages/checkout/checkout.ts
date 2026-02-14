@@ -5,8 +5,10 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   signal
 } from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -80,6 +82,7 @@ export class Checkout implements OnInit, OnDestroy {
   private langService = inject(Language);
   private translocoService = inject(TranslocoService);
   private ga = inject(GoogleAnalytics);
+  private platformId = inject(PLATFORM_ID);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -394,7 +397,9 @@ export class Checkout implements OnInit, OnDestroy {
           this.cartService.clearCart();
 
           if (response.waitingForPayment && response.paymentUrl) {
-            window.location.href = response.paymentUrl;
+            if (isPlatformBrowser(this.platformId)) {
+              window.location.href = response.paymentUrl;
+            }
           } else {
             this.router.navigate(['/', this.activeLang(), 'order-success', response.orderTrackingNumber]);
           }

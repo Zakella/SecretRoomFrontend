@@ -46,7 +46,7 @@
           </div>
         }
         <div class="cart-items">
-          @for (cartItem of cartItems; track cartItem.id; let i = $index) {
+          @for (cartItem of cartItems; track $index; let i = $index) {
             <div class="cart-item">
               <img [src]="cartItem.product.imageURL ?? 'assets/images/unavailable.jpg'"
                    [alt]="cartItem.product | localizedName"

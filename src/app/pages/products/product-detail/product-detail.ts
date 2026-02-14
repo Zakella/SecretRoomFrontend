@@ -16,6 +16,7 @@ import {ProductVariant} from '../../../entities/product-variant';
 import {ProductService} from '../../../@core/api/product';
 import {FavoritesService} from '../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
+import {CapitalizePipe} from '../../../shared/pipes/capitalize.pipe';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Slugify} from '../../../@core/services/slugify';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
@@ -25,7 +26,7 @@ import {ProductPrice} from '../../../shared/components/product/product-price/pro
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, ProductPrice],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],

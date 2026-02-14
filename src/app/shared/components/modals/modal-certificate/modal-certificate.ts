@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, OnDestroy, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 @Component({
@@ -8,7 +8,7 @@ import {isPlatformBrowser} from '@angular/common';
   styleUrl: './modal-certificate.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalCertificate implements OnInit {
+export class ModalCertificate implements OnInit, OnDestroy {
   isVisible = signal<boolean>(true);
   hasShown = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
@@ -27,8 +27,14 @@ export class ModalCertificate implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.isBrowser()) {
+      window.removeEventListener('scroll', this.onScroll);
+    }
+  }
+
   onScroll = (): void => {
-    if (!this.isBrowser || this.hasShown()) return;
+    if (!this.isBrowser() || this.hasShown()) return;
 
     const scrolled = window.scrollY;
     if (scrolled > 1550) {

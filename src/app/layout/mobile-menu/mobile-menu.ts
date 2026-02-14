@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, inject, ViewEncapsulation, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, ViewEncapsulation, OnInit, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -44,6 +45,7 @@ export class MobileMenu  implements OnInit{
   public searchService = inject(SearchService);
   public favoritesService = inject(FavoritesService);
   private slugify = inject(Slugify);
+  private platformId = inject(PLATFORM_ID);
 
   isAuth = this.authService.logged;
   mobileQuery = signal('');
@@ -91,10 +93,12 @@ export class MobileMenu  implements OnInit{
   openSearch() {
     this.closeCart();
     this.visible = true;
-    setTimeout(() => {
-      const input = document.querySelector('.search-input-wrapper input') as HTMLInputElement;
-      input?.focus();
-    }, 300);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        const input = document.querySelector('.search-input-wrapper input') as HTMLInputElement;
+        input?.focus();
+      }, 300);
+    }
   }
 
   getUserInitials(): string {

@@ -349,7 +349,7 @@
       <h3 class="summary-title">{{ 'Your Order' | transloco }}</h3>
 
       <div class="cart-items">
-        @for (item of cartItems; track item.id; let i = $index) {
+        @for (item of cartItems; track $index; let i = $index) {
           <div class="cart-item">
             <div class="item-image">
               <img [src]="item.product.imageURL ?? 'assets/images/unavailable.jpg'" [alt]="item.product | localizedName" loading="lazy">

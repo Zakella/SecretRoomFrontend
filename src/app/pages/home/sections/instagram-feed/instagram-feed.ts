@@ -60,14 +60,18 @@ export class InstagramFeed implements OnInit, OnDestroy {
   openViewer(index: number): void {
     this.currentIndex.set(index);
     this.isViewerOpen.set(true);
-    document.body.style.overflowY = 'hidden';
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflowY = 'hidden';
+    }
     this.markViewed(this.currentPost?.id || '');
     this.startAutoPlay();
   }
 
   closeViewer(): void {
     this.clearTimer();
-    document.body.style.overflow = '';
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = '';
+    }
     this.isViewerOpen.set(false);
   }
 

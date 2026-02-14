@@ -37,14 +37,13 @@ export class ProductCard {
   readonly discountPercent = input<number>(0);
   readonly showOptions = input<boolean>();
 
-  hasDiscount(): boolean {
+  hasDiscount = computed(() => {
     const old = this.oldPrice();
     const current = this.price();
     return old !== null && old > 0 && current !== undefined && old > current;
-  }
+  });
 
-
-  hoverImageUrl(): string | null {
+  hoverImageUrl = computed(() => {
     const images = this.product()?.productImagesWebStore;
     if (images && images.length > 1) {
       return images[1].imageUrl;
@@ -53,7 +52,7 @@ export class ProductCard {
       return images[0].imageUrl;
     }
     return null;
-  }
+  });
   currentSize: string | undefined;
   quantity: number = 1;
   loading  = signal<boolean>(false);
@@ -69,19 +68,19 @@ export class ProductCard {
     if (id) this.favoritesService.toggle(id);
   }
 
-  isFavorite(): boolean {
+  isFavorite = computed(() => {
     const id = this.product()?.id;
     return id ? this.favoritesService.isFavorite(id) : false;
-  }
+  });
 
-  isOutOfStock(): boolean {
+  isOutOfStock = computed(() => {
     const p = this.product();
     if (!p) return false;
     if (p.variants?.length) {
       return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
     }
     return (p.unitsInStock ?? 0) <= 0;
-  }
+  });
 
   addProductInCart() {
     let cartItem: CartItem;

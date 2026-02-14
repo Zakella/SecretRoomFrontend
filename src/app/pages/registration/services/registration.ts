@@ -1,4 +1,5 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
+import {computed, inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {Authentication} from '../../../@core/auth/authentication';
 import {Router} from '@angular/router';
@@ -13,6 +14,7 @@ export class RegistrationService {
   private authenticationService= inject(Authentication);
   private  router = inject(Router);
   private ga = inject(GoogleAnalytics);
+  private platformId = inject(PLATFORM_ID);
   userExists = signal<boolean>(false);
   registrationForm = this.fb.group({
     email: ["", [Validators.required ,Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
@@ -26,7 +28,9 @@ export class RegistrationService {
       this.authenticationService.registration(user).subscribe(
         {
           next: authResponse => {
-            localStorage.setItem('user', JSON.stringify(authResponse));
+            if (isPlatformBrowser(this.platformId)) {
+              localStorage.setItem('user', JSON.stringify(authResponse));
+            }
             this.ga.send({
               event: 'sign_up',
               category: 'engagement',

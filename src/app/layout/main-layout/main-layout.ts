@@ -1,4 +1,5 @@
-import {Component, computed, inject} from '@angular/core';
+import {Component, computed, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Header} from '../header/header';
 import {Footer} from '../footer/footer';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
@@ -32,6 +33,7 @@ export class MainLayout {
   private cartService = inject(CartUi);
   private router = inject(Router);
   private langService = inject(Language);
+  private destroyRef = inject(DestroyRef);
 
   public readonly visible = computed(() => this.cartService.visible());
 
@@ -42,7 +44,8 @@ export class MainLayout {
   public initializeLanguageSync() {
     this.router.events
       .pipe(
-        filter(event => event instanceof NavigationEnd)
+        filter(event => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((event: NavigationEnd) => {
         // Extract language from URL: /ro/checkout -> ro

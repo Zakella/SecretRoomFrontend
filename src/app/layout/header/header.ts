@@ -172,6 +172,7 @@ export class Header implements OnInit {
 
 
   scrollToInstagram() {
+    if (!isPlatformBrowser(this.platformId)) return;
     const isHome = this.currentUrl()?.match(/^\/[a-z]{2}$/);
     if (isHome) {
       document.getElementById('instagram')?.scrollIntoView({behavior: 'smooth'});

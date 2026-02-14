@@ -134,13 +134,13 @@ export class CartUi {
 
 
   deleteItemFromCart(index: number) {
-    const currentValue = this.cartItems.value;
-    currentValue.splice(index, 1);
-    this.cartItems.next(currentValue);
+    const updated = [...this.cartItems.value];
+    updated.splice(index, 1);
+    this.cartItems.next(updated);
     this.saveCartItemsToStorage();
     this.computeCartTotals();
     this.cartModified.next(true);
-    this.cartCount.set(currentValue?.length || 0);
+    this.cartCount.set(updated.length);
   }
 
   recalculateCartItem(cartItem: CartItem, index: number) {
@@ -148,9 +148,9 @@ export class CartUi {
     if (maxStock != null && maxStock > 0 && cartItem.quantity > maxStock) {
       cartItem.quantity = maxStock;
     }
-    const currentValue = this.cartItems.value;
-    currentValue[index] = cartItem;
-    this.cartItems.next(currentValue);
+    const updated = [...this.cartItems.value];
+    updated[index] = cartItem;
+    this.cartItems.next(updated);
     this.saveCartItemsToStorage();
     this.computeCartTotals();
     this.cartModified.next(true);

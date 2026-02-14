@@ -1,4 +1,5 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {Authentication} from '../../../@core/auth/authentication';
 import {Router} from '@angular/router';
 import {Language} from '../../../@core/services/language';
@@ -13,13 +14,16 @@ export class LoginService {
   private router = inject(Router);
   private langService = inject(Language)
   private ga = inject(GoogleAnalytics)
+  private platformId = inject(PLATFORM_ID)
   activeLang = this.langService.currentLanguage
 
 
   login(user: any) {
     this.authenticationService.login(user).subscribe({
       next: (authResponse) => {
-        localStorage.setItem('user', JSON.stringify(authResponse))
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('user', JSON.stringify(authResponse));
+        }
         this.ga.send({
           event: 'login',
           category: 'engagement',

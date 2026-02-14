@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, PLATFORM_ID} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
 import {MetaService} from '../../@core/services/meta.service';
 import {TranslocoDirective, TranslocoService} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
@@ -15,6 +16,7 @@ export class DeliveryTerms implements OnInit {
   private metaService = inject(MetaService);
   private langService = inject(Language);
   private transloco = inject(TranslocoService);
+  private platformId = inject(PLATFORM_ID);
 
   activeLang = this.langService.currentLanguage;
 
@@ -35,7 +37,9 @@ export class DeliveryTerms implements OnInit {
     this.metaService.updateImage('https://secretroom.md/assets/images/SR-transparent.png');
     this.metaService.updateCanonicalUrl();
     this.setFaqJsonLd();
-    this.onWindowScroll();
+    if (isPlatformBrowser(this.platformId)) {
+      this.onWindowScroll();
+    }
   }
 
   private setFaqJsonLd() {
@@ -68,7 +72,7 @@ export class DeliveryTerms implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    if (this.scrollTicking) return;
+    if (this.scrollTicking || !isPlatformBrowser(this.platformId)) return;
     this.scrollTicking = true;
     requestAnimationFrame(() => {
       const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
