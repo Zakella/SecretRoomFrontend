@@ -67,8 +67,17 @@ async function generateSitemap(): Promise<string> {
   const now = new Date().toISOString().split('T')[0];
   const urls: string[] = [];
 
-  const addUrl = (loc: string, changefreq: string, priority: string) => {
-    urls.push(`<url><loc>${escapeXml(loc)}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
+  const addUrl = (path: string, changefreq: string, priority: string) => {
+    const entries: string[] = [];
+    for (const lang of LANGUAGES) {
+      const loc = `${SITE_URL}/${lang}${path}`;
+      const alternates = LANGUAGES.map(
+        l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`
+      ).join('');
+      const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
+      entries.push(`<url><loc>${escapeXml(loc)}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}${xDefault}</url>`);
+    }
+    urls.push(...entries);
   };
 
   // Static pages
@@ -83,13 +92,10 @@ async function generateSitemap(): Promise<string> {
     { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
     { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
     { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
-    { path: '/favorites', changefreq: 'weekly', priority: '0.4' },
   ];
 
-  for (const lang of LANGUAGES) {
-    for (const page of staticPages) {
-      addUrl(`${SITE_URL}/${lang}${page.path}`, page.changefreq, page.priority);
-    }
+  for (const page of staticPages) {
+    addUrl(page.path, page.changefreq, page.priority);
   }
 
   // Dynamic: products
@@ -99,9 +105,7 @@ async function generateSitemap(): Promise<string> {
       const products: any[] = await productsRes.json();
       for (const product of products) {
         const slug = slugify(product.name || '');
-        for (const lang of LANGUAGES) {
-          addUrl(`${SITE_URL}/${lang}/product/${product.id}/${slug}`, 'weekly', '0.8');
-        }
+        addUrl(`/product/${product.id}/${slug}`, 'weekly', '0.8');
       }
     }
   } catch (e) {
@@ -116,9 +120,7 @@ async function generateSitemap(): Promise<string> {
       const flatCategories = categories.flatMap((cat: any) => [cat, ...(cat.children || [])]);
       for (const cat of flatCategories) {
         const catSlug = cat.slug || slugify(cat.name || '');
-        for (const lang of LANGUAGES) {
-          addUrl(`${SITE_URL}/${lang}/catalog/${catSlug}`, 'weekly', '0.7');
-        }
+        addUrl(`/catalog/${catSlug}`, 'weekly', '0.7');
       }
     }
   } catch (e) {
@@ -132,16 +134,14 @@ async function generateSitemap(): Promise<string> {
       const brands: any[] = await brandsRes.json();
       for (const brand of brands) {
         const slug = brandSlug(brand.brand || '');
-        for (const lang of LANGUAGES) {
-          addUrl(`${SITE_URL}/${lang}/catalog/brand/${slug}`, 'weekly', '0.7');
-        }
+        addUrl(`/catalog/brand/${slug}`, 'weekly', '0.7');
       }
     }
   } catch (e) {
     console.error('Sitemap: failed to fetch brands', e);
   }
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>`;
 }
 
 app.get('/sitemap.xml', async (req, res) => {

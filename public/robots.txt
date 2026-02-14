@@ -6,5 +6,8 @@ Disallow: /profile
 Disallow: /order-success
 Disallow: /account-not-found
 Disallow: /payment-fail
+Disallow: /favorites
+Disallow: /registration
+Disallow: /order/
 
 Sitemap: https://secretroom.md/sitemap.xml

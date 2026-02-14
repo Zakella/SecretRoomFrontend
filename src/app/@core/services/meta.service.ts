@@ -1,8 +1,9 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +12,22 @@ export class MetaService {
   private meta = inject(Meta);
   private title = inject(Title);
   private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
+  private readonly siteUrl = environment.frontend;
 
   constructor() {
-    // Listen to route changes to update canonical URL
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.updateCanonicalUrl();
+      this.autoUpdateAlternateTags();
     });
+  }
+
+  /** Build full absolute URL from router path (works in SSR and browser) */
+  private getFullUrl(): string {
+    const path = this.router.url.split('?')[0].split('#')[0];
+    return `${this.siteUrl}${path}`;
   }
 
   updateTitle(title: string) {
@@ -39,8 +46,10 @@ export class MetaService {
     this.meta.updateTag({ name: 'keywords', content: keywords });
   }
 
-  updateImage(imageUrl: string) {
+  updateImage(imageUrl: string, width: number = 1200, height: number = 630) {
     this.meta.updateTag({ property: 'og:image', content: imageUrl });
+    this.meta.updateTag({ property: 'og:image:width', content: String(width) });
+    this.meta.updateTag({ property: 'og:image:height', content: String(height) });
     this.meta.updateTag({ name: 'twitter:image', content: imageUrl });
   }
 
@@ -49,43 +58,54 @@ export class MetaService {
   }
 
   updateCanonicalUrl() {
-    if (isPlatformBrowser(this.platformId)) {
-      const head = this.document.getElementsByTagName('head')[0];
-      let link: HTMLLinkElement = this.document.querySelector('link[rel="canonical"]') || this.document.createElement('link');
+    const url = this.getFullUrl();
+    const head = this.document.getElementsByTagName('head')[0];
+    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!link) {
+      link = this.document.createElement('link');
       link.setAttribute('rel', 'canonical');
-      link.setAttribute('href', this.document.location.href);
-      if (!link.parentElement) {
-        head.appendChild(link);
-      }
+      head.appendChild(link);
     }
+    link.setAttribute('href', url);
+    this.updateUrl(url);
   }
 
   updateAlternateTags(roUrl: string, ruUrl: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      const head = this.document.getElementsByTagName('head')[0];
+    const head = this.document.getElementsByTagName('head')[0];
 
-      // Remove existing alternate tags
-      const existing = this.document.querySelectorAll('link[rel="alternate"]');
-      existing.forEach(el => el.remove());
+    // Remove existing alternate tags
+    const existing = this.document.querySelectorAll('link[rel="alternate"]');
+    existing.forEach(el => el.remove());
 
-      const linkRo = this.document.createElement('link');
-      linkRo.setAttribute('rel', 'alternate');
-      linkRo.setAttribute('hreflang', 'ro-MD');
-      linkRo.setAttribute('href', roUrl);
-      head.appendChild(linkRo);
+    const linkRo = this.document.createElement('link');
+    linkRo.setAttribute('rel', 'alternate');
+    linkRo.setAttribute('hreflang', 'ro-MD');
+    linkRo.setAttribute('href', roUrl);
+    head.appendChild(linkRo);
 
-      const linkRu = this.document.createElement('link');
-      linkRu.setAttribute('rel', 'alternate');
-      linkRu.setAttribute('hreflang', 'ru-MD');
-      linkRu.setAttribute('href', ruUrl);
-      head.appendChild(linkRu);
+    const linkRu = this.document.createElement('link');
+    linkRu.setAttribute('rel', 'alternate');
+    linkRu.setAttribute('hreflang', 'ru-MD');
+    linkRu.setAttribute('href', ruUrl);
+    head.appendChild(linkRu);
 
-      // x-default usually points to the main language (ro)
-      const linkDefault = this.document.createElement('link');
-      linkDefault.setAttribute('rel', 'alternate');
-      linkDefault.setAttribute('hreflang', 'x-default');
-      linkDefault.setAttribute('href', roUrl);
-      head.appendChild(linkDefault);
+    const linkDefault = this.document.createElement('link');
+    linkDefault.setAttribute('rel', 'alternate');
+    linkDefault.setAttribute('hreflang', 'x-default');
+    linkDefault.setAttribute('href', roUrl);
+    head.appendChild(linkDefault);
+  }
+
+  /** Auto-generate hreflang alternates from current URL by swapping the lang segment */
+  private autoUpdateAlternateTags() {
+    const path = this.router.url.split('?')[0].split('#')[0];
+    const segments = path.split('/');
+    // URL structure: /:lang/... (segments[0] is empty, segments[1] is lang)
+    if (segments.length >= 2 && (segments[1] === 'ro' || segments[1] === 'ru')) {
+      const pathWithoutLang = segments.slice(2).join('/');
+      const roUrl = `${this.siteUrl}/ro/${pathWithoutLang}`;
+      const ruUrl = `${this.siteUrl}/ru/${pathWithoutLang}`;
+      this.updateAlternateTags(roUrl, ruUrl);
     }
   }
 
@@ -123,15 +143,15 @@ export class MetaService {
 
     // Generate Hreflang links if slugify service is provided
     if (slugifyService && product.id) {
-      const baseUrl = 'https://secretroom.md';
-      // We need to construct URLs manually or use a helper
-      // Assuming structure: /:lang/product/:id/:slug
-      const slug = slugifyService.transform(product.name); // Using default name for slug usually
-      const roUrl = `${baseUrl}/ro/product/${product.id}/${slug}`;
-      const ruUrl = `${baseUrl}/ru/product/${product.id}/${slug}`;
+      const slug = slugifyService.transform(product.name);
+      const roUrl = `${this.siteUrl}/ro/product/${product.id}/${slug}`;
+      const ruUrl = `${this.siteUrl}/ru/product/${product.id}/${slug}`;
 
       this.updateAlternateTags(roUrl, ruUrl);
     }
+
+    const inStock = product.inStock !== false && (product.unitsInStock ?? 0) > 0;
+    const availability = inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
 
     this.setJsonLd({
       "@context": "https://schema.org/",
@@ -139,19 +159,20 @@ export class MetaService {
       "name": name,
       "image": product.imageURL,
       "description": cleanDescription,
+      "sku": product.sku || product.article || undefined,
       "brand": {
         "@type": "Brand",
         "name": brand
       },
       "offers": {
         "@type": "Offer",
-        "url": this.document.location.href,
+        "url": this.getFullUrl(),
         "priceCurrency": "MDL",
         "price": product.price,
-        "availability": "https://schema.org/InStock",
+        "availability": availability,
         "itemCondition": "https://schema.org/NewCondition"
       }
-    });
+    }, 'product');
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
@@ -166,7 +187,7 @@ export class MetaService {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": itemListElement
-    });
+    }, 'breadcrumb');
   }
 
   setOrganizationJsonLd() {
@@ -209,7 +230,7 @@ export class MetaService {
           }
         }
       ]
-    });
+    }, 'organization');
   }
 
   setWebSiteJsonLd() {
@@ -223,18 +244,27 @@ export class MetaService {
         "target": "https://secretroom.md/ro/search/{search_term_string}",
         "query-input": "required name=search_term_string"
       }
-    });
+    }, 'website');
   }
 
-  setJsonLd(data: any) {
-    if (isPlatformBrowser(this.platformId)) {
-      let script = this.document.querySelector('script[type="application/ld+json"]');
-      if (!script) {
-        script = this.document.createElement('script');
-        script.setAttribute('type', 'application/ld+json');
-        this.document.head.appendChild(script);
-      }
-      script.textContent = JSON.stringify(data);
+  setJsonLd(data: any, schemaId: string = 'default') {
+    const selector = `script[type="application/ld+json"][data-schema="${schemaId}"]`;
+    let script = this.document.querySelector(selector) as HTMLScriptElement;
+    if (!script) {
+      script = this.document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('data-schema', schemaId);
+      this.document.head.appendChild(script);
     }
+    script.textContent = JSON.stringify(data);
+  }
+
+  clearJsonLd() {
+    const scripts = this.document.querySelectorAll('script[type="application/ld+json"]');
+    scripts.forEach(s => s.remove());
+  }
+
+  updateHtmlLang(lang: string) {
+    this.document.documentElement.setAttribute('lang', lang);
   }
 }

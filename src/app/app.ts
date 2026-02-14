@@ -1,12 +1,12 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, effect} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {Loader} from './shared/components/loader/loader';
 import {Toast} from 'primeng/toast';
-import {ThemeKey} from './@core/theme/theme.model';
 import {ThemeService} from './@core/theme/theme.service';
 import {Language} from './@core/services/language';
 import {CookieBanner} from './shared/components/cookie-banner/cookie-banner';
 import {GoogleAnalytics} from './@core/services/google-analytics';
+import {MetaService} from './@core/services/meta.service';
 import {filter} from 'rxjs';
 
 
@@ -21,11 +21,17 @@ export class App {
   private lang = inject(Language)
   private router = inject(Router)
   private ga = inject(GoogleAnalytics)
+  private metaService = inject(MetaService)
 
   constructor() {
     this.lang.init();
     this.themeService.init()
     this.trackPageViews();
+
+    effect(() => {
+      const currentLang = this.lang.currentLanguage();
+      this.metaService.updateHtmlLang(currentLang);
+    });
   }
 
   private trackPageViews() {
