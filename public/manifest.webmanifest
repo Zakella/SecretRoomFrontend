@@ -1,0 +1,30 @@
+{
+  "name": "Secret Room — Victoria's Secret Moldova",
+  "short_name": "Secret Room",
+  "description": "Magazin oficial Victoria's Secret și Bath & Body Works în Moldova",
+  "start_url": "/ro",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#b8956c",
+  "icons": [
+    {
+      "src": "assets/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "assets/images/SR-transparent.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/SR-transparent.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "lang": "ro",
+  "categories": ["shopping", "lifestyle"]
+}

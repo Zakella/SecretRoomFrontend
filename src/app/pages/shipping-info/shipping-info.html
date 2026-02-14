@@ -1,0 +1,44 @@
+<div class="terms-page" *transloco="let t">
+  <div class="terms-hero">
+    <nav class="terms-breadcrumb">
+      <a [routerLink]="['/', activeLang()]">{{ t('Home') }}</a>
+      <span class="separator">/</span>
+      <span>{{ t('ShippingInfo') }}</span>
+    </nav>
+
+    <h1 class="terms-title">
+      {{ t('shippingPage.heading1') }}
+      <span class="accent">{{ t('shippingPage.heading2') }}</span>
+    </h1>
+
+    <p class="terms-subtitle">{{ t('shippingPage.subtitle') }}</p>
+  </div>
+
+  <div class="terms-content">
+    <aside class="terms-sidebar">
+      <div class="sidebar-nav">
+        @for (id of sectionIds; track id; let i = $index) {
+          <a class="sidebar-link"
+             [class.active]="activeSection === id"
+             [href]="'#' + id"
+             (click)="scrollToSection(id, $event)">
+            <span class="link-number">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <span class="link-text">{{ t('shippingPage.' + id + '.title') }}</span>
+          </a>
+        }
+      </div>
+    </aside>
+
+    <article class="terms-article">
+      @for (id of sectionIds; track id; let i = $index) {
+        <section [id]="id" class="terms-section">
+          <div class="section-header">
+            <span class="section-number">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <h2 class="section-title">{{ t('shippingPage.' + id + '.title') }}</h2>
+          </div>
+          <div class="section-body" [innerHTML]="t('shippingPage.' + id + '.content')"></div>
+        </section>
+      }
+    </article>
+  </div>
+</div>
