@@ -57,15 +57,8 @@ export class Login implements OnInit {
 
     this.isSubmitting.set(true);
     this.loginService.login(this.loginForm.value);
-
-    // Reset submitting state after a delay (in real app, this would be in the service callback)
     setTimeout(() => this.isSubmitting.set(false), 2000);
   }
-
-
-  onResetPasswordSubmitted(event: any) {
-  }
-
 
   showDialog() {
     this.showResetPassword.set(true);

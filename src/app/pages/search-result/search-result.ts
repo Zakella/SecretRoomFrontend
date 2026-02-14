@@ -10,6 +10,7 @@ import {Product} from '../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {MetaService} from '../../@core/services/meta.service';
+import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 
 @Component({
   selector: 'app-search-result',
@@ -18,6 +19,7 @@ import {MetaService} from '../../@core/services/meta.service';
     FormsModule,
     ProductList,
     TranslocoPipe,
+    LocalizedNamePipe,
   ],
   templateUrl: './search-result.html',
   styleUrl: './search-result.scss',

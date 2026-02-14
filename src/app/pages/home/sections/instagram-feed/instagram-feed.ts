@@ -116,10 +116,12 @@ export class InstagramFeed implements OnInit, OnDestroy {
       const next = new Set(set);
       next.add(postId);
 
-      localStorage.setItem(
-        this.VIEWED_KEY,
-        JSON.stringify([...next])
-      );
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem(
+          this.VIEWED_KEY,
+          JSON.stringify([...next])
+        );
+      }
 
       return next;
     });

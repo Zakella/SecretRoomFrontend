@@ -102,7 +102,10 @@ export class Cart implements OnInit, OnDestroy {
   }
 
   private subscribeToCartItems() {
-    this.cartService.cartItems.pipe(takeUntil(this.ngUnsubscribe)).subscribe(items => this.cartItems = items);
+    this.cartService.cartItems.pipe(takeUntil(this.ngUnsubscribe)).subscribe(items => {
+      this.cartItems = items;
+      this.cdr.markForCheck();
+    });
   }
 
   private subscribeToCartModification() {
@@ -149,17 +152,18 @@ export class Cart implements OnInit, OnDestroy {
     this.cartService.totalAmount.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
       (data) => {
         this.totalAmount = data;
+        this.cdr.markForCheck();
       }
-    )
-
+    );
   }
 
   private subscribeToTotalQuantity() {
     this.cartService.totalQuantity.pipe(takeUntil(this.ngUnsubscribe)).subscribe(
       (data) => {
         this.totalQuantity = data;
+        this.cdr.markForCheck();
       }
-    )
+    );
   }
 
   protected getItemMaxStock(cartItem: CartItem): number {
@@ -206,7 +210,7 @@ export class Cart implements OnInit, OnDestroy {
   protected navigateToCheckout(): void {
     if (this.cartItems.length === 0) return;
 
-    this.router.navigate([this.activeLang(), 'checkout']).then(
+    this.router.navigate(['/', this.activeLang(), 'checkout']).then(
       () => {
         this.closeDrawer();
       }

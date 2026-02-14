@@ -19,7 +19,7 @@
       <div class="sidebar-nav">
         @for (id of sectionIds; track id; let i = $index) {
           <a class="sidebar-link"
-             [class.active]="activeSection === id"
+             [class.active]="activeSection() === id"
              [href]="'#' + id"
              (click)="scrollToSection(id, $event)">
             <span class="link-number">{{ (i + 1).toString().padStart(2, '0') }}</span>

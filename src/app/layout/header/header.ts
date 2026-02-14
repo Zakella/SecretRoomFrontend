@@ -57,7 +57,7 @@ export class Header implements OnInit {
   query = signal('');
   activeCategory = signal<Category | null>(null);
   navHovered = signal(false);
-  isHidden = false;
+  isHidden = signal(false);
   isMinBrands = signal<boolean>(false)
   brands = signal<Brand[]>([]);
 
@@ -118,7 +118,7 @@ export class Header implements OnInit {
     const q = this.query().trim();
     if (!q) return;
     this.searchService.clear();
-    this.router.navigate([this.activeLang(), 'search', q]);
+    this.router.navigate(['/', this.activeLang(), 'search', q]);
   }
 
   closeSearchDropdown() {
@@ -161,7 +161,7 @@ export class Header implements OnInit {
 
   goToBrandList(brand: Brand) {
     this.activeBrand.set(brand);
-    this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+    this.router.navigate(['/', this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
   }
 
   goToCategoryList() {
@@ -194,7 +194,7 @@ export class Header implements OnInit {
     requestAnimationFrame(() => {
       if (isPlatformBrowser(this.platformId)) {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
-        this.isHidden = currentScroll > 0;
+        this.isHidden.set(currentScroll > 0);
       }
       this.scrollTicking = false;
     });

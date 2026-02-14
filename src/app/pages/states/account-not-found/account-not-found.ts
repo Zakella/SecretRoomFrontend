@@ -1,20 +1,21 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
+import {TranslocoPipe} from '@ngneat/transloco';
+import {Language} from '../../../@core/services/language';
 
 @Component({
   selector: 'app-account-not-found',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './account-not-found.html',
   styleUrl: './account-not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AccountNotFound {
+  private router = inject(Router);
+  protected langService = inject(Language);
+  protected activeLang = this.langService.currentLanguage;
 
-  constructor(private  router:Router) {
-  }
   goHome() {
-    const brand = this.router.url.includes('vs') ? 'vs' : 'bb';
-    this.router.navigate([brand])
-
+    this.router.navigate(['/', this.activeLang()]);
   }
 }

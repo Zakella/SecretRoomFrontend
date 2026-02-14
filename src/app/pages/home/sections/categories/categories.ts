@@ -63,11 +63,11 @@ export class Categories implements OnInit {
     const slug = this.slugify.transform(name);
     const identifier = slug || category.categoryId;
 
-    this.router.navigate([this.currentLanguage(), 'catalog', identifier]);
+    this.router.navigate(['/', this.currentLanguage(), 'catalog', identifier]);
   }
 
   goToStatic(tag: string) {
-    this.router.navigate([this.currentLanguage(), 'catalog', tag]);
+    this.router.navigate(['/', this.currentLanguage(), 'catalog', tag]);
   }
 
   getCollageImages(category: any): string[] {

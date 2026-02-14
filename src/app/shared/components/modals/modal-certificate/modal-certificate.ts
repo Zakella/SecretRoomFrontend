@@ -9,7 +9,7 @@ import {isPlatformBrowser} from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalCertificate implements OnInit, OnDestroy {
-  isVisible = signal<boolean>(true);
+  isVisible = signal<boolean>(false);
   hasShown = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
 

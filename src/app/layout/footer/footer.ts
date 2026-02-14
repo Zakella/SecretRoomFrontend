@@ -39,6 +39,6 @@ export class Footer implements OnInit {
 
   goToBrand(brand: Brand) {
     const slug = this.brandService.toSlug(brand.brand);
-    this.router.navigate([this.activeLang(), 'catalog', 'brand', slug]);
+    this.router.navigate(['/', this.activeLang(), 'catalog', 'brand', slug]);
   }
 }

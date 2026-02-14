@@ -128,19 +128,19 @@ export class MobileMenu  implements OnInit{
   }
 
   goToBrandList(brand: Brand) {
-    this.router.navigate([this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+    this.router.navigate(['/', this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
     this.visible = false;
   }
 
   goToCategory(category: Category) {
     const slug = this.slugify.transform(category.name);
     const identifier = slug || category.id;
-    this.router.navigate([this.activeLang(), 'catalog', identifier]);
+    this.router.navigate(['/', this.activeLang(), 'catalog', identifier]);
     this.visible = false;
   }
 
   goToStaticCategory(tag: string) {
-    this.router.navigate([this.activeLang(), 'catalog', tag]);
+    this.router.navigate(['/', this.activeLang(), 'catalog', tag]);
     this.visible = false;
   }
 
@@ -155,7 +155,7 @@ export class MobileMenu  implements OnInit{
     if (!q) return;
     this.searchService.clear();
     this.visible = false;
-    this.router.navigate([this.activeLang(), 'search', q]);
+    this.router.navigate(['/', this.activeLang(), 'search', q]);
   }
 
   goToProductFromSearch(product: Product) {

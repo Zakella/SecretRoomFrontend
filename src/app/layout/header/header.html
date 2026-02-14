@@ -11,7 +11,7 @@
           <span>{{'Instagram' | transloco}}</span>
         </span>
       </nav>
-      <div class="logo-scroll-wrapper" [class.visible]="isHidden">
+      <div class="logo-scroll-wrapper" [class.visible]="isHidden()">
         <ng-container *ngTemplateOutlet="logo"/>
       </div>
       <div class="nav-right">
@@ -35,7 +35,7 @@
       </div>
     </div>
   </div>
-  <div class="header-medium" [class.hidden]="isHidden" [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
+  <div class="header-medium" [class.hidden]="isHidden()" [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
     <div class="logo-search-row">
       <div class="row-left">
         <div class="lang-switch">

@@ -55,8 +55,7 @@ export class ResetPassword {
       },
       error: () => {
         this.submitting.set(false);
-        this.successMessage.set('forgotPassword.successMessage');
-        this.form.reset();
+        this.errorMessage.set('forgotPassword.errorMessage');
       }
     });
   }

@@ -190,7 +190,6 @@ export class Catalog implements OnInit {
   }
 
   loadMore(): void {
-    this.currentPage++;
     this.fetchProducts(true);
   }
 

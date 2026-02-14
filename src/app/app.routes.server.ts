@@ -6,11 +6,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
-    path: ':lang/catalog/:tag',
+    path: ':lang/catalog/brand/:brandName',
     renderMode: RenderMode.Server
   },
   {
-    path: ':lang/catalog/brand/:brandName',
+    path: ':lang/catalog/:tag',
     renderMode: RenderMode.Server
   },
   {

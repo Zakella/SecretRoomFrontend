@@ -79,7 +79,7 @@
         </div>
 
         <!-- Error message -->
-        @if (loginService.badCredentials) {
+        @if (loginService.badCredentials()) {
           <div class="auth-error">
             <i class="ri-error-warning-line"></i>
             {{ 'Unknown username or password' | transloco }}
@@ -92,7 +92,7 @@
             <span class="spinner"></span>
             {{ 'Processing...' | transloco }}
           } @else {
-            {{ 'Sing in' | transloco }}
+            {{ 'Sign in' | transloco }}
             <i class="ri-arrow-right-line"></i>
           }
         </button>
@@ -119,5 +119,5 @@
 </div>
 
 @if (showResetPassword()) {
-  <app-reset-password (close)="showResetPassword.set(false)" (submitted)="onResetPasswordSubmitted($event)"/>
+  <app-reset-password (close)="showResetPassword.set(false)"/>
 }

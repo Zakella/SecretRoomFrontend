@@ -3,12 +3,14 @@ import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from '@ang
 import {Observable, of, catchError} from 'rxjs';
 import {Product} from '../../../entities/product';
 import {ProductService} from '../../../@core/api/product';
+import {Language} from '../../../@core/services/language';
 
 
 @Injectable({providedIn: 'root'})
 export class ProductResolver implements Resolve<Product | null> {
   private productService = inject(ProductService);
   private router = inject(Router);
+  private langService = inject(Language);
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Product | null> {
     const id = route.paramMap.get('id');
@@ -17,7 +19,8 @@ export class ProductResolver implements Resolve<Product | null> {
     return this.productService.getProductById(id).pipe(
       catchError(err => {
         console.error('Product fetch error', err);
-        this.router.navigate(['/404']);
+        const lang = route.paramMap.get('lang') || this.langService.currentLanguage();
+        this.router.navigate(['/', lang, 'not-found']);
         return of(null);
       })
     );

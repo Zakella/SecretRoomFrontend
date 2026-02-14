@@ -60,7 +60,7 @@
   "Сomment": "Comentariu",
   "Sign into your account": "Autentificare",
   "Password": "Parolă",
-  "Sing in": "Autentificare",
+  "Sign in": "Autentificare",
   "Forgot Password": " Ai uitat parola?",
   "No account": "Nu ai un cont?",
   "Register here": "Înregistrează-te aici",
@@ -130,7 +130,8 @@
     "submit": "Trimite linkul",
     "sending": "Se trimite...",
     "successMessage": "Dacă adresa de email există, am trimis un mesaj cu linkul de resetare a parolei.",
-    "invalidEmail": "Introduceți un email valid"
+    "invalidEmail": "Introduceți un email valid",
+    "errorMessage": "A apărut o eroare. Vă rugăm să încercați mai târziu."
   },
   "notFound": {
     "title": "Pagina nu a fost găsită",

@@ -14,8 +14,8 @@
       </p>
     </div>
 
-    <button class="action-button">
+    <a class="action-button" [routerLink]="['/', activeLang()]">
       {{ activeLang() === 'ro' ? 'Spre magazin' : 'В магазин' }}
-    </button>
+    </a>
   </div>
 </div>

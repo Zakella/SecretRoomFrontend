@@ -1,4 +1,4 @@
-import {inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {Authentication} from '../../../@core/auth/authentication';
 import {Router} from '@angular/router';
@@ -9,16 +9,16 @@ import {GoogleAnalytics} from '../../../@core/services/google-analytics';
   providedIn: 'root'
 })
 export class LoginService {
-  badCredentials: boolean = false
+  badCredentials = signal(false);
   private authenticationService = inject(Authentication);
   private router = inject(Router);
-  private langService = inject(Language)
-  private ga = inject(GoogleAnalytics)
-  private platformId = inject(PLATFORM_ID)
-  activeLang = this.langService.currentLanguage
+  private langService = inject(Language);
+  private ga = inject(GoogleAnalytics);
+  private platformId = inject(PLATFORM_ID);
+  activeLang = this.langService.currentLanguage;
 
-
-  login(user: any) {
+  login(user: any): void {
+    this.badCredentials.set(false);
     this.authenticationService.login(user).subscribe({
       next: (authResponse) => {
         if (isPlatformBrowser(this.platformId)) {
@@ -29,13 +29,12 @@ export class LoginService {
           category: 'engagement',
           label: 'email'
         });
-        this.router.navigate([this.activeLang(), 'cabinet']);
+        this.router.navigate(['/', this.activeLang(), 'cabinet']);
       },
       error: (err) => {
         if (err.status === 401) {
-          this.badCredentials = true;
-          setTimeout(() => this.badCredentials = false, 3000);
-
+          this.badCredentials.set(true);
+          setTimeout(() => this.badCredentials.set(false), 3000);
         }
       }
     });

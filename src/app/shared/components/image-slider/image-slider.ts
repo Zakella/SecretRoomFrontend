@@ -1,12 +1,11 @@
 import {
   AfterViewInit, ChangeDetectionStrategy,
-  Component, inject,
+  Component, effect, inject,
   Inject, input,
-  OnChanges,
   OnDestroy,
   PLATFORM_ID,
   signal,
-  SimpleChanges
+  untracked,
 } from '@angular/core';
 import {isPlatformBrowser, NgClass, NgStyle} from '@angular/common';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
@@ -23,7 +22,7 @@ import {HeroService} from '../../../@core/api/hero';
   styleUrl: './image-slider.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
+export class ImageSlider implements AfterViewInit, OnDestroy {
   private router = inject(Router);
   public images = input<CarouselImage[]>([]);
   public indicator = input<boolean>(true);
@@ -50,16 +49,17 @@ export class ImageSlider implements AfterViewInit, OnDestroy, OnChanges {
       this.resizeListener = () => this.isMobile.set(window.innerWidth <= 768);
       window.addEventListener('resize', this.resizeListener);
     }
+
+    effect(() => {
+      this.images();
+      this.autoSlide();
+      this.autoSlideSpeed();
+      untracked(() => this.restartAuto());
+    });
   }
 
   ngAfterViewInit(): void {
     this.restartAuto();
-  }
-
-  ngOnChanges(ch: SimpleChanges): void {
-    if ('images' in ch || 'autoSlide' in ch || 'autoSlideSpeed' in ch) {
-      this.restartAuto();
-    }
   }
 
   ngOnDestroy(): void {

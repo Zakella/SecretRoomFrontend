@@ -8,7 +8,7 @@ import { ProductResolver } from './pages/products/product-detail/product.resolve
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'ru',
+    redirectTo: 'ro',
     pathMatch: 'full',
   },
   {

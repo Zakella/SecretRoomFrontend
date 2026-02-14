@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, PLATFORM_ID} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {MetaService} from '../../@core/services/meta.service';
 import {TranslocoDirective, TranslocoService} from '@ngneat/transloco';
@@ -21,7 +21,7 @@ export class ShippingInfo implements OnInit {
   activeLang = this.langService.currentLanguage;
 
   sectionIds = ['zones', 'cost', 'payment', 'processing', 'important'];
-  activeSection = this.sectionIds[0];
+  activeSection = signal(this.sectionIds[0]);
 
   ngOnInit() {
     const isRo = this.activeLang() === 'ro';
@@ -64,7 +64,7 @@ export class ShippingInfo implements OnInit {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({behavior: 'smooth', block: 'start'});
-      this.activeSection = id;
+      this.activeSection.set(id);
     }
   }
 
@@ -79,7 +79,7 @@ export class ShippingInfo implements OnInit {
       for (let i = this.sectionIds.length - 1; i >= 0; i--) {
         const sectionEl = document.getElementById(this.sectionIds[i]);
         if (sectionEl && scrollPos + 80 >= sectionEl.offsetTop) {
-          this.activeSection = this.sectionIds[i];
+          this.activeSection.set(this.sectionIds[i]);
           break;
         }
       }

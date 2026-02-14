@@ -23,11 +23,12 @@ import {Language} from '../../../../@core/services/language';
 export class ShareModal {
   visible = false;
   shareService = inject(ShareLinkService);
-  private langService = inject(Language)
+  private langService = inject(Language);
   activeLang = this.langService.currentLanguage;
-  shareUrl = this.shareService.createShareableLink();
+  shareUrl = '';
 
   public open(): void {
+    this.shareUrl = this.shareService.createShareableLink();
     this.visible = true;
   }
 

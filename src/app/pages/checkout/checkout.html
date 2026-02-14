@@ -367,6 +367,7 @@
                   [min]="1"
                   [max]="getItemMaxStock(item)"
                   [(ngModel)]="item.quantity"
+                  [ngModelOptions]="{standalone: true}"
                   (ngModelChange)="updateCartItemQuantity(item, i)"
                   inputStyleClass="quantity-input"
                   decrementButtonClass="qty-btn"
