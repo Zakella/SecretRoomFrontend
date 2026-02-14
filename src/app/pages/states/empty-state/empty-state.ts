@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Language} from '../../../@core/services/language';
 
 @Component({
@@ -6,6 +6,7 @@ import {Language} from '../../../@core/services/language';
   imports: [],
   templateUrl: './empty-state.html',
   styleUrl: './empty-state.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyState {
  private langService = inject(Language);

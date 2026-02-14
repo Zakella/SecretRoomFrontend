@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {ReturnPolicy} from '../../shared/components/modals/return-policy/return-policy';
 import {TranslocoDirective} from '@ngneat/transloco';
@@ -14,7 +14,8 @@ import {Brand} from '../../entities/category';
     TranslocoDirective
   ],
   templateUrl: './footer.html',
-  styleUrl: './footer.scss'
+  styleUrl: './footer.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer implements OnInit {
   isReturnPolicyVisible = false;

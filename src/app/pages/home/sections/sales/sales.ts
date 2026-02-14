@@ -1,4 +1,4 @@
-import {Component, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
@@ -15,7 +15,8 @@ import {ProductPrice} from '../../../../shared/components/product/product-price/
     ProductPrice
   ],
   templateUrl: './sales.html',
-  styleUrl: './sales.scss'
+  styleUrl: './sales.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sales {
   public sales = input<Product[]>([]);

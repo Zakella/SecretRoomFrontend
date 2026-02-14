@@ -64,15 +64,22 @@ export class DeliveryTerms implements OnInit {
     }
   }
 
+  private scrollTicking = false;
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    for (let i = this.sectionIds.length - 1; i >= 0; i--) {
-      const sectionEl = document.getElementById(this.sectionIds[i]);
-      if (sectionEl && scrollPos + 80 >= sectionEl.offsetTop) {
-        this.activeSection = this.sectionIds[i];
-        break;
+    if (this.scrollTicking) return;
+    this.scrollTicking = true;
+    requestAnimationFrame(() => {
+      const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      for (let i = this.sectionIds.length - 1; i >= 0; i--) {
+        const sectionEl = document.getElementById(this.sectionIds[i]);
+        if (sectionEl && scrollPos + 80 >= sectionEl.offsetTop) {
+          this.activeSection = this.sectionIds[i];
+          break;
+        }
       }
-    }
+      this.scrollTicking = false;
+    });
   }
 }

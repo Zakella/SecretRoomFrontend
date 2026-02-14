@@ -1,4 +1,5 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
@@ -19,7 +20,8 @@ import {MetaService} from '../../@core/services/meta.service';
     TranslocoPipe,
   ],
   templateUrl: './search-result.html',
-  styleUrl: './search-result.scss'
+  styleUrl: './search-result.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchResult implements OnInit {
   private route = inject(ActivatedRoute);
@@ -27,6 +29,7 @@ export class SearchResult implements OnInit {
   private ga = inject(GoogleAnalytics);
   private metaService = inject(MetaService);
   private meta = inject(Meta);
+  private destroyRef = inject(DestroyRef);
 
   viewMode: 'grid' | 'list' = 'grid';
   products = signal<Product[]>([]);
@@ -38,7 +41,7 @@ export class SearchResult implements OnInit {
   private pageSize = 12;
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const q = params.get('query') || '';
       this.query.set(q);
       this.page = 0;

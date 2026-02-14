@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {Meta} from '@angular/platform-browser';
 import {FavoritesService} from '../../@core/services/favorites';
 import {ProductService} from '../../@core/api/product';
@@ -11,6 +11,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
   imports: [ProductList, TranslocoPipe],
   templateUrl: './favorites.html',
   styleUrl: './favorites.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Favorites implements OnInit {
   private meta = inject(Meta);

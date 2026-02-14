@@ -1,4 +1,4 @@
-import {Component, inject, effect} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, effect} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {Loader} from './shared/components/loader/loader';
 import {Toast} from 'primeng/toast';
@@ -14,7 +14,8 @@ import {filter} from 'rxjs';
   selector: 'app-root',
   imports: [RouterOutlet, Loader, Toast, CookieBanner],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   private themeService = inject(ThemeService)

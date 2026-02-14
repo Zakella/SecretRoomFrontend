@@ -1,9 +1,10 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal} from '@angular/core';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {ActivatedRoute} from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {finalize, map, switchMap} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
@@ -25,6 +26,7 @@ import {EmptyState} from '../../states/empty-state/empty-state';
   providers: [ProductService],
   templateUrl: './catalog.html',
   styleUrl: './catalog.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Catalog implements OnInit {
   private productService = inject(ProductService);
@@ -34,6 +36,8 @@ export class Catalog implements OnInit {
   private categoryService = inject(CategoryService);
   private metaService = inject(MetaService);
   private langService = inject(Language);
+  public activeLang = this.langService.currentLanguage;
+  private destroyRef = inject(DestroyRef);
 
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
@@ -63,6 +67,7 @@ export class Catalog implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
+      takeUntilDestroyed(this.destroyRef),
       map(p => ({ tag: p.get('tag'), slug: p.get('brandName') })),
       switchMap(({ tag, slug }) => {
         if (slug) {

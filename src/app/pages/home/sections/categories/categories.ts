@@ -1,4 +1,4 @@
-import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
@@ -12,6 +12,7 @@ import {Slugify} from '../../../../@core/services/slugify';
   ],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Categories implements OnInit {
   private router = inject(Router);

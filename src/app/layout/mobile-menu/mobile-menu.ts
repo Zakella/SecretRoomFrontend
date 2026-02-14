@@ -1,4 +1,4 @@
-import {Component, inject, ViewEncapsulation, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, ViewEncapsulation, OnInit, signal} from '@angular/core';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -31,7 +31,8 @@ import {ProductPrice} from '../../shared/components/product/product-price/produc
   ],
   templateUrl: './mobile-menu.html',
   styleUrl: './mobile-menu.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MobileMenu  implements OnInit{
   public router = inject(Router);

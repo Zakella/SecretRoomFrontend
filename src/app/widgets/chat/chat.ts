@@ -1,4 +1,4 @@
-import {Component, HostListener, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 interface ChatMessage {
@@ -11,7 +11,8 @@ interface ChatMessage {
     FormsModule
   ],
   templateUrl: './chat.html',
-  styleUrl: './chat.scss'
+  styleUrl: './chat.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Chat {
   chatOpen = signal(false);

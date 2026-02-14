@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
 
@@ -6,7 +6,8 @@ import {Language} from '../../@core/services/language';
   selector: 'app-our-story',
   imports: [],
   templateUrl: './our-story.html',
-  styleUrl: './our-story.scss'
+  styleUrl: './our-story.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OurStory implements OnInit {
   private metaService = inject(MetaService);

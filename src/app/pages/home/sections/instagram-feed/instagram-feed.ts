@@ -1,4 +1,4 @@
-import {Component, OnInit, signal, inject, HostListener, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, signal, inject, HostListener, PLATFORM_ID, ViewEncapsulation} from '@angular/core';
 import {CommonModule, isPlatformBrowser} from '@angular/common';
 import {InstagramService, InstagramMedia} from '../../../../@core/api/instagram';
 import {Language} from '../../../../@core/services/language';
@@ -9,9 +9,10 @@ import {Language} from '../../../../@core/services/language';
   imports: [CommonModule],
   templateUrl: './instagram-feed.html',
   styleUrl: './instagram-feed.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InstagramFeed implements OnInit {
+export class InstagramFeed implements OnInit, OnDestroy {
   private instagramService = inject(InstagramService);
   private readonly VIEWED_KEY = 'ig_viewed_posts';
   viewedIds = signal<Set<string>>(new Set());
@@ -26,6 +27,10 @@ export class InstagramFeed implements OnInit {
   private langService = inject(Language);
   activeLang = this.langService.currentLanguage;
 
+
+  ngOnDestroy(): void {
+    this.clearTimer();
+  }
 
   ngOnInit(): void {
     this.instagramService.getFeed(10).subscribe({

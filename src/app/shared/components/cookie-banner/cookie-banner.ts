@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslocoModule } from '@ngneat/transloco';
 import { GoogleAnalytics } from '../../../@core/services/google-analytics';
@@ -8,7 +8,8 @@ import { GoogleAnalytics } from '../../../@core/services/google-analytics';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './cookie-banner.html',
-  styleUrls: ['./cookie-banner.scss']
+  styleUrls: ['./cookie-banner.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CookieBanner implements OnInit {
   isVisible = false;

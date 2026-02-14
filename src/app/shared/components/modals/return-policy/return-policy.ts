@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Dialog} from 'primeng/dialog';
 
@@ -6,7 +6,8 @@ import {Dialog} from 'primeng/dialog';
   selector: 'return-policy',
   imports: [TranslocoPipe, Dialog],
   templateUrl: './return-policy.html',
-  styleUrl: './return-policy.scss'
+  styleUrl: './return-policy.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReturnPolicy {
   @Input() open = false;

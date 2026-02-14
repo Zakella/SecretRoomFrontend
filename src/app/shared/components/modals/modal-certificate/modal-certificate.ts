@@ -1,11 +1,12 @@
-import {Component, Inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 @Component({
   selector: 'app-modal-certificate',
   imports: [],
   templateUrl: './modal-certificate.html',
-  styleUrl: './modal-certificate.scss'
+  styleUrl: './modal-certificate.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalCertificate implements OnInit {
   isVisible = signal<boolean>(true);

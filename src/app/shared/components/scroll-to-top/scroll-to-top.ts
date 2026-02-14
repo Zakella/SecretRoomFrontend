@@ -1,4 +1,4 @@
-import {Component, HostListener, signal, PLATFORM_ID, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, signal, PLATFORM_ID, inject} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 @Component({
@@ -67,17 +67,25 @@ import {isPlatformBrowser} from '@angular/common';
         height: 44px;
       }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScrollToTop {
   private platformId = inject(PLATFORM_ID);
   isVisible = signal(false);
 
+  private scrollTicking = false;
+
   @HostListener('window:scroll')
   onScroll(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isVisible.set(window.scrollY > 400);
-    }
+    if (this.scrollTicking) return;
+    this.scrollTicking = true;
+    requestAnimationFrame(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.isVisible.set(window.scrollY > 400);
+      }
+      this.scrollTicking = false;
+    });
   }
 
   scrollToTop(): void {

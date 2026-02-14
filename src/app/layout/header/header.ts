@@ -184,11 +184,18 @@ export class Header implements OnInit {
     }
   }
 
+  private scrollTicking = false;
+
   @HostListener('window:scroll')
   onWindowScroll() {
-    if (isPlatformBrowser(this.platformId)) {
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
-      this.isHidden = currentScroll > 0;
-    }
+    if (this.scrollTicking) return;
+    this.scrollTicking = true;
+    requestAnimationFrame(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+        this.isHidden = currentScroll > 0;
+      }
+      this.scrollTicking = false;
+    });
   }
 }

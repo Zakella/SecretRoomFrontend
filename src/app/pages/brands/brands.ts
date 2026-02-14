@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
@@ -12,6 +12,7 @@ import {Brand} from '../../entities/category';
   ],
   templateUrl: './brands.html',
   styleUrl: './brands.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Brands implements OnInit {
   private metaService = inject(MetaService);

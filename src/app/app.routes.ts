@@ -1,28 +1,9 @@
 import {Routes} from '@angular/router';
 import {Home} from './pages/home/home';
-import {Contacts} from './pages/contacts/contacts';
-import {Login} from './pages/login/login';
-import {Cabinet} from './pages/cabinet/cabinet';
-import {DeliveryTerms} from './pages/delivery-terms/delivery-terms';
-import {ShippingInfo} from './pages/shipping-info/shipping-info';
 import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
-import {Registration} from './pages/registration/registration';
-import {Checkout} from './pages/checkout/checkout';
-import {OrderSummary} from './pages/order-summary/order-summary';
-import {SearchResult} from './pages/search-result/search-result';
 import {AccessGuard} from './@core/guards/acces-guard';
-import {OurStory} from './pages/our-story/our-story';
-import {AccountNotFound} from './pages/states/account-not-found/account-not-found';
-import {ProductDetail} from './pages/products/product-detail/product-detail';
 import { ProductResolver } from './pages/products/product-detail/product.resolver';
-import {PaymentFail} from './pages/states/payment-fail/payment-fail';
-import {Notfound} from './pages/states/notfound/notfound';
-import {Catalog} from './pages/products/catalog/catalog';
-import {OrderDetail} from './pages/order-detail/order-detail';
-import {Brands} from './pages/brands/brands';
-import {Favorites} from './pages/favorites/favorites';
-import {ResetPasswordPage} from './pages/reset-password/reset-password-page';
 
 export const routes: Routes = [
   {
@@ -40,22 +21,22 @@ export const routes: Routes = [
           {path: '', component: Home},
           {
             path: 'catalog/brand/:brandName',
-            component: Catalog,
+            loadComponent: () => import('./pages/products/catalog/catalog').then(m => m.Catalog),
             data: {breadcrumb: {ro: 'Catalog', ru: 'Каталог'}}
           },
           {
             path: 'catalog/:tag',
-            component: Catalog,
+            loadComponent: () => import('./pages/products/catalog/catalog').then(m => m.Catalog),
             data: {breadcrumb: {ro: 'Catalog', ru: 'Каталог'}}
           },
           {
             path: 'brands',
-            component: Brands,
+            loadComponent: () => import('./pages/brands/brands').then(m => m.Brands),
             data: {breadcrumb: {ro: 'Branduri', ru: 'Бренды'}}
           },
           {
             path: 'product/:id/:slug',
-            component: ProductDetail,
+            loadComponent: () => import('./pages/products/product-detail/product-detail').then(m => m.ProductDetail),
             resolve: {
               product: ProductResolver
             },
@@ -68,54 +49,54 @@ export const routes: Routes = [
           },
           {
             path: 'contacts',
-            component: Contacts,
+            loadComponent: () => import('./pages/contacts/contacts').then(m => m.Contacts),
             data: {breadcrumb: {ro: 'Contacte', ru: 'Контакты'}}
           },
           {
             path: 'payment-fail',
-            component: PaymentFail,
+            loadComponent: () => import('./pages/states/payment-fail/payment-fail').then(m => m.PaymentFail),
             data: {breadcrumb: {ro: 'Plata eșuată', ru: 'Ошибка оплаты'}}
           },
           {
             path: 'delivery-terms',
-            component: DeliveryTerms,
+            loadComponent: () => import('./pages/delivery-terms/delivery-terms').then(m => m.DeliveryTerms),
             data: {breadcrumb: {ro: 'Termeni și condiții', ru: 'Правила и условия'}}
           },
           {
             path: 'shipping',
-            component: ShippingInfo,
+            loadComponent: () => import('./pages/shipping-info/shipping-info').then(m => m.ShippingInfo),
             data: {breadcrumb: {ro: 'Livrare', ru: 'Доставка'}}
           },
           {
             path: 'cabinet',
             canActivate: [AccessGuard],
-            component: Cabinet,
+            loadComponent: () => import('./pages/cabinet/cabinet').then(m => m.Cabinet),
             data: {breadcrumb: {ro: 'Contul meu', ru: 'Мой кабинет'}}
           },
           {
             path: 'order/:trackingNumber',
             canActivate: [AccessGuard],
-            component: OrderDetail,
+            loadComponent: () => import('./pages/order-detail/order-detail').then(m => m.OrderDetail),
             data: {breadcrumb: {ro: 'Detalii comandă', ru: 'Детали заказа'}}
           },
           {
             path: 'checkout',
-            component: Checkout,
+            loadComponent: () => import('./pages/checkout/checkout').then(m => m.Checkout),
             data: {breadcrumb: {ro: 'Finalizare comandă', ru: 'Оформление заказа'}}
           },
           {
             path: 'about-the-secret-room',
-            component: OurStory,
+            loadComponent: () => import('./pages/our-story/our-story').then(m => m.OurStory),
             data: {breadcrumb: {ro: 'Despre noi', ru: 'О нас'}}
           },
           {
             path: 'favorites',
-            component: Favorites,
+            loadComponent: () => import('./pages/favorites/favorites').then(m => m.Favorites),
             data: {breadcrumb: {ro: 'Favorite', ru: 'Избранное'}}
           },
           {
             path: 'search/:query',
-            component: SearchResult,
+            loadComponent: () => import('./pages/search-result/search-result').then(m => m.SearchResult),
             data: {breadcrumb: {ro: 'Rezultate căutare', ru: 'Результаты поиска'}}
           }
         ],
@@ -124,12 +105,12 @@ export const routes: Routes = [
         path: '',
         component: BlankLayout,
         children: [
-          {path: 'login', component: Login},
-          {path: 'reset-password', component: ResetPasswordPage},
-          {path: 'registration', component: Registration},
-          {path: 'account-not-found', component: AccountNotFound},
-          {path: 'order-success/:trackingNumber', component: OrderSummary},
-          {path: '**', component: Notfound}
+          {path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login)},
+          {path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password-page').then(m => m.ResetPasswordPage)},
+          {path: 'registration', loadComponent: () => import('./pages/registration/registration').then(m => m.Registration)},
+          {path: 'account-not-found', loadComponent: () => import('./pages/states/account-not-found/account-not-found').then(m => m.AccountNotFound)},
+          {path: 'order-success/:trackingNumber', loadComponent: () => import('./pages/order-summary/order-summary').then(m => m.OrderSummary)},
+          {path: '**', loadComponent: () => import('./pages/states/notfound/notfound').then(m => m.Notfound)}
         ]
       }
     ]

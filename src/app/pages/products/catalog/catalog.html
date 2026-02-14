@@ -36,49 +36,94 @@
   <!-- SEO Text Block -->
   @if (category() === 'vs') {
     <div class="seo-text-block">
-      <h2>Victoria's Secret în Moldova</h2>
-      <p>
-        Bine ați venit în universul Victoria's Secret la Secret Room! Suntem mândri să vă oferim cea mai variată colecție de
-        <strong>lenjerie intimă Victoria's Secret în Moldova</strong>. De la sutiene confortabile și chiloți eleganți, până la
-        celebrele pijamale și halate, aici găsiți tot ce aveți nevoie pentru a vă simți încrezătoare și sexy.
-      </p>
-      <p>
-        Pe lângă lenjerie, magazinul nostru online vă propune o gamă largă de produse cosmetice:
-        <strong>parfumuri Victoria's Secret</strong>, loțiuni de corp hidratante și spray-uri parfumate care vă vor cuceri simțurile.
-        Toate produsele sunt 100% originale, importate direct din SUA.
-      </p>
-      <h3>De ce să cumperi Victoria's Secret de la noi?</h3>
-      <ul>
-        <li>Produse originale garantate</li>
-        <li>Livrare rapidă în Chișinău și pe tot teritoriul Moldovei</li>
-        <li>Prețuri competitive și oferte speciale frecvente</li>
-        <li>Consultanță profesionistă în alegerea mărimii potrivite</li>
-      </ul>
+      @if (activeLang() === 'ro') {
+        <h2>Victoria's Secret în Moldova</h2>
+        <p>
+          Bine ați venit în universul Victoria's Secret la Secret Room! Suntem mândri să vă oferim cea mai variată colecție de
+          <strong>lenjerie intimă Victoria's Secret în Moldova</strong>. De la sutiene confortabile și chiloți eleganți, până la
+          celebrele pijamale și halate, aici găsiți tot ce aveți nevoie pentru a vă simți încrezătoare și sexy.
+        </p>
+        <p>
+          Pe lângă lenjerie, magazinul nostru online vă propune o gamă largă de produse cosmetice:
+          <strong>parfumuri Victoria's Secret</strong>, loțiuni de corp hidratante și spray-uri parfumate care vă vor cuceri simțurile.
+          Toate produsele sunt 100% originale, importate direct din SUA.
+        </p>
+        <h3>De ce să cumperi Victoria's Secret de la noi?</h3>
+        <ul>
+          <li>Produse originale garantate</li>
+          <li>Livrare rapidă în Chișinău și pe tot teritoriul Moldovei</li>
+          <li>Prețuri competitive și oferte speciale frecvente</li>
+          <li>Consultanță profesionistă în alegerea mărimii potrivite</li>
+        </ul>
+      } @else {
+        <h2>Victoria's Secret в Молдове</h2>
+        <p>
+          Добро пожаловать в мир Victoria's Secret в Secret Room! Мы гордимся тем, что предлагаем самую разнообразную коллекцию
+          <strong>нижнего белья Victoria's Secret в Молдове</strong>. От удобных бюстгальтеров и элегантных трусиков до
+          знаменитых пижам и халатов — здесь вы найдёте всё, чтобы чувствовать себя уверенно и привлекательно.
+        </p>
+        <p>
+          Помимо белья, наш интернет-магазин предлагает широкий ассортимент косметики:
+          <strong>парфюмы Victoria's Secret</strong>, увлажняющие лосьоны для тела и ароматические спреи, которые покорят ваши чувства.
+          Все продукты 100% оригинальные, импортированные напрямую из США.
+        </p>
+        <h3>Почему стоит покупать Victoria's Secret у нас?</h3>
+        <ul>
+          <li>Гарантированная оригинальность продукции</li>
+          <li>Быстрая доставка по Кишинёву и всей Молдове</li>
+          <li>Конкурентные цены и частые специальные предложения</li>
+          <li>Профессиональная консультация по подбору размера</li>
+        </ul>
+      }
     </div>
   } @else if (category() === 'bb') {
     <div class="seo-text-block">
-      <h2>Bath & Body Works Moldova</h2>
-      <p>
-        Transformați-vă rutina zilnică de îngrijire într-un ritual spa cu produsele <strong>Bath & Body Works</strong>, acum disponibile în Moldova prin Secret Room.
-        Descoperiți aromele care au cucerit lumea: de la clasicul Japanese Cherry Blossom până la noile colecții sezoniere.
-      </p>
-      <p>
-        În oferta noastră găsiți celebrele <strong>lumânări parfumate cu 3 fitile</strong>, care vor umple casa dvs. de o atmosferă caldă și primitoare.
-        De asemenea, vă oferim geluri de duș, săpunuri spumante și creme de corp ultra-hidratante cu unt de shea.
-      </p>
+      @if (activeLang() === 'ro') {
+        <h2>Bath & Body Works Moldova</h2>
+        <p>
+          Transformați-vă rutina zilnică de îngrijire într-un ritual spa cu produsele <strong>Bath & Body Works</strong>, acum disponibile în Moldova prin Secret Room.
+          Descoperiți aromele care au cucerit lumea: de la clasicul Japanese Cherry Blossom până la noile colecții sezoniere.
+        </p>
+        <p>
+          În oferta noastră găsiți celebrele <strong>lumânări parfumate cu 3 fitile</strong>, care vor umple casa dvs. de o atmosferă caldă și primitoare.
+          De asemenea, vă oferim geluri de duș, săpunuri spumante și creme de corp ultra-hidratante cu unt de shea.
+        </p>
+      } @else {
+        <h2>Bath & Body Works в Молдове</h2>
+        <p>
+          Превратите ежедневный уход за собой в спа-ритуал с продуктами <strong>Bath & Body Works</strong>, теперь доступными в Молдове через Secret Room.
+          Откройте для себя ароматы, покорившие весь мир: от классического Japanese Cherry Blossom до новых сезонных коллекций.
+        </p>
+        <p>
+          В нашем ассортименте вы найдёте знаменитые <strong>ароматические свечи с 3 фитилями</strong>, которые наполнят ваш дом тёплой и уютной атмосферой.
+          А также гели для душа, пенящееся мыло и ультраувлажняющие кремы для тела с маслом ши.
+        </p>
+      }
     </div>
   } @else if (brandName()) {
     <!-- Dynamic Brand SEO Text -->
     <div class="seo-text-block">
-      <h2>{{ brandAlias() || brandName() }} Moldova</h2>
-      <p>
-        Descoperă colecția exclusivă <strong>{{ brandAlias() || brandName() }}</strong> la Secret Room. Suntem destinația ta de încredere pentru produse originale {{ brandAlias() || brandName() }} în Moldova.
-        Fie că ești în căutarea celor mai noi lansări sau a produselor clasice, magazinul nostru îți oferă o gamă variată la prețuri competitive.
-      </p>
-      <p>
-        Comandă online produse <strong>{{ brandAlias() || brandName() }}</strong> cu livrare rapidă în Chișinău și în toată țara.
-        Garantăm autenticitatea fiecărui produs din portofoliul nostru.
-      </p>
+      @if (activeLang() === 'ro') {
+        <h2>{{ brandAlias() || brandName() }} Moldova</h2>
+        <p>
+          Descoperă colecția exclusivă <strong>{{ brandAlias() || brandName() }}</strong> la Secret Room. Suntem destinația ta de încredere pentru produse originale {{ brandAlias() || brandName() }} în Moldova.
+          Fie că ești în căutarea celor mai noi lansări sau a produselor clasice, magazinul nostru îți oferă o gamă variată la prețuri competitive.
+        </p>
+        <p>
+          Comandă online produse <strong>{{ brandAlias() || brandName() }}</strong> cu livrare rapidă în Chișinău și în toată țara.
+          Garantăm autenticitatea fiecărui produs din portofoliul nostru.
+        </p>
+      } @else {
+        <h2>{{ brandAlias() || brandName() }} Молдова</h2>
+        <p>
+          Откройте для себя эксклюзивную коллекцию <strong>{{ brandAlias() || brandName() }}</strong> в Secret Room. Мы — ваш надёжный источник оригинальной продукции {{ brandAlias() || brandName() }} в Молдове.
+          Ищете ли вы последние новинки или классические продукты — наш магазин предложит широкий выбор по конкурентным ценам.
+        </p>
+        <p>
+          Заказывайте продукцию <strong>{{ brandAlias() || brandName() }}</strong> онлайн с быстрой доставкой по Кишинёву и всей стране.
+          Мы гарантируем подлинность каждого продукта в нашем ассортименте.
+        </p>
+      }
     </div>
   }
 </div>

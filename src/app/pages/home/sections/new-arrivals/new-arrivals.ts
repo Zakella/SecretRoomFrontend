@@ -1,4 +1,4 @@
-import {Component, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
@@ -11,6 +11,7 @@ import {ProductPrice} from '../../../../shared/components/product/product-price/
   imports: [RouterLink, TranslocoPipe, LocalizedNamePipe, ProductPrice],
   templateUrl: './new-arrivals.html',
   styleUrl: './new-arrivals.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewArrivals {
   readonly newArrivals = input<Product[]>([]);

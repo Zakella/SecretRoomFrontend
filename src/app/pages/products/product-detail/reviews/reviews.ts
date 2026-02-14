@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ReviewsApi} from '../../../../@core/services/reviews';
@@ -10,7 +10,8 @@ import {ReviewsApi} from '../../../../@core/services/reviews';
     FormsModule
   ],
   templateUrl: './reviews.html',
-  styleUrl: './reviews.scss'
+  styleUrl: './reviews.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Reviews {
   private reviewStore = inject(ReviewsApi);
