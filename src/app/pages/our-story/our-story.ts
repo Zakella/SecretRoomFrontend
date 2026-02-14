@@ -15,9 +15,14 @@ export class OurStory implements OnInit {
   protected activeLang = this.langService.currentLanguage;
 
   ngOnInit() {
-    this.metaService.updateTitle('Despre Noi | Secret Room');
-    this.metaService.updateDescription('Află povestea Secret Room - destinația ta pentru produse Victoria\'s Secret și Bath & Body Works în Moldova.');
-    this.metaService.updateKeywords('Secret Room Moldova, despre noi, Victoria\'s Secret, Bath & Body Works, magazin parfumuri Chișinău');
+    const isRo = this.activeLang() === 'ro';
+    this.metaService.updateTitle(isRo
+      ? 'Despre Noi — Secret Room | Victoria\'s Secret și Bath & Body Works Moldova'
+      : 'О Нас — Secret Room | Victoria\'s Secret и Bath & Body Works Молдова');
+    this.metaService.updateDescription(isRo
+      ? 'Secret Room — produse originale Victoria\'s Secret și Bath & Body Works în Moldova. Parfumuri, cosmetice, lenjerie. Livrare rapidă în toată țara.'
+      : 'Secret Room — оригинальная продукция Victoria\'s Secret и Bath & Body Works в Молдове. Парфюмы, косметика, бельё. Быстрая доставка по всей стране.');
+    this.metaService.updateKeywords('Secret Room Moldova, despre noi, Victoria\'s Secret, Bath & Body Works, parfumuri originale, Chișinău, оригинальная продукция');
     this.metaService.updateImage('https://secretroom.md/assets/images/SR-transparent.png');
   }
 }

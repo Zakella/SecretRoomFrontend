@@ -2,33 +2,46 @@
   <div class="story-inner">
     <div class="story-text">
       @if (activeLang() === 'ro') {
-        <h1>Magazin de Cosmetice și Parfumuri Originale în Moldova</h1>
+        <h1>Secret Room — Povestea Noastră</h1>
         <p>
-          Ești în căutarea acelui <strong>spray de corp</strong> perfect sau a unei <strong>loțiuni</strong> care să-ți hidrateze pielea întreaga zi?
-          La Secret Room, am selectat cele mai iubite produse de îngrijire: de la <strong>geluri de duș</strong> aromate și <strong>exfoliante</strong> delicate, până la <strong>parfumuri</strong> care întorc priviri.
-          Fiecare produs este 100% original și ales pentru a-ți oferi un ritual de frumusețe complet.
+          Totul a început cu o întrebare: de ce în Moldova nu poți cumpăra <strong>Victoria's Secret</strong> sau
+          <strong>Bath & Body Works</strong> fără să comanzi din străinătate și să aștepți săptămâni?
+          Ni s-a părut nedrept. Și am decis să schimbăm asta.
         </p>
         <p>
-          Dar experiența Secret Room nu se oprește la cosmetice. Redefinește confortul de acasă cu colecția noastră de <strong>pijamale Victoria's Secret</strong>, <strong>halate</strong> pufoase și <strong>papuci de casă</strong>.
-          Iar pentru momente speciale sau confort zilnic, alege
-          din gama noastră variată de <strong>lenjerie intimă</strong>: <strong>sutiene</strong> cu susținere perfectă și <strong>chiloți</strong> din materiale fine.
+          Așa a apărut <strong>Secret Room</strong> — un loc unde poți atinge, mirosi și alege produsul perfect chiar aici,
+          în Chișinău. Nu vindem replici. Nu vindem „inspirat de". Totul este <strong>100% original</strong>, adus direct de la branduri.
         </p>
         <p>
-          Indiferent dacă cauți un <strong>set cadou</strong> sau vrei să te răsfeți, oferim livrare rapidă în Chișinău și în toată Moldova, aducând brandurile tale preferate direct la ușa ta.
+          Știm că parfumul potrivit poate schimba o zi întreagă. Că o pijama bună te face să te simți altfel.
+          Că un set cadou ales cu grijă spune mai mult decât o mie de cuvinte.
+          De aceea alegem fiecare produs ca și cum l-am cumpăra pentru noi.
+        </p>
+        <p>
+          Dacă ești în Chișinău — te așteptăm în magazin.
+          Dacă nu — îți livrăm oriunde în Moldova. Simplu.
+          Secret Room — mereu alături de tine
         </p>
       } @else {
-        <h1>Магазин Оригинальной Косметики и Парфюмерии в Молдове</h1>
+        <h1>Secret Room — Наша История</h1>
         <p>
-          Ищете тот самый <strong>спрей для тела</strong> или <strong>лосьон</strong>, который подарит коже увлажнение на весь день?
-          В Secret Room мы собрали самые любимые средства ухода: от ароматных <strong>гелей для душа</strong> и нежных <strong>скрабов</strong> до <strong>парфюма</strong>, который не оставит равнодушным.
-          Каждый продукт на 100% оригинален и подобран для вашего идеального ритуала красоты.
+          Всё началось с вопроса: почему в Молдове нельзя купить <strong>Victoria's Secret</strong> или
+          <strong>Bath & Body Works</strong>, не заказывая из-за границы и не ожидая неделями?
+          Нам показалось это не справедливым. И мы решили это изменить.
         </p>
         <p>
-          Но Secret Room — это не только косметика. Переосмыслите домашний уют с нашей коллекцией <strong>пижам Victoria's Secret</strong>, пушистых <strong>халатов</strong> и <strong>домашних тапочек</strong>.
-          А для особых случаев или на каждый день выберите из нашего ассортимента <strong>нижнего белья</strong>: <strong>бюстгальтеры</strong> с идеальной поддержкой и <strong>трусики</strong> из тончайших материалов.
+          Так появился <strong>Secret Room</strong> — место, где можно потрогать, понюхать и выбрать идеальный продукт прямо здесь,
+          в Кишинёве. Мы не продаём реплики. Не продаём «вдохновлённое чем-то». Всё <strong>100% оригинал</strong>, напрямую от брендов.
         </p>
         <p>
-          Ищете ли вы <strong>подарочный набор</strong> или хотите побаловать себя, мы предлагаем быструю доставку по Кишиневу и всей Молдове, доставляя ваши любимые бренды прямо к двери.
+          Мы знаем, что правильный аромат может изменить целый день. Что хорошая пижама — это другое ощущение себя.
+          Что подарочный набор, выбранный с душой, скажет больше тысячи слов.
+          Поэтому каждый продукт мы выбираем так, как если бы покупали его себе.
+        </p>
+        <p>
+          Если вы в Кишинёве — ждём вас в магазине.
+          Если нет — доставим в любую точку Молдовы. Всё просто.
+          Secret Room - всегда вместе с вами
         </p>
       }
     </div>
@@ -39,23 +52,23 @@
   <div class="standards-inner">
     <div class="standards-metrics">
       <div class="metric">
-        <span class="icon">✿</span>
-        <strong>{{ activeLang() === 'ro' ? 'Ingrediente Pure' : 'Чистые Ингредиенты' }}</strong>
-      </div>
-
-      <div class="metric">
         <span class="number">100%</span>
         <span class="label">{{ activeLang() === 'ro' ? 'Produse Originale' : 'Оригинальная Продукция' }}</span>
       </div>
 
       <div class="metric">
-        <span class="icon">✓</span>
-        <strong>{{ activeLang() === 'ro' ? 'Calitate Garantată' : 'Гарантия Качества' }}</strong>
+        <span class="icon">✿</span>
+        <strong>{{ activeLang() === 'ro' ? 'Direct de la Branduri' : 'Напрямую от Брендов' }}</strong>
       </div>
 
       <div class="metric">
         <span class="number">24h</span>
         <span class="label">{{ activeLang() === 'ro' ? 'Livrare Rapidă' : 'Быстрая Доставка' }}</span>
+      </div>
+
+      <div class="metric">
+        <span class="icon">✓</span>
+        <strong>{{ activeLang() === 'ro' ? 'Livrare în Toată Moldova' : 'Доставка по Всей Молдове' }}</strong>
       </div>
     </div>
   </div>

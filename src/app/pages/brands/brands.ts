@@ -1,7 +1,9 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
+import {BrandService} from '../../@core/api/brand';
+import {Brand} from '../../entities/category';
 
 @Component({
   selector: 'app-brands',
@@ -14,9 +16,14 @@ import {Language} from '../../@core/services/language';
 export class Brands implements OnInit {
   private metaService = inject(MetaService);
   private langService = inject(Language);
+  private brandService = inject(BrandService);
+
+  activeLang = this.langService.currentLanguage;
+  brands = signal<Brand[]>([]);
+  alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   ngOnInit() {
-    const isRo = this.langService.currentLanguage() === 'ro';
+    const isRo = this.activeLang() === 'ro';
     this.metaService.updateTitle(
       isRo
         ? 'Branduri originale în Moldova — Victoria\'s Secret, Bath & Body Works | Secret Room'
@@ -30,24 +37,31 @@ export class Brands implements OnInit {
     this.metaService.updateKeywords(
       'Secret Room brands, branduri Moldova, Victoria\'s Secret Moldova, Bath Body Works Moldova, оригинальные бренды Молдова'
     );
+
+    this.brandService.gerAllBrands().subscribe(brands => {
+      this.brands.set(brands.sort((a, b) => this.displayName(a).localeCompare(this.displayName(b))));
+    });
   }
-  alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  brands = [
-    { id: 1, name: 'Chanel', logoUrl: 'https://www.retail.ru/upload/iblock/6aa/f4b21hnj21c296516fhpwgv4xr7wiebj/1.jpeg' },
-    { id: 2, name: 'Dior', logoUrl: 'https://yt3.googleusercontent.com/retS2O4yoIWDjEqYYIP1Q65ssG8f-eJofNmiOGuvVJYKPyvLj8zP_Z6cR7_Y3Q7qi2N9YxJTj7s=s900-c-k-c0x00ffffff-no-rj' },
-  ];
+
+  displayName(brand: Brand): string {
+    return brand.brandAlias || brand.brand;
+  }
+
+  brandSlug(brand: Brand): string {
+    return this.brandService.toSlug(brand.brand);
+  }
 
   get groupedBrands() {
     return this.alphabet
       .map(letter => ({
         letter,
-        brands: this.brands.filter(b => b.name.startsWith(letter))
+        brands: this.brands().filter(b => this.displayName(b).toUpperCase().startsWith(letter))
       }))
       .filter(group => group.brands.length > 0);
   }
 
   hasBrandsForLetter(letter: string): boolean {
-    return this.brands.some(b => b.name.startsWith(letter));
+    return this.brands().some(b => this.displayName(b).toUpperCase().startsWith(letter));
   }
 
   scrollToSection(letter: string) {

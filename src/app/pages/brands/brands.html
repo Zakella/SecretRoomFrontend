@@ -1,8 +1,8 @@
 <div class="brands-page">
   <header class="brands-header">
     <span class="eyebrow">World of Beauty</span>
-    <h1>Наши Бренды</h1>
-    <p>Мы собрали лучшие косметические дома со всего мира в одном месте.</p>
+    <h1>{{ activeLang() === 'ro' ? 'Brandurile Noastre' : 'Наши Бренды' }}</h1>
+    <p>{{ activeLang() === 'ro' ? 'Am adunat cele mai iubite branduri din lume într-un singur loc.' : 'Мы собрали самые любимые бренды со всего мира в одном месте.' }}</p>
   </header>
 
   <nav class="alphabet-nav">
@@ -21,15 +21,9 @@
         <div class="letter-badge">{{ group.letter }}</div>
 
         <div class="brand-grid">
-          @for (brand of group.brands; track brand.id) {
-            <a [routerLink]="['/catalog', brand.id]" class="brand-card">
-              <div class="brand-logo-wrapper">
-                <img [src]="brand.logoUrl || 'assets/images/brand-placeholder.png'"
-                     [alt]="brand.name"
-                     loading="lazy"
-                     #brandImg (error)="brandImg.src = 'assets/images/placeholder.png'">
-              </div>
-              <span class="brand-name">{{ brand.name }}</span>
+          @for (brand of group.brands; track brand.brand) {
+            <a [routerLink]="['/', activeLang(), 'catalog', 'brand', brandSlug(brand)]" class="brand-card">
+              <span class="brand-name">{{ displayName(brand) }}</span>
             </a>
           }
         </div>
