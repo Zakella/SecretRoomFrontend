@@ -160,6 +160,13 @@ product-price {
   border: 1px solid rgba(108, 117, 125, 0.2);
 }
 
+.stock-discontinued {
+  background: rgba(44, 36, 33, 0.08);
+  color: #2c2421;
+  border: 1px solid rgba(44, 36, 33, 0.25);
+  font-weight: 600;
+}
+
 @keyframes stockPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -334,6 +341,28 @@ product-price {
 
       i {
         color: #ccc;
+        transform: none;
+      }
+    }
+  }
+
+  &.discontinued-btn {
+    background: #2c2421;
+    color: #999;
+    cursor: not-allowed;
+
+    i {
+      color: #999;
+    }
+
+    &:hover {
+      background: #2c2421;
+      color: #999;
+      box-shadow: none;
+      transform: none;
+
+      i {
+        color: #999;
         transform: none;
       }
     }

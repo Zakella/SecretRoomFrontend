@@ -2,7 +2,7 @@ import { ValidatorFn, Validators } from '@angular/forms';
 
 export const nameValidator: ValidatorFn[] = [
   Validators.required,
-  Validators.pattern('^[A-Za-z\\s]*$')
+  Validators.pattern(/^[\p{L}\s\-']+$/u)
 ];
 
 export const passwordValidator: ValidatorFn[] = [

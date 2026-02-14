@@ -33,6 +33,8 @@
   "LowInStockDetail": "Товар заканчивается — спешите!",
   "OutOfStock": "Нет на складе",
   "OutOfStockMessage": "Товар временно отсутствует на складе",
+  "Discontinued": "Товар снят с продажи",
+  "DiscontinuedMessage": "Этот товар больше не доступен для заказа",
   "Product": "Продукт",
   "Price": "Цена",
   "Continue Shopping": "Продолжить покупки",

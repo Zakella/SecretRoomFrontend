@@ -53,9 +53,13 @@ export class ProductDetail {
     }
     return this.product()?.unitsInStock;
   });
+  protected isDiscontinued = computed(() => {
+    return this.product()?.discontinued === true;
+  });
   protected isOutOfStock = computed(() => {
     const p = this.product();
     if (!p) return false;
+    if (p.discontinued) return true;
     if (p.variants?.length) {
       return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
     }

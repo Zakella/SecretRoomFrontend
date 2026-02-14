@@ -11,8 +11,8 @@ export class UserService {
   private readonly API_URL = environment.apiUrl +'v1/users/accountInfo';
   private http = inject(HttpClient);
 
-  getCustomerOrders(userEmail: string): Observable<UserAccountInfo> {
-    return this.http.post<UserAccountInfo>(this.API_URL, {email: userEmail});
+  getCustomerOrders(): Observable<UserAccountInfo> {
+    return this.http.post<UserAccountInfo>(this.API_URL, {});
   }
 
 }

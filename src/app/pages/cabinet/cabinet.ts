@@ -65,12 +65,7 @@ export class Cabinet implements OnInit, OnDestroy {
   }
 
   private loadOrders(): void {
-    if (!this.userEmail) {
-      this.isLoading.set(false);
-      return;
-    }
-
-    this.userService.getCustomerOrders(this.userEmail)
+    this.userService.getCustomerOrders()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (accountInfo) => {

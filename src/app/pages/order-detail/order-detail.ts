@@ -6,8 +6,7 @@ import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {Order} from '../../entities/order';
 import {Subject, takeUntil} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
+import {PurchaseService} from '../../@core/api/purchase';
 
 @Component({
   selector: 'app-order-detail',
@@ -29,7 +28,7 @@ export class OrderDetail implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private langService = inject(Language);
-  private http = inject(HttpClient);
+  private purchaseService = inject(PurchaseService);
   private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
 
@@ -55,11 +54,11 @@ export class OrderDetail implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.http.get<Order>(`${environment.apiUrl}v1/order/${trackingNumber}`)
+    this.purchaseService.getOrderDetails(trackingNumber)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (order) => {
-          this.order.set(order);
+          this.order.set(order as unknown as Order);
           this.isLoading.set(false);
           this.cdr.markForCheck();
         },

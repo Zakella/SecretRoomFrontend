@@ -33,6 +33,8 @@
   "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
   "OutOfStock": "Indisponibil",
   "OutOfStockMessage": "Produsul este temporar indisponibil",
+  "Discontinued": "Produs retras din vânzare",
+  "DiscontinuedMessage": "Acest produs nu mai este disponibil pentru comandă",
   "Continue Shopping": "Continuă cumpărăturile",
   "Product description": "Descriere produs",
   "Back to list": "Înapoi",

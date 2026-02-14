@@ -37,7 +37,12 @@
               [oldPrice]="selectedVariant()?.oldPrice ?? product()!.oldPrice"
               size="lg"/>
 
-            @if (isOutOfStock()) {
+            @if (isDiscontinued()) {
+              <div class="stock-warning stock-discontinued">
+                <i class="ri-forbid-2-fill"></i>
+                <span>{{ 'DiscontinuedMessage' | transloco }}</span>
+              </div>
+            } @else if (isOutOfStock()) {
               <div class="stock-warning stock-out">
                 <i class="ri-close-circle-fill"></i>
                 <span>{{ 'OutOfStockMessage' | transloco }}</span>
@@ -91,7 +96,12 @@
           }
 
           <div class="actions">
-            @if (isOutOfStock()) {
+            @if (isDiscontinued()) {
+              <button class="add-to-bag-btn discontinued-btn" disabled>
+                <i class="ri-forbid-2-line"></i>
+                <span>{{ 'Discontinued' | transloco }}</span>
+              </button>
+            } @else if (isOutOfStock()) {
               <button class="add-to-bag-btn out-of-stock-btn" disabled>
                 <i class="ri-close-circle-line"></i>
                 <span>{{ 'OutOfStock' | transloco }}</span>

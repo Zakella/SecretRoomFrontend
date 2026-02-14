@@ -12,7 +12,7 @@ export class User {
   private readonly apiUrl = environment.apiUrl +'v1/users/accountInfo';
 
 
-  getCustomerOrders(userEmail: string): Observable<UserAccountInfo> {
-    return this.http.post<UserAccountInfo>(this.apiUrl, {email: userEmail});
+  getCustomerOrders(): Observable<UserAccountInfo> {
+    return this.http.post<UserAccountInfo>(this.apiUrl, {});
   }
 }

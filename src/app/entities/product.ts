@@ -34,4 +34,5 @@ export interface Product {
   isNew: boolean,
   isBestSeller: boolean,
   variants?: ProductVariant[],
+  discontinued?: boolean,
 }

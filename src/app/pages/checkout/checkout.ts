@@ -227,7 +227,7 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   private getDeliveryDateRange(minDays: number, maxDays: number): string {
-    const formatter = new Intl.DateTimeFormat('ru', {day: '2-digit', month: '2-digit', year: 'numeric'});
+    const formatter = new Intl.DateTimeFormat(this.activeLang(), {day: '2-digit', month: '2-digit', year: 'numeric'});
     const now = new Date();
     const from = new Date(now.getTime() + minDays * 24 * 60 * 60 * 1000);
     const to = new Date(now.getTime() + maxDays * 24 * 60 * 60 * 1000);
