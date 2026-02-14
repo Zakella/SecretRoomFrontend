@@ -91,6 +91,9 @@
             {{ 'Check out' | transloco }}
             <i class="ri-arrow-right-line"></i>
           </button>
+          <button class="btn-continue" (click)="closeDrawer()">
+            {{ 'Continue Shopping' | transloco }}
+          </button>
         </div>
       } @else {
         <ng-container *ngTemplateOutlet="emptyCart"/>

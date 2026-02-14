@@ -10,10 +10,14 @@
     — Secret Room Moldova
   </h1>
   <div class="product-list-panel">
-    <product-list [products]="products()"/>
+    @if(products().length>0){
+      <product-list [products]="products()"/>
+    } @else {
+      <app-empty-state/>
+    }
   </div>
 
-  @if (!allLoaded()) {
+  @if (!allLoaded() && products().length > 0) {
     <div class="load-more">
       <button
         class="load-more-btn"

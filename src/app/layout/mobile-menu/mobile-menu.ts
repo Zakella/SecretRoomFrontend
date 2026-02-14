@@ -7,7 +7,6 @@ import {ButtonModule} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Authentication} from '../../@core/auth/authentication';
-import {UpperCasePipe} from '@angular/common';
 import {BrandService} from '../../@core/api/brand';
 import {Brand, Category} from '../../entities/category';
 import {CategoryService} from '../../@core/api/category';
@@ -27,7 +26,6 @@ import {ProductPrice} from '../../shared/components/product/product-price/produc
     ButtonModule,
     FormsModule,
     TranslocoPipe,
-    UpperCasePipe,
     LocalizedNamePipe,
     ProductPrice
   ],

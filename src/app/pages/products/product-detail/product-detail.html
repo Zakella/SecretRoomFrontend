@@ -3,12 +3,6 @@
     <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
     </button>
-    @if (!isOutOfStock()) {
-      <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
-        <i class="pi pi-shopping-bag"></i>
-      </button>
-    }
-
     <button class="back-btn-desktop" (click)="navigateToList()">
       <i class="ri-arrow-left-line"></i>
       <span>{{ 'Back' | transloco }}</span>

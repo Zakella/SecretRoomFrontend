@@ -1,1 +1,21 @@
-<p>empty-state works!</p>
+<div class="empty-layout">
+  <div class="content-wrapper">
+    <div class="illustration">
+      <div class="circle"></div>
+      <span class="emoji"><img src="/assets/SR-black.svg" alt="logo"></span>
+    </div>
+
+    <div class="text-group">
+      <h2>{{ activeLang() === 'ro' ? 'E liniște aici...' : 'Здесь пока пусто...' }}</h2>
+      <p>
+        {{ activeLang() === 'ro'
+        ? 'Se pare că nu am găsit nimic în această secțiune. Încearcă să explorezi alte produse magice!'
+        : 'Похоже, в этом разделе ничего нет. Попробуйте заглянуть в другие категории!' }}
+      </p>
+    </div>
+
+    <button class="action-button">
+      {{ activeLang() === 'ro' ? 'Spre magazin' : 'В магазин' }}
+    </button>
+  </div>
+</div>

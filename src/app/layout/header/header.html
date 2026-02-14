@@ -16,7 +16,7 @@
       </div>
       <div class="nav-right">
         <div class="icons">
-          <a class="icon fav-icon" [routerLink]="['/', activeLang(), 'favorites']">
+          <a class="icon" [routerLink]="['/', activeLang(), 'favorites']">
             <i class="ri-heart-line"></i>
             @if (favoritesService.count() > 0) {
               <span class="fav-badge">{{ favoritesService.count() }}</span>
@@ -25,7 +25,7 @@
           <a class="icon">
             <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
           </a>
-          <a class="icon cart-icon" (click)="openCart()">
+          <a class="icon" (click)="openCart()">
             <i class="ri-shopping-bag-line"></i>
             @if (cartCount() > 0) {
               <span class="cart-badge">{{ cartCount() }}</span>
@@ -36,7 +36,6 @@
     </div>
   </div>
   <div class="header-medium" [class.hidden]="isHidden" [ngStyle]="{'padding': isMinBrands() ? '10px 420px' : '10px 150px'}">
-
     <div class="logo-search-row">
       <div class="row-left">
         <div class="lang-switch">
@@ -68,7 +67,6 @@
         </div>
       </div>
     </div>
-
     <div class="brands-row">
       <nav class="brands-nav">
         @for (brand of brands(); track brand) {
@@ -89,18 +87,16 @@
         <a class="category-text" [routerLink]="['/', activeLang(), 'catalog', 'bestsellers']">
           {{ 'BestSellers' | transloco }}
         </a>
-
         @if (headerItems()) {
           @for (category of headerItems(); track category.id) {
             <a class="category-text"
                [class.active]="activeCategory()?.id === category.id"
                (mouseenter)="showDropdown(category)"
                (click)="goToCategory(category)">
-              {{ category.name }}
+              {{ activeLang() === 'ro' ? category.nameRo : category.nameRu }}
             </a>
           }
         }
-
         <a class="category-text sale-link" [routerLink]="['/', activeLang(), 'catalog', 'sales']">
           {{ 'Sale' | transloco }}
         </a>
@@ -117,7 +113,7 @@
                    [style.animation-delay]="i * 0.05 + 's'"
                    [routerLink]="['/', activeLang(), 'catalog', slugify.transform(sub.name) || sub.id]"
                    (click)="closeDropdown()">
-                  {{ sub?.name }}
+                  {{ activeLang() === 'ro' ? sub.nameRo : sub.nameRu }}
                 </a>
               }
             </div>
