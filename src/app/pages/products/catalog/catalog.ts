@@ -138,8 +138,8 @@ export class Catalog implements OnInit {
         switch (category) {
           case 'vs':
             title = isRo
-              ? "Victoria's Secret Moldova - Lenjerie și Cosmetice Originale | Secret Room"
-              : "Victoria's Secret Молдова - Оригинальное белье и косметика | Secret Room";
+              ? "Produse originale de la Victoria's Secret Moldova - Lenjerie și Cosmetice Originale | Secret Room"
+              : "Оригинальные продукты от Victoria's Secret Молдова - Оригинальное белье и косметика | Secret Room";
             break;
           case 'bb':
             title = isRo

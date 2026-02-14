@@ -279,6 +279,17 @@
     }
   }
 
+  // Out of stock badge — серый
+  .badge-out-of-stock {
+    background: rgba(108, 117, 125, 0.95);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+
+    i {
+      color: #fff;
+    }
+  }
+
   @keyframes stockPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.75; }
@@ -432,6 +443,28 @@
 
   &:active {
     transform: translateY(0);
+  }
+
+  &.out-of-stock-btn {
+    background: #6c757d;
+    color: #ccc;
+    cursor: not-allowed;
+
+    i {
+      color: #ccc;
+    }
+
+    &:hover {
+      background: #6c757d;
+      color: #ccc;
+      box-shadow: none;
+      transform: none;
+
+      i {
+        color: #ccc;
+        transform: none;
+      }
+    }
   }
 
   @media (max-width: 768px) {

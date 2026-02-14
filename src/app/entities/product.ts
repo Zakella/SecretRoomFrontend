@@ -21,6 +21,7 @@ export interface Product {
   price?: number | 0,
   imageURL: string | null,
   active?: boolean,
+  inStock?: boolean,
   unitsInStock?: number,
   size: string | null,
   brand?: string,

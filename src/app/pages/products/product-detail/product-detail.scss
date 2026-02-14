@@ -162,6 +162,12 @@ product-price {
   border: 1px solid rgba(230, 126, 34, 0.2);
 }
 
+.stock-out {
+  background: rgba(108, 117, 125, 0.08);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
 @keyframes stockPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -325,6 +331,28 @@ product-price {
 
   &:active {
     transform: translateY(0);
+  }
+
+  &.out-of-stock-btn {
+    background: #6c757d;
+    color: #ccc;
+    cursor: not-allowed;
+
+    i {
+      color: #ccc;
+    }
+
+    &:hover {
+      background: #6c757d;
+      color: #ccc;
+      box-shadow: none;
+      transform: none;
+
+      i {
+        color: #ccc;
+        transform: none;
+      }
+    }
   }
 }
 

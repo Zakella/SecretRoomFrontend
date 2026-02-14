@@ -31,6 +31,8 @@
   "LowInStock": "Мало на складе",
   "LastItemHurry": "Последний товар — спешите!",
   "LowInStockDetail": "Товар заканчивается — спешите!",
+  "OutOfStock": "Нет на складе",
+  "OutOfStockMessage": "Товар временно отсутствует на складе",
   "Product": "Продукт",
   "Price": "Цена",
   "Continue Shopping": "Продолжить покупки",

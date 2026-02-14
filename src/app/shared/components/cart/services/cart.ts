@@ -36,6 +36,10 @@ export class CartUi {
     const existingCartItemIndex = this.findExistingCartItemIndex(currentItems, theCartItem);
     const maxStock = this.getMaxStock(theCartItem);
 
+    if (maxStock != null && maxStock <= 0) {
+      return;
+    }
+
     if (existingCartItemIndex !== -1) {
       const existing = currentItems[existingCartItemIndex];
       const newQty = existing.quantity + theCartItem.quantity;

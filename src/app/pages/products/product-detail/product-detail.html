@@ -3,9 +3,11 @@
     <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
     </button>
-    <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
-      <i class="pi pi-shopping-bag"></i>
-    </button>
+    @if (!isOutOfStock()) {
+      <button class="add-to-cart-mobile" (click)="addProductInCart()" aria-label="Add to cart">
+        <i class="pi pi-shopping-bag"></i>
+      </button>
+    }
 
     <button class="back-btn-desktop" (click)="navigateToList()">
       <i class="ri-arrow-left-line"></i>
@@ -41,7 +43,12 @@
               [oldPrice]="selectedVariant()?.oldPrice ?? product()!.oldPrice"
               size="lg"/>
 
-            @if (effectiveStock() === 1) {
+            @if (isOutOfStock()) {
+              <div class="stock-warning stock-out">
+                <i class="ri-close-circle-fill"></i>
+                <span>{{ 'OutOfStockMessage' | transloco }}</span>
+              </div>
+            } @else if (effectiveStock() === 1) {
               <div class="stock-warning stock-critical">
                 <i class="ri-error-warning-fill"></i>
                 <span>{{ 'LastItemHurry' | transloco }}</span>
@@ -79,14 +86,28 @@
               </div>
             </div>
           } @else if (product()?.size) {
-            <span class="article">{{ 'Size' | transloco }}: {{ product()?.size }}</span>
+            <div class="variant-selector">
+              <span class="variant-label">{{ 'Size' | transloco }}:</span>
+              <div class="variant-options">
+                <button class="variant-btn active">
+                  {{ product()?.size }}
+                </button>
+              </div>
+            </div>
           }
 
           <div class="actions">
-            <button class="add-to-bag-btn" (click)="addProductInCart()">
-              <i class="ri-shopping-bag-line"></i>
-              <span>{{ 'Add to Cart' | transloco }}</span>
-            </button>
+            @if (isOutOfStock()) {
+              <button class="add-to-bag-btn out-of-stock-btn" disabled>
+                <i class="ri-close-circle-line"></i>
+                <span>{{ 'OutOfStock' | transloco }}</span>
+              </button>
+            } @else {
+              <button class="add-to-bag-btn" (click)="addProductInCart()">
+                <i class="ri-shopping-bag-line"></i>
+                <span>{{ 'Add to Cart' | transloco }}</span>
+              </button>
+            }
 
             <div class="secondary-actions">
               <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()">

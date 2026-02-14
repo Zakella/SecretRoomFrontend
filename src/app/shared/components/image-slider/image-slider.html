@@ -6,7 +6,11 @@
         <div class="slide-bg" [style.backgroundImage]="'url(' + getImageUrl(image) + ')'"></div>
         <!-- Main image -->
         <img [src]="getImageUrl(image)" [alt]="image.name" class="slide-img fade"
-             [style.filter]="getImageFilterStyle(image)"/>
+             [style.filter]="getImageFilterStyle(image)"
+             [loading]="i === 0 ? 'eager' : 'lazy'"
+             [attr.fetchpriority]="i === 0 ? 'high' : null"
+             [width]="isMobile() ? 1080 : 1536"
+             [height]="isMobile() ? 1440 : 672"/>
         <!-- Dynamic gradient overlay -->
         <div class="slide-gradient" [style.background]="getOverlayStyle(image)"></div>
         <!-- Badge -->

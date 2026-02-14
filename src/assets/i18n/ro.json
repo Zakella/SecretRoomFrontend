@@ -31,6 +31,8 @@
   "LowInStock": "Stoc limitat",
   "LastItemHurry": "Ultimul articol — grăbește-te!",
   "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
+  "OutOfStock": "Indisponibil",
+  "OutOfStockMessage": "Produsul este temporar indisponibil",
   "Continue Shopping": "Continuă cumpărăturile",
   "Product description": "Descriere produs",
   "Back to list": "Înapoi",

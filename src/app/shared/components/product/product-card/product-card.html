@@ -40,6 +40,11 @@
         <i class="ri-sparkling-fill"></i>
         <span>New</span>
       </div>
+    } @else if (isOutOfStock()) {
+      <div class="badge badge-status badge-out-of-stock">
+        <i class="ri-close-circle-fill"></i>
+        <span>{{ 'OutOfStock' | transloco }}</span>
+      </div>
     } @else if (!product()?.variants?.length && product()?.unitsInStock === 1) {
       <div class="badge badge-status badge-last-item">
         <i class="ri-error-warning-fill"></i>
@@ -76,13 +81,20 @@
   </div>
 
   <div class="product-info">
-    <button
-      class="add-to-bag-btn"
-      (click)="addProductInCart(); $event.stopPropagation()"
-      analyticEvent="buy_click"
-    >
-      <i class="ri-shopping-bag-line"></i>
-      <span>{{ 'Add to Cart' | transloco }}</span>
-    </button>
+    @if (isOutOfStock()) {
+      <button class="add-to-bag-btn out-of-stock-btn" disabled>
+        <i class="ri-close-circle-line"></i>
+        <span>{{ 'OutOfStock' | transloco }}</span>
+      </button>
+    } @else {
+      <button
+        class="add-to-bag-btn"
+        (click)="addProductInCart(); $event.stopPropagation()"
+        analyticEvent="buy_click"
+      >
+        <i class="ri-shopping-bag-line"></i>
+        <span>{{ 'Add to Cart' | transloco }}</span>
+      </button>
+    }
   </div>
 </div>

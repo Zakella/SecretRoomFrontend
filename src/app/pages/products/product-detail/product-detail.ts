@@ -52,6 +52,14 @@ export class ProductDetail {
     }
     return this.product()?.unitsInStock;
   });
+  protected isOutOfStock = computed(() => {
+    const p = this.product();
+    if (!p) return false;
+    if (p.variants?.length) {
+      return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
+    }
+    return (p.unitsInStock ?? 0) <= 0;
+  });
   quantity: number = 1;
   currentSize: string | undefined;
   mainImage: string | null = null;

@@ -74,6 +74,15 @@ export class ProductCard {
     return id ? this.favoritesService.isFavorite(id) : false;
   }
 
+  isOutOfStock(): boolean {
+    const p = this.product();
+    if (!p) return false;
+    if (p.variants?.length) {
+      return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
+    }
+    return (p.unitsInStock ?? 0) <= 0;
+  }
+
   addProductInCart() {
     let cartItem: CartItem;
     if (this.product()!.productSizes && this.product()!.productSizes!.length > 0) {
