@@ -16,13 +16,6 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     if (req.url.includes('/api/')) {
-      let modifiedReq = req.clone({
-        setHeaders: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-
       if (isPlatformBrowser(this.platformId)) {
         const storedUser = localStorage.getItem("user");
 
@@ -31,14 +24,13 @@ export class AuthInterceptor implements HttpInterceptor {
           const token = userDetails.accessToken;
 
           if (token && this.isProtectedEndpoint(req.url)) {
-            modifiedReq = modifiedReq.clone({
+            const autReq = req.clone({
               setHeaders: { Authorization: "Bearer " + token }
             });
+            return next.handle(autReq);
           }
         }
       }
-
-      return next.handle(modifiedReq);
     }
 
     return next.handle(req);

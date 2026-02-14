@@ -326,6 +326,21 @@
   "Sale": "Sale",
   "RecentlyViewed": "Недавно просмотренные",
   "Filters" : "Фильтры",
+  "GetDirections": "Построить маршрут",
+  "reviews": {
+    "ofReviews": "из {{count}} отзывов",
+    "excellent": "Отлично",
+    "good": "Хорошо",
+    "average": "Средне",
+    "belowAvg": "Ниже среднего",
+    "poor": "Плохо",
+    "placeholder": "Введите ваш отзыв...",
+    "submit": "Добавить отзыв"
+  },
+  "brandsPage": {
+    "title": "Наши Бренды",
+    "description": "Мы собрали самые любимые бренды со всего мира в одном месте."
+  },
   "termsPage": {
     "pageTitle": "Правила и условия",
     "heading1": "Правила &",

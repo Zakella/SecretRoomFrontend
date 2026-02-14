@@ -1,13 +1,15 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {TranslocoPipe} from '@ngneat/transloco';
 import {ReviewsApi} from '../../../../@core/services/reviews';
 
 @Component({
   selector: 'app-reviews',
   imports: [
     DatePipe,
-    FormsModule
+    FormsModule,
+    TranslocoPipe
   ],
   templateUrl: './reviews.html',
   styleUrl: './reviews.scss',

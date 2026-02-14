@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
+import {TranslocoPipe} from '@ngneat/transloco';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
 import {BrandService} from '../../@core/api/brand';
@@ -8,7 +9,8 @@ import {Brand} from '../../entities/category';
 @Component({
   selector: 'app-brands',
   imports: [
-    RouterLink
+    RouterLink,
+    TranslocoPipe
   ],
   templateUrl: './brands.html',
   styleUrl: './brands.scss',
@@ -40,7 +42,7 @@ export class Brands implements OnInit {
     );
 
     this.brandService.gerAllBrands().subscribe(brands => {
-      this.brands.set(brands.sort((a, b) => this.displayName(a).localeCompare(this.displayName(b))));
+      this.brands.set([...brands].sort((a, b) => this.displayName(a).localeCompare(this.displayName(b))));
     });
   }
 

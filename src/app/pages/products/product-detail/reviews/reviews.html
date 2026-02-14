@@ -3,7 +3,7 @@
     <!-- Средний рейтинг -->
     <div class="text-center border border-gray-200 p-4 rounded-lg md:mr-4">
       <div class="text-4xl font-bold">4.8</div>
-      <div class="text-gray-500 text-sm">of 125 reviews</div>
+      <div class="text-gray-500 text-sm">{{ 'reviews.ofReviews' | transloco: { count: 125 } }}</div>
       <div class="flex justify-center mt-1">
         <span class="text-yellow-400">★</span>
         <span class="text-yellow-400">★</span>
@@ -16,7 +16,7 @@
     <!-- Список оценок -->
     <div class="flex-1">
       <div class="flex items-center mb-1">
-        <span class="w-24 text-sm">Excellent</span>
+        <span class="w-24 text-sm">{{ 'reviews.excellent' | transloco }}</span>
         <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
           <div class="h-2 bg-black rounded w-full"></div>
         </div>
@@ -24,7 +24,7 @@
       </div>
 
       <div class="flex items-center mb-1">
-        <span class="w-24 text-sm">Good</span>
+        <span class="w-24 text-sm">{{ 'reviews.good' | transloco }}</span>
         <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
           <div class="h-2 bg-black rounded w-[11%]"></div>
         </div>
@@ -32,7 +32,7 @@
       </div>
 
       <div class="flex items-center mb-1">
-        <span class="w-24 text-sm">Average</span>
+        <span class="w-24 text-sm">{{ 'reviews.average' | transloco }}</span>
         <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
           <div class="h-2 bg-black rounded w-[24%]"></div>
         </div>
@@ -40,7 +40,7 @@
       </div>
 
       <div class="flex items-center mb-1">
-        <span class="w-24 text-sm">Below Avg</span>
+        <span class="w-24 text-sm">{{ 'reviews.belowAvg' | transloco }}</span>
         <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
           <div class="h-2 bg-black rounded w-[40%]"></div>
         </div>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="flex items-center">
-        <span class="w-24 text-sm">Poor</span>
+        <span class="w-24 text-sm">{{ 'reviews.poor' | transloco }}</span>
         <div class="flex-1 h-2 bg-gray-200 rounded mx-2">
           <div class="h-2 bg-black rounded w-[5%]"></div>
         </div>
@@ -83,8 +83,8 @@
     <textarea
       rows="3"
       [(ngModel)]="newComment"
-      placeholder="Введите ваш отзыв..."
+      [placeholder]="'reviews.placeholder' | transloco"
     ></textarea>
-    <button (click)="addReview()">Добавить отзыв</button>
+    <button (click)="addReview()">{{ 'reviews.submit' | transloco }}</button>
   </div>
 </div>

@@ -327,6 +327,21 @@
   "Sale": "Sale",
   "RecentlyViewed": "Vizualizate recent",
   "Filters" : "Filtre",
+  "GetDirections": "Construiește ruta",
+  "reviews": {
+    "ofReviews": "din {{count}} recenzii",
+    "excellent": "Excelent",
+    "good": "Bun",
+    "average": "Mediu",
+    "belowAvg": "Sub medie",
+    "poor": "Slab",
+    "placeholder": "Scrieți recenzia dvs...",
+    "submit": "Adaugă recenzie"
+  },
+  "brandsPage": {
+    "title": "Brandurile Noastre",
+    "description": "Am adunat cele mai iubite branduri din lume într-un singur loc."
+  },
   "termsPage": {
     "pageTitle": "Termeni și condiții",
     "heading1": "Termeni &",
