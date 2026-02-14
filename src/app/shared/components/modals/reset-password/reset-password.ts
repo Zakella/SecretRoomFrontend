@@ -1,11 +1,14 @@
-import {ChangeDetectionStrategy, Component, input, model, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, model, output, signal} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DialogModule} from 'primeng/dialog';
 import {ButtonModule} from 'primeng/button';
+import {TranslocoPipe} from '@ngneat/transloco';
+import {Authentication} from '../../../../@core/auth/authentication';
+import {Language} from '../../../../@core/services/language';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [ReactiveFormsModule, DialogModule, ButtonModule],
+  imports: [ReactiveFormsModule, DialogModule, ButtonModule, TranslocoPipe],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -13,11 +16,13 @@ import {ButtonModule} from 'primeng/button';
 export class ResetPassword {
   isVisible = model<boolean>(true);
   close = output<void>();
-  submitted = output<string>();
   form: FormGroup;
-  submitting = false;
-  successMessage = '';
-  errorMessage = '';
+  submitting = signal(false);
+  successMessage = signal('');
+  errorMessage = signal('');
+
+  private authService = inject(Authentication);
+  private langService = inject(Language);
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -35,22 +40,31 @@ export class ResetPassword {
       this.form.markAllAsTouched();
       return;
     }
-    this.submitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.submitting.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
-    setTimeout(() => {
-      this.submitting = false;
-      this.successMessage = 'Если адрес электронной почты существует, на него отправлено письмо для сброса пароля.';
-      this.submitted.emit(this.form.value.email);
-      this.form.reset();
-    }, 1500);
+    const email = this.form.value.email;
+    const lang = this.langService.currentLanguage();
+
+    this.authService.restorePassword(email, lang).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        this.successMessage.set('forgotPassword.successMessage');
+        this.form.reset();
+      },
+      error: () => {
+        this.submitting.set(false);
+        this.successMessage.set('forgotPassword.successMessage');
+        this.form.reset();
+      }
+    });
   }
 
   private reset(): void {
     this.form.reset();
-    this.submitting = false;
-    this.successMessage = '';
-    this.errorMessage = '';
+    this.submitting.set(false);
+    this.successMessage.set('');
+    this.errorMessage.set('');
   }
 }

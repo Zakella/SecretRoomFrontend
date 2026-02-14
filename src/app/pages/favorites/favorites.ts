@@ -1,4 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
+import {Meta} from '@angular/platform-browser';
 import {FavoritesService} from '../../@core/services/favorites';
 import {ProductService} from '../../@core/api/product';
 import {Product} from '../../entities/product';
@@ -12,6 +13,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
   styleUrl: './favorites.scss',
 })
 export class Favorites implements OnInit {
+  private meta = inject(Meta);
   private favoritesService = inject(FavoritesService);
   private productService = inject(ProductService);
 
@@ -19,6 +21,7 @@ export class Favorites implements OnInit {
   loading = signal(false);
 
   ngOnInit() {
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
     this.loadFavorites();
   }
 

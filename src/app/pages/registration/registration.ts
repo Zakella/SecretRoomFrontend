@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
+import {Meta} from '@angular/platform-browser';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {RegistrationService} from './services/registration';
 import {Router, RouterLink} from '@angular/router';
@@ -16,7 +17,8 @@ import {Language} from '../../@core/services/language';
   styleUrl: './registration.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Registration {
+export class Registration implements OnInit {
+  private meta = inject(Meta);
   registrationService = inject(RegistrationService);
   private langService = inject(Language);
   private router = inject(Router);
@@ -26,6 +28,10 @@ export class Registration {
 
   showPassword = false;
   isSubmitting = signal(false);
+
+  ngOnInit() {
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+  }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registrationForm.get(fieldName);

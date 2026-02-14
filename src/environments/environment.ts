@@ -1,6 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https:/api-sr.solterprise.com/api/',
-  frontend:"http://localhost:7200"
-
+  apiUrl: 'http://localhost:9090/api/',
+  frontend: 'http://localhost:7200'
 };

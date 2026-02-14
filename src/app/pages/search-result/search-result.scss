@@ -54,3 +54,28 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .search-result-header {
+    padding: 12px 16px;
+
+    .search-result-info {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+    }
+
+    .view-toggle {
+      gap: 10px;
+      padding: 5px 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .search-result-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+}

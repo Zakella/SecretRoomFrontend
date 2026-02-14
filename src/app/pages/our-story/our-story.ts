@@ -17,5 +17,7 @@ export class OurStory implements OnInit {
   ngOnInit() {
     this.metaService.updateTitle('Despre Noi | Secret Room');
     this.metaService.updateDescription('Află povestea Secret Room - destinația ta pentru produse Victoria\'s Secret și Bath & Body Works în Moldova.');
+    this.metaService.updateKeywords('Secret Room Moldova, despre noi, Victoria\'s Secret, Bath & Body Works, magazin parfumuri Chișinău');
+    this.metaService.updateImage('https://secretroom.md/assets/images/SR-transparent.png');
   }
 }

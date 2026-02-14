@@ -2,11 +2,13 @@ import {Component, inject, OnInit, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
 import {ProductService} from '../../@core/api/product';
 import {ProductList} from '../../shared/components/product/product-list/product-list';
 import {Product} from '../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
+import {MetaService} from '../../@core/services/meta.service';
 
 @Component({
   selector: 'app-search-result',
@@ -23,6 +25,8 @@ export class SearchResult implements OnInit {
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
   private ga = inject(GoogleAnalytics);
+  private metaService = inject(MetaService);
+  private meta = inject(Meta);
 
   viewMode: 'grid' | 'list' = 'grid';
   products = signal<Product[]>([]);
@@ -39,6 +43,9 @@ export class SearchResult implements OnInit {
       this.query.set(q);
       this.page = 0;
       this.products.set([]);
+      this.metaService.updateTitle(`${q} — Secret Room`);
+      this.metaService.updateDescription(`Результаты поиска «${q}» в магазине Secret Room Moldova.`);
+      this.meta.updateTag({name: 'robots', content: 'noindex, follow'});
       if (q.trim()) {
         this.loadProducts();
         this.trackSearch(q);

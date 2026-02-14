@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
+import {MetaService} from '../../@core/services/meta.service';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'app-brands',
@@ -9,7 +11,26 @@ import {RouterLink} from '@angular/router';
   templateUrl: './brands.html',
   styleUrl: './brands.scss',
 })
-export class Brands {
+export class Brands implements OnInit {
+  private metaService = inject(MetaService);
+  private langService = inject(Language);
+
+  ngOnInit() {
+    const isRo = this.langService.currentLanguage() === 'ro';
+    this.metaService.updateTitle(
+      isRo
+        ? 'Branduri originale în Moldova — Victoria\'s Secret, Bath & Body Works | Secret Room'
+        : 'Оригинальные бренды в Молдове — Victoria\'s Secret, Bath & Body Works | Secret Room'
+    );
+    this.metaService.updateDescription(
+      isRo
+        ? 'Toate brandurile disponibile în magazinul Secret Room Moldova. Produse originale: lenjerie, cosmetice, parfumuri de la cele mai populare branduri mondiale.'
+        : 'Все бренды в магазине Secret Room Молдова. Оригинальная продукция: бельё, косметика, парфюмерия от самых популярных мировых брендов.'
+    );
+    this.metaService.updateKeywords(
+      'Secret Room brands, branduri Moldova, Victoria\'s Secret Moldova, Bath Body Works Moldova, оригинальные бренды Молдова'
+    );
+  }
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   brands = [
     { id: 1, name: 'Chanel', logoUrl: 'https://www.retail.ru/upload/iblock/6aa/f4b21hnj21c296516fhpwgv4xr7wiebj/1.jpeg' },

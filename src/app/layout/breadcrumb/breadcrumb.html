@@ -1,14 +1,12 @@
-<!--
-<nav class="breadcrumbs" *ngIf="breadcrumbs().length">
-  <ng-container *ngFor="let bc of breadcrumbs(); let last = last">
-    <a
-      [routerLink]="!last ? bc.url : null"
-      [class.active]="last"
-    >
-      {{ bc.label }}
-    </a>
-
-    <span class="separator" *ngIf="!last">/</span>
-  </ng-container>
-</nav>
--->
+@if (breadcrumbs().length) {
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    @for (bc of breadcrumbs(); track bc.url; let last = $last) {
+      @if (!last) {
+        <a [routerLink]="bc.url">{{ bc.label }}</a>
+        <span class="separator" aria-hidden="true">/</span>
+      } @else {
+        <span class="active" aria-current="page">{{ bc.label }}</span>
+      }
+    }
+  </nav>
+}

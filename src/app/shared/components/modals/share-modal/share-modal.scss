@@ -1,5 +1,9 @@
-::ng-deep p-dialog{
-  width: 425px!important;
+::ng-deep p-dialog {
+  width: 425px !important;
+
+  @media (max-width: 480px) {
+    width: 95vw !important;
+  }
 }
 
 ::ng-deep .beauty-share-dialog {
@@ -32,6 +36,10 @@
     justify-content: center;
     gap: 2.5rem;
     margin-bottom: 2rem;
+
+    @media (max-width: 480px) {
+      gap: 1.5rem;
+    }
   }
 
   .share-item {

@@ -43,6 +43,32 @@ export class Contacts implements OnInit {
   ngOnInit() {
     this.metaService.updateTitle('Contacte | Secret Room');
     this.metaService.updateDescription('Contacte Secret Room: adresele magazinelor, numere de telefon și program de lucru.');
+    this.metaService.updateKeywords('Secret Room contacte, adresa magazin, Chișinău, program de lucru, telefon, Victoria\'s Secret Moldova');
+    this.metaService.updateImage(this.stores[0].imgUrl);
+
+    for (const store of this.stores) {
+      this.metaService.setJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        'name': store.name,
+        'image': store.imgUrl,
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': store.location.split(',')[0],
+          'addressLocality': 'Chișinău',
+          'addressCountry': 'MD'
+        },
+        'geo': {
+          '@type': 'GeoCoordinates',
+          'latitude': store.latitude,
+          'longitude': store.longitude
+        },
+        'telephone': '+373' + store.contact,
+        'openingHours': 'Mo-Su ' + store.workTime,
+        'url': 'https://secretroom.md',
+        'priceRange': '$$'
+      }, `local-business-${store.id}`);
+    }
   }
 
   getGoogleMapsUrl(lat: number, lng: number): SafeResourceUrl {

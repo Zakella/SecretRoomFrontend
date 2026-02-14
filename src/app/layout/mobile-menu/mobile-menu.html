@@ -83,7 +83,7 @@
             @for (product of searchService.suggestions(); track product.id) {
               <div class="mobile-search-item" (click)="goToProductFromSearch(product)">
                 <div class="mobile-search-img">
-                  <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product | localizedName"/>
+                  <img [src]="product.imageURL || 'assets/images/no-image.png'" [alt]="product | localizedName" loading="lazy"/>
                 </div>
                 <div class="mobile-search-info">
                   <span class="mobile-search-brand">{{ product.brandAlias }}</span>

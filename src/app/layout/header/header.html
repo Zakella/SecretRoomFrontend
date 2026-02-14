@@ -6,10 +6,10 @@
           <i class="ri-map-pin-line"></i>
           <span>{{'Stores' | transloco}}</span>
         </a>
-        <a class="nav-item nav-item--luxury" [routerLink]="['/', activeLang(), 'about-the-secret-room']">
+        <span class="nav-item nav-item--luxury" (click)="scrollToInstagram()">
           <i class="ri-instagram-line"></i>
           <span>{{'Instagram' | transloco}}</span>
-        </a>
+        </span>
       </nav>
       <div class="logo-scroll-wrapper" [class.visible]="isHidden">
         <ng-container *ngTemplateOutlet="logo"/>
@@ -22,8 +22,8 @@
               <span class="fav-badge">{{ favoritesService.count() }}</span>
             }
           </a>
-          <a class="icon">
-            <i [routerLink]="['/', activeLang(), 'cabinet']" class="ri-user-line"></i>
+          <a class="icon" [routerLink]="['/', activeLang(), 'cabinet']">
+            <i class="ri-user-line"></i>
           </a>
           <a class="icon" (click)="openCart()">
             <i class="ri-shopping-bag-line"></i>
@@ -92,7 +92,8 @@
             <a class="category-text"
                [class.active]="activeCategory()?.id === category.id"
                (mouseenter)="showDropdown(category)"
-               (click)="goToCategory(category)">
+               [routerLink]="['/', activeLang(), 'catalog', category.slug || slugify.transform(category.name) || category.id]"
+               (click)="closeDropdown()">
               {{ activeLang() === 'ro' ? category.nameRo : category.nameRu }}
             </a>
           }
@@ -111,14 +112,16 @@
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {
                 <a class="mega-dropdown__item"
                    [style.animation-delay]="i * 0.05 + 's'"
-                   [routerLink]="['/', activeLang(), 'catalog', slugify.transform(sub.name) || sub.id]"
+                   [routerLink]="['/', activeLang(), 'catalog', sub.slug || slugify.transform(sub.name) || sub.id]"
                    (click)="closeDropdown()">
                   {{ activeLang() === 'ro' ? sub.nameRo : sub.nameRu }}
                 </a>
               }
             </div>
 
-            <a class="mega-dropdown__all" (click)="goToCategory(activeCategory()!)">
+            <a class="mega-dropdown__all"
+               [routerLink]="['/', activeLang(), 'catalog', activeCategory()?.slug || slugify.transform(activeCategory()?.name || '') || activeCategory()?.id]"
+               (click)="closeDropdown()">
               {{ 'ViewAll' | transloco }}
               <i class="ri-arrow-right-line"></i>
             </a>

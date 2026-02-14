@@ -27,6 +27,8 @@
     width: 100%;
     background: transparent;
     height: 36px;
+    position: relative;
+    z-index: 102;
 
     &-inner {
       max-width: 1200px;
@@ -207,6 +209,7 @@
       padding-top: 0;
       padding-bottom: 0;
       overflow: hidden;
+      pointer-events: none;
     }
 
     .logo-search-row {
@@ -610,7 +613,7 @@
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1100px) {
+@media screen and (min-width: 768px) and (max-width: 1024px) {
 
   .header-medium {
     padding: 15px 20px !important;

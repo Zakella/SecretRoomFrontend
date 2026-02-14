@@ -124,7 +124,36 @@
     "serverError": "A apărut o eroare pe server. Vă rugăm să încercați mai târziu."
   },
 
+  "forgotPassword": {
+    "title": "Resetare parolă",
+    "description": "Introduceți emailul asociat contului dvs. Vă vom trimite un link pentru resetarea parolei.",
+    "submit": "Trimite linkul",
+    "sending": "Se trimite...",
+    "successMessage": "Dacă adresa de email există, am trimis un mesaj cu linkul de resetare a parolei.",
+    "invalidEmail": "Introduceți un email valid"
+  },
+  "notFound": {
+    "title": "Pagina nu a fost găsită",
+    "description": "Se pare că această pagină a luat o vacanță. Dar nu vă faceți griji — colecția noastră vă așteaptă.",
+    "goHome": "Pagina principală",
+    "goToCatalog": "Mergi la catalog"
+  },
   "resetPassword": {
+    "title": "Parolă nouă",
+    "description": "Creați o parolă nouă pentru contul dvs.",
+    "newPassword": "Parolă nouă",
+    "confirmPassword": "Confirmați parola",
+    "passwordRequirements": "Minim 8 caractere, litere și cifre",
+    "passwordsMismatch": "Parolele nu se potrivesc",
+    "submit": "Salvează parola",
+    "processing": "Se salvează...",
+    "successTitle": "Parola a fost schimbată",
+    "successMessage": "Parola dvs. a fost schimbată cu succes. Acum puteți să vă autentificați cu noua parolă.",
+    "goToLogin": "Autentificare",
+    "backToLogin": "Înapoi la autentificare",
+    "invalidToken": "Link invalid pentru resetarea parolei",
+    "tokenExpired": "Linkul a expirat. Solicitați unul nou.",
+    "error": "A apărut o eroare. Încercați din nou.",
     "passwordsDoNotMatch": "Parolele nu se potrivesc",
     "invalidOrExpiredToken": "Token invalid sau expirat",
     "errorOccurred": "A apărut o eroare la resetarea parolei",
@@ -133,7 +162,8 @@
 
   "AllRightReserved": "Toate drepturile rezervate",
   "Contacts": "Contacte",
-  "DeliveryTerms": "Termeni de livrare",
+  "DeliveryTerms": "Termeni și condiții",
+  "ShippingInfo": "Condiții de livrare",
   "Company": "Companie",
   "Сonditions": "Condiții",
   "Estimated delivery: ": "Livrare estimată",
@@ -296,5 +326,65 @@
   "BestSellers": "Cele mai vândute",
   "Sale": "Sale",
   "RecentlyViewed": "Vizualizate recent",
-  "Filters" : "Filtre"
+  "Filters" : "Filtre",
+  "termsPage": {
+    "pageTitle": "Termeni și condiții",
+    "heading1": "Termeni &",
+    "heading2": "Condiții",
+    "pageSubtitle": "Prezenții Termeni și Condiții de utilizare a magazinului online www.secretroom.md sunt aplicabile comenzilor pentru achiziționarea produselor/serviciilor oferite de compania Zapolski Brands SRL prin intermediul site-ului. Pentru folosirea în bune condiții a site-ului, vă recomandăm familiarizarea cu atenție a Termenilor și Condițiilor prezentate.",
+    "lastUpdated": "",
+    "general": {
+      "title": "Dispoziții generale",
+      "content": "<p>Acest site este deținut de <strong>Zapolski Brands SRL</strong>. La înregistrarea comenzii în magazinul online, Cumpărătorul acceptă Termenii și Condițiile de vânzare a bunurilor/produselor și/sau prestare a serviciilor, care sunt bazați pe legislația RM (în continuare – Termeni și Condiții) prezentate mai jos.</p><p>Utilizarea website-ului presupune acceptarea Termenilor și Condițiilor propuse de către Zapolski Brands SRL, în conformitate cu Legea nr. 284/2004 privind Comerțul Electronic. Relațiile dintre client și vânzător sunt stabilite în baza Legii nr. 105/2003 cu privire la Protecția drepturilor consumatorului, și a altor acte normative adoptate în conformitate cu aceasta.</p><p>Vânzătorul își rezervă dreptul de a modifica Termenii și Condițiile date, iar Cumpărătorul este obligat să monitorizeze modificările.</p>"
+    },
+    "dataProtection": {
+      "title": "Protecția datelor cu caracter personal",
+      "content": "<p>Prin utilizarea site-ului www.secretroom.md, sunteți de acord în mod automat cu colectarea și prelucrarea datelor cu caracter personal, care sunt necesare pentru procesarea/confirmarea/executarea comenzilor.</p><p>Datele personale se prelucrează doar pentru scopuri legitime, precum acela de a furniza produsele pe care le comandați, promoții, Google Analytics, cookies și notificări/newsletter.</p><p>Toată informația ce conține date cu caracter personal este stocată și utilizată doar pentru perioada necesară atingerii scopurilor pentru care a fost colectată și în conformitate cu prevederile stabilite de Legea nr. 133/2011 privind protecția datelor cu caracter personal.</p><p>Noi folosim măsuri de securitate comerciale pentru a preveni accesul neautorizat, menținerea exactității datelor și pentru asigurarea utilizării corecte a informațiilor de pe site. Transmiterea datelor pe internet sau prin rețea wireless nu poate fi protejată în totalitate. Prin urmare, la fel ca alte companii, noi nu putem garanta securitatea informațiilor pe care le oferă Cumpărătorul, astfel, el va face acest lucru pe propria răspundere.</p>"
+    },
+    "orders": {
+      "title": "Înregistrarea și achitarea comenzii",
+      "content": "<p>Achitarea comenzilor este posibilă cu cardul de plată – la primirea comenzii veți primi bonul fiscal ce va confirma plata.</p><p>Plata online se face în condiții de siguranță maximă folosind ca instrument de plată cardul de plată, care permite efectuarea de tranzacții online. După efectuarea plății veți primi o confirmare de plată pe adresa dvs. de email.</p><p>Procesatorul de plată folosește un sistem securizat, bazat pe ultima versiune a standardului de securitate <strong>3D-Secure</strong>, ceea ce înseamnă o nouă abordare globală a autentificării cumpărătorilor în tranzacții sigure online. Această măsură de siguranță presupune redirecționarea utilizatorului în momentul efectuării plății pe o pagină securizată, unde autentificarea fiecărui deținător de card se face prin atribuirea unui cod de unică folosință pentru fiecare tranzacție online.</p><p>Rambursarea mijloacelor bănești se efectuează doar pe cardul de plată care a fost folosit pentru achiziție.</p><p>Pentru a efectua o plată, va trebui să introduceți detaliile cardului dvs. bancar. Transferul acestor informații se face în conformitate cu toate măsurile de securitate necesare. Informațiile sunt transmise în formă criptată și sunt stocate numai pe un server specializat al sistemului de plăți.</p><p>Pentru efectuarea plății vor fi solicitate următoarele date:</p><ul><li>Numărul cardului (16 cifre)</li><li>Data expirării (luna și anul)</li><li>Codul CVC sau CVV (3 cifre)</li><li>Numele și prenumele de pe cardul de plată</li></ul><p>În cazul în care valuta cardului diferă de valuta tranzacției (MDL), atunci la convertirea sumei reținute din contul de card se vor aplica condițiile băncii emitente.</p>"
+    },
+    "delivery": {
+      "title": "Livrarea produselor",
+      "content": "<p>După înregistrarea comenzii, cumpărătorului i se oferă informația privind data preconizată de transmitere a comenzii de către curieri / serviciul de livrare.</p><p>Livrarea în raza mun. <strong>Chișinău</strong> se efectuează în timp de 24–72 ore la confirmarea comenzii de către operatorii noștri. Livrarea este gratuită pentru comenzi de minim 1000 lei, pentru comenzi cu valoare mai mică se achită livrarea (care va fi inclusă în suma totală a tranzacției/comenzii).</p><p>Livrarea pe teritoriul <strong>R. Moldova</strong> se efectuează în timp de 24–72 ore, de la confirmarea comenzii de către operatorii noștri. Livrarea este gratuită pentru comenzi de minim 1000 lei, pentru comenzi cu valoare mai mică se achită livrarea (care va fi inclusă în suma totală a tranzacției/comenzii).</p><p>În zilele de duminică sau sărbătoare națională nu se efectuează livrări.</p><p>Termenul de livrare se poate extinde în anumite situații izolate (de exemplu: condiții meteo nefavorabile, perioadele sărbătorilor legale, probleme tehnice neprevăzute etc). Vă vom notifica în cazul în care întâmpinăm una dintre situațiile izolate în prealabil.</p><p>Puteți alege orice adresă pentru livrare – acasă, în oficiu sau oricare altă adresă, fără achitări suplimentare. Noi acceptăm o singură adresă de livrare pentru fiecare comandă. În cazul în care aveți nevoie pentru a livra comanda pe diferite adrese, vă rugăm să înregistrați comenzi diferite pentru fiecare adresă.</p><p>La primirea produselor, vă rugăm în prezența curierului să verificați integritatea ambalajului, prezența bonului fiscal. Orice pretenție ulterioară cu privire la aceste aspecte nu vor fi acceptate.</p>"
+    },
+    "returns": {
+      "title": "Dreptul la retur",
+      "content": "<p>Conform Hotărârii Guvernului №1465 din 08.12.2003, MO248-253/19.12.2003, art.1530, Anexa 2, p.4 (în redacția Hotărârii Guvernului №1188 din 02.11.2007, МО175/09.11.2007), <strong>articolele de parfumerie și cosmetică nu pot fi schimbate sau returnate</strong>.</p>"
+    },
+    "privacy": {
+      "title": "Politica de confidențialitate",
+      "content": "<p>În conformitate cu prevederile Legii Nr. 133/2011 privind protecția datelor cu caracter personal, furnizorul de servicii prelucrează date cu caracter personal. Datele cu caracter personal sunt prelucrate cu bună-credință și se face în temeiul și în conformitate cu prevederile legale. Prelucrarea datelor cu caracter personal se realizează prin mijloace mixte (automate și manuale), cu respectarea cerințelor legale și în condiții care să asigure securitatea, confidențialitatea și respectarea drepturilor persoanelor vizate.</p><p>Furnizorul colectează și prelucrează doar datele personale furnizate de consumatori la efectuarea comenzii: nume, prenume, număr de telefon, adresa, adresa poștală.</p><p>Datele personale sunt utilizate exclusiv în scopul administrării site-ului, pentru a permite accesul la informații speciale, pentru livrarea comenzilor sau pentru a contacta consumatorul în vederea executării livrării.</p><p>Furnizorul de servicii prelucrează datele cu caracter personal ale utilizatorilor și consumatorilor care sunt furnizate prin navigarea, folosirea și înregistrarea pe site-ul www.secretroom.md.</p><p>Orice informație furnizată de către utilizatorii și consumatorii site-ului www.secretroom.md va fi considerată și va reprezenta consimțământul expres ca datele personale să fie folosite de Furnizor.</p><p>Furnizorul nu va dezvălui unei terțe părți niciuna dintre datele deținute, fără acordul persoanelor vizate și nu va comercializa, schimba, divulga aceste date cu alte persoane, cu excepțiile prevăzute de legislația în vigoare.</p><p>Furnizorul de servicii îndeplinește cerințele de securitate a datelor cu caracter personal și asigură protecția datelor consumatorilor și le protejează pentru a nu fi pierdute, distruse, distorsionate/falsificate sau divulgate terțelor persoane.</p><p>Angajații furnizorului de servicii sunt obligați să respecte confidențialitatea datelor personale ale consumatorilor.</p><p>Furnizorul utilizează metode și tehnologii de securitate conform prevederilor legale în vigoare.</p><p>Furnizorul nu colectează informații referitoare la tranzacții, cum ar fi nr. cardului, data expirării, țara de origine.</p><p>Pentru mai multe detalii, orice persoană interesată poate contacta prin email sau telefonul specificat în informațiile de contact.</p>"
+    },
+    "contact": {
+      "title": "Datele de contact",
+      "content": "<p><strong>Denumirea juridică:</strong> Zapolski Brands SRL</p><p><strong>IDNO:</strong> 1021600045117</p><p><strong>Adresa juridică:</strong> Tudor Strișcă 8/1</p><p><strong>Adresa fizică:</strong> Atrium, et. 2</p><p><strong>Telefon de contact:</strong> 060 099 775</p><p><strong>Email de contact:</strong> support@secretroom.md</p>"
+    }
+  },
+  "shippingPage": {
+    "heading1": "Condiții de",
+    "heading2": "Livrare",
+    "subtitle": "Informații complete despre livrare, costurile de transport și modalitățile de plată în magazinul online Secret Room.",
+    "zones": {
+      "title": "Zonele de livrare",
+      "content": "<p>Livrăm comenzi pe întreg teritoriul Republicii Moldova.</p><p><strong>Municipiul Chișinău</strong> — livrarea se efectuează prin curier în termen de 24–72 ore de la confirmarea comenzii de către operatorii noștri.</p><p><strong>Toată Republica Moldova</strong> — livrarea se efectuează prin serviciul de curierat în termen de 24–72 ore de la confirmarea comenzii.</p><p>Termenul de livrare poate fi extins în situații excepționale: condiții meteo nefavorabile, perioade de sărbători legale sau probleme tehnice neprevăzute. În astfel de cazuri, veți fi notificat în prealabil.</p>"
+    },
+    "cost": {
+      "title": "Costul livrării",
+      "content": "<p>Livrarea este <strong>gratuită</strong> pentru comenzi cu valoarea de la <strong>1000 MDL</strong>.</p><p>Pentru comenzi cu valoare mai mică de 1000 MDL, costul livrării va fi calculat automat și adăugat la suma totală a comenzii.</p><p>Puteți alege orice adresă pentru livrare — acasă, la birou sau oricare altă adresă, fără achitări suplimentare. Acceptăm o singură adresă de livrare pentru fiecare comandă. Dacă doriți livrarea pe adrese diferite, vă rugăm să plasați comenzi separate.</p>"
+    },
+    "payment": {
+      "title": "Modalități de plată",
+      "content": "<p>Oferim următoarele modalități de plată:</p><ul><li><strong>Achitare online</strong> — plata cu cardul bancar prin intermediul sistemului securizat cu standard 3D-Secure. După efectuarea plății, veți primi confirmarea pe email.</li><li><strong>Cu card la livrare</strong> — achitați cu cardul bancar la primirea comenzii de la curier. La primire veți primi bonul fiscal.</li><li><strong>Numerar la livrare</strong> — achitați în numerar la primirea comenzii de la curier.</li></ul><p>Disponibilitatea metodelor de plată poate varia în funcție de zona de livrare selectată.</p><p>Rambursarea mijloacelor bănești se efectuează exclusiv pe cardul bancar care a fost utilizat pentru plată.</p>"
+    },
+    "processing": {
+      "title": "Procesarea comenzii",
+      "content": "<p>După plasarea comenzii pe site, veți primi o confirmare automată pe adresa de email indicată.</p><p>Operatorii noștri vor contacta pentru confirmarea comenzii și stabilirea detaliilor de livrare. Data estimată de livrare va fi comunicată după confirmarea comenzii.</p><p>În zilele de <strong>duminică</strong> și în zilele de <strong>sărbătoare națională</strong> nu se efectuează livrări și nici procesarea comenzilor.</p>"
+    },
+    "important": {
+      "title": "Informații importante",
+      "content": "<p>La primirea produselor, vă rugăm în prezența curierului să verificați:</p><ul><li>Integritatea ambalajului</li><li>Corespondența produselor cu comanda</li><li>Prezența bonului fiscal</li></ul><p>Orice pretenție ulterioară cu privire la aceste aspecte nu vor fi acceptate.</p><p>Conform Hotărârii Guvernului nr. 1465 din 08.12.2003, <strong>articolele de parfumerie și cosmetică nu pot fi schimbate sau returnate</strong>.</p><p>Pentru întrebări legate de livrare, ne puteți contacta la <strong>061 029 933</strong> sau prin email la <strong>support@secretroom.md</strong>.</p>"
+    }
+  }
 }

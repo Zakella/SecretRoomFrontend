@@ -84,7 +84,7 @@
                 @for (item of order.items; track item.product.id; let i = $index) {
                   @if (i < 3) {
                     <div class="item-thumbnail">
-                      <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
+                      <img [src]="item.product.imageURL" [alt]="item.product | localizedName" loading="lazy">
                       @if (item.quantity > 1) {
                         <span class="item-qty">{{ item.quantity }}</span>
                       }

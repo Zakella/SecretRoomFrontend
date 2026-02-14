@@ -39,7 +39,7 @@
               <div class="order-item">
                 <div class="item-image">
                   @if (item.product.imageURL) {
-                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
+                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName" loading="lazy">
                   }
                 </div>
                 <div class="item-details">

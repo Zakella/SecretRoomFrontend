@@ -323,5 +323,5 @@
   .qty-btn { background: transparent !important; color: #4b3e2b !important; border: none !important; }
 }
 
-@media (max-width: 992px) { .checkout-container { flex-direction: column; } .checkout-form { max-width: 100%; } .order-summary { max-width: 100%; position: static; order: -1; margin-bottom: 2rem; } }
+@media (max-width: 1024px) { .checkout-container { flex-direction: column; } .checkout-form { max-width: 100%; } .order-summary { max-width: 100%; position: static; order: -1; margin-bottom: 2rem; } }
 @media (max-width: 600px) { .checkout-page { padding: 180px 15px 40px; } .steps { flex-wrap: wrap; .step-divider { display: none; } } .form-row { flex-direction: column; gap: 0; } .step-navigation { flex-direction: column; .btn-back { order: 2; } .btn-continue, .btn-submit { width: 100%; justify-content: center; margin-left: 0; } } }

@@ -171,6 +171,19 @@ export class Header implements OnInit {
   }
 
 
+  scrollToInstagram() {
+    const isHome = this.currentUrl()?.match(/^\/[a-z]{2}$/);
+    if (isHome) {
+      document.getElementById('instagram')?.scrollIntoView({behavior: 'smooth'});
+    } else {
+      this.router.navigate(['/', this.activeLang()]).then(() => {
+        setTimeout(() => {
+          document.getElementById('instagram')?.scrollIntoView({behavior: 'smooth'});
+        }, 500);
+      });
+    }
+  }
+
   @HostListener('window:scroll')
   onWindowScroll() {
     if (isPlatformBrowser(this.platformId)) {

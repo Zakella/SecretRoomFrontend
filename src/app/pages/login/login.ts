@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Meta} from '@angular/platform-browser';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
@@ -19,7 +20,8 @@ import {LoginService} from './services/login';
   styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Login {
+export class Login implements OnInit {
+  private meta = inject(Meta);
   protected showResetPassword = signal<boolean>(false)
   private langService = inject(Language);
   private router = inject(Router);
@@ -32,6 +34,10 @@ export class Login {
 
   showPassword = false;
   isSubmitting = signal(false);
+
+  ngOnInit() {
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+  }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.loginForm.get(fieldName);

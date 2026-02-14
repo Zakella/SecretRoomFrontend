@@ -89,3 +89,28 @@
     opacity: 1;
   }
 }
+
+@media (max-width: 480px) {
+  .cookie-banner {
+    width: 95%;
+    padding: 1.25rem;
+    bottom: 12px;
+
+    .cookie-content {
+      gap: 1rem;
+
+      p {
+        font-size: 0.875rem;
+      }
+
+      .cookie-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+
+        button {
+          padding: 0.7rem 1rem;
+        }
+      }
+    }
+  }
+}

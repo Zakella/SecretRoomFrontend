@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal, PLATFORM_ID} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
@@ -12,7 +12,6 @@ import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
 import {of} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {isPlatformBrowser} from '@angular/common';
 import {EmptyState} from '../../states/empty-state/empty-state';
 
 @Component({
@@ -35,7 +34,6 @@ export class Catalog implements OnInit {
   private categoryService = inject(CategoryService);
   private metaService = inject(MetaService);
   private langService = inject(Language);
-  private platformId = inject(PLATFORM_ID);
 
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
@@ -166,16 +164,12 @@ export class Catalog implements OnInit {
     this.metaService.updateKeywords(keywords);
     this.metaService.updateCanonicalUrl();
 
-    // Add JSON-LD for CollectionPage
-    if (isPlatformBrowser(this.platformId)) {
-      this.metaService.setJsonLd({
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": title,
-        "description": description,
-        "url": window.location.href
-      });
-    }
+    this.metaService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": title,
+      "description": description
+    }, 'collection');
   }
 
   private setCategory(tag: string) {
@@ -218,7 +212,21 @@ export class Catalog implements OnInit {
         this.products.set(
           append ? [...this.products(), ...items] : items
         );
+        this.setItemListJsonLd(this.products());
       });
+  }
+
+  private setItemListJsonLd(products: Product[]) {
+    const lang = this.langService.currentLanguage();
+    this.metaService.setJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      'itemListElement': products.slice(0, 12).map((p, i) => ({
+        '@type': 'ListItem',
+        'position': i + 1,
+        'url': `https://secretroom.md/${lang}/product/${p.id}/${encodeURIComponent(p.name || '')}`
+      }))
+    }, 'item-list');
   }
 
   private loadByCategory(category: string, page: number, size: number) {

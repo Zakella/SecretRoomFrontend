@@ -72,3 +72,36 @@
     margin: 0;
   }
 }
+
+@media (max-width: 768px) {
+  .favorites-page {
+    padding: 120px 16px 60px;
+  }
+
+  .favorites-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+
+  .favorites-title {
+    font-size: 1.5rem;
+  }
+
+  .favorites-empty {
+    padding: 40px 16px;
+
+    i {
+      font-size: 40px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-page {
+    padding: 100px 12px 40px;
+  }
+
+  .favorites-title {
+    font-size: 1.25rem;
+  }
+}

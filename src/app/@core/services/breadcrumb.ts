@@ -2,6 +2,7 @@ import {computed, inject, Injectable, signal} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs';
 import {MetaService} from './meta.service';
+import {Language} from './language';
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,6 +16,7 @@ export class BreadcrumbsService {
   private readonly _breadcrumbs = signal<BreadcrumbItem[]>([]);
   readonly breadcrumbs = computed(() => this._breadcrumbs());
   private metaService = inject(MetaService);
+  private langService = inject(Language);
 
   constructor(
     private router: Router,
@@ -51,8 +53,10 @@ export class BreadcrumbsService {
       url += `/${part}`;
     }
 
-    const label = child.snapshot.data['breadcrumb'];
-    if (label) {
+    const raw = child.snapshot.data['breadcrumb'];
+    if (raw) {
+      const lang = this.langService.currentLanguage();
+      const label = (typeof raw === 'object' && raw[lang]) ? raw[lang] : raw;
       acc.push({ label, url });
     }
 

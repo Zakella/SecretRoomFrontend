@@ -1,6 +1,6 @@
 <div class="stories-header">
   <div class="profile">
-    <img src="assets/SR-black.svg" alt="Secret room" class="avatar" />
+    <img src="assets/SR-black.svg" alt="Secret Room Moldova - Instagram" class="avatar" />
     <div class="profile-info">
       <h2 class="name">secret_room.moldova</h2>
     </div>
@@ -18,7 +18,7 @@
       <button class="story-item" [class.viewed]="isViewed(post.id)" (click)="openViewer(i)">
         <div class="ring">
           <div class="avatar">
-            <img [src]="getThumbnail(post)" />
+            <img [src]="getThumbnail(post)" [alt]="'Secret Room Instagram — post ' + (i + 1)" loading="lazy" />
           </div>
         </div>
       </button>
@@ -61,7 +61,7 @@
             }
           </button>
         } @else {
-          <img [src]="currentPost.mediaUrl" />
+          <img [src]="currentPost.mediaUrl" alt="Secret Room Instagram" />
         }
       </div>
     </div>

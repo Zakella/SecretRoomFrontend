@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {Authentication} from '../../@core/auth/authentication';
+import {Meta} from '@angular/platform-browser';
 import {CurrencyPipe, DatePipe, NgClass} from '@angular/common';
 import {UserDetails} from '../../entities/user-details';
 import {UserService} from '../../@core/services/user-service';
@@ -33,6 +34,7 @@ export class Cabinet implements OnInit, OnDestroy {
   userLastName = '';
   userEmail = '';
 
+  private meta = inject(Meta);
   private authService = inject(Authentication);
   private userService = inject(UserService);
   private langService = inject(Language);
@@ -43,6 +45,7 @@ export class Cabinet implements OnInit, OnDestroy {
   activeLang = this.langService.currentLanguage;
 
   ngOnInit(): void {
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
     this.loadUserDetails();
     this.loadOrders();
   }
@@ -111,7 +114,7 @@ export class Cabinet implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/', this.activeLang(), 'profile']);
+    this.router.navigate(['/', this.activeLang(), 'login']);
   }
 
   retryLoad(): void {

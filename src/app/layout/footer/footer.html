@@ -24,6 +24,7 @@
         <a [routerLink]="['/', activeLang(), 'contacts']">{{ t('Stores') }}</a>
         <a (click)="showPolicy()" class="cursor-pointer">{{ t('Return policy') }}</a>
         <a [routerLink]="['/', activeLang(), 'delivery-terms']">{{ t('DeliveryTerms') }}</a>
+        <a [routerLink]="['/', activeLang(), 'shipping']">{{ t('ShippingInfo') }}</a>
         <a [routerLink]="['/', activeLang(), 'about-the-secret-room']">{{ t('About us') }}</a>
       </div>
 
@@ -48,10 +49,10 @@
     <div class="container">
       <span class="copyright">{{ t('Copyright') }}</span>
       <div class="payment-icons">
-        <img src="assets/images/payment/visa.svg" alt="Visa"/>
-        <img src="assets/images/payment/master-card.svg" alt="MasterCard"/>
-        <img src="assets/images/payment/apple-pay.svg" alt="Apple Pay"/>
-        <img src="assets/images/payment/google-gpay.svg" alt="Google Pay"/>
+        <img src="assets/images/payment/visa.svg" alt="Visa" loading="lazy"/>
+        <img src="assets/images/payment/master-card.svg" alt="MasterCard" loading="lazy"/>
+        <img src="assets/images/payment/apple-pay.svg" alt="Apple Pay" loading="lazy"/>
+        <img src="assets/images/payment/google-gpay.svg" alt="Google Pay" loading="lazy"/>
       </div>
 
       <div class="policies">

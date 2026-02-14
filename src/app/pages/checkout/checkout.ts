@@ -14,6 +14,7 @@ import {CartItem} from '../../entities/cart-item';
 import {forkJoin, of, Subject} from 'rxjs';
 import {catchError, map, takeUntil} from 'rxjs/operators';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
 import {Shipping} from '../../@core/api/shipping';
 import {ShippingOption} from '../../entities/shipping-options';
 import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
@@ -67,6 +68,7 @@ export class Checkout implements OnInit, OnDestroy {
   shippingError = signal<string | null>(null);
 
   private fb = inject(FormBuilder);
+  private meta = inject(Meta);
   private cartService = inject(CartUi);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -83,6 +85,7 @@ export class Checkout implements OnInit, OnDestroy {
   activeLang = this.langService.currentLanguage;
 
   ngOnInit(): void {
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
     // Ensure language is synced with URL
     this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const lang = params['lang'];

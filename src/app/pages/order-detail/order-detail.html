@@ -48,7 +48,7 @@
               @for (item of order()!.items; track item.product.id) {
                 <div class="order-item">
                   <div class="item-image">
-                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName">
+                    <img [src]="item.product.imageURL" [alt]="item.product | localizedName" loading="lazy">
                   </div>
                   <div class="item-details">
                     <h4 class="item-name">{{ item.product | localizedName }}</h4>

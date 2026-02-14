@@ -7,7 +7,7 @@
     }
 
     <div class="product-image-container">
-      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product() | localizedName" class="product-image"/>
+      <img (click)="navToProduct()" [src]="imageUrl()" [alt]="product() | localizedName" class="product-image" loading="lazy"/>
     </div>
 
 

@@ -29,6 +29,6 @@ export class AccessGuard implements CanActivate{
       return true;
     }
 
-    return this.router.createUrlTree([this.lang(), 'profile']);
+    return this.router.createUrlTree([this.lang(), 'login']);
   }
 }
