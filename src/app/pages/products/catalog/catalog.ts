@@ -97,7 +97,7 @@ export class Catalog implements OnInit {
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,
-              categoryName: cat ? cat.name : null
+              categoryName: cat ? (this.langService.currentLanguage() === 'ro' ? cat.nameRo : cat.nameRu) || cat.name : null
             }))
           );
         }

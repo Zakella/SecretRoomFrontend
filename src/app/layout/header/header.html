@@ -106,7 +106,7 @@
       @if (headerItems()?.length) {
         <div class="mega-dropdown" [class.visible]="activeCategory()">
           <div class="mega-dropdown__inner">
-            <h3 class="mega-dropdown__title">{{ activeCategory()?.name  }}</h3>
+            <h3 class="mega-dropdown__title">{{ activeLang() === 'ro' ? activeCategory()?.nameRo : activeCategory()?.nameRu }}</h3>
 
             <div class="mega-dropdown__list">
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {

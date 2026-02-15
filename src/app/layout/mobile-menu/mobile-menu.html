@@ -115,7 +115,7 @@
             @for (cat of categories(); track cat.id) {
               <div class="category-item" (click)="goToCategory(cat)">
                 <div class="cat-circle">
-                  {{ cat.name }}
+                  {{ activeLang() === 'ro' ? cat.nameRo : cat.nameRu }}
                 </div>
               </div>
             }
