@@ -10,106 +10,84 @@ on:
       - 'angular.json'
       - 'Dockerfile-prod'
       - 'docker-compose-prod.yml'
+      - '.github/workflows/frontend-cd.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout кода
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Установка Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # 3. Сборка Docker образа
       - name: Build Docker image
         run: |
           docker build -f Dockerfile-prod -t secret-room-frontend:prod .
 
-      # 4. Сохранение Docker образа в архив
       - name: Save Docker image
         run: docker save secret-room-frontend:prod | gzip > frontend-prod.tar.gz
 
-      # 5. Копирование файлов на VPS
       - name: Copy files to VPS
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.STAGE_HOST }}
+          username: ${{ secrets.STAGE_USERNAME }}
+          key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
           source: "frontend-prod.tar.gz,docker-compose-prod.yml"
           target: "/tmp"
-
-      # 6. Деплой на сервер через SSH
 
       - name: Deploy application to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.STAGE_HOST }}
+          username: ${{ secrets.STAGE_USERNAME }}
+          key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
           script: |
-            # Создаем папку для проекта
             mkdir -p ~/secretroom-frontend-prod
             cd ~/secretroom-frontend-prod
 
-            # Загружаем Docker образ
             echo "Loading Docker image..."
             docker load < /tmp/frontend-prod.tar.gz
 
-            # Копируем docker-compose файл
             cp /tmp/docker-compose-prod.yml ./docker-compose.yml
 
-            # Останавливаем старую версию
             echo "Stopping old containers..."
             docker-compose down
 
-            # Запускаем новую версию
             echo "Starting new containers..."
             docker-compose up -d
 
-            # Удаляем временные файлы
             rm -f /tmp/frontend-prod.tar.gz
             rm -f /tmp/docker-compose-prod.yml
 
-            echo "Deployment completed successfully!"
+            echo "Deployment completed!"
 
-      # 7. Очистка старых Docker-образов на сервере
       - name: Clean up old Docker images
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.STAGE_HOST }}
+          username: ${{ secrets.STAGE_USERNAME }}
+          key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
           script: |
-            echo "Cleaning up old Docker images..."
             docker image prune -af --filter "until=24h"
-            echo "Cleanup completed!"
 
-      # 8. Проверка статуса контейнера
       - name: Verify deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.STAGE_HOST }}
+          username: ${{ secrets.STAGE_USERNAME }}
+          key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
           script: |
-            cd ~/secretroom-frontend-prod
-
             echo "Checking container status..."
-            docker-compose ps
+            docker ps | grep secret-room-frontend-prod || echo "Container not found!"
 
             echo "Waiting for application to start..."
             sleep 10
 
-            echo "Checking application health..."
-            curl -f http://localhost:5000 || echo "Health check failed!"
-
-            echo "Checking application logs..."
-            docker-compose logs --tail 50
-
+            echo "Checking health..."
+            curl -sf http://localhost:5002 || echo "Health check failed!"

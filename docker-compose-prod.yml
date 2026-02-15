@@ -6,7 +6,7 @@ services:
     container_name: secret-room-frontend-prod
     restart: unless-stopped
     ports:
-      - "5000:4000"
+      - "5002:4000"
     environment:
       - NODE_ENV=production
     networks:
