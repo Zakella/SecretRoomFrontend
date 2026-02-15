@@ -35,8 +35,8 @@ app.use(
   }),
 );
 
-const API_BASE = 'https://public.secretroom.md/api/';
-const SITE_URL = 'https://secretroom.md';
+const API_BASE = 'https://api-shop.solterprise.com/api/';
+const SITE_URL = 'https://shop.solterprise.com';
 const LANGUAGES = ['ro', 'ru'];
 
 let sitemapCache: { xml: string; timestamp: number } | null = null;
