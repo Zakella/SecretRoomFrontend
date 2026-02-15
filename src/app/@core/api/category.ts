@@ -31,11 +31,18 @@ export class CategoryService {
     return this.http.get<any[]>(this.previewUrl);
   }
 
-  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number): Observable<GetResponse> {
+  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number, brand?: string): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());
+    if (brand) {
+      params = params.set('brand', brand);
+    }
     return this.http.get<GetResponse>(`${this.apiUrl}/${categoryId}/products`, {params: params})
+  }
+
+  getBrandsForCategory(categoryId: string): Observable<{brand: string, brandAlias: string}[]> {
+    return this.http.get<{brand: string, brandAlias: string}[]>(`${this.apiUrl}/${categoryId}/brands`);
   }
 
   // Helper to find category ID by slug

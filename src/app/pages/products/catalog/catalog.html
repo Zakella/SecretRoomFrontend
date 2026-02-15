@@ -9,6 +9,25 @@
     }
     — Secret Room Moldova
   </h1>
+  @if (availableBrands().length > 1) {
+    <div class="brand-filter">
+      <button
+        class="brand-chip"
+        [class.active]="selectedBrand() === null"
+        (click)="selectBrand(null)">
+        {{ activeLang() === 'ro' ? 'Toate' : 'Все' }}
+      </button>
+      @for (b of availableBrands(); track b.brand) {
+        <button
+          class="brand-chip"
+          [class.active]="selectedBrand() === b.brand"
+          (click)="selectBrand(b.brand)">
+          {{ b.brandAlias || b.brand }}
+        </button>
+      }
+    </div>
+  }
+
   <div class="product-list-panel">
     @if(products().length>0){
       <product-list [products]="products()"/>

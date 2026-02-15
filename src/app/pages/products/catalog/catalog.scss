@@ -15,6 +15,52 @@
 }
 
 
+.brand-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding: 0 4px;
+
+  @media (max-width: 768px) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.brand-chip {
+  padding: 8px 20px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  border: 1px solid #444;
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border-radius: 0;
+
+  &:hover {
+    border-color: #b8956c;
+    color: #b8956c;
+  }
+
+  &.active {
+    background: #b8956c;
+    border-color: #b8956c;
+    color: #000;
+  }
+}
+
 .product-list-panel {
   width: 100%;
 }

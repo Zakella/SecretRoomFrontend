@@ -42,10 +42,14 @@ export class Catalog implements OnInit {
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
   protected brandAlias = signal<string | null>(null);
-  protected categoryName = signal<string | null>(null); // New signal for display name
+  protected categoryName = signal<string | null>(null);
   protected products = signal<Product[]>([]);
   protected isLoading = signal(false);
   protected allLoaded = signal(false);
+
+  // Brand filter
+  protected availableBrands = signal<{brand: string, brandAlias: string}[]>([]);
+  protected selectedBrand = signal<string | null>(null);
 
   private currentCategoryId: string | null = null;
   private currentPage = 0;
@@ -181,12 +185,35 @@ export class Catalog implements OnInit {
     this.category.set(tag);
     this.reset();
     this.fetchProducts();
+    this.loadBrandsForCategory();
   }
 
   private reset() {
     this.currentPage = 0;
     this.allLoaded.set(false);
     this.products.set([]);
+    this.selectedBrand.set(null);
+  }
+
+  private loadBrandsForCategory() {
+    const categoryId = this.currentCategoryId;
+    if (!categoryId) {
+      this.availableBrands.set([]);
+      return;
+    }
+    this.categoryService.getBrandsForCategory(categoryId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(brands => {
+      this.availableBrands.set(brands);
+    });
+  }
+
+  selectBrand(brand: string | null) {
+    this.selectedBrand.set(brand);
+    this.currentPage = 0;
+    this.allLoaded.set(false);
+    this.products.set([]);
+    this.fetchProducts();
   }
 
   loadMore(): void {
@@ -249,7 +276,7 @@ export class Catalog implements OnInit {
      case 'brand':
         return this.brandService.getProductsByBrand(this.brandName()!, page, size);
       default:
-        return this.categoryService.getProductsByGroupId(category, page, size);
+        return this.categoryService.getProductsByGroupId(category, page, size, this.selectedBrand() || undefined);
     }
   }
 }
