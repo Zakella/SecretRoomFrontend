@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://public.secretroom.md/api/',
-  frontend: 'https://secretroom.md'
+  apiUrl: 'https://api-shop.solterprise.com/api/',
+  frontend: 'https://shop.solterprise.com'
 };
