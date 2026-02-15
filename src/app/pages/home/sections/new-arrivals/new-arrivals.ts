@@ -42,16 +42,15 @@ export class NewArrivals {
   }
 
   getProductImage(product: Product): string {
-    if (product.productImagesWebStore && product.productImagesWebStore.length > 0) {
-      return product.productImagesWebStore[0].imageUrl;
-    }
     return product.imageURL || '';
   }
 
   getHoverImage(product: Product): string | null {
     const images = product.productImagesWebStore;
-    if (images && images.length > 1) {
-      return images[1].imageUrl;
+    if (images && images.length > 0) {
+      const mainUrl = product.imageURL || '';
+      const alt = images.find(img => img.imageUrl !== mainUrl);
+      return alt?.imageUrl || null;
     }
     return null;
   }
