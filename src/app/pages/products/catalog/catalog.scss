@@ -20,14 +20,16 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 32px;
-  padding: 0 4px;
 
   @media (max-width: 768px) {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 4px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 0 20px 8px;
+    gap: 8px;
 
     &::-webkit-scrollbar {
       display: none;
@@ -48,6 +50,7 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   border-radius: 0;
+  flex-shrink: 0;
 
   &:hover {
     border-color: #b8956c;
@@ -58,6 +61,11 @@
     background: #b8956c;
     border-color: #b8956c;
     color: #000;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px 14px;
+    font-size: 12px;
   }
 }
 
