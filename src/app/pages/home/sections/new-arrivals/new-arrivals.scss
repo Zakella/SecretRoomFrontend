@@ -40,6 +40,42 @@ $bg: #fdfdfd;
   }
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.see-all-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $accent;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: var(--gold, #b8956c);
+
+    svg {
+      transform: translateX(4px);
+    }
+  }
+}
+
+.desktop-only {
+  display: flex;
+}
+
 .nav-arrows {
   display: flex;
   gap: 16px;
@@ -192,52 +228,6 @@ $bg: #fdfdfd;
   }
 }
 
-.view-all-card {
-  min-width: 280px;
-  flex-shrink: 0;
-  background: #fff;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.4s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-  }
-
-  .view-all-content {
-    text-align: center;
-    padding: 40px;
-
-    i {
-      font-size: 3rem;
-      color: var(--gold, #b8956c);
-      display: block;
-      margin-bottom: 16px;
-    }
-
-    .view-all-text {
-      font-family: var(--font-title);
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text-dark, #2c2421);
-      display: block;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .view-all-subtitle {
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      color: var(--text-muted, #999);
-      display: block;
-      margin-top: 4px;
-    }
-  }
-}
 
 .indicators {
   display: flex;
@@ -300,10 +290,6 @@ $bg: #fdfdfd;
     }
   }
 
-  .view-all-card {
-    min-width: 240px;
-    border-radius: 18px;
-  }
 }
 
 /* =========================
@@ -333,9 +319,10 @@ $bg: #fdfdfd;
     }
   }
 
-  /* стрелки не нужны — свайп */
-  .nav-arrows {
-    display: none;
+  /* стрелки и see-all не нужны на мобайле */
+  .nav-arrows,
+  .desktop-only {
+    display: none !important;
   }
 
   .slider-viewport {
@@ -377,10 +364,6 @@ $bg: #fdfdfd;
         font-size: 16px;
       }
     }
-  }
-
-  .view-all-card.desktop-only {
-    display: none;
   }
 
   .indicators {
