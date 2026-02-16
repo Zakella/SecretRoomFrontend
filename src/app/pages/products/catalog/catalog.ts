@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnInit, signal} from '@angular/core';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
+import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {finalize, map, switchMap} from 'rxjs';
+import {catchError, finalize, map, switchMap} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
@@ -13,7 +14,9 @@ import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
 import {of} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
+import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
+import {DrawerModule} from 'primeng/drawer';
 
 @Component({
   selector: 'app-catalog',
@@ -21,7 +24,9 @@ import {EmptyState} from '../../states/empty-state/empty-state';
     FadeUp,
     ProductList,
     TranslocoPipe,
-    EmptyState
+    LocalizedNamePipe,
+    EmptyState,
+    DrawerModule,
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',
@@ -42,7 +47,7 @@ export class Catalog implements OnInit {
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
   protected brandAlias = signal<string | null>(null);
-  protected categoryName = signal<string | null>(null);
+  protected categoryName = signal<string | null>(null); // New signal for display name
   protected products = signal<Product[]>([]);
   protected isLoading = signal(false);
   protected allLoaded = signal(false);
@@ -50,6 +55,37 @@ export class Catalog implements OnInit {
   // Brand filter
   protected availableBrands = signal<{brand: string, brandAlias: string}[]>([]);
   protected selectedBrand = signal<string | null>(null);
+
+  // Product filters
+  protected availableFilters = signal<FilterGroup[]>([]);
+  protected selectedFilters = signal<Map<string, Set<string>>>(new Map());
+
+  // Mobile filter drawer
+  filterDrawerVisible = false;
+  protected totalProductCount = signal<number>(0);
+  brandSectionOpen = true;
+
+  // Pending state for mobile drawer (applied only on "Show results" tap)
+  protected pendingBrand = signal<string | null>(null);
+  protected pendingFilters = signal<Map<string, Set<string>>>(new Map());
+
+  protected activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.selectedBrand()) count++;
+    this.selectedFilters().forEach(values => count += values.size);
+    return count;
+  });
+
+  protected pendingFilterCount = computed(() => {
+    let count = 0;
+    if (this.pendingBrand()) count++;
+    this.pendingFilters().forEach(values => count += values.size);
+    return count;
+  });
+
+  protected hasFilters = computed(() => {
+    return this.availableBrands().length > 1 || this.availableFilters().length > 0;
+  });
 
   private currentCategoryId: string | null = null;
   private currentPage = 0;
@@ -101,7 +137,7 @@ export class Catalog implements OnInit {
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,
-              categoryName: cat ? (this.langService.currentLanguage() === 'ro' ? cat.nameRo : cat.nameRu) || cat.name : null
+              categoryName: cat ? cat.name : null
             }))
           );
         }
@@ -184,8 +220,8 @@ export class Catalog implements OnInit {
   private setCategory(tag: string) {
     this.category.set(tag);
     this.reset();
+    this.loadFilters();
     this.fetchProducts();
-    this.loadBrandsForCategory();
   }
 
   private reset() {
@@ -193,18 +229,43 @@ export class Catalog implements OnInit {
     this.allLoaded.set(false);
     this.products.set([]);
     this.selectedBrand.set(null);
+    this.selectedFilters.set(new Map());
   }
 
-  private loadBrandsForCategory() {
+  private loadFilters() {
     const categoryId = this.currentCategoryId;
-    if (!categoryId) {
+    const brand = this.brandName();
+
+    if (brand) {
+      // Brand page — load filters for this brand
       this.availableBrands.set([]);
+      this.brandService.getFiltersForBrand(brand).pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError(() => of([]))
+      ).subscribe(filters => {
+        this.availableFilters.set(filters);
+      });
       return;
     }
+
+    if (!categoryId) {
+      this.availableBrands.set([]);
+      this.availableFilters.set([]);
+      return;
+    }
+
+    // Category page — load brands and filters
     this.categoryService.getBrandsForCategory(categoryId).pipe(
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
+      catchError(() => of([]))
     ).subscribe(brands => {
       this.availableBrands.set(brands);
+    });
+    this.categoryService.getFiltersForCategory(categoryId).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      catchError(() => of([]))
+    ).subscribe(filters => {
+      this.availableFilters.set(filters);
     });
   }
 
@@ -214,6 +275,101 @@ export class Catalog implements OnInit {
     this.allLoaded.set(false);
     this.products.set([]);
     this.fetchProducts();
+  }
+
+  toggleFilter(filterSlug: string, valueSlug: string) {
+    const current = new Map(this.selectedFilters());
+    const values = current.get(filterSlug) ?? new Set<string>();
+
+    if (values.has(valueSlug)) {
+      values.delete(valueSlug);
+      if (values.size === 0) {
+        current.delete(filterSlug);
+      }
+    } else {
+      values.add(valueSlug);
+      current.set(filterSlug, values);
+    }
+
+    this.selectedFilters.set(current);
+    this.currentPage = 0;
+    this.allLoaded.set(false);
+    this.products.set([]);
+    this.fetchProducts();
+  }
+
+  isFilterSelected(filterSlug: string, valueSlug: string): boolean {
+    return this.selectedFilters().get(filterSlug)?.has(valueSlug) ?? false;
+  }
+
+  clearAllFilters() {
+    this.selectedBrand.set(null);
+    this.selectedFilters.set(new Map());
+    this.currentPage = 0;
+    this.allLoaded.set(false);
+    this.products.set([]);
+    this.fetchProducts();
+  }
+
+  openFilterDrawer() {
+    // Copy current state → pending
+    this.pendingBrand.set(this.selectedBrand());
+    const copy = new Map<string, Set<string>>();
+    this.selectedFilters().forEach((vals, key) => copy.set(key, new Set(vals)));
+    this.pendingFilters.set(copy);
+    this.filterDrawerVisible = true;
+  }
+
+  selectPendingBrand(brand: string | null) {
+    this.pendingBrand.set(brand);
+  }
+
+  togglePendingFilter(filterSlug: string, valueSlug: string) {
+    const current = new Map(this.pendingFilters());
+    const values = current.get(filterSlug) ?? new Set<string>();
+
+    if (values.has(valueSlug)) {
+      values.delete(valueSlug);
+      if (values.size === 0) current.delete(filterSlug);
+    } else {
+      values.add(valueSlug);
+      current.set(filterSlug, values);
+    }
+
+    this.pendingFilters.set(current);
+  }
+
+  isPendingFilterSelected(filterSlug: string, valueSlug: string): boolean {
+    return this.pendingFilters().get(filterSlug)?.has(valueSlug) ?? false;
+  }
+
+  clearPendingFilters() {
+    this.pendingBrand.set(null);
+    this.pendingFilters.set(new Map());
+  }
+
+  applyFiltersAndClose() {
+    // Copy pending → actual and fetch
+    this.selectedBrand.set(this.pendingBrand());
+    const copy = new Map<string, Set<string>>();
+    this.pendingFilters().forEach((vals, key) => copy.set(key, new Set(vals)));
+    this.selectedFilters.set(copy);
+    this.currentPage = 0;
+    this.allLoaded.set(false);
+    this.products.set([]);
+    this.fetchProducts();
+    this.filterDrawerVisible = false;
+  }
+
+  private buildFiltersParam(): string | undefined {
+    const map = this.selectedFilters();
+    if (map.size === 0) return undefined;
+
+    const parts: string[] = [];
+    map.forEach((values, slug) => {
+      values.forEach(v => parts.push(`${slug}:${v}`));
+    });
+    return parts.join(',');
   }
 
   loadMore(): void {
@@ -232,6 +388,7 @@ export class Catalog implements OnInit {
     this.loadByCategory(categoryIdentifier!, page, this.itemsPerPage)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe(res => {
+        this.totalProductCount.set(res?.totalElements ?? 0);
         const items = res?.content ?? [];
 
         if (!items.length) {
@@ -274,9 +431,9 @@ export class Catalog implements OnInit {
       case 'hero':
         return this.heroService.getHeroProductsById(page, size);
      case 'brand':
-        return this.brandService.getProductsByBrand(this.brandName()!, page, size);
+        return this.brandService.getProductsByBrand(this.brandName()!, page, size, this.buildFiltersParam());
       default:
-        return this.categoryService.getProductsByGroupId(category, page, size, this.selectedBrand() || undefined);
+        return this.categoryService.getProductsByGroupId(category, page, size, this.selectedBrand() || undefined, this.buildFiltersParam());
     }
   }
 }

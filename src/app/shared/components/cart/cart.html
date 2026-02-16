@@ -56,6 +56,9 @@
                      $event.stopPropagation()"/>
               <div class="item-info">
                 <p class="title">{{ cartItem.product | localizedName }}</p>
+                @if (cartItem.size?.sizeType) {
+                  <span class="item-size">{{ cartItem.size!.sizeType }}</span>
+                }
                 <div class="qty-controls">
                   <p-inputNumber [showButtons]="true"
                                  buttonLayout="horizontal"

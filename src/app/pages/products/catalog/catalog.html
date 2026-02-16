@@ -9,54 +9,205 @@
     }
     — Secret Room Moldova
   </h1>
-  @if (availableBrands().length > 1) {
-    <div class="brand-filter">
-      <button
-        class="brand-chip"
-        [class.active]="selectedBrand() === null"
-        (click)="selectBrand(null)">
-        {{ activeLang() === 'ro' ? 'Toate' : 'Все' }}
-      </button>
-      @for (b of availableBrands(); track b.brand) {
-        <button
-          class="brand-chip"
-          [class.active]="selectedBrand() === b.brand"
-          (click)="selectBrand(b.brand)">
-          {{ b.brandAlias || b.brand }}
-        </button>
-      }
-    </div>
-  }
 
-  <div class="product-list-panel">
-    @if(products().length>0){
-      <product-list [products]="products()"/>
-    } @else {
-      <app-empty-state/>
-    }
-  </div>
-
-  @if (!allLoaded() && products().length > 0) {
-    <div class="load-more">
-      <button
-        class="load-more-btn"
-        [disabled]="isLoading()"
-        (click)="loadMore()"
-      >
-        @if (isLoading()) {
-          {{ 'Loading...' | transloco }}
-        } @else {
-          {{ 'Load more' | transloco }}
+  <!-- MOBILE: filter trigger button (hidden on desktop) -->
+  @if (hasFilters()) {
+    <div class="mobile-filter-bar">
+      <button class="mobile-filter-btn" (click)="openFilterDrawer()">
+        <i class="ri-equalizer-line"></i>
+        {{ 'Filters' | transloco }}
+        @if (activeFilterCount() > 0) {
+          <span class="filter-badge">{{ activeFilterCount() }}</span>
         }
       </button>
     </div>
   }
 
+  <!-- MOBILE: active filter tags -->
+  @if (hasFilters() && activeFilterCount() > 0) {
+    <div class="mobile-active-filters">
+      @if (selectedBrand()) {
+        <button class="active-filter-tag" (click)="selectBrand(null)">
+          {{ selectedBrand() }}
+          <i class="ri-close-line"></i>
+        </button>
+      }
+      @for (group of availableFilters(); track group.slug) {
+        @for (v of group.values; track v.slug) {
+          @if (isFilterSelected(group.slug, v.slug)) {
+            <button class="active-filter-tag" (click)="toggleFilter(group.slug, v.slug)">
+              {{ v | localizedName:'value' }}
+              <i class="ri-close-line"></i>
+            </button>
+          }
+        }
+      }
+      <button class="clear-all-tag" (click)="clearAllFilters()">
+        {{ 'ClearAll' | transloco }}
+      </button>
+    </div>
+  }
+
+  <!-- MOBILE: Filter Drawer -->
+  <p-drawer [(visible)]="filterDrawerVisible" [fullScreen]="true" styleClass="filter-drawer">
+    <ng-template pTemplate="header">
+      <div class="filter-drawer-header">
+        <span class="filter-drawer-title">{{ 'Filters' | transloco }}</span>
+        @if (pendingFilterCount() > 0) {
+          <button class="filter-drawer-clear" (click)="clearPendingFilters()">
+            {{ 'ClearAll' | transloco }}
+          </button>
+        }
+      </div>
+    </ng-template>
+
+    <div class="filter-drawer-content">
+      @if (availableBrands().length > 1) {
+        <div class="filter-drawer-section">
+          <div class="filter-drawer-section-title" (click)="brandSectionOpen = !brandSectionOpen">
+            <span>{{ 'Brand' | transloco }}</span>
+            <i [class]="brandSectionOpen ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+          </div>
+          @if (brandSectionOpen) {
+            <div class="filter-drawer-options">
+              <button class="filter-drawer-option"
+                      [class.selected]="pendingBrand() === null"
+                      (click)="selectPendingBrand(null)">
+                <span class="option-check">
+                  @if (pendingBrand() === null) { <i class="ri-checkbox-circle-fill"></i> }
+                </span>
+                {{ 'AllBrands' | transloco }}
+              </button>
+              @for (b of availableBrands(); track b.brand) {
+                <button class="filter-drawer-option"
+                        [class.selected]="pendingBrand() === b.brand"
+                        (click)="selectPendingBrand(b.brand)">
+                  <span class="option-check">
+                    @if (pendingBrand() === b.brand) { <i class="ri-checkbox-circle-fill"></i> }
+                  </span>
+                  {{ b.brandAlias || b.brand }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @for (group of availableFilters(); track group.slug) {
+        <div class="filter-drawer-section">
+          <div class="filter-drawer-section-title">
+            <span>{{ group | localizedName }}</span>
+          </div>
+          <div class="filter-drawer-options">
+            @for (v of group.values; track v.slug) {
+              <button class="filter-drawer-option"
+                      [class.selected]="isPendingFilterSelected(group.slug, v.slug)"
+                      (click)="togglePendingFilter(group.slug, v.slug)">
+                <span class="option-check">
+                  @if (isPendingFilterSelected(group.slug, v.slug)) { <i class="ri-checkbox-circle-fill"></i> }
+                </span>
+                {{ v | localizedName:'value' }}
+                <span class="option-count">({{ v.count }})</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="filter-drawer-footer">
+      <button class="filter-drawer-apply" (click)="applyFiltersAndClose()">
+        {{ 'ShowResults' | transloco }}
+        @if (totalProductCount() > 0) {
+          ({{ totalProductCount() }})
+        }
+      </button>
+    </div>
+  </p-drawer>
+
+  <div class="catalog-layout">
+    <!-- DESKTOP: sidebar filters (hidden on mobile) -->
+    @if (hasFilters()) {
+      <aside class="desktop-filters">
+        <div class="sidebar-header">
+          <span class="sidebar-title">{{ 'Filters' | transloco }}</span>
+          @if (activeFilterCount() > 0) {
+            <button class="clear-all-btn" (click)="clearAllFilters()">
+              <i class="ri-close-line"></i>
+              {{ 'ClearAll' | transloco }}
+            </button>
+          }
+        </div>
+
+        @if (availableBrands().length > 1) {
+          <div class="sidebar-section">
+            <span class="filter-title">{{ 'Brand' | transloco }}</span>
+            <div class="filter-chips">
+              <button
+                class="filter-chip"
+                [class.active]="selectedBrand() === null"
+                (click)="selectBrand(null)">
+                {{ 'AllBrands' | transloco }}
+              </button>
+              @for (b of availableBrands(); track b.brand) {
+                <button
+                  class="filter-chip"
+                  [class.active]="selectedBrand() === b.brand"
+                  (click)="selectBrand(b.brand)">
+                  {{ b.brandAlias || b.brand }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @for (group of availableFilters(); track group.slug) {
+          <div class="sidebar-section">
+            <span class="filter-title">{{ group | localizedName }}</span>
+            <div class="filter-chips">
+              @for (v of group.values; track v.slug) {
+                <button class="filter-chip"
+                        [class.active]="isFilterSelected(group.slug, v.slug)"
+                        (click)="toggleFilter(group.slug, v.slug)">
+                  {{ v | localizedName:'value' }} ({{ v.count }})
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </aside>
+    }
+
+    <div class="product-list-panel">
+      @if(products().length>0){
+        <product-list [products]="products()"/>
+      } @else {
+        <app-empty-state/>
+      }
+
+      @if (!allLoaded() && products().length > 0) {
+        <div class="load-more">
+          <button
+            class="load-more-btn"
+            [disabled]="isLoading()"
+            (click)="loadMore()"
+          >
+            @if (isLoading()) {
+              {{ 'Loading...' | transloco }}
+            } @else {
+              {{ 'Load more' | transloco }}
+            }
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
   <!-- SEO Text Block -->
   @if (category() === 'vs') {
     <div class="seo-text-block">
       @if (activeLang() === 'ro') {
-        <h2>Victoria's Secret în Moldova</h2>
+        <h2>Produse originale de la Victoria's Secret în Moldova</h2>
         <p>
           Bine ați venit în universul Victoria's Secret la Secret Room! Suntem mândri să vă oferim cea mai variată colecție de
           <strong>lenjerie intimă Victoria's Secret în Moldova</strong>. De la sutiene confortabile și chiloți eleganți, până la
@@ -75,7 +226,7 @@
           <li>Consultanță profesionistă în alegerea mărimii potrivite</li>
         </ul>
       } @else {
-        <h2>Victoria's Secret в Молдове</h2>
+        <h2>Оригинальные продукты от Victoria's Secret в Молдове</h2>
         <p>
           Добро пожаловать в мир Victoria's Secret в Secret Room! Мы гордимся тем, что предлагаем самую разнообразную коллекцию
           <strong>нижнего белья Victoria's Secret в Молдове</strong>. От удобных бюстгальтеров и элегантных трусиков до

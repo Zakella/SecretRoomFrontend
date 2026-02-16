@@ -3,11 +3,11 @@
     <h2>{{ 'Shop by Category' | transloco }}</h2>
     <div class="nav-buttons">
       <button (click)="prev()" [class.disabled]="currentIndex === 0">&#8592;</button>
-      <button (click)="next()" [class.disabled]="currentIndex >= categories().length - 1">&#8594;</button>
+      <button (click)="next()" [class.disabled]="currentIndex >= maxIndex">&#8594;</button>
     </div>
   </div>
 
-  <div class="slider">
+  <div class="slider" #slider>
     <div
       class="slider-track"
       [style.transform]="'translateX(' + translateX + 'px)'"

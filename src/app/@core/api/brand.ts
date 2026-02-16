@@ -4,6 +4,7 @@ import {environment} from '../../../environments/environment';
 import {Brand} from '../../entities/category';
 import {Observable, of, tap} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
+import {FilterGroup} from '../../entities/filter-group';
 
 @Injectable({
   providedIn: 'root',
@@ -22,11 +23,18 @@ export class BrandService {
     );
   }
 
-  getProductsByBrand(brand: string, page: number, size: number): Observable<GetResponse> {
-    const params = new HttpParams()
+  getProductsByBrand(brand: string, page: number, size: number, filters?: string): Observable<GetResponse> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
+    if (filters) {
+      params = params.set('filters', filters);
+    }
     return this.http.get<GetResponse>(`${this.baseUrL}/brand/${brand}`, {params});
+  }
+
+  getFiltersForBrand(brand: string): Observable<FilterGroup[]> {
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/brand/${brand}/filters`);
   }
 
   toSlug(brand: string): string {

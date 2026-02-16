@@ -2,6 +2,8 @@ import {ProductImage} from "./product-image";
 import {ProductCategory} from "./product-category";
 import {Size} from './size';
 import {ProductVariant} from './product-variant';
+import {ProductFilterItem} from './product-filter';
+import {ProductCompositionItem} from './product-composition';
 
 export interface Product {
   id?: string,
@@ -34,5 +36,7 @@ export interface Product {
   isNew: boolean,
   isBestSeller: boolean,
   variants?: ProductVariant[],
+  filters?: ProductFilterItem[],
+  compositions?: ProductCompositionItem[],
   discontinued?: boolean,
 }

@@ -68,6 +68,27 @@
             <div class="description" [innerHTML]="(product() | localizedName:'description') | capitalize"></div>
           }
 
+          @if (product()?.filters?.length) {
+            <div class="product-specs">
+              <h3>{{ 'Characteristics' | transloco }}</h3>
+              @for (f of product()!.filters; track f.valueSlug) {
+                <div class="spec-row">
+                  <span class="spec-label">{{ f | localizedName:'filterName' }}</span>
+                  <span class="spec-value">{{ f | localizedName:'value' }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (product()?.compositions?.length) {
+            <div class="product-composition">
+              <h3>{{ 'Composition' | transloco }}</h3>
+              @for (c of product()!.compositions; track $index) {
+                <p>{{ c | localizedName:'content' }}</p>
+              }
+            </div>
+          }
+
           @if (product()?.variants && product()!.variants!.length > 0) {
             <div class="variant-selector">
               <span class="variant-label">{{ 'Size' | transloco }}:</span>
