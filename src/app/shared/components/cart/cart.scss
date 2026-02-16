@@ -314,7 +314,16 @@
             font-size: 0.95rem;
             font-weight: 500;
             line-height: 1.4;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+          }
+
+          .item-size {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #b8956c;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
           }
 
           .qty-controls {
@@ -604,7 +613,7 @@
           flex-wrap: nowrap;
 
           img {
-            grid-row: 1 / 3;
+            grid-row: 1 / 4;
             grid-column: 1;
             width: 70px;
             height: 90px;
@@ -623,9 +632,16 @@
               line-height: 1.3;
             }
 
+            .item-size {
+              grid-column: 2 / 4;
+              grid-row: 2;
+              font-size: 0.7rem;
+              margin: 0;
+            }
+
             .qty-controls {
               grid-column: 2;
-              grid-row: 2;
+              grid-row: 3;
               align-self: end;
               margin: 0;
               display: flex;
@@ -685,7 +701,7 @@
 
           product-price {
             grid-column: 3;
-            grid-row: 2;
+            grid-row: 3;
             align-self: end;
             justify-self: end;
             width: auto;

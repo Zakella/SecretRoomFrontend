@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable, of, tap} from 'rxjs';
 import {Category} from '../../entities/category';
+import {FilterGroup} from '../../entities/filter-group';
 import {environment} from '../../../environments/environment';
 import {GetResponse} from '../../entities/get-response';
 import {Slugify} from '../services/slugify';
@@ -31,11 +32,25 @@ export class CategoryService {
     return this.http.get<any[]>(this.previewUrl);
   }
 
-  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number): Observable<GetResponse> {
+  getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number, brand?: string, filters?: string): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());
+    if (brand) {
+      params = params.set('brand', brand);
+    }
+    if (filters) {
+      params = params.set('filters', filters);
+    }
     return this.http.get<GetResponse>(`${this.apiUrl}/${categoryId}/products`, {params: params})
+  }
+
+  getBrandsForCategory(categoryId: string): Observable<{brand: string, brandAlias: string}[]> {
+    return this.http.get<{brand: string, brandAlias: string}[]>(`${this.apiUrl}/${categoryId}/brands`);
+  }
+
+  getFiltersForCategory(categoryId: string): Observable<FilterGroup[]> {
+    return this.http.get<FilterGroup[]>(`${this.apiUrl}/${categoryId}/filters`);
   }
 
   // Helper to find category ID by slug
