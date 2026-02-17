@@ -95,16 +95,25 @@ export class ProductDetail {
     });
   }
 
+  private static readonly SIZE_ORDER: string[] = [
+    'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', '2xl', '3xl', '4xl', '5xl',
+    'one-size',
+    '70a', '70b', '70c', '70d', '75a', '75b', '75c', '75d',
+    '80a', '80b', '80c', '80d', '85a', '85b', '85c', '85d',
+  ];
+
   private setProduct(product: Product | null) {
     this.product.set(product);
     this.quantity = 1;
     this.currentSize = undefined;
     this.selectedVariant.set(null);
     if (product) {
+      if (product.variants?.length) {
+        product.variants.sort((a, b) => this.compareSizes(a.size, b.size));
+      }
       this.mainImage = product.imageURL;
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
-      // Автоматически выбираем первый доступный вариант
       if (product.variants && product.variants.length > 0) {
         const firstAvailable = product.variants.find(v => v.available && v.inStock) || product.variants[0];
         this.selectVariant(firstAvailable);
@@ -115,6 +124,31 @@ export class ProductDetail {
   selectVariant(variant: ProductVariant) {
     this.selectedVariant.set(variant);
     this.currentSize = variant.size;
+    this.updateSizeInFilters(variant.size);
+  }
+
+  private updateSizeInFilters(size?: string) {
+    const product = this.product();
+    if (!product?.filters || !size) return;
+    const sizeFilter = product.filters.find(f => f.filterSlug === 'size');
+    if (sizeFilter) {
+      sizeFilter.valueRu = size;
+      sizeFilter.valueRo = size;
+      sizeFilter.valueSlug = size.toLowerCase().replace(' ', '-');
+      this.product.set({...product});
+    }
+  }
+
+  private compareSizes(a?: string, b?: string): number {
+    if (!a && !b) return 0;
+    if (!a) return 1;
+    if (!b) return -1;
+    const idxA = ProductDetail.SIZE_ORDER.indexOf(a.toLowerCase());
+    const idxB = ProductDetail.SIZE_ORDER.indexOf(b.toLowerCase());
+    if (idxA === -1 && idxB === -1) return a.localeCompare(b, undefined, {numeric: true});
+    if (idxA === -1) return 1;
+    if (idxB === -1) return -1;
+    return idxA - idxB;
   }
 
   addProductInCart() {
