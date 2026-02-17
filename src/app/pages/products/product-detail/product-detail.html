@@ -59,8 +59,8 @@
               </div>
             }
 
-            @if (product()?.article) {
-              <span class="article">{{ 'Article' | transloco }}: {{ product()?.article }}</span>
+            @if (selectedVariant()?.article || product()?.article) {
+              <span class="article">{{ 'Article' | transloco }}: {{ selectedVariant()?.article ?? product()?.article }}</span>
             }
           </div>
 
