@@ -43,6 +43,12 @@ export class ProductCard {
     return old !== null && old > 0 && current !== undefined && old > current;
   });
 
+  thumbnailUrl = computed(() => {
+    const url = this.imageUrl();
+    if (!url) return '';
+    return url + (url.includes('?') ? '&' : '?') + 'w=400';
+  });
+
   hoverImageUrl = computed(() => {
     const images = this.product()?.productImagesWebStore;
     if (images && images.length > 1) {
@@ -52,6 +58,12 @@ export class ProductCard {
       return images[0].imageUrl;
     }
     return null;
+  });
+
+  hoverThumbnailUrl = computed(() => {
+    const url = this.hoverImageUrl();
+    if (!url) return null;
+    return url + (url.includes('?') ? '&' : '?') + 'w=400';
   });
   currentSize: string | undefined;
   quantity: number = 1;
