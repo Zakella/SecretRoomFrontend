@@ -96,8 +96,8 @@ export class ProductDetail {
   }
 
   private static readonly SIZE_ORDER: string[] = [
-    'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', '2xl', '3xl', '4xl', '5xl',
-    'one-size',
+    'xxs', 'xs', 'xs/s', 's', 's/m', 'm', 'm/l', 'l', 'l/xl', 'xl', 'xl/xxl', 'xxl', '2xl', '3xl', '4xl', '5xl',
+    'one size', 'one-size',
     '70a', '70b', '70c', '70d', '75a', '75b', '75c', '75d',
     '80a', '80b', '80c', '80d', '85a', '85b', '85c', '85d',
   ];
