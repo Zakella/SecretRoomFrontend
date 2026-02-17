@@ -407,8 +407,8 @@
       margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: center; // Centered categories
-      gap: 56px;
+      justify-content: center;
+      gap: clamp(16px, 2.5vw, 40px);
       padding: 0 20px;
       height: 56px;
     }
@@ -416,13 +416,14 @@
     .category-text {
       position: relative;
       font-family: 'Public Sans', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #3D3D3D;
       text-decoration: none;
       padding: 18px 0;
+      white-space: nowrap;
       cursor: pointer;
       transition: color 0.3s ease;
 
