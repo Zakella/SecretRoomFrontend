@@ -46,7 +46,7 @@ export class ProductCard {
   thumbnailUrl = computed(() => {
     const url = this.imageUrl();
     if (!url) return '';
-    return url + (url.includes('?') ? '&' : '?') + 'w=400';
+    return url + (url.includes('?') ? '&' : '?') + 'w=300';
   });
 
   hoverImageUrl = computed(() => {
@@ -63,7 +63,7 @@ export class ProductCard {
   hoverThumbnailUrl = computed(() => {
     const url = this.hoverImageUrl();
     if (!url) return null;
-    return url + (url.includes('?') ? '&' : '?') + 'w=400';
+    return url + (url.includes('?') ? '&' : '?') + 'w=300';
   });
   currentSize: string | undefined;
   quantity: number = 1;
