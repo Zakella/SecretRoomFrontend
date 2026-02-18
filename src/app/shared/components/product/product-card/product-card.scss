@@ -18,6 +18,11 @@
   display: flex;
   flex-direction: column;
 
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
   // --- SALE CARD STYLES ---
   &.on-sale {
     // Increase size slightly via scale (does not affect layout flow)
@@ -75,6 +80,7 @@
     flex-shrink: 0; // Prevent image from shrinking
 
     .img-container {
+      display: block;
       height: 100%;
       width: 100%;
       cursor: pointer;

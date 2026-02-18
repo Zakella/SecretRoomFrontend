@@ -94,6 +94,8 @@
   border-radius: 4px;
   transition: transform 0.3s ease;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     transform: translateY(-4px);
@@ -179,6 +181,8 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
+  text-decoration: none;
+  color: inherit;
 
   &:active {
     transform: scale(0.97);

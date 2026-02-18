@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
 import {toObservable, takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {switchMap, of, filter} from 'rxjs';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {CarouselModule} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
 import {TagModule} from 'primeng/tag';
@@ -19,7 +19,7 @@ import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'recommended-products',
-  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe, ProductPrice],
+  imports: [CarouselModule, ButtonModule, TagModule, LocalizedNamePipe, TranslocoPipe, ProductPrice, RouterLink],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -27,7 +27,6 @@ import {ProductPrice} from '../product-price/product-price';
 export class RecommendedProducts {
   private recommendedService = inject(RecommendedProductService);
   private cartService = inject(CartUi);
-  private router = inject(Router);
   private slugify = inject(Slugify);
   private langService = inject(Language);
   public favoritesService = inject(FavoritesService);
@@ -63,9 +62,9 @@ export class RecommendedProducts {
     return product.id ? this.favoritesService.isFavorite(product.id) : false;
   }
 
-  protected goToProduct(product: Product) {
+  protected getProductUrl(product: Product): string[] | null {
     const id = product.appId || product.id;
-    if (!id) return;
-    this.router.navigate(this.slugify.productUrl(this.langService.currentLanguage(), id, product.name ?? ''));
+    if (!id) return null;
+    return this.slugify.productUrl(this.langService.currentLanguage(), id, product.name ?? '');
   }
 }

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
-import {Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CartUi} from '../../cart/services/cart';
 import {Product} from '../../../../entities/product';
@@ -15,13 +15,12 @@ import {ProductPrice} from '../product-price/product-price';
 
 @Component({
   selector: 'product-card',
-  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe, ProductPrice],
+  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe, ProductPrice, RouterLink],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductCard {
-  private route = inject(Router);
   private langService = inject(Language);
   private cartService = inject(CartUi);
   private slugify = inject(Slugify);
@@ -57,10 +56,11 @@ export class ProductCard {
   quantity: number = 1;
   loading  = signal<boolean>(false);
 
-  protected navToProduct(): void {
-    const p = this.product()!;
-    this.route.navigate(this.slugify.productUrl(this.activeLang(), p.id!, p.name ?? ''));
-  }
+  productUrl = computed(() => {
+    const p = this.product();
+    if (!p?.id) return null;
+    return this.slugify.productUrl(this.activeLang(), p.id, p.name ?? '');
+  });
 
   toggleFavorite(event: Event) {
     event.stopPropagation();

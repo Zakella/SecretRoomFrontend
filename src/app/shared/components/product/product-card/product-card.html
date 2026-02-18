@@ -61,15 +61,15 @@
       <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
-    <div class="img-container" (click)="navToProduct()">
+    <a class="img-container" [routerLink]="productUrl()">
       <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
       @if (hoverImageUrl()) {
         <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy"/>
       }
-    </div>
+    </a>
   </div>
 
-  <div class="info" (click)="navToProduct()">
+  <a class="info" [routerLink]="productUrl()">
 
     <h2 class="brand-name">
       <span>
@@ -78,7 +78,7 @@
     <h3 class="name">{{ product() | localizedName }}</h3>
 
     <product-price [price]="price()!" [oldPrice]="oldPrice()"/>
-  </div>
+  </a>
 
   <div class="product-info">
     @if (isOutOfStock()) {
