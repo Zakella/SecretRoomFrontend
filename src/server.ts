@@ -25,6 +25,18 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
+ * Remove trailing slashes (301 redirect) to avoid duplicate URLs.
+ */
+app.use((req, res, next) => {
+  if (req.path !== '/' && req.path.endsWith('/')) {
+    const query = req.url.slice(req.path.length);
+    res.redirect(301, req.path.slice(0, -1) + query);
+  } else {
+    next();
+  }
+});
+
+/**
  * Serve static files from /browser
  */
 app.use(
