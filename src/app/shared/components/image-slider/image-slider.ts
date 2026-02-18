@@ -13,7 +13,6 @@ import {CarouselImage} from '../../../entities/carousel-image';
 import {Router} from '@angular/router';
 import {Language} from '../../../@core/services/language';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {HeroService} from '../../../@core/api/hero';
 
 @Component({
   selector: 'image-slider',
@@ -38,7 +37,6 @@ export class ImageSlider implements AfterViewInit, OnDestroy {
   endX = 0;
   private languageService = inject(Language);
   protected activeLang = this.languageService.currentLanguage
-  private heroService = inject(HeroService);
   private sanitizer = inject(DomSanitizer);
   private resizeListener: (() => void) | null = null;
 
@@ -274,7 +272,6 @@ export class ImageSlider implements AfterViewInit, OnDestroy {
   }
 
   protected goToImage(image: CarouselImage): void {
-    this.router.navigate(['/', this.activeLang(), 'catalog', 'hero']);
-    this.heroService.heroId.set(image.id);
+    this.router.navigate(['/', this.activeLang(), 'catalog', 'hero', image.id]);
   }
 }

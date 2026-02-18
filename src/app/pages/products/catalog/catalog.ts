@@ -88,6 +88,7 @@ export class Catalog implements OnInit {
   });
 
   private currentCategoryId: string | null = null;
+  private currentHeroId: number | null = null;
   private currentPage = 0;
   private readonly itemsPerPage = 12;
 
@@ -108,8 +109,14 @@ export class Catalog implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(p => ({ tag: p.get('tag'), slug: p.get('brandName') })),
-      switchMap(({ tag, slug }) => {
+      map(p => ({ tag: p.get('tag'), slug: p.get('brandName'), heroId: p.get('heroId') })),
+      switchMap(({ tag, slug, heroId }) => {
+        // Hero route: /catalog/hero/:heroId
+        if (heroId) {
+          this.currentHeroId = +heroId;
+          return of({ tag: 'hero', brandName: null, brandAlias: null, categoryId: null, categoryName: null });
+        }
+
         if (slug) {
           return this.brandService.gerAllBrands().pipe(
             map(brands => {
@@ -125,7 +132,7 @@ export class Catalog implements OnInit {
           );
         }
 
-        const staticCategories = ['vs', 'bb', 'bestsellers', 'new-arrivals', 'sales', 'hero'];
+        const staticCategories = ['vs', 'bb', 'bestsellers', 'new-arrivals', 'sales'];
         if (tag && staticCategories.includes(tag)) {
           return of({ tag: tag, brandName: null, brandAlias: null, categoryId: null, categoryName: null });
         }
@@ -429,7 +436,7 @@ export class Catalog implements OnInit {
       case 'sales':
         return this.productService.getSales(page, size);
       case 'hero':
-        return this.heroService.getHeroProductsById(page, size);
+        return this.heroService.getHeroProductsById(this.currentHeroId!, page, size);
      case 'brand':
         return this.brandService.getProductsByBrand(this.brandName()!, page, size, this.buildFiltersParam());
       default:

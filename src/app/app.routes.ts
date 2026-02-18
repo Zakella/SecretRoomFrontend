@@ -25,6 +25,11 @@ export const routes: Routes = [
             data: {breadcrumb: {ro: 'Catalog', ru: 'Каталог'}}
           },
           {
+            path: 'catalog/hero/:heroId',
+            loadComponent: () => import('./pages/products/catalog/catalog').then(m => m.Catalog),
+            data: {breadcrumb: {ro: 'Catalog', ru: 'Каталог'}}
+          },
+          {
             path: 'catalog/:tag',
             loadComponent: () => import('./pages/products/catalog/catalog').then(m => m.Catalog),
             data: {breadcrumb: {ro: 'Catalog', ru: 'Каталог'}}
