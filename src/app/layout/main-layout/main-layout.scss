@@ -4,9 +4,8 @@
     display: none;
   }
 
-  // Add padding to bottom so content isn't hidden behind bottom nav
   :host {
     display: block;
-    padding-bottom: 90px; // 80px nav + 10px buffer
+    padding-bottom: 55px;
   }
 }

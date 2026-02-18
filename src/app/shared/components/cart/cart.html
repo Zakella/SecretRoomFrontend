@@ -1,7 +1,7 @@
 <div class="drawer-backdrop" (click)="closeDrawer()">
   <div class="cart-drawer" (click)="$event.stopPropagation()">
     @if (recommendations().length > 0) {
-      <aside class="cart-suggestions">
+      <aside class="cart-suggestions no-scrollbar">
         <h3>{{ 'cart.youMayAlsoLike' | transloco }}</h3>
         @for (item of recommendations(); track item.id) {
           <div class="suggested-item">

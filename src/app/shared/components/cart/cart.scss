@@ -825,3 +825,15 @@
     text-decoration-color: #d4a373;
   }
 }
+
+
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Для IE, Edge и Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;  /* Firefox */
+}
