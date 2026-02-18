@@ -35,7 +35,8 @@ export class CategoryService {
   getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number, brand?: string, filters?: string): Observable<GetResponse> {
     let params = new HttpParams()
       .set('page', thePage.toString())
-      .set('size', thePageSize.toString());
+      .set('size', thePageSize.toString())
+      .set('sort', 'id,asc');
     if (brand) {
       params = params.set('brand', brand);
     }
