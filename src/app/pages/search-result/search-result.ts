@@ -10,6 +10,7 @@ import {Product} from '../../entities/product';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {MetaService} from '../../@core/services/meta.service';
+import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 
 @Component({
@@ -30,6 +31,7 @@ export class SearchResult implements OnInit {
   private productService = inject(ProductService);
   private ga = inject(GoogleAnalytics);
   private metaService = inject(MetaService);
+  private langService = inject(Language);
   private meta = inject(Meta);
   private destroyRef = inject(DestroyRef);
 
@@ -48,8 +50,11 @@ export class SearchResult implements OnInit {
       this.query.set(q);
       this.page = 0;
       this.products.set([]);
+      const isRo = this.langService.currentLanguage() === 'ro';
       this.metaService.updateTitle(`${q} — Secret Room`);
-      this.metaService.updateDescription(`Результаты поиска «${q}» в магазине Secret Room Moldova.`);
+      this.metaService.updateDescription(isRo
+        ? `Rezultatele căutării «${q}» în magazinul Secret Room Moldova.`
+        : `Результаты поиска «${q}» в магазине Secret Room Moldova.`);
       this.meta.updateTag({name: 'robots', content: 'noindex, follow'});
       if (q.trim()) {
         this.loadProducts();

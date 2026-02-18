@@ -70,7 +70,6 @@ export class Home implements OnInit {
     this.metaService.updateDescription(description);
     this.metaService.updateKeywords("cosmetica, parfumuri, lenjerie, cadouri, magazin online moldova, косметика, парфюмерия, белье, подарки, интернет магазин молдова");
     this.metaService.updateImage("https://secretroom.md/assets/images/logo/secretroom.png");
-    this.metaService.updateUrl("https://secretroom.md/");
 
     // Добавляем разметку Organization и WebSite
     this.metaService.setOrganizationJsonLd();

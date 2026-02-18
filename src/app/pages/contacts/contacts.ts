@@ -3,6 +3,7 @@ import {FadeUp} from '../../@core/directives/fade-up';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {MetaService} from '../../@core/services/meta.service';
+import {Language} from '../../@core/services/language';
 
 @Component({
   selector: 'contacts',
@@ -14,6 +15,7 @@ import {MetaService} from '../../@core/services/meta.service';
 export class Contacts implements OnInit {
   private metaService = inject(MetaService);
   private sanitizer = inject(DomSanitizer);
+  private langService = inject(Language);
 
   stores = [
     {
@@ -41,10 +43,17 @@ export class Contacts implements OnInit {
   ];
 
   ngOnInit() {
-    this.metaService.updateTitle('Contacte | Secret Room');
-    this.metaService.updateDescription('Contacte Secret Room: adresele magazinelor, numere de telefon și program de lucru.');
-    this.metaService.updateKeywords('Secret Room contacte, adresa magazin, Chișinău, program de lucru, telefon, Victoria\'s Secret Moldova');
-    this.metaService.updateImage(this.stores[0].imgUrl);
+    const isRo = this.langService.currentLanguage() === 'ro';
+    this.metaService.updateTitle(isRo
+      ? 'Contacte | Secret Room'
+      : 'Контакты | Secret Room');
+    this.metaService.updateDescription(isRo
+      ? 'Contacte Secret Room: adresele magazinelor, numere de telefon și program de lucru.'
+      : 'Контакты Secret Room: адреса магазинов, номера телефонов и график работы.');
+    this.metaService.updateKeywords(isRo
+      ? 'Secret Room contacte, adresa magazin, Chișinău, program de lucru, telefon, Victoria\'s Secret Moldova'
+      : 'Secret Room контакты, адрес магазина, Кишинёв, график работы, телефон, Victoria\'s Secret Молдова');
+    this.metaService.updateImage('https://secretroom.md/assets/images/SR-transparent.png');
 
     for (const store of this.stores) {
       this.metaService.setJsonLd({
