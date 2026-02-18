@@ -176,6 +176,11 @@ export class MetaService {
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
+    if (!breadcrumbs.length) {
+      this.removeJsonLd('breadcrumb');
+      return;
+    }
+
     const itemListElement = breadcrumbs.map((item, index) => ({
       "@type": "ListItem",
       "position": index + 1,
@@ -257,6 +262,11 @@ export class MetaService {
       this.document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(data);
+  }
+
+  removeJsonLd(schemaId: string) {
+    const script = this.document.querySelector(`script[type="application/ld+json"][data-schema="${schemaId}"]`);
+    script?.remove();
   }
 
   clearJsonLd() {
