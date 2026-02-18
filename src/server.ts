@@ -35,7 +35,7 @@ app.use(
   }),
 );
 
-const API_BASE = 'https://api.secretroom.md/api/';
+const API_BASE = process.env['SSR_API_URL'] || 'https://api.secretroom.md/api/';
 const SITE_URL = 'https://secretroom.md';
 const LANGUAGES = ['ro', 'ru'];
 

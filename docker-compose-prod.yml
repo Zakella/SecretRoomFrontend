@@ -9,6 +9,9 @@ services:
       - "5002:4000"
     environment:
       - NODE_ENV=production
+      - SSR_API_URL=http://host.docker.internal:9092/api/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - app-network
 
