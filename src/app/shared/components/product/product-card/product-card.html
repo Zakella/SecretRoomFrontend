@@ -61,7 +61,7 @@
       <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
-    <a class="img-container" [routerLink]="productUrl()">
+    <a class="img-container" [routerLink]="productUrl()" [queryParams]="queryParams()">
       <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
       @if (hoverImageUrl()) {
         <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy"/>
@@ -69,7 +69,7 @@
     </a>
   </div>
 
-  <a class="info" [routerLink]="productUrl()">
+  <a class="info" [routerLink]="productUrl()" [queryParams]="queryParams()">
 
     <h2 class="brand-name">
       <span>

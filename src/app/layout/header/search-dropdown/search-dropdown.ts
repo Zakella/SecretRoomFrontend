@@ -30,7 +30,8 @@ export class SearchDropdown {
   goToProduct(product: Product) {
     this.searchService.clear();
     this.closed.emit();
-    this.router.navigate(this.slugify.productUrl(this.langService.currentLanguage(), product.id!, product.name ?? ''));
+    const extras = product.selectedVariantAppId ? {queryParams: {variant: product.selectedVariantAppId}} : {};
+    this.router.navigate(this.slugify.productUrl(this.langService.currentLanguage(), product.id!, product.name ?? ''), extras);
   }
 
   showAll() {

@@ -39,4 +39,5 @@ export interface Product {
   filters?: ProductFilterItem[],
   compositions?: ProductCompositionItem[],
   discontinued?: boolean,
+  selectedVariantAppId?: number,
 }

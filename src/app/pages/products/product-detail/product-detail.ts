@@ -115,7 +115,11 @@ export class ProductDetail {
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
       if (product.variants && product.variants.length > 0) {
-        const firstAvailable = product.variants.find(v => v.available && v.inStock) || product.variants[0];
+        const variantParam = this.route.snapshot.queryParamMap.get('variant');
+        const preselected = variantParam
+          ? product.variants.find(v => String(v.appId) === variantParam)
+          : null;
+        const firstAvailable = preselected || product.variants.find(v => v.available && v.inStock) || product.variants[0];
         this.selectVariant(firstAvailable);
       }
     }

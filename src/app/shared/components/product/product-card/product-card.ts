@@ -62,6 +62,11 @@ export class ProductCard {
     return this.slugify.productUrl(this.activeLang(), p.id, p.name ?? '');
   });
 
+  queryParams = computed(() => {
+    const variantId = this.product()?.selectedVariantAppId;
+    return variantId ? {variant: variantId} : {};
+  });
+
   toggleFavorite(event: Event) {
     event.stopPropagation();
     const id = this.product()?.id;
