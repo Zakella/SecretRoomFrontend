@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, ViewEncapsulation} from '@angular/core';
 import {DialogModule} from 'primeng/dialog';
 import {ButtonModule} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
@@ -19,10 +19,12 @@ import {Language} from '../../../../@core/services/language';
   styleUrl: './share-modal.scss',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true
 })
 export class ShareModal {
   visible = false;
   shareService = inject(ShareLinkService);
+  private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   activeLang = this.langService.currentLanguage;
   shareUrl = '';
@@ -30,6 +32,7 @@ export class ShareModal {
   public open(): void {
     this.shareUrl = this.shareService.createShareableLink();
     this.visible = true;
+    this.cdr.markForCheck();
   }
 
   protected copyLink(): void {

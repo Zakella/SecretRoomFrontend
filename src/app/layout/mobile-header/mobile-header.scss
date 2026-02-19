@@ -43,6 +43,15 @@
     background-clip: text;
 
     animation: logoShine 6s linear infinite;
+    @media (max-width: 375px) {
+      font-size: 18px; // Уменьшаем шрифт логотипа для средних и малых тел.
+      letter-spacing: 1.5px;
+    }
+
+    @media (max-width: 330px) {
+      font-size: 16px; // Критически малые экраны
+      letter-spacing: 1px;
+    }
   }
 
   .header-right-icons {
@@ -51,6 +60,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+  @media (max-width: 360px) {
+    gap: 0;
   }
 }
 
@@ -83,6 +95,10 @@
     justify-content: center;
     border: 1.5px solid #121216;
   }
+  @media (max-width: 360px) {
+    font-size: 20px; // Уменьшаем размер самих иконок
+    padding: 6px;
+  }
 }
 
 .lang-switch-header {
@@ -108,6 +124,15 @@
       background: #b8956c;
       color: #121216;
       font-weight: 700;
+    }
+  }
+  @media (max-width: 360px) {
+    left: 8px; // Сдвигаем к краю
+    gap: 2px;
+
+    .lang-option {
+      padding: 3px 6px; // Уменьшаем внутренние отступы кнопок
+      font-size: 9px;
     }
   }
 }

@@ -246,7 +246,48 @@
 // ═══════════════════════════════════════════════════════════════
 // FILTER DRAWER (PrimeNG full-screen drawer)
 // ═══════════════════════════════════════════════════════════════
+::ng-deep .filter-drawer {
+  // На некоторых мобильных устройствах fullScreen может не учитывать
+  // высоту нижней панели браузера. Форсируем высоту:
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
 
+  .p-drawer-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; // Убираем скролл у самого контейнера
+    height: 100%;
+  }
+}
+
+.filter-drawer-content {
+  flex: 1; // Занимает все пространство от шапки до футера
+  overflow-y: auto; // Скролл только здесь
+  padding-bottom: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-drawer-footer {
+  flex-shrink: 0; // Не позволяет футеру сжиматься или улетать
+  background: #fff;
+  padding: 16px 20px;
+
+  /* ВАЖНО: Если на сайте есть нижнее меню (как на скрине),
+     нужно добавить отступ, чтобы кнопка была НАД ним.
+     Замените 60px на реальную высоту вашего Tab Bar.
+  */
+  margin-bottom: 60px;
+
+  // Дополнительно учитываем "челку" iPhone
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+
+  border-top: 1px solid #f0f0f0;
+  z-index: 10;
+}
+
+/*
 ::ng-deep .filter-drawer {
   background: #fff;
 
@@ -259,6 +300,7 @@
     padding: 0;
   }
 }
+*/
 
 .filter-drawer-header {
   display: flex;

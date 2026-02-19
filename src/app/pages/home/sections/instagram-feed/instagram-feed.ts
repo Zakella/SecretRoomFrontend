@@ -133,7 +133,6 @@ export class InstagramFeed implements OnInit, OnDestroy {
 
 
   toggleMute(event: Event) {
-    event.stopPropagation();
     this.isMuted.update(v => !v);
   }
 

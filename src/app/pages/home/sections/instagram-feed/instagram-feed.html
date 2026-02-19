@@ -43,7 +43,10 @@
     </div>
 
     <div class="stories-block">
-      <div class="nav-overlay" (click)="next()"></div>
+      <div class="nav-zones-mobile">
+        <div class="zone-left" (click)="prev()"></div>
+        <div class="zone-right" (click)="next()"></div>
+      </div>
 
       <div class="media-content">
         @if (isVideo(currentPost)) {
@@ -53,7 +56,7 @@
                  playsinline
                  (ended)="next()"
                  [muted]="isMuted()"></video>
-          <button class="mute-control" (click)="toggleMute($event)">
+          <button class="mute-control" (click)="toggleMute($event); $event.stopPropagation()">
             @if (isMuted()) {
               <i class="ri-volume-mute-line"></i>
             } @else {

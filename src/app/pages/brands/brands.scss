@@ -132,6 +132,9 @@
 }
 
 @media screen and (max-width: 768px) {
+  .brands-page{
+    padding-top: 0;
+  }
   .brand-grid {
     grid-template-columns: repeat(2, 1fr); // 2 колонки на мобильном
   }

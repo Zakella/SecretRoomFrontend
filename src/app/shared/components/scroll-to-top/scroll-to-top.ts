@@ -67,6 +67,11 @@ import {isPlatformBrowser} from '@angular/common';
         height: 44px;
       }
     }
+    @media screen and (max-width: 1024px) {
+      .scroll-top-btn {
+        bottom: 75px;
+      }
+      }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
