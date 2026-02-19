@@ -11,7 +11,7 @@
     <div class="product-grid">
       <div class="product-images">
         <div class="main-image">
-          <img [src]="mainImage" [alt]="product() | localizedName"/>
+          <img [src]="mainImage" [alt]="product() | localizedName" fetchpriority="high" width="550" height="550"/>
         </div>
         @defer {
           <div class="thumbnails">
