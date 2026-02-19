@@ -1,14 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /cabinet
-Disallow: /checkout
-Disallow: /login
-Disallow: /registration
-Disallow: /order-success
-Disallow: /account-not-found
-Disallow: /payment-fail
-Disallow: /favorites
-Disallow: /order/
-Disallow: /search/
+Disallow: /*/cabinet
+Disallow: /*/checkout
+Disallow: /*/login
+Disallow: /*/registration
+Disallow: /*/order-success
+Disallow: /*/account-not-found
+Disallow: /*/payment-fail
+Disallow: /*/favorites
+Disallow: /*/order/
+Disallow: /*/search/
 
 Sitemap: https://secretroom.md/sitemap.xml

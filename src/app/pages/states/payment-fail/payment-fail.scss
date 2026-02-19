@@ -1,113 +1,262 @@
-.section {
-  padding: 280px 20px 40px;
-  background-color: #fff0f5;
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes logoShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes errorPop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+// Page container
+.fail-page {
+  min-height: 100vh;
   display: flex;
+  align-items: center;
   justify-content: center;
-}
-
-.container {
-  max-width: 400px;
-  width: 100%;
-}
-
-.card {
-  background: radial-gradient(circle, white 0%, #d5d5d5 100%);
-  width: 100%;
-  height: 200px;
-  border-radius: 20px;
   position: relative;
-  box-shadow: 3px 3px 17px rgba(0, 0, 0, 0.55);
-  padding: 1rem;
   overflow: hidden;
-  transition: transform 0.3s;
+  padding: 40px 20px;
 }
 
-.logo {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+// Animated background
+.fail-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+  .fail-bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0a0a0c 0%, #121218 25%, #0e0e12 50%, #151520 75%, #0a0a0c 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  .fail-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(229, 115, 115, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(196, 148, 143, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(229, 115, 115, 0.03) 0%, transparent 30%);
+    animation: pulse 8s ease-in-out infinite;
+  }
 }
 
+// Container
+.fail-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-.number {
-  position: absolute;
-  bottom: 60px;
-  left: 20px;
-  font-size: 1.2rem;
+// Logo
+.fail-logo {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 500;
   letter-spacing: 4px;
-  color: #000;
-  opacity: 0.9;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+
+  background: linear-gradient(
+    90deg,
+    #8B7355 0%,
+    #8B7355 35%,
+    #b8956c 40%,
+    #d4b896 44%,
+    #f5e6d3 47%,
+    #FFFFFF 50%,
+    #f5e6d3 53%,
+    #d4b896 56%,
+    #b8956c 60%,
+    #8B7355 65%,
+    #8B7355 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logoShine 6s linear infinite;
+
+  &:hover {
+    animation-duration: 3s;
+  }
 }
 
-.owner {
-  position: absolute;
-  bottom: 35px;
-  left: 20px;
-  font-size: 1rem;
-  letter-spacing: 1px;
-  color: #000;
-  opacity: 0.9;
-}
-
+// Error Icon
 .error-icon {
-  position: absolute;
-  top: 100px;
-  left: 20px;
-  color: #e53935;
-  font-weight: bold;
-  font-size: 14px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(229, 115, 115, 0.2) 0%, rgba(229, 115, 115, 0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  animation: errorPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  i {
+    font-size: 3rem;
+    color: #e57373;
+  }
 }
 
-.retry-button {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background-color: #e53935;
-  color: white;
-  padding: 6px 14px;
+// Title
+.fail-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: #F5F3F4;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+
+.fail-subtitle {
+  font-size: 1rem;
+  color: rgba(245, 243, 244, 0.5);
+  margin: 0 0 2rem;
+  text-align: center;
+}
+
+// Card
+.fail-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.fail-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+
+  > i {
+    font-size: 1.4rem;
+    color: #8B7355;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: rgba(245, 243, 244, 0.7);
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+// Actions
+.fail-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  width: 100%;
+  max-width: 320px;
+  background: linear-gradient(135deg, #8B7355 0%, #b8956c 50%, #d4b896 100%);
+  background-size: 200% 200%;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 12px;
+  color: #0a0a0c;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(196, 148, 143, 0.3);
 
-.retry-button:hover {
-  background-color: #d32f2f;
-}
-
-.card.error {
-  border: 2px solid #e53935;
-  animation: pulseError 1.5s ease-in-out infinite;
-}
-
-@keyframes pulseError {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(229, 57, 53, 0.5);
+  i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
   }
-  50% {
-    transform: scale(1.03);
-    box-shadow: 0 0 12px rgba(229, 57, 53, 0.7);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(229, 57, 53, 0.5);
+
+  &:hover {
+    background-position: 100% 100%;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(196, 148, 143, 0.4);
   }
 }
 
-@media (max-width: 400px) {
-  .card {
-    height: 180px;
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  color: rgba(245, 243, 244, 0.5);
+  font-size: 0.9rem;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: rgba(245, 243, 244, 0.8);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .fail-page {
+    padding: 20px 15px;
   }
 
-  .number,
-  .owner,
-  .error-icon {
-    left: 16px;
+  .fail-logo {
+    font-size: 1.6rem;
   }
 
-  .retry-button {
-    right: 16px;
+  .fail-card {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .fail-title {
+    font-size: 1.4rem;
   }
 }

@@ -79,13 +79,13 @@ export class MetaService {
 
     const linkRo = this.document.createElement('link');
     linkRo.setAttribute('rel', 'alternate');
-    linkRo.setAttribute('hreflang', 'ro-MD');
+    linkRo.setAttribute('hreflang', 'ro');
     linkRo.setAttribute('href', roUrl);
     head.appendChild(linkRo);
 
     const linkRu = this.document.createElement('link');
     linkRu.setAttribute('rel', 'alternate');
-    linkRu.setAttribute('hreflang', 'ru-MD');
+    linkRu.setAttribute('hreflang', 'ru');
     linkRu.setAttribute('href', ruUrl);
     head.appendChild(linkRu);
 
@@ -103,8 +103,9 @@ export class MetaService {
     // URL structure: /:lang/... (segments[0] is empty, segments[1] is lang)
     if (segments.length >= 2 && (segments[1] === 'ro' || segments[1] === 'ru')) {
       const pathWithoutLang = segments.slice(2).join('/');
-      const roUrl = `${this.siteUrl}/ro/${pathWithoutLang}`;
-      const ruUrl = `${this.siteUrl}/ru/${pathWithoutLang}`;
+      const suffix = pathWithoutLang ? `/${pathWithoutLang}` : '';
+      const roUrl = `${this.siteUrl}/ro${suffix}`;
+      const ruUrl = `${this.siteUrl}/ru${suffix}`;
       this.updateAlternateTags(roUrl, ruUrl);
     }
   }
@@ -176,6 +177,11 @@ export class MetaService {
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
+    if (!breadcrumbs.length) {
+      this.removeJsonLd('breadcrumb');
+      return;
+    }
+
     const itemListElement = breadcrumbs.map((item, index) => ({
       "@type": "ListItem",
       "position": index + 1,
@@ -257,6 +263,11 @@ export class MetaService {
       this.document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(data);
+  }
+
+  removeJsonLd(schemaId: string) {
+    const script = this.document.querySelector(`script[type="application/ld+json"][data-schema="${schemaId}"]`);
+    script?.remove();
   }
 
   clearJsonLd() {

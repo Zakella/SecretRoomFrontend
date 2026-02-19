@@ -58,11 +58,6 @@ export const routes: Routes = [
             data: {breadcrumb: {ro: 'Contacte', ru: 'Контакты'}}
           },
           {
-            path: 'payment-fail',
-            loadComponent: () => import('./pages/states/payment-fail/payment-fail').then(m => m.PaymentFail),
-            data: {breadcrumb: {ro: 'Plata eșuată', ru: 'Ошибка оплаты'}}
-          },
-          {
             path: 'delivery-terms',
             loadComponent: () => import('./pages/delivery-terms/delivery-terms').then(m => m.DeliveryTerms),
             data: {breadcrumb: {ro: 'Termeni și condiții', ru: 'Правила и условия'}}
@@ -115,6 +110,7 @@ export const routes: Routes = [
           {path: 'registration', loadComponent: () => import('./pages/registration/registration').then(m => m.Registration)},
           {path: 'account-not-found', loadComponent: () => import('./pages/states/account-not-found/account-not-found').then(m => m.AccountNotFound)},
           {path: 'order-success/:trackingNumber', loadComponent: () => import('./pages/order-summary/order-summary').then(m => m.OrderSummary)},
+          {path: 'payment-fail', loadComponent: () => import('./pages/states/payment-fail/payment-fail').then(m => m.PaymentFail)},
           {path: '**', loadComponent: () => import('./pages/states/notfound/notfound').then(m => m.Notfound)}
         ]
       }
