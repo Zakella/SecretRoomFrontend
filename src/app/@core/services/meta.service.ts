@@ -110,7 +110,7 @@ export class MetaService {
     }
   }
 
-  setProductMeta(product: any, lang: string = 'ro', slugifyService?: any) {
+  setProductMeta(product: any, lang: string = 'ro', slugifyService?: any, rating?: { value: number, count: number }) {
     const name = lang === 'ru' ? (product.nameRu || product.name) : (product.nameRo || product.name);
     const description = lang === 'ru' ? (product.descriptionRu || product.description) : (product.descriptionRo || product.description);
     const brand = product.brandAlias || product.brand || 'Secret Room';
@@ -154,7 +154,7 @@ export class MetaService {
     const inStock = product.inStock !== false && (product.unitsInStock ?? 0) > 0;
     const availability = inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
 
-    this.setJsonLd({
+    const productJsonLd: any = {
       "@context": "https://schema.org/",
       "@type": "Product",
       "name": name,
@@ -173,7 +173,17 @@ export class MetaService {
         "availability": availability,
         "itemCondition": "https://schema.org/NewCondition"
       }
-    }, 'product');
+    };
+
+    if (rating && rating.count > 0) {
+      productJsonLd["aggregateRating"] = {
+        "@type": "AggregateRating",
+        "ratingValue": rating.value,
+        "reviewCount": rating.count
+      };
+    }
+
+    this.setJsonLd(productJsonLd, 'product');
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
@@ -209,7 +219,7 @@ export class MetaService {
       ],
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+37369999999",
+        "telephone": "+37361029933",
         "contactType": "customer service",
         "areaServed": "MD",
         "availableLanguage": ["ro", "ru"]

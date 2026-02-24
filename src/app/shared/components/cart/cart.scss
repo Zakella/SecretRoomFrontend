@@ -518,37 +518,39 @@
     animation: fadeIn 0.3s ease;
 
     .cart-suggestions {
-      display: none!important;
-      /*
+      order: 2;
       display: flex;
-      */
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       width: 100%;
-      padding: 1rem;
+      padding: 1rem 1rem calc(1rem + 60px + env(safe-area-inset-bottom, 0px));
       border-right: none;
-      border-bottom: 1px solid rgba(181, 133, 95, 0.1);
+      border-top: 1px solid rgba(181, 133, 95, 0.1);
       background: #faf7f5;
       flex-shrink: 0;
       gap: 10px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       h3 {
-        display: block;
-        margin-bottom: 0;
-        font-size: 0.9rem;
-        width: 100%;
-        flex-basis: 100%;
+        display: none;
       }
 
       .suggested-item {
-        flex: 1 1 calc(50% - 10px);
-        min-width: 120px;
-        max-width: calc(50% - 5px);
+        flex: 0 0 140px;
+        min-width: 140px;
         box-sizing: border-box;
         background: #fff;
         padding: 10px;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         text-align: center;
+        scroll-snap-align: start;
 
         img {
           width: 60px;
@@ -582,6 +584,7 @@
     }
 
     .cart-content {
+      order: 1;
       width: 100%;
       padding: 1rem;
       overflow: visible;

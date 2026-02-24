@@ -27,7 +27,7 @@ export class ImageSlider implements AfterViewInit, OnDestroy {
   public indicator = input<boolean>(true);
   public controls = input<boolean>(true);
   public autoSlide = input<boolean>(true);
-  public autoSlideSpeed = input<number>(5000);
+  public autoSlideSpeed = input<number>(10000);
   public indicators = input<boolean>(true);
   public selectedIndex = signal(0);
   private intervalId = signal<number | null>(null);
