@@ -518,13 +518,12 @@
     animation: fadeIn 0.3s ease;
 
     .cart-suggestions {
-      order: 2;
       display: flex;
       flex-wrap: nowrap;
       width: 100%;
-      padding: 1rem 1rem calc(1rem + 60px + env(safe-area-inset-bottom, 0px));
+      padding: 1rem;
       border-right: none;
-      border-top: 1px solid rgba(181, 133, 95, 0.1);
+      border-bottom: 1px solid rgba(181, 133, 95, 0.1);
       background: #faf7f5;
       flex-shrink: 0;
       gap: 10px;
@@ -584,7 +583,6 @@
     }
 
     .cart-content {
-      order: 1;
       width: 100%;
       padding: 1rem;
       overflow: visible;
