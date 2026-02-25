@@ -490,8 +490,13 @@ product-price {
     flex: 1 1 100%;
   }
 
+  .main-image {
+    aspect-ratio: auto;
+  }
+
   .main-image img {
-    max-height: 320px;
+    height: auto;
+    max-height: 400px;
   }
 
   .thumbnails {
@@ -533,10 +538,15 @@ product-price {
     .spec-value { font-size: 13px; text-align: left; }
   }
 
+  .main-image {
+    aspect-ratio: auto;
+  }
+
   .main-image img {
     width: 100%;
+    height: auto;
     background: transparent;
-    max-height: 260px;
+    max-height: 320px;
     border: none;
     outline: none;
   }
