@@ -184,11 +184,11 @@ export class Catalog implements OnInit {
 
     if (displayBrand) {
       if (isRo) {
-        title = `${displayBrand} Moldova — Lenjerie și Cosmetice Originale | Secret Room`;
-        description = `Cumpără produse originale ${displayBrand} în Moldova: lenjerie intimă, parfumuri, loțiuni de corp, cosmetice. Livrare rapidă în Chișinău.`;
+        title = `${displayBrand} Moldova — Produse Originale | Secret Room`;
+        description = `${displayBrand} în Moldova: lenjerie, parfumuri, loțiuni, cosmetice originale. Magazin Secret Room, livrare în Chișinău și toată țara.`;
       } else {
-        title = `${displayBrand} Молдова — Оригинальное бельё и косметика | Secret Room`;
-        description = `Купить оригинальную продукцию ${displayBrand} в Молдове: нижнее бельё, парфюмы, лосьоны для тела, косметику. Доставка по Кишинёву.`;
+        title = `${displayBrand} Молдова — Оригинальная продукция | Secret Room`;
+        description = `${displayBrand} в Молдове: бельё, парфюмы, лосьоны, косметика — оригинал. Магазин Secret Room, доставка по Кишинёву и всей стране.`;
       }
       keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, купить ${displayBrand} молдова, ${displayBrand} кишинев`;
     } else if (category) {
@@ -200,11 +200,11 @@ export class Catalog implements OnInit {
         // Dynamic category with known name
         const nameLower = localizedName.toLowerCase();
         if (isRo) {
-          title = `${localizedName} Victoria's Secret și Bath & Body Works — Cumpără în Moldova | Secret Room`;
-          description = `Comandă ${nameLower} originale de la Victoria's Secret și Bath & Body Works în Moldova. Prețuri avantajoase, livrare rapidă în Chișinău și toată țara.`;
+          title = `${localizedName} Victoria's Secret și Bath & Body Works — Moldova | Secret Room`;
+          description = `${localizedName} originale în Moldova. Victoria's Secret și Bath & Body Works — comandă online sau vizitează magazinele Secret Room din Chișinău.`;
         } else {
-          title = `${localizedName} Victoria's Secret и Bath & Body Works — Купить в Молдове | Secret Room`;
-          description = `Заказывайте оригинальные ${nameLower} от Victoria's Secret и Bath & Body Works в Молдове. Выгодные цены, быстрая доставка по Кишинёву и всей стране.`;
+          title = `${localizedName} Victoria's Secret и Bath & Body Works — Молдова | Secret Room`;
+          description = `${localizedName} оригинал в Молдове. Victoria's Secret и Bath & Body Works — закажите онлайн или в магазинах Secret Room в Кишинёве.`;
         }
         const nameRo = catData?.nameRo || localizedName;
         const nameRu = catData?.nameRu || localizedName;
@@ -213,51 +213,51 @@ export class Catalog implements OnInit {
         switch (category) {
           case 'vs':
             if (isRo) {
-              title = "Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice Originale | Secret Room";
-              description = "Cumpără produse originale Victoria's Secret în Moldova: lenjerie intimă, sutiene, chiloți, parfumuri, loțiuni de corp. Livrare rapidă în Chișinău.";
+              title = "Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice | Secret Room";
+              description = "Victoria's Secret în Moldova: sutiene, chiloți, pijamale, parfumuri, loțiuni, spray-uri — originale din SUA. Magazin Secret Room, Chișinău.";
             } else {
               title = "Victoria's Secret Молдова — Бельё, парфюмы, косметика | Secret Room";
-              description = "Купить оригинальную продукцию Victoria's Secret в Молдове: нижнее бельё, бюстгальтеры, трусики, парфюмы, лосьоны. Доставка по Кишинёву.";
+              description = "Victoria's Secret в Молдове: бюстгальтеры, трусики, пижамы, парфюмы, лосьоны, спреи — оригинал из США. Магазин Secret Room, Кишинёв.";
             }
             keywords = "victoria secret, victoria secret moldova, lenjerie victoria secret, sutiene victoria secret, parfum victoria secret, victoria secret chisinau, белье victoria secret, бюстгальтеры victoria secret, парфюм victoria secret молдова";
             break;
           case 'bb':
             if (isRo) {
               title = "Bath & Body Works Moldova — Lumânări, Loțiuni, Geluri de Duș | Secret Room";
-              description = "Produse originale Bath & Body Works în Moldova: lumânări parfumate, loțiuni de corp, geluri de duș, spray-uri, săpunuri. Livrare rapidă în Chișinău.";
+              description = "Bath & Body Works în Moldova: lumânări cu 3 fitile, loțiuni, geluri de duș, săpunuri spumante — originale din SUA. Magazin Secret Room, Chișinău.";
             } else {
               title = "Bath & Body Works Молдова — Свечи, лосьоны, гели для душа | Secret Room";
-              description = "Оригинальная продукция Bath & Body Works в Молдове: ароматические свечи, лосьоны для тела, гели для душа, спреи. Доставка по Кишинёву.";
+              description = "Bath & Body Works в Молдове: свечи с 3 фитилями, лосьоны, гели для душа, пенящееся мыло — оригинал из США. Магазин Secret Room, Кишинёв.";
             }
             keywords = "bath body works, bath body works moldova, lumanari bath body works, lotiuni bath body works, bath body works chisinau, bath body works молдова, свечи bath body works";
             break;
           case 'bestsellers':
             if (isRo) {
-              title = "Bestsellere Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
-              description = "Top produse Victoria's Secret și Bath & Body Works — cele mai vândute parfumuri, loțiuni, lenjerie intimă și lumânări. Comandă online în Moldova.";
+              title = "Bestsellere Victoria's Secret și Bath & Body Works | Secret Room Moldova";
+              description = "Cele mai vândute produse din magazinul Secret Room: parfumuri, loțiuni, lenjerie Victoria's Secret și lumânări Bath & Body Works. Livrare în Moldova.";
             } else {
-              title = "Хиты продаж Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
-              description = "Самые популярные товары Victoria's Secret и Bath & Body Works — парфюмы, лосьоны, нижнее бельё и свечи. Заказывайте онлайн в Молдове.";
+              title = "Хиты продаж Victoria's Secret и Bath & Body Works | Secret Room Молдова";
+              description = "Самые продаваемые товары в Secret Room: парфюмы, лосьоны, бельё Victoria's Secret и свечи Bath & Body Works. Доставка по Молдове.";
             }
             keywords = "bestsellers, cele mai vandute, хиты продаж, victoria secret популярные, bath body works bestsellers, moldova";
             break;
           case 'new-arrivals':
             if (isRo) {
-              title = "Noutăți Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
-              description = "Ultimele noutăți de la Victoria's Secret și Bath & Body Works: parfumuri, loțiuni, lenjerie și cosmetice noi, disponibile în Moldova.";
+              title = "Produse noi Victoria's Secret și Bath & Body Works | Secret Room Moldova";
+              description = "Ultimele produse adăugate în Secret Room: parfumuri, loțiuni, lenjerie Victoria's Secret și cosmetice Bath & Body Works. Import din SUA.";
             } else {
-              title = "Новинки Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
-              description = "Последние новинки от Victoria's Secret и Bath & Body Works: парфюмы, лосьоны, бельё и косметика в Молдове.";
+              title = "Новинки Victoria's Secret и Bath & Body Works | Secret Room Молдова";
+              description = "Последние поступления в Secret Room: парфюмы, лосьоны, бельё Victoria's Secret и косметика Bath & Body Works. Импорт из США.";
             }
             keywords = "noutati, новинки, produse noi, new arrivals, victoria secret nou, bath body works nou, moldova";
             break;
           case 'sales':
             if (isRo) {
-              title = "Reduceri Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
-              description = "Cele mai bune reduceri la produse originale Victoria's Secret și Bath & Body Works: parfumuri, loțiuni, lenjerie în Moldova. Oferte speciale!";
+              title = "Reduceri Victoria's Secret și Bath & Body Works | Secret Room Moldova";
+              description = "Produse originale Victoria's Secret și Bath & Body Works la prețuri reduse. Parfumuri, loțiuni, lenjerie, lumânări — stocuri limitate.";
             } else {
-              title = "Скидки Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
-              description = "Лучшие скидки на оригинальную продукцию Victoria's Secret и Bath & Body Works: парфюмы, лосьоны, бельё в Молдове.";
+              title = "Скидки Victoria's Secret и Bath & Body Works | Secret Room Молдова";
+              description = "Оригинальная продукция Victoria's Secret и Bath & Body Works по сниженным ценам. Парфюмы, лосьоны, бельё, свечи — количество ограничено.";
             }
             keywords = "reduceri, скидки, sale, oferte, victoria secret reduceri, bath body works reduceri, moldova";
             break;
