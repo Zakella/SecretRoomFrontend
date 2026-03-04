@@ -2,10 +2,17 @@
   <h1 class="visually-hidden">
     @if (brandAlias() || brandName()) {
       {{ brandAlias() || brandName() }}
-    } @else if (categoryName()) {
-      {{ categoryName() }}
+    } @else if (localizedCategoryName()) {
+      {{ localizedCategoryName() }} Victoria's Secret
     } @else {
-      Catalog
+      @switch (category()) {
+        @case ('vs') { Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice }
+        @case ('bb') { Bath & Body Works Moldova — Lumânări, Loțiuni, Cosmetice }
+        @case ('bestsellers') { Bestsellere Victoria's Secret și Bath & Body Works }
+        @case ('new-arrivals') { Noutăți Victoria's Secret și Bath & Body Works }
+        @case ('sales') { Reduceri Victoria's Secret și Bath & Body Works }
+        @default { Catalog }
+      }
     }
     — Secret Room Moldova
   </h1>
@@ -291,6 +298,107 @@
         <p>
           Заказывайте продукцию <strong>{{ brandAlias() || brandName() }}</strong> онлайн с быстрой доставкой по Кишинёву и всей стране.
           Мы гарантируем подлинность каждого продукта в нашем ассортименте.
+        </p>
+      }
+    </div>
+  } @else if (category() === 'bestsellers') {
+    <div class="seo-text-block">
+      @if (activeLang() === 'ro') {
+        <h2>Cele mai vândute produse în Moldova</h2>
+        <p>
+          Descoperă cele mai populare produse de la <strong>Victoria's Secret</strong> și <strong>Bath & Body Works</strong>,
+          alese de clienții noștri din Moldova. De la parfumuri și loțiuni bestseller până la lenjerie intimă și lumânări parfumate
+          — aici găsești topul preferințelor.
+        </p>
+        <p>
+          Toate produsele sunt 100% originale, importate direct din SUA.
+          Comandă online cu livrare rapidă în Chișinău și pe tot teritoriul Moldovei.
+        </p>
+      } @else {
+        <h2>Самые популярные товары в Молдове</h2>
+        <p>
+          Откройте самые популярные товары от <strong>Victoria's Secret</strong> и <strong>Bath & Body Works</strong>,
+          которые выбирают наши клиенты в Молдове. От парфюмов и лосьонов-бестселлеров до нижнего белья и ароматических свечей
+          — здесь собраны фавориты покупателей.
+        </p>
+        <p>
+          Все товары 100% оригинальные, импортированные напрямую из США.
+          Заказывайте онлайн с быстрой доставкой по Кишинёву и всей Молдове.
+        </p>
+      }
+    </div>
+  } @else if (category() === 'new-arrivals') {
+    <div class="seo-text-block">
+      @if (activeLang() === 'ro') {
+        <h2>Noutăți Victoria's Secret și Bath & Body Works</h2>
+        <p>
+          Fii prima care descoperă ultimele lansări de la <strong>Victoria's Secret</strong> și <strong>Bath & Body Works</strong>!
+          Colecția noastră de noutăți include cele mai recente parfumuri, loțiuni, lenjerie intimă și produse de îngrijire
+          disponibile acum în Moldova.
+        </p>
+        <p>
+          Produse noi adăugate regulat, importate direct din SUA.
+          Comandă online cu livrare rapidă în Chișinău.
+        </p>
+      } @else {
+        <h2>Новинки Victoria's Secret и Bath & Body Works</h2>
+        <p>
+          Будьте первой, кто откроет последние новинки от <strong>Victoria's Secret</strong> и <strong>Bath & Body Works</strong>!
+          Наша коллекция новинок включает свежие парфюмы, лосьоны, нижнее бельё и средства по уходу,
+          доступные в Молдове.
+        </p>
+        <p>
+          Новые товары добавляются регулярно, импорт напрямую из США.
+          Заказывайте онлайн с быстрой доставкой по Кишинёву.
+        </p>
+      }
+    </div>
+  } @else if (category() === 'sales') {
+    <div class="seo-text-block">
+      @if (activeLang() === 'ro') {
+        <h2>Reduceri la produse Victoria's Secret și Bath & Body Works</h2>
+        <p>
+          Profită de <strong>cele mai bune oferte</strong> la produse originale Victoria's Secret și Bath & Body Works în Moldova.
+          Reduceri la parfumuri, loțiuni, spray-uri de corp, lenjerie intimă și lumânări parfumate.
+        </p>
+        <p>
+          Toate produsele la preț redus sunt 100% originale. Stocuri limitate — comandă acum cu livrare rapidă în Chișinău și toată Moldova.
+        </p>
+      } @else {
+        <h2>Скидки на продукцию Victoria's Secret и Bath & Body Works</h2>
+        <p>
+          Воспользуйтесь <strong>лучшими предложениями</strong> на оригинальную продукцию Victoria's Secret и Bath & Body Works в Молдове.
+          Скидки на парфюмы, лосьоны, спреи для тела, нижнее бельё и ароматические свечи.
+        </p>
+        <p>
+          Все товары со скидкой — 100% оригинал. Ограниченные запасы — закажите сейчас с быстрой доставкой по Кишинёву и всей Молдове.
+        </p>
+      }
+    </div>
+  } @else if (localizedCategoryName()) {
+    <!-- Dynamic Category SEO Text -->
+    <div class="seo-text-block">
+      @if (activeLang() === 'ro') {
+        <h2>{{ localizedCategoryName() }} originale în Moldova</h2>
+        <p>
+          Descoperă colecția de <strong>{{ localizedCategoryName() }}</strong> originale la Secret Room — magazinul autorizat
+          de produse Victoria's Secret și Bath & Body Works în Moldova.
+          Oferim doar produse autentice importate direct din SUA, cu livrare rapidă în Chișinău și pe tot teritoriul țării.
+        </p>
+        <p>
+          Alege din gama noastră variată de <strong>{{ localizedCategoryName()!.toLowerCase() }}</strong> la prețuri competitive.
+          Fiecare produs vine cu garanția autenticității și consultanță profesionistă în alegerea produsului potrivit.
+        </p>
+      } @else {
+        <h2>Оригинальные {{ localizedCategoryName() }} в Молдове</h2>
+        <p>
+          Откройте коллекцию оригинальных <strong>{{ localizedCategoryName()!.toLowerCase() }}</strong> в Secret Room — авторизованном
+          магазине продукции Victoria's Secret и Bath & Body Works в Молдове.
+          Только подлинные товары, импортированные напрямую из США, с быстрой доставкой по Кишинёву и всей стране.
+        </p>
+        <p>
+          Выбирайте из нашего ассортимента <strong>{{ localizedCategoryName()!.toLowerCase() }}</strong> по конкурентным ценам.
+          Каждый товар сопровождается гарантией подлинности и профессиональной консультацией.
         </p>
       }
     </div>

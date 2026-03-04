@@ -6,12 +6,14 @@ import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, finalize, map, switchMap} from 'rxjs';
+import {catchError, finalize, map, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
+import {Slugify} from '../../../@core/services/slugify';
+import {Category} from '../../../entities/category';
 import {of} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
@@ -41,13 +43,15 @@ export class Catalog implements OnInit {
   private categoryService = inject(CategoryService);
   private metaService = inject(MetaService);
   private langService = inject(Language);
+  private slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage;
   private destroyRef = inject(DestroyRef);
 
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
   protected brandAlias = signal<string | null>(null);
-  protected categoryName = signal<string | null>(null); // New signal for display name
+  protected categoryName = signal<string | null>(null);
+  protected categoryData = signal<Category | null>(null);
   protected products = signal<Product[]>([]);
   protected isLoading = signal(false);
   protected allLoaded = signal(false);
@@ -83,6 +87,12 @@ export class Catalog implements OnInit {
     return count;
   });
 
+  protected localizedCategoryName = computed(() => {
+    const cat = this.categoryData();
+    if (!cat) return this.categoryName();
+    return (this.activeLang() === 'ro' ? cat.nameRo : cat.nameRu) || cat.name;
+  });
+
   protected hasFilters = computed(() => {
     return this.availableBrands().length > 1 || this.availableFilters().length > 0;
   });
@@ -98,10 +108,11 @@ export class Catalog implements OnInit {
       const brand = this.brandName();
       const alias = this.brandAlias();
       const catName = this.categoryName();
+      const catData = this.categoryData();
       const lang = this.langService.currentLanguage();
 
       if (cat || brand) {
-        this.updateMeta(cat, brand, alias, catName, lang);
+        this.updateMeta(cat, brand, alias, catName, catData, lang);
       }
     });
   }
@@ -114,7 +125,7 @@ export class Catalog implements OnInit {
         // Hero route: /catalog/hero/:heroId
         if (heroId) {
           this.currentHeroId = +heroId;
-          return of({ tag: 'hero', brandName: null, brandAlias: null, categoryId: null, categoryName: null });
+          return of({ tag: 'hero', brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
         }
 
         if (slug) {
@@ -126,7 +137,8 @@ export class Catalog implements OnInit {
                 brandName: original?.brand ?? slug,
                 brandAlias: original?.brandAlias ?? original?.brand ?? slug,
                 categoryId: null,
-                categoryName: null
+                categoryName: null,
+                categoryObj: null as Category | null
               };
             })
           );
@@ -134,7 +146,7 @@ export class Catalog implements OnInit {
 
         const staticCategories = ['vs', 'bb', 'bestsellers', 'new-arrivals', 'sales'];
         if (tag && staticCategories.includes(tag)) {
-          return of({ tag: tag, brandName: null, brandAlias: null, categoryId: null, categoryName: null });
+          return of({ tag: tag, brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
         }
 
         if (tag) {
@@ -144,23 +156,25 @@ export class Catalog implements OnInit {
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,
-              categoryName: cat ? cat.name : null
+              categoryName: cat ? cat.name : null,
+              categoryObj: cat
             }))
           );
         }
 
-        return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null });
+        return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
       })
-    ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName }) => {
+    ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName, categoryObj }) => {
       this.brandName.set(brandName);
       this.brandAlias.set(brandAlias);
       this.categoryName.set(categoryName);
+      this.categoryData.set(categoryObj ?? null);
       this.currentCategoryId = categoryId;
       this.setCategory(tag!);
     });
   }
 
-  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, lang: string) {
+  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string) {
     let title = 'Catalog | Secret Room';
     let description = 'Catalog de produse Secret Room';
     let keywords = 'cosmetice, lenjerie, moldova, chisinau';
@@ -170,42 +184,82 @@ export class Catalog implements OnInit {
 
     if (displayBrand) {
       if (isRo) {
-        title = `${displayBrand} Moldova - Lenjerie și Cosmetice Originale | Secret Room`;
-        description = `Descoperă colecția exclusivă ${displayBrand} la Secret Room. Suntem destinația ta de încredere pentru produse originale ${displayBrand} în Moldova.`;
+        title = `${displayBrand} Moldova — Lenjerie și Cosmetice Originale | Secret Room`;
+        description = `Cumpără produse originale ${displayBrand} în Moldova: lenjerie intimă, parfumuri, loțiuni de corp, cosmetice. Livrare rapidă în Chișinău.`;
       } else {
-        title = `${displayBrand} Молдова - Оригинальное белье и косметика | Secret Room`;
-        description = `Откройте для себя эксклюзивную коллекцию ${displayBrand} в Secret Room. Мы — ваш надежный источник оригинальной продукции ${displayBrand} в Молдове.`;
+        title = `${displayBrand} Молдова — Оригинальное бельё и косметика | Secret Room`;
+        description = `Купить оригинальную продукцию ${displayBrand} в Молдове: нижнее бельё, парфюмы, лосьоны для тела, косметику. Доставка по Кишинёву.`;
       }
-      keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, ${displayBrand} online`;
+      keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, купить ${displayBrand} молдова, ${displayBrand} кишинев`;
     } else if (category) {
-      // Use real category name if available
-      if (catName) {
-        title = isRo
-          ? `${catName} - Cumpără Online în Moldova | Secret Room`
-          : `${catName} - Купить Онлайн в Молдове | Secret Room`;
-        description = isRo
-          ? `Comandă ${catName} la prețuri avantajoase. Livrare rapidă în Chișinău și toată țara.`
-          : `Заказывайте ${catName} по выгодным ценам. Быстрая доставка по Кишиневу и всей стране.`;
+      const localizedName = catData
+        ? (isRo ? catData.nameRo : catData.nameRu) || catData.name
+        : catName;
+
+      if (localizedName) {
+        // Dynamic category with known name
+        const nameLower = localizedName.toLowerCase();
+        if (isRo) {
+          title = `${localizedName} Victoria's Secret și Bath & Body Works — Cumpără în Moldova | Secret Room`;
+          description = `Comandă ${nameLower} originale de la Victoria's Secret și Bath & Body Works în Moldova. Prețuri avantajoase, livrare rapidă în Chișinău și toată țara.`;
+        } else {
+          title = `${localizedName} Victoria's Secret и Bath & Body Works — Купить в Молдове | Secret Room`;
+          description = `Заказывайте оригинальные ${nameLower} от Victoria's Secret и Bath & Body Works в Молдове. Выгодные цены, быстрая доставка по Кишинёву и всей стране.`;
+        }
+        const nameRo = catData?.nameRo || localizedName;
+        const nameRu = catData?.nameRu || localizedName;
+        keywords = `${nameRo}, ${nameRu}, victoria secret ${nameRo.toLowerCase()}, ${nameRo.toLowerCase()} moldova, ${nameRo.toLowerCase()} chisinau, купить ${nameRu.toLowerCase()} молдова, ${nameRu.toLowerCase()} кишинев`;
       } else {
         switch (category) {
           case 'vs':
-            title = isRo
-              ? "Produse originale de la Victoria's Secret Moldova - Lenjerie și Cosmetice Originale | Secret Room"
-              : "Оригинальные продукты от Victoria's Secret Молдова - Оригинальное белье и косметика | Secret Room";
+            if (isRo) {
+              title = "Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice Originale | Secret Room";
+              description = "Cumpără produse originale Victoria's Secret în Moldova: lenjerie intimă, sutiene, chiloți, parfumuri, loțiuni de corp. Livrare rapidă în Chișinău.";
+            } else {
+              title = "Victoria's Secret Молдова — Бельё, парфюмы, косметика | Secret Room";
+              description = "Купить оригинальную продукцию Victoria's Secret в Молдове: нижнее бельё, бюстгальтеры, трусики, парфюмы, лосьоны. Доставка по Кишинёву.";
+            }
+            keywords = "victoria secret, victoria secret moldova, lenjerie victoria secret, sutiene victoria secret, parfum victoria secret, victoria secret chisinau, белье victoria secret, бюстгальтеры victoria secret, парфюм victoria secret молдова";
             break;
           case 'bb':
-            title = isRo
-              ? "Bath & Body Works Moldova - Arome și Îngrijire Corp | Secret Room"
-              : "Bath & Body Works Молдова - Ароматы и уход за телом | Secret Room";
+            if (isRo) {
+              title = "Bath & Body Works Moldova — Lumânări, Loțiuni, Geluri de Duș | Secret Room";
+              description = "Produse originale Bath & Body Works în Moldova: lumânări parfumate, loțiuni de corp, geluri de duș, spray-uri, săpunuri. Livrare rapidă în Chișinău.";
+            } else {
+              title = "Bath & Body Works Молдова — Свечи, лосьоны, гели для душа | Secret Room";
+              description = "Оригинальная продукция Bath & Body Works в Молдове: ароматические свечи, лосьоны для тела, гели для душа, спреи. Доставка по Кишинёву.";
+            }
+            keywords = "bath body works, bath body works moldova, lumanari bath body works, lotiuni bath body works, bath body works chisinau, bath body works молдова, свечи bath body works";
             break;
           case 'bestsellers':
-            title = isRo ? "Cele mai vândute produse | Secret Room" : "Хиты продаж | Secret Room";
+            if (isRo) {
+              title = "Bestsellere Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
+              description = "Top produse Victoria's Secret și Bath & Body Works — cele mai vândute parfumuri, loțiuni, lenjerie intimă și lumânări. Comandă online în Moldova.";
+            } else {
+              title = "Хиты продаж Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
+              description = "Самые популярные товары Victoria's Secret и Bath & Body Works — парфюмы, лосьоны, нижнее бельё и свечи. Заказывайте онлайн в Молдове.";
+            }
+            keywords = "bestsellers, cele mai vandute, хиты продаж, victoria secret популярные, bath body works bestsellers, moldova";
             break;
           case 'new-arrivals':
-            title = isRo ? "Noutăți - Produse Noi | Secret Room" : "Новинки - Новые поступления | Secret Room";
+            if (isRo) {
+              title = "Noutăți Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
+              description = "Ultimele noutăți de la Victoria's Secret și Bath & Body Works: parfumuri, loțiuni, lenjerie și cosmetice noi, disponibile în Moldova.";
+            } else {
+              title = "Новинки Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
+              description = "Последние новинки от Victoria's Secret и Bath & Body Works: парфюмы, лосьоны, бельё и косметика в Молдове.";
+            }
+            keywords = "noutati, новинки, produse noi, new arrivals, victoria secret nou, bath body works nou, moldova";
             break;
           case 'sales':
-            title = isRo ? "Reduceri și Oferte Speciale | Secret Room" : "Скидки и Специальные Предложения | Secret Room";
+            if (isRo) {
+              title = "Reduceri Victoria's Secret și Bath & Body Works în Moldova | Secret Room";
+              description = "Cele mai bune reduceri la produse originale Victoria's Secret și Bath & Body Works: parfumuri, loțiuni, lenjerie în Moldova. Oferte speciale!";
+            } else {
+              title = "Скидки Victoria's Secret и Bath & Body Works в Молдове | Secret Room";
+              description = "Лучшие скидки на оригинальную продукцию Victoria's Secret и Bath & Body Works: парфюмы, лосьоны, бельё в Молдове.";
+            }
+            keywords = "reduceri, скидки, sale, oferte, victoria secret reduceri, bath body works reduceri, moldova";
             break;
         }
       }
@@ -222,6 +276,54 @@ export class Catalog implements OnInit {
       "name": title,
       "description": description
     }, 'collection');
+
+    this.updateBreadcrumbs(category, brand, alias, catData, lang);
+  }
+
+  private updateBreadcrumbs(category: string | null, brand: string | null, alias: string | null, catData: Category | null, lang: string) {
+    const isRo = lang === 'ro';
+    const breadcrumbs: { label: string, url: string }[] = [
+      { label: 'Secret Room', url: `/${lang}` }
+    ];
+
+    if (brand) {
+      breadcrumbs.push({ label: alias || brand, url: `/${lang}/catalog/brand/${this.brandService.toSlug(brand)}` });
+      this.metaService.setBreadcrumbJsonLd(breadcrumbs);
+    } else if (catData) {
+      if (catData.parentCategoryId) {
+        this.categoryService.getCategories().pipe(take(1)).subscribe(categories => {
+          const flat = categories.flatMap(c => [c, ...(c.children || [])]);
+          const parent = flat.find(c => c.id === catData.parentCategoryId);
+          if (parent) {
+            const parentName = (isRo ? parent.nameRo : parent.nameRu) || parent.name;
+            const parentSlug = parent.slug || this.slugify.transform(parent.name);
+            breadcrumbs.push({ label: parentName, url: `/${lang}/catalog/${parentSlug}` });
+          }
+          const name = (isRo ? catData.nameRo : catData.nameRu) || catData.name;
+          const slug = catData.slug || this.slugify.transform(catData.name);
+          breadcrumbs.push({ label: name, url: `/${lang}/catalog/${slug}` });
+          this.metaService.setBreadcrumbJsonLd(breadcrumbs);
+        });
+      } else {
+        const name = (isRo ? catData.nameRo : catData.nameRu) || catData.name;
+        const slug = catData.slug || this.slugify.transform(catData.name);
+        breadcrumbs.push({ label: name, url: `/${lang}/catalog/${slug}` });
+        this.metaService.setBreadcrumbJsonLd(breadcrumbs);
+      }
+    } else if (category) {
+      const staticNames: Record<string, { ro: string, ru: string }> = {
+        'vs': { ro: "Victoria's Secret", ru: "Victoria's Secret" },
+        'bb': { ro: 'Bath & Body Works', ru: 'Bath & Body Works' },
+        'bestsellers': { ro: 'Bestsellere', ru: 'Хиты продаж' },
+        'new-arrivals': { ro: 'Noutăți', ru: 'Новинки' },
+        'sales': { ro: 'Reduceri', ru: 'Скидки' },
+      };
+      const name = staticNames[category];
+      if (name) {
+        breadcrumbs.push({ label: isRo ? name.ro : name.ru, url: `/${lang}/catalog/${category}` });
+      }
+      this.metaService.setBreadcrumbJsonLd(breadcrumbs);
+    }
   }
 
   private setCategory(tag: string) {
