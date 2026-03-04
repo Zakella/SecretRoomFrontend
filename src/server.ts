@@ -25,6 +25,17 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
+ * Block search engine indexing on non-production domains (e.g. sr.solterprise.com)
+ */
+app.use((req, res, next) => {
+  const host = req.hostname;
+  if (host && !host.includes('secretroom.md')) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  }
+  next();
+});
+
+/**
  * Remove trailing slashes (301 redirect) to avoid duplicate URLs.
  */
 app.use((req, res, next) => {
@@ -174,6 +185,11 @@ app.get('/sitemap.xml', async (req, res) => {
 });
 
 app.get('/robots.txt', (req, res) => {
+  const host = req.hostname;
+  if (host && !host.includes('secretroom.md')) {
+    res.type('text/plain').send('User-agent: *\nDisallow: /\n');
+    return;
+  }
   res.sendFile(join(browserDistFolder, 'robots.txt'));
 });
 
