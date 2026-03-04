@@ -76,11 +76,9 @@ export class Categories implements OnInit {
   }
 
   goToCategory(category: any) {
-    // Use slug if available (generated from name), otherwise fallback to ID
-    const name = category.categoryName || '';
+    const name = (this.currentLanguage() === 'ro' ? category.nameRo : category.nameRu) || category.name || '';
     const slug = this.slugify.transform(name);
     const identifier = slug || category.categoryId;
-
     this.router.navigate(['/', this.currentLanguage(), 'catalog', identifier]);
   }
 

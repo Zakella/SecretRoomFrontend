@@ -178,6 +178,35 @@ app.get('/robots.txt', (req, res) => {
 });
 
 /**
+ * Permanent redirect: root → /ro (instead of Angular's 302)
+ */
+app.get('/', (req, res) => {
+  res.redirect(301, '/ro');
+});
+
+/**
+ * 301 redirects from old product URLs (legacy site) to new format.
+ * Old: /vs/product-view/ID or /bb/product-view/ID
+ * New: /ro/product/ID/slug
+ */
+app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
+  const appId = req.params['id'];
+  const brand = req.path.startsWith('/vs') ? 'vs' : 'bb';
+
+  try {
+    const apiRes = await fetch(`${API_BASE}products/findProduct/${appId}`);
+    if (apiRes.ok) {
+      const product: any = await apiRes.json();
+      const slug = slugify(product.name || '');
+      res.redirect(301, `/ro/product/${appId}/${slug}`);
+      return;
+    }
+  } catch (_) { /* fallback below */ }
+
+  res.redirect(301, `/ro/catalog/${brand}`);
+});
+
+/**
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
