@@ -119,12 +119,14 @@
               }
             </div>
 
-            <a class="mega-dropdown__all"
-               [routerLink]="['/', activeLang(), 'catalog', activeCategory()?.slug || slugify.transform(activeCategory()?.name || '') || activeCategory()?.id]"
-               (click)="closeDropdown()">
-              {{ 'ViewAll' | transloco }}
-              <i class="ri-arrow-right-line"></i>
-            </a>
+            @if (activeCategory()) {
+              <a class="mega-dropdown__all"
+                 [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.slug || slugify.transform(activeCategory()!.name) || activeCategory()!.id]"
+                 (click)="closeDropdown()">
+                {{ 'ViewAll' | transloco }}
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            }
           </div>
         </div>
       }
