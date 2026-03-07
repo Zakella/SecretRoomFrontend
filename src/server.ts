@@ -265,6 +265,14 @@ app.get(['/vs/category/:id', '/bb/category/:id'], (req, res) => {
 });
 
 /**
+ * 301 redirects for legacy brand root and "all products" pages.
+ */
+app.get('/vs', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
+app.get('/bb', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
+app.get('/vs/all-vs-products', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
+app.get('/bb/all-bb-products', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
+
+/**
  * 301 redirects for legacy pages without language prefix.
  */
 app.get('/contacts', (_req, res) => res.redirect(301, '/ro/contacts'));
