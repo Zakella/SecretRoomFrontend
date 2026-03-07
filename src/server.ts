@@ -255,6 +255,24 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
 });
 
 /**
+ * 301 redirects for legacy category URLs.
+ * Old: /vs/category/ID or /bb/category/ID
+ * New: /ro/catalog/vs or /ro/catalog/bb (brand page)
+ */
+app.get(['/vs/category/:id', '/bb/category/:id'], (req, res) => {
+  const brand = req.path.startsWith('/vs') ? 'vs' : 'bb';
+  res.redirect(301, `/ro/catalog/${brand}`);
+});
+
+/**
+ * 301 redirects for legacy pages without language prefix.
+ */
+app.get('/contacts', (_req, res) => res.redirect(301, '/ro/contacts'));
+app.get('/about-us', (_req, res) => res.redirect(301, '/ro/about-the-secret-room'));
+app.get('/shipping', (_req, res) => res.redirect(301, '/ro/shipping'));
+app.get('/delivery-terms', (_req, res) => res.redirect(301, '/ro/delivery-terms'));
+
+/**
  * 301 redirect: wrong-language category slug → correct slug.
  * e.g. /ro/catalog/trusy → /ro/catalog/chiloti
  */
