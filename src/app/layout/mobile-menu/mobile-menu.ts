@@ -133,7 +133,7 @@ export class MobileMenu  implements OnInit{
   }
 
   goToCategory(category: Category) {
-    const slug = this.slugify.transform(category.name);
+    const slug = this.slugify.categorySlug(category, this.activeLang());
     const identifier = slug || category.id;
     this.router.navigate(['/', this.activeLang(), 'catalog', identifier]);
     this.visible = false;

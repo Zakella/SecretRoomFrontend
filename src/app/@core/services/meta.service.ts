@@ -14,6 +14,7 @@ export class MetaService {
   private router = inject(Router);
   private document = inject(DOCUMENT);
   private readonly siteUrl = environment.frontend;
+  private alternateOverride = false;
 
   constructor() {
     this.router.events.pipe(
@@ -96,8 +97,18 @@ export class MetaService {
     head.appendChild(linkDefault);
   }
 
+  setAlternateOverride(roUrl: string, ruUrl: string) {
+    this.alternateOverride = true;
+    this.updateAlternateTags(roUrl, ruUrl);
+  }
+
+  clearAlternateOverride() {
+    this.alternateOverride = false;
+  }
+
   /** Auto-generate hreflang alternates from current URL by swapping the lang segment */
   private autoUpdateAlternateTags() {
+    if (this.alternateOverride) return;
     const path = this.router.url.split('?')[0].split('#')[0];
     const segments = path.split('/');
     // URL structure: /:lang/... (segments[0] is empty, segments[1] is lang)

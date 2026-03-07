@@ -35,6 +35,11 @@ export class Slugify {
       .replace(/-+$/, '');         // Trim - from end of text
   }
 
+  categorySlug(cat: { name: string; nameRo: string; nameRu: string }, lang: string): string {
+    const name = lang === 'ro' ? cat.nameRo : cat.nameRu;
+    return this.transform(name || cat.name);
+  }
+
   productUrl(lang: string, id: string, name: string): string[] {
     return ['/', lang, 'product', id, this.transform(name)];
   }

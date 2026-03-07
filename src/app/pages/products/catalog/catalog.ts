@@ -1,10 +1,10 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, finalize, map, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
@@ -35,9 +35,10 @@ import {DrawerModule} from 'primeng/drawer';
   styleUrl: './catalog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Catalog implements OnInit {
+export class Catalog implements OnInit, OnDestroy {
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private heroService = inject(HeroService);
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
@@ -165,6 +166,16 @@ export class Catalog implements OnInit {
         return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
       })
     ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName, categoryObj }) => {
+      // Redirect to correct language slug if needed
+      if (categoryObj && tag) {
+        const lang = this.langService.currentLanguage();
+        const expectedSlug = this.slugify.categorySlug(categoryObj, lang);
+        if (expectedSlug && tag !== expectedSlug) {
+          this.router.navigate(['/', lang, 'catalog', expectedSlug], { replaceUrl: true });
+          return;
+        }
+      }
+
       this.brandName.set(brandName);
       this.brandAlias.set(brandAlias);
       this.categoryName.set(categoryName);
@@ -172,6 +183,10 @@ export class Catalog implements OnInit {
       this.currentCategoryId = categoryId;
       this.setCategory(tag!);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.metaService.clearAlternateOverride();
   }
 
   private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string) {
@@ -270,6 +285,17 @@ export class Catalog implements OnInit {
     this.metaService.updateKeywords(keywords);
     this.metaService.updateCanonicalUrl();
 
+    if (catData) {
+      const roSlug = this.slugify.categorySlug(catData, 'ro');
+      const ruSlug = this.slugify.categorySlug(catData, 'ru');
+      this.metaService.setAlternateOverride(
+        `https://secretroom.md/ro/catalog/${roSlug}`,
+        `https://secretroom.md/ru/catalog/${ruSlug}`
+      );
+    } else {
+      this.metaService.clearAlternateOverride();
+    }
+
     this.metaService.setJsonLd({
       "@context": "https://schema.org",
       "@type": "CollectionPage",
@@ -296,17 +322,17 @@ export class Catalog implements OnInit {
           const parent = flat.find(c => c.id === catData.parentCategoryId);
           if (parent) {
             const parentName = (isRo ? parent.nameRo : parent.nameRu) || parent.name;
-            const parentSlug = parent.slug || this.slugify.transform(parent.name);
+            const parentSlug = this.slugify.categorySlug(parent, lang);
             breadcrumbs.push({ label: parentName, url: `/${lang}/catalog/${parentSlug}` });
           }
           const name = (isRo ? catData.nameRo : catData.nameRu) || catData.name;
-          const slug = catData.slug || this.slugify.transform(catData.name);
+          const slug = this.slugify.categorySlug(catData, lang);
           breadcrumbs.push({ label: name, url: `/${lang}/catalog/${slug}` });
           this.metaService.setBreadcrumbJsonLd(breadcrumbs);
         });
       } else {
         const name = (isRo ? catData.nameRo : catData.nameRu) || catData.name;
-        const slug = catData.slug || this.slugify.transform(catData.name);
+        const slug = this.slugify.categorySlug(catData, lang);
         breadcrumbs.push({ label: name, url: `/${lang}/catalog/${slug}` });
         this.metaService.setBreadcrumbJsonLd(breadcrumbs);
       }

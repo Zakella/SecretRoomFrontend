@@ -92,7 +92,7 @@
             <a class="category-text"
                [class.active]="activeCategory()?.id === category.id"
                (mouseenter)="showDropdown(category)"
-               [routerLink]="['/', activeLang(), 'catalog', category.slug || slugify.transform(category.name) || category.id]"
+               [routerLink]="['/', activeLang(), 'catalog', slugify.categorySlug(category, activeLang()) || category.id]"
                (click)="closeDropdown()">
               {{ activeLang() === 'ro' ? category.nameRo : category.nameRu }}
             </a>
@@ -112,7 +112,7 @@
               @for (sub of activeCategory()?.children!; track sub.id; let i = $index) {
                 <a class="mega-dropdown__item"
                    [style.animation-delay]="i * 0.05 + 's'"
-                   [routerLink]="['/', activeLang(), 'catalog', sub.slug || slugify.transform(sub.name) || sub.id]"
+                   [routerLink]="['/', activeLang(), 'catalog', slugify.categorySlug(sub, activeLang()) || sub.id]"
                    (click)="closeDropdown()">
                   {{ activeLang() === 'ro' ? sub.nameRo : sub.nameRu }}
                 </a>
@@ -121,7 +121,7 @@
 
             @if (activeCategory()) {
               <a class="mega-dropdown__all"
-                 [routerLink]="['/', activeLang(), 'catalog', activeCategory()!.slug || slugify.transform(activeCategory()!.name) || activeCategory()!.id]"
+                 [routerLink]="['/', activeLang(), 'catalog', slugify.categorySlug(activeCategory()!, activeLang()) || activeCategory()!.id]"
                  (click)="closeDropdown()">
                 {{ 'ViewAll' | transloco }}
                 <i class="ri-arrow-right-line"></i>

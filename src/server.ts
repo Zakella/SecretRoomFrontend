@@ -82,8 +82,33 @@ function brandSlug(brand: string): string {
   return brand.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[\s_]+/g, '-').toLowerCase();
 }
 
+function categorySlug(cat: any, lang: string): string {
+  const name = lang === 'ro' ? cat.nameRo : cat.nameRu;
+  return slugify(name || cat.name || '');
+}
+
 function escapeXml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+// Category cache for 301 redirect middleware
+let redirectCategoriesCache: { data: any[]; ts: number } | null = null;
+const REDIRECT_CATEGORIES_TTL = 3600000; // 1 hour
+
+async function getCachedCategories(): Promise<any[]> {
+  if (redirectCategoriesCache && Date.now() - redirectCategoriesCache.ts < REDIRECT_CATEGORIES_TTL) {
+    return redirectCategoriesCache.data;
+  }
+  try {
+    const res = await fetch(`${API_BASE}web-categories/hierarchy/active`);
+    if (!res.ok) return redirectCategoriesCache?.data || [];
+    const categories: any[] = await res.json();
+    const flat = categories.flatMap((c: any) => [c, ...(c.children || [])]);
+    redirectCategoriesCache = { data: flat, ts: Date.now() };
+    return flat;
+  } catch {
+    return redirectCategoriesCache?.data || [];
+  }
 }
 
 async function generateSitemap(): Promise<string> {
@@ -135,15 +160,22 @@ async function generateSitemap(): Promise<string> {
     console.error('Sitemap: failed to fetch products', e);
   }
 
-  // Dynamic: categories
+  // Dynamic: categories (language-aware slugs)
   try {
     const categoriesRes = await fetch(`${API_BASE}web-categories/hierarchy/active`);
     if (categoriesRes.ok) {
       const categories: any[] = await categoriesRes.json();
       const flatCategories = categories.flatMap((cat: any) => [cat, ...(cat.children || [])]);
       for (const cat of flatCategories) {
-        const catSlug = cat.slug || slugify(cat.name || '');
-        addUrl(`/catalog/${catSlug}`, 'weekly', '0.7');
+        const roSlug = categorySlug(cat, 'ro');
+        const ruSlug = categorySlug(cat, 'ru');
+        const roLoc = `${SITE_URL}/ro/catalog/${roSlug}`;
+        const ruLoc = `${SITE_URL}/ru/catalog/${ruSlug}`;
+        const alternates = `<xhtml:link rel="alternate" hreflang="ro" href="${escapeXml(roLoc)}" />`
+          + `<xhtml:link rel="alternate" hreflang="ru" href="${escapeXml(ruLoc)}" />`
+          + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(roLoc)}" />`;
+        urls.push(`<url><loc>${escapeXml(roLoc)}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
+        urls.push(`<url><loc>${escapeXml(ruLoc)}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
       }
     }
   } catch (e) {
@@ -220,6 +252,37 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
   } catch (_) { /* fallback below */ }
 
   res.redirect(301, `/ro/catalog/${brand}`);
+});
+
+/**
+ * 301 redirect: wrong-language category slug → correct slug.
+ * e.g. /ro/catalog/trusy → /ro/catalog/chiloti
+ */
+const STATIC_CATALOG_TAGS = new Set(['vs', 'bb', 'bestsellers', 'new-arrivals', 'sales']);
+
+app.get('/:lang/catalog/:slug', async (req, res, next) => {
+  const { lang, slug: urlSlug } = req.params;
+  if (!['ro', 'ru'].includes(lang) || STATIC_CATALOG_TAGS.has(urlSlug)) return next();
+
+  try {
+    const categories = await getCachedCategories();
+    if (!categories.length) return next();
+
+    const cat = categories.find((c: any) =>
+      c.slug === urlSlug
+      || slugify(c.name || '') === urlSlug
+      || slugify(c.nameRo || '') === urlSlug
+      || slugify(c.nameRu || '') === urlSlug
+    );
+    if (!cat) return next();
+
+    const expectedSlug = categorySlug(cat, lang);
+    if (expectedSlug && urlSlug !== expectedSlug) {
+      res.redirect(301, `/${lang}/catalog/${expectedSlug}`);
+      return;
+    }
+  } catch { /* fallback to Angular */ }
+  next();
 });
 
 /**
