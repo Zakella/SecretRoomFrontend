@@ -129,7 +129,7 @@ export class Checkout implements OnInit, OnDestroy {
   private loadCart(): void {
     this.cartItems = this.cartService.loadCartItemsFromStorage();
     if (this.cartItems.length === 0) {
-      this.router.navigate([this.activeLang(), 'catalog', 'all']);
+      this.router.navigate(['/', this.activeLang()]);
       return;
     }
     this.cartService.computeCartTotals();
@@ -163,7 +163,7 @@ export class Checkout implements OnInit, OnDestroy {
         });
 
         if (this.cartItems.length === 0) {
-          this.router.navigate([this.activeLang(), 'catalog', 'all']);
+          this.router.navigate(['/', this.activeLang()]);
         }
       }
     });
@@ -322,7 +322,7 @@ export class Checkout implements OnInit, OnDestroy {
     this.updateShippingCost();
     this.cdr.detectChanges();
     if (this.cartItems.length === 0) {
-      this.router.navigate([this.activeLang(), 'catalog', 'all']);
+      this.router.navigate(['/', this.activeLang()]);
     }
   }
 
