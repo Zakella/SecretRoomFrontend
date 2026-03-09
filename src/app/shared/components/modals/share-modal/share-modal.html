@@ -26,9 +26,9 @@
     </div>
 
     <div class="copy-section">
-      <label>{{ activeLang() === 'ro' ? 'Linkul produsului' : 'Ссылка на товар' }}</label>
+      <label for="share-url-input">{{ activeLang() === 'ro' ? 'Linkul produsului' : 'Ссылка на товар' }}</label>
       <div class="input-wrapper">
-        <input type="text" [value]="shareUrl" readonly>
+        <input id="share-url-input" type="text" [value]="shareUrl" readonly>
         <button class="copy-icon-btn" (click)="copyLink()" [pTooltip]="activeLang() === 'ro' ? 'Copiază' : 'Копировать'">
           <i class="ri-file-copy-line"></i>
         </button>

@@ -213,7 +213,6 @@ export class Catalog implements OnInit, OnDestroy {
 
       if (localizedName) {
         // Dynamic category with known name
-        const nameLower = localizedName.toLowerCase();
         if (isRo) {
           title = `${localizedName} Victoria's Secret și Bath & Body Works — Moldova | Secret Room`;
           description = `${localizedName} originale în Moldova. Victoria's Secret și Bath & Body Works — comandă online sau vizitează magazinele Secret Room din Chișinău.`;

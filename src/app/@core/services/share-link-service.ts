@@ -6,7 +6,7 @@ import {isPlatformBrowser} from '@angular/common';
 export class ShareLinkService {
   private notification = inject(MessageService);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
 
   public createShareableLink(): string {
     if (isPlatformBrowser(this.platformId)) {
@@ -71,13 +71,13 @@ export class ShareLinkService {
     try {
       document.execCommand('copy');
       this.onSuccess();
-    } catch (err) {
+    } catch {
       this.showError();
     }
     document.body.removeChild(textArea);
   }
 
-  private onSuccess(summary?:string) {
+  private onSuccess(_summary?:string) {
     this.notification.add({
       severity: 'secondary',
       summary: 'Скопировано',

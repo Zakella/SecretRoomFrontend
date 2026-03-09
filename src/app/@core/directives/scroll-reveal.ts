@@ -10,7 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[scrollReveal]',
+  selector: '[appScrollReveal]',
   standalone: true
 })
 export class ScrollReveal implements OnInit, OnDestroy {
@@ -18,7 +18,7 @@ export class ScrollReveal implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private observer: IntersectionObserver | null = null;
 
-  @Input() scrollReveal: 'fade-up' | 'fade-in' | 'fade-left' | 'fade-right' | 'zoom-in' = 'fade-up';
+  @Input() appScrollReveal: 'fade-up' | 'fade-in' | 'fade-left' | 'fade-right' | 'zoom-in' = 'fade-up';
   @Input() revealDelay: number = 0;
   @Input() revealThreshold: number = 0.15;
 
@@ -53,7 +53,7 @@ export class ScrollReveal implements OnInit, OnDestroy {
   }
 
   private setInitialTransform(element: HTMLElement): void {
-    switch (this.scrollReveal) {
+    switch (this.appScrollReveal) {
       case 'fade-up':
         element.style.transform = 'translateY(40px)';
         break;

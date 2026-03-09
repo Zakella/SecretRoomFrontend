@@ -12,7 +12,7 @@ export class ProductResolver implements Resolve<Product | null> {
   private router = inject(Router);
   private langService = inject(Language);
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Product | null> {
+  resolve(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Observable<Product | null> {
     const id = route.paramMap.get('id');
     if (!id) return of(null);
 

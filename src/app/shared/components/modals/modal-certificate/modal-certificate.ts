@@ -13,7 +13,7 @@ export class ModalCertificate implements OnInit, OnDestroy {
   hasShown = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {
     this.isBrowser.set(isPlatformBrowser(this.platformId))
   }
 

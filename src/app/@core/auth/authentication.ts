@@ -1,4 +1,4 @@
-import {inject, Injectable, signal} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {BehaviorSubject, Observable, Subscriber, tap} from 'rxjs';
 
@@ -51,7 +51,7 @@ export class Authentication {
   registration(user: User): Observable<UserDetails> {
     const url = environment.apiUrl  + 'v1/users';
     return this.http.post<UserDetails>(url, user).pipe(
-      tap((userDetails: UserDetails) => {
+      tap((_userDetails: UserDetails) => {
         this.loggedIn.next(true);
       })
     );

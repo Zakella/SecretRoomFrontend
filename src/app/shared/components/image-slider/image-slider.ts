@@ -199,7 +199,7 @@ export class ImageSlider implements AfterViewInit, OnDestroy {
   protected getOverlayPositionClass(image: CarouselImage): string {
     const vertical = this.getTitlePosition(image);
     const align = image.titleTextAlign || 'center';
-    let classes = '';
+    let classes: string;
     switch (vertical) {
       case 'top': classes = 'overlay-top'; break;
       case 'center': classes = 'overlay-center'; break;

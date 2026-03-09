@@ -43,7 +43,7 @@ export class ResetPasswordPage implements OnInit {
     }
   }
 
-  passwordsMatch(group: FormGroup): {[key: string]: boolean} | null {
+  passwordsMatch(group: FormGroup): Record<string, boolean> | null {
     const password = group.get('password')?.value;
     const confirm = group.get('passwordConfirmation')?.value;
     if (password && confirm && password !== confirm) {

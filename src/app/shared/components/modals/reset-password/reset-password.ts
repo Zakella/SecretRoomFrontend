@@ -15,6 +15,7 @@ import {Language} from '../../../../@core/services/language';
 })
 export class ResetPassword {
   isVisible = model<boolean>(true);
+  // eslint-disable-next-line @angular-eslint/no-output-native
   close = output<void>();
   form: FormGroup;
   submitting = signal(false);

@@ -18,7 +18,7 @@ export class ProductService {
 
 
   getAllProductsByBrand(brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('page', thePage.toString())
       .set('size', thePageSize.toString())
 
@@ -26,7 +26,7 @@ export class ProductService {
   }
 
   search(query: string, brand: string, thePage: number, thePageSize: number): Observable<GetResponse> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('name', query)
       .set('page', thePage.toString())
       .set('size', thePageSize.toString());

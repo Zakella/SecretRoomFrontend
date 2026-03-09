@@ -9,7 +9,7 @@ export class Slugify {
     if (!value) return '';
 
     // Transliterate common Romanian and Russian chars
-    const map: {[key: string]: string} = {
+    const map: Record<string, string> = {
       'ă': 'a', 'â': 'a', 'î': 'i', 'ș': 's', 'ț': 't',
       'Ă': 'A', 'Â': 'A', 'Î': 'I', 'Ș': 'S', 'Ț': 'T',
       'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
@@ -29,8 +29,8 @@ export class Slugify {
       .toLowerCase()
       .trim()
       .replace(/\s+/g, '-')        // Replace spaces with -
-      .replace(/[^\w\-]+/g, '')    // Remove all non-word chars
-      .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+      .replace(/[^\w-]+/g, '')     // Remove all non-word chars
+      .replace(/--+/g, '-')        // Replace multiple - with single -
       .replace(/^-+/, '')          // Trim - from start of text
       .replace(/-+$/, '');         // Trim - from end of text
   }

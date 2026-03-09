@@ -81,7 +81,7 @@ export class CartUi {
     let totalAmountValue: number = 0;
     let totalQuantityValue: number = 0;
 
-    for (let currentCartItem of this.cartItems.value) {
+    for (const currentCartItem of this.cartItems.value) {
       totalAmountValue += this.calculateCartItemAmount(currentCartItem);
       totalQuantityValue += currentCartItem.quantity;
       currentCartItem.amount = this.calculateCartItemAmount(currentCartItem);

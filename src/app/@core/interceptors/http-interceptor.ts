@@ -1,4 +1,4 @@
-import {HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Inject, Injectable, Optional, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs';
 import {isPlatformBrowser, isPlatformServer} from '@angular/common';
@@ -14,7 +14,7 @@ import {SSR_API_URL} from '../tokens/ssr-api-url.token';
 export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(PLATFORM_ID) private platformId: object,
     @Optional() @Inject(SSR_API_URL) private ssrApiUrl: string
   ) { }
 

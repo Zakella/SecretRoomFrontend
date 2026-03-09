@@ -8,7 +8,7 @@ export class FavoritesService {
   private ids = signal<Set<string>>(new Set());
   count = signal(0);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {
     if (isPlatformBrowser(this.platformId)) {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -16,7 +16,7 @@ export class FavoritesService {
           const arr = JSON.parse(stored) as string[];
           this.ids.set(new Set(arr));
           this.count.set(arr.length);
-        } catch {}
+        } catch { /* intentionally empty */ }
       }
     }
   }

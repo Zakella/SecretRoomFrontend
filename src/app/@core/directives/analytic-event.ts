@@ -2,7 +2,7 @@ import {Directive, HostListener, inject, Input} from '@angular/core';
 import {GoogleAnalytics} from '../services/google-analytics';
 
 @Directive({
-  selector: '[analyticEvent]'
+  selector: '[appAnalyticEvent]'
 })
 export class AnalyticEvent {
   @Input() gaEvent!: string;

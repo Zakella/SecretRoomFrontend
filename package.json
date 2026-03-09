@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "lint": "ng lint",
     "serve:ssr:secret-room": "node dist/secret-room/server/server.mjs"
   },
   "prettier": {
@@ -42,14 +43,23 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^21.3.0",
+    "@angular-eslint/eslint-plugin": "^21.3.0",
+    "@angular-eslint/eslint-plugin-template": "^21.3.0",
+    "@angular-eslint/template-parser": "^21.3.0",
     "@angular/build": "^20.1.1",
     "@angular/cli": "^20.1.1",
     "@angular/compiler-cli": "^20.1.0",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "angular-eslint": "^21.3.0",
     "autoprefixer": "^10.4.22",
+    "eslint": "^10.0.3",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -58,6 +68,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "typescript-eslint": "^8.56.1"
   }
 }

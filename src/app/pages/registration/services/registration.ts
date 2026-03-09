@@ -1,6 +1,6 @@
-import {computed, inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
+import {inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
-import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {Authentication} from '../../../@core/auth/authentication';
 import {Router} from '@angular/router';
 import {nameValidator, passwordValidator} from '../../../@core/validators/validators';
@@ -17,7 +17,7 @@ export class RegistrationService {
   private platformId = inject(PLATFORM_ID);
   userExists = signal<boolean>(false);
   registrationForm = this.fb.group({
-    email: ["", [Validators.required ,Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
+    email: ["", [Validators.required ,Validators.pattern(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)]],
     password: ["", passwordValidator],
     firstName: ["", nameValidator],
     lastName: ["", nameValidator],

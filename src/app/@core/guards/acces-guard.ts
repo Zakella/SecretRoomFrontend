@@ -16,11 +16,11 @@ export class AccessGuard implements CanActivate{
   private authService = inject(Authentication);
   private langService = inject(Language);
   private lang = this.langService.currentLanguage;
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
 
   canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    _route: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (!isPlatformBrowser(this.platformId)) {
       return true;

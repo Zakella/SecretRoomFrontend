@@ -31,7 +31,7 @@ export class Favorites implements OnInit {
     if (!ids.length) return;
 
     this.loading.set(true);
-    let loaded: Product[] = [];
+    const loaded: Product[] = [];
     let remaining = ids.length;
 
     for (const id of ids) {

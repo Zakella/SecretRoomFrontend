@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, HostListener, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 interface ChatMessage {

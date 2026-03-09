@@ -132,8 +132,8 @@ export class MetaService {
     // Aggressive SEO Title
     // RO: Bare Vanilla Victoria's Secret - Preț Moldova | Secret Room
     // RU: Bare Vanilla Victoria's Secret - Цена Молдова | Secret Room
-    let title = '';
-    let metaDesc = '';
+    let title: string;
+    let metaDesc: string;
 
     if (lang === 'ro') {
       title = `${name} ${brand} - Preț Moldova | Secret Room`;

@@ -13,7 +13,7 @@ export class LocalizedNamePipe implements PipeTransform {
     const lang = this.langService.currentLanguage();
     const roKey = field + 'Ro';
     const ruKey = field + 'Ru';
-    let value = '';
+    let value: string;
     if (lang === 'ro' && item[roKey]) value = item[roKey];
     else if (lang === 'ru' && item[ruKey]) value = item[ruKey];
     else value = item[field] || '';

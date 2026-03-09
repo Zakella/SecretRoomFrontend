@@ -16,7 +16,7 @@
       <p class="product-description">Lorem ipsum dolor sit.</p>
       <p class="product-price">{{ price() }} MDL </p>
 
-      <button class="add-to-bag-btn" (click)="addProductInCart()" analyticEvent="buy_click">
+      <button class="add-to-bag-btn" (click)="addProductInCart()" appAnalyticEvent="buy_click">
         {{ 'Add to Cart' | transloco }}
       </button>
     </div>
@@ -90,7 +90,7 @@
       <button
         class="add-to-bag-btn"
         (click)="addProductInCart(); $event.stopPropagation()"
-        analyticEvent="buy_click"
+        appAnalyticEvent="buy_click"
       >
         <i class="ri-shopping-bag-line"></i>
         <span>{{ 'Add to Cart' | transloco }}</span>

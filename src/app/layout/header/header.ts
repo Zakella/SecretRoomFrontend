@@ -71,7 +71,7 @@ export class Header implements OnInit {
 
   isCheckoutPage = computed(() => this.currentUrl()?.includes('/checkout'));
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {
   }
 
   ngOnInit(): void {
@@ -165,9 +165,11 @@ export class Header implements OnInit {
   }
 
   goToCategoryList() {
+    // intentionally empty
   }
 
   goToSubCategory() {
+    // intentionally empty
   }
 
 

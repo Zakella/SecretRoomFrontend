@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
 import {toObservable, takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {switchMap, of, filter} from 'rxjs';
+import {switchMap, filter} from 'rxjs';
 import {RouterLink} from '@angular/router';
 import {CarouselModule} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';

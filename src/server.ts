@@ -249,7 +249,7 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
       res.redirect(301, `/ro/product/${appId}/${slug}`);
       return;
     }
-  } catch (_) { /* fallback below */ }
+  } catch { /* fallback below */ }
 
   res.redirect(301, `/ro/catalog/${brand}`);
 });

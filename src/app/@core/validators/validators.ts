@@ -13,5 +13,5 @@ export const passwordValidator: ValidatorFn[] = [
 
 export const emailValidator: ValidatorFn[] = [
   Validators.required,
-  Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  Validators.pattern(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)
 ];

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {Authentication} from '../../@core/auth/authentication';
 import {Meta} from '@angular/platform-browser';
-import {CurrencyPipe, DatePipe, NgClass} from '@angular/common';
+import {DatePipe, NgClass} from '@angular/common';
 import {UserDetails} from '../../entities/user-details';
 import {UserService} from '../../@core/services/user-service';
 import {Order} from '../../entities/order';

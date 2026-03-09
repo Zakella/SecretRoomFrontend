@@ -3,16 +3,16 @@
   <div class="image-wrapper">
     <image-slider [images]="(heroItems$ | async)|| []" [autoSlide]="true" [controls]="false"/>
   </div>
-  <div scrollReveal="fade-up">
+  <div appScrollReveal="fade-up">
     <categories/>
   </div>
-  <div scrollReveal="fade-up">
+  <div appScrollReveal="fade-up">
     <best-sellers [bestSellers]="(bestSellers$ | async) || []"/>
   </div>
-  <div scrollReveal="fade-up">
+  <div appScrollReveal="fade-up">
     <new-arrivals [newArrivals]="(newArrivals$| async) || []"/>
   </div>
-  <div scrollReveal="fade-up">
+  <div appScrollReveal="fade-up">
     <sales [sales]="(sales$ | async) || []"/>
   </div>
     <instagram-feed id="instagram"/>

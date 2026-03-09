@@ -43,6 +43,7 @@ import {RecommendedProductService} from '../product/recommended-products/recomme
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cart implements OnInit, OnDestroy {
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
   private shippingService = inject(Shipping);
