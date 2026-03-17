@@ -10,5 +10,6 @@ Disallow: /*/payment-fail
 Disallow: /*/favorites
 Disallow: /*/order/
 Disallow: /*/search/
+Disallow: /*/not-found
 
 Sitemap: https://secretroom.md/sitemap.xml

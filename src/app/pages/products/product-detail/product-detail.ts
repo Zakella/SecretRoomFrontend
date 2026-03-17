@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, DestroyRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, DestroyRef, RESPONSE_INIT} from '@angular/core';
 import {NgClass, Location} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
@@ -26,7 +27,7 @@ import {ProductPrice} from '../../../shared/components/product/product-price/pro
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -43,8 +44,11 @@ export class ProductDetail {
   private ga = inject(GoogleAnalytics);
   private recentlyViewedService = inject(RecentlyViewedService);
   public favoritesService = inject(FavoritesService);
+  private meta = inject(Meta);
+  private responseInit = inject(RESPONSE_INIT, {optional: true});
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
+  protected productNotFound = signal(false);
   protected selectedVariant = signal<ProductVariant | null>(null);
   protected effectiveStock = computed(() => {
     const variant = this.selectedVariant();
@@ -107,6 +111,16 @@ export class ProductDetail {
     this.quantity = 1;
     this.currentSize = undefined;
     this.selectedVariant.set(null);
+    if (!product) {
+      this.productNotFound.set(true);
+      this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+      if (this.responseInit) {
+        this.responseInit.status = 404;
+        this.responseInit.statusText = 'Not Found';
+      }
+      return;
+    }
+    this.productNotFound.set(false);
     if (product) {
       if (product.variants?.length) {
         product.variants.sort((a, b) => this.compareSizes(a.size, b.size));

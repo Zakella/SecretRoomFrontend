@@ -25,6 +25,17 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
+ * 301 redirect: www.secretroom.md → secretroom.md (canonical domain consolidation)
+ */
+app.use((req, res, next) => {
+  if (req.hostname === 'www.secretroom.md') {
+    res.redirect(301, `https://secretroom.md${req.originalUrl}`);
+    return;
+  }
+  next();
+});
+
+/**
  * Block search engine indexing on non-production domains (e.g. sr.solterprise.com)
  */
 app.use((req, res, next) => {

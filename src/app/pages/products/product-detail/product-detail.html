@@ -1,4 +1,15 @@
-@if (product()) {
+@if (productNotFound()) {
+  <section class="product-not-found" appFadeUp>
+    <div class="not-found-content">
+      <i class="ri-search-line not-found-icon"></i>
+      <h1>{{ 'ProductNotFound' | transloco }}</h1>
+      <p>{{ 'ProductNotFoundMessage' | transloco }}</p>
+      <a [routerLink]="['/', activeLang(), 'catalog', 'vs']" class="back-to-catalog-btn">
+        {{ 'BackToCatalog' | transloco }}
+      </a>
+    </div>
+  </section>
+} @else if (product()) {
   <section class="product-page" appFadeUp>
     <button class="back-btn-mobile" (click)="navigateToList()" aria-label="Назад">
       <img src="assets/images/back.svg" alt="Назад" />
