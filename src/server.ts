@@ -74,7 +74,7 @@ const SITE_URL = 'https://secretroom.md';
 const LANGUAGES = ['ro', 'ru'];
 
 let sitemapCache: { xml: string; timestamp: number } | null = null;
-const SITEMAP_TTL = 3600000; // 1 hour
+const SITEMAP_TTL = 21600000; // 6 hours
 
 function slugify(value: string): string {
   const map: Record<string, string> = {
@@ -126,7 +126,7 @@ async function generateSitemap(): Promise<string> {
   const now = new Date().toISOString().split('T')[0];
   const urls: string[] = [];
 
-  const addUrl = (path: string, changefreq: string, priority: string) => {
+  const addUrl = (path: string, changefreq: string, priority: string, lastmod: string = now) => {
     const entries: string[] = [];
     for (const lang of LANGUAGES) {
       const loc = `${SITE_URL}/${lang}${path}`;
@@ -134,7 +134,7 @@ async function generateSitemap(): Promise<string> {
         l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`
       ).join('');
       const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
-      entries.push(`<url><loc>${escapeXml(loc)}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}${xDefault}</url>`);
+      entries.push(`<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}${xDefault}</url>`);
     }
     urls.push(...entries);
   };
@@ -157,14 +157,17 @@ async function generateSitemap(): Promise<string> {
     addUrl(page.path, page.changefreq, page.priority);
   }
 
-  // Dynamic: products
+  // Dynamic: products (lightweight sitemap endpoint, no stock filter)
   try {
-    const productsRes = await fetch(`${API_BASE}products/all`);
+    const productsRes = await fetch(`${API_BASE}products/sitemap`);
     if (productsRes.ok) {
       const products: any[] = await productsRes.json();
       for (const product of products) {
-        const slug = slugify(product.name || '');
-        addUrl(`/product/${product.id}/${slug}`, 'weekly', '0.8');
+        const slug = slugify(product.name || product.nameRo || '');
+        const productLastmod = product.updatedAt
+          ? product.updatedAt.split('T')[0]
+          : now;
+        addUrl(`/product/${product.appId}/${slug}`, 'weekly', '0.8', productLastmod);
       }
     }
   } catch (e) {
