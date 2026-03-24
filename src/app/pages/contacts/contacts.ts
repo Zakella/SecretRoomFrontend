@@ -72,7 +72,6 @@ export class Contacts implements OnInit {
           'latitude': store.latitude,
           'longitude': store.longitude
         },
-        'telephone': '+373' + store.contact,
         'openingHours': 'Mo-Su ' + store.workTime,
         'url': 'https://secretroom.md',
         'priceRange': '$$'
