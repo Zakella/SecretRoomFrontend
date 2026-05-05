@@ -185,8 +185,10 @@
     }
 
     <div class="product-list-panel">
-      @if(products().length>0){
+      @if (products().length > 0) {
         <product-list [products]="products()"/>
+      } @else if (isLoading()) {
+        <product-card-skeleton [count]="12"/>
       } @else {
         <app-empty-state/>
       }

@@ -1,0 +1,12 @@
+<div class="product-list-skeleton" aria-busy="true" aria-live="polite">
+  @for (i of visibleSlots(); track i) {
+    <div class="skeleton-card">
+      <div class="skeleton-image shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line shimmer skeleton-title"></div>
+        <div class="skeleton-line shimmer skeleton-subtitle"></div>
+        <div class="skeleton-line shimmer skeleton-price"></div>
+      </div>
+    </div>
+  }
+</div>

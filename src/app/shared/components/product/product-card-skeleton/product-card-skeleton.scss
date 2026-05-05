@@ -1,0 +1,87 @@
+// Skeleton placeholder grid — повторяет сетку product-list, чтобы layout не "прыгал" при загрузке
+.product-list-skeleton {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 35px;
+  padding: 0;
+  margin: 0;
+
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+  }
+}
+
+.skeleton-card {
+  background: var(--bg-white, #fff);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(44, 36, 33, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-image {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  background-color: #ececec;
+}
+
+.skeleton-body {
+  padding: 16px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background-color: #ececec;
+}
+
+.skeleton-title { width: 85%; }
+.skeleton-subtitle { width: 60%; height: 12px; }
+.skeleton-price { width: 35%; height: 18px; margin-top: 6px; }
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after { animation: none; }
+}

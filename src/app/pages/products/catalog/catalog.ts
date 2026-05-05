@@ -19,6 +19,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
 import {DrawerModule} from 'primeng/drawer';
+import {ProductCardSkeleton} from '../../../shared/components/product/product-card-skeleton/product-card-skeleton';
 
 @Component({
   selector: 'app-catalog',
@@ -29,6 +30,7 @@ import {DrawerModule} from 'primeng/drawer';
     LocalizedNamePipe,
     EmptyState,
     DrawerModule,
+    ProductCardSkeleton,
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',
