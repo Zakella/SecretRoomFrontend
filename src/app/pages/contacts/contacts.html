@@ -6,19 +6,52 @@
   <div class="store-list">
     @for (store of stores; track store.id; let i = $index) {
       <div class="store-item" [class.store-item--reverse]="i % 2 !== 0">
-        <div class="store-item__map">
-          <iframe
-            [src]="getGoogleMapsUrl(store.latitude, store.longitude)"
-            width="100%"
-            height="100%"
-            loading="lazy">
-          </iframe>
-          <div class="store-item__map-overlay">
-            <a [href]="'https://maps.google.com/?q=' + store.latitude + ',' + store.longitude"
-               target="_blank"
-               class="store-item__map-btn">
-              <i class="ri-fullscreen-line"></i>
-            </a>
+        <div class="store-item__media">
+          @if (store.photos.length > 0) {
+            <div class="store-photos"
+                 [class.store-photos--landscape]="store.photos[0].landscape">
+              @for (photo of store.photos; track photo.desktop; let pi = $index) {
+                <button type="button"
+                        class="store-photos__item"
+                        [class.store-photos__item--landscape]="photo.landscape"
+                        (click)="openLightbox(store.photos, pi)"
+                        [attr.aria-label]="'ViewPhoto' | transloco">
+                  <picture>
+                    @if (photo.mobileWebp) {
+                      <source media="(max-width: 900px)" type="image/webp" [srcset]="photo.mobileWebp">
+                    }
+                    @if (photo.mobile) {
+                      <source media="(max-width: 900px)" [srcset]="photo.mobile">
+                    }
+                    @if (photo.desktopWebp) {
+                      <source type="image/webp" [srcset]="photo.desktopWebp">
+                    }
+                    <img [src]="photo.desktop"
+                         [alt]="store.name + ' — ' + store.location"
+                         loading="lazy"
+                         decoding="async">
+                  </picture>
+                  <span class="store-photos__zoom">
+                    <i class="ri-zoom-in-line"></i>
+                  </span>
+                </button>
+              }
+            </div>
+          }
+          <div class="store-item__map">
+            <iframe
+              [src]="getGoogleMapsUrl(store.latitude, store.longitude)"
+              width="100%"
+              height="100%"
+              loading="lazy">
+            </iframe>
+            <div class="store-item__map-overlay">
+              <a [href]="'https://maps.google.com/?q=' + store.latitude + ',' + store.longitude"
+                 target="_blank"
+                 class="store-item__map-btn">
+                <i class="ri-fullscreen-line"></i>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -44,7 +77,61 @@
             <i class="ri-arrow-right-line"></i>
           </a>
         </div>
+
       </div>
     }
   </div>
 </section>
+
+@if (isLightboxOpen()) {
+  <div class="lightbox" (click)="closeLightbox()" role="dialog" aria-modal="true">
+    <button type="button"
+            class="lightbox__close"
+            (click)="closeLightbox(); $event.stopPropagation()"
+            [attr.aria-label]="'ClosePhoto' | transloco">
+      <i class="ri-close-line"></i>
+    </button>
+
+    @if (activePhotos().length > 1) {
+      <button type="button"
+              class="lightbox__nav lightbox__nav--prev"
+              (click)="prevPhoto($event)"
+              [attr.aria-label]="'PreviousPhoto' | transloco">
+        <i class="ri-arrow-left-s-line"></i>
+      </button>
+    }
+
+    <div class="lightbox__stage" (click)="$event.stopPropagation()">
+      @let activePhoto = activePhotos()[activeIndex()];
+      <picture>
+        @if (activePhoto.mobileWebp) {
+          <source media="(max-width: 900px)" type="image/webp" [srcset]="activePhoto.mobileWebp">
+        }
+        @if (activePhoto.mobile) {
+          <source media="(max-width: 900px)" [srcset]="activePhoto.mobile">
+        }
+        @if (activePhoto.desktopWebp) {
+          <source type="image/webp" [srcset]="activePhoto.desktopWebp">
+        }
+        <img [src]="activePhoto.desktop"
+             class="lightbox__image"
+             alt=""
+             decoding="async">
+      </picture>
+      @if (activePhotos().length > 1) {
+        <div class="lightbox__counter">
+          {{ activeIndex() + 1 }} / {{ activePhotos().length }}
+        </div>
+      }
+    </div>
+
+    @if (activePhotos().length > 1) {
+      <button type="button"
+              class="lightbox__nav lightbox__nav--next"
+              (click)="nextPhoto($event)"
+              [attr.aria-label]="'NextPhoto' | transloco">
+        <i class="ri-arrow-right-s-line"></i>
+      </button>
+    }
+  </div>
+}

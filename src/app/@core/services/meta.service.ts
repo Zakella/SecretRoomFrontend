@@ -258,7 +258,7 @@ export class MetaService {
           "name": "Secret Room - Atrium",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Strada Albișoara 4, CC Atrium, et. 2, but. 2018",
+            "streetAddress": "Strada Albișoara 4, CC Atrium, et. 1, but. 1029",
             "addressLocality": "Chișinău",
             "addressCountry": "MD"
           }

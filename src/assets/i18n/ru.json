@@ -343,6 +343,11 @@
   "AllBrands": "Все",
   "Brand": "Бренд",
   "GetDirections": "Построить маршрут",
+  "StorePhotos": "Фотографии магазина",
+  "ViewPhoto": "Открыть фото",
+  "ClosePhoto": "Закрыть",
+  "PreviousPhoto": "Предыдущее фото",
+  "NextPhoto": "Следующее фото",
   "reviews": {
     "ofReviews": "из {{count}} отзывов",
     "excellent": "Отлично",
@@ -389,7 +394,7 @@
     },
     "contact": {
       "title": "Контактные данные",
-      "content": "<p><strong>Юридическое название:</strong> Zapolski Brands SRL</p><p><strong>IDNO:</strong> 1021600045117</p><p><strong>Юридический адрес:</strong> Tudor Strișcă 8/1</p><p><strong>Физический адрес:</strong> Atrium, 2 этаж</p><p><strong>Телефон:</strong> 061029933</p><p><strong>Email:</strong> support@secretroom.md</p>"
+      "content": "<p><strong>Юридическое название:</strong> Zapolski Brands SRL</p><p><strong>IDNO:</strong> 1021600045117</p><p><strong>Юридический адрес:</strong> Tudor Strișcă 8/1</p><p><strong>Физический адрес:</strong> Atrium, 1 этаж, бутик 1029</p><p><strong>Телефон:</strong> 061029933</p><p><strong>Email:</strong> support@secretroom.md</p>"
     }
   },
   "shippingPage": {
