@@ -113,8 +113,8 @@ export class Checkout implements OnInit, OnDestroy {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.pattern(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)]],
       country: [{value: 'Moldova, Republic of', disabled: true}],
-      name: ['', [Validators.required, Validators.minLength(2)]],
-      lastname: ['', [Validators.required, Validators.minLength(2)]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[A-Za-z\s'-]+$/)]],
+      lastname: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[A-Za-z\s'-]+$/)]],
       address: ['', [Validators.required, Validators.minLength(3)]],
       city: ['', [Validators.required, Validators.minLength(2)]],
       zip: ['', [Validators.required, Validators.pattern(/^\d+$/)]],

@@ -89,7 +89,11 @@
                     [class.invalid]="isFieldInvalid('name')">
                   @if (isFieldInvalid('name')) {
                     <span class="error-message">
-                      {{ 'Required field' | transloco }}
+                      @if (form.get('name')?.hasError('pattern')) {
+                        {{ 'Latin letters only' | transloco }}
+                      } @else {
+                        {{ 'Required field' | transloco }}
+                      }
                     </span>
                   }
                 </div>
@@ -103,7 +107,11 @@
                     [class.invalid]="isFieldInvalid('lastname')">
                   @if (isFieldInvalid('lastname')) {
                     <span class="error-message">
-                      {{ 'Required field' | transloco }}
+                      @if (form.get('lastname')?.hasError('pattern')) {
+                        {{ 'Latin letters only' | transloco }}
+                      } @else {
+                        {{ 'Required field' | transloco }}
+                      }
                     </span>
                   }
                 </div>
