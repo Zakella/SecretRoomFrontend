@@ -92,6 +92,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4203
+          },
           "configurations": {
             "production": {
               "buildTarget": "secret-room:build:production"

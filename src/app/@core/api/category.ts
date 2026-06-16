@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable, of, tap} from 'rxjs';
+import {Observable, of, tap, shareReplay} from 'rxjs';
 import {Category} from '../../entities/category';
 import {FilterGroup} from '../../entities/filter-group';
 import {environment} from '../../../environments/environment';
@@ -18,14 +18,19 @@ export class CategoryService {
   private previewUrl = this.apiUrl + '/parents/product-preview';
 
   private categoriesCache: Category[] = [];
+  private categories$: Observable<Category[]> | null = null;
 
   getCategories(): Observable<Category[]> {
     if (this.categoriesCache.length > 0) {
       return of(this.categoriesCache);
     }
-    return this.http.get<Category[]>(this.apiUrl + '/hierarchy/active').pipe(
-      tap(categories => this.categoriesCache = categories)
-    );
+    if (!this.categories$) {
+      this.categories$ = this.http.get<Category[]>(this.apiUrl + '/hierarchy/active').pipe(
+        tap(categories => { this.categoriesCache = categories; this.categories$ = null; }),
+        shareReplay(1)
+      );
+    }
+    return this.categories$;
   }
 
   getCategoriesWithPreview(): Observable<any[]> {

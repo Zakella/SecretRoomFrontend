@@ -198,6 +198,9 @@
           <button
             class="load-more-btn"
             [disabled]="isLoading()"
+            (mouseenter)="prefetchNext()"
+            (focus)="prefetchNext()"
+            (touchstart)="prefetchNext()"
             (click)="loadMore()"
           >
             @if (isLoading()) {

@@ -6,7 +6,7 @@ import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, finalize, map, switchMap, take} from 'rxjs';
+import {catchError, finalize, map, Observable, shareReplay, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
@@ -103,7 +103,8 @@ export class Catalog implements OnInit, OnDestroy {
   private currentCategoryId: string | null = null;
   private currentHeroId: number | null = null;
   private currentPage = 0;
-  private readonly itemsPerPage = 12;
+  private readonly itemsPerPage = 24;
+  private prefetched: { page: number; request$: Observable<any> } | null = null;
 
   constructor() {
     effect(() => {
@@ -366,6 +367,7 @@ export class Catalog implements OnInit, OnDestroy {
     this.products.set([]);
     this.selectedBrand.set(null);
     this.selectedFilters.set(new Map());
+    this.prefetched = null;
   }
 
   private loadFilters() {
@@ -512,32 +514,54 @@ export class Catalog implements OnInit, OnDestroy {
     this.fetchProducts(true);
   }
 
+  prefetchNext(): void {
+    if (this.isLoading() || this.allLoaded()) return;
+    const nextPage = this.currentPage + 1;
+    if (this.prefetched?.page === nextPage) return;
+    const categoryIdentifier = this.currentCategoryId || this.category();
+    if (!categoryIdentifier) return;
+    const request$ = this.loadByCategory(categoryIdentifier, nextPage, this.itemsPerPage).pipe(
+      catchError(() => of(null)),
+      shareReplay(1)
+    );
+    this.prefetched = { page: nextPage, request$ };
+    request$.subscribe();
+  }
+
   fetchProducts(append = false) {
     if (this.isLoading() || this.allLoaded()) return;
-
-    this.isLoading.set(true);
 
     const page = append ? this.currentPage + 1 : 0;
     const category = this.category();
     const categoryIdentifier = this.currentCategoryId || category;
 
-    this.loadByCategory(categoryIdentifier!, page, this.itemsPerPage)
+    let source$: Observable<any>;
+    if (append && this.prefetched?.page === page) {
+      source$ = this.prefetched.request$;
+      this.prefetched = null;
+    } else {
+      if (!append) this.prefetched = null;
+      source$ = this.loadByCategory(categoryIdentifier!, page, this.itemsPerPage);
+    }
+
+    this.isLoading.set(true);
+    source$
       .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe(res => {
-        this.totalProductCount.set(res?.totalElements ?? 0);
-        const items = res?.content ?? [];
+      .subscribe(res => this.applyProductsResponse(res, page, append));
+  }
 
-        if (!items.length) {
-          this.allLoaded.set(true);
-          return;
-        }
+  private applyProductsResponse(res: any, page: number, append: boolean) {
+    this.totalProductCount.set(res?.totalElements ?? 0);
+    const items = res?.content ?? [];
 
-        this.currentPage = page;
-        this.products.set(
-          append ? [...this.products(), ...items] : items
-        );
-        this.setItemListJsonLd(this.products());
-      });
+    if (!items.length) {
+      this.allLoaded.set(true);
+      return;
+    }
+
+    this.currentPage = page;
+    this.products.set(append ? [...this.products(), ...items] : items);
+    this.setItemListJsonLd(this.products());
   }
 
   private setItemListJsonLd(products: Product[]) {

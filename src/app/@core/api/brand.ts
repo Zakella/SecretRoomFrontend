@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {Brand} from '../../entities/category';
-import {Observable, of, tap} from 'rxjs';
+import {Observable, of, tap, shareReplay} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {FilterGroup} from '../../entities/filter-group';
 
@@ -13,14 +13,19 @@ export class BrandService {
   private http = inject(HttpClient);
   private baseUrL = environment.apiUrl + "products";
   private brandsCache: Brand[] = [];
+  private brands$: Observable<Brand[]> | null = null;
 
   gerAllBrands(): Observable<Brand[]> {
     if (this.brandsCache.length) {
       return of(this.brandsCache);
     }
-    return this.http.get<Brand[]>(`${this.baseUrL}/brands`).pipe(
-      tap(brands => this.brandsCache = brands)
-    );
+    if (!this.brands$) {
+      this.brands$ = this.http.get<Brand[]>(`${this.baseUrL}/brands`).pipe(
+        tap(brands => { this.brandsCache = brands; this.brands$ = null; }),
+        shareReplay(1)
+      );
+    }
+    return this.brands$;
   }
 
   getProductsByBrand(brand: string, page: number, size: number, filters?: string): Observable<GetResponse> {
