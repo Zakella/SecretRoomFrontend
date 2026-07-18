@@ -124,8 +124,8 @@
     <div class="filter-drawer-footer">
       <button class="filter-drawer-apply" (click)="applyFiltersAndClose()">
         {{ 'ShowResults' | transloco }}
-        @if (totalProductCount() > 0) {
-          ({{ totalProductCount() }})
+        @if ((pendingCount() ?? totalProductCount()) > 0) {
+          ({{ pendingCount() ?? totalProductCount() }})
         }
       </button>
     </div>

@@ -4,6 +4,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
+import {FilterGroup} from '../../entities/filter-group';
 
 @Injectable(
   {
@@ -43,18 +44,46 @@ export class ProductService {
     return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
   }
 
-  getBestSellers(page: number, size: number): Observable<GetResponse> {
-    const params = new HttpParams()
+  getBestSellers(page: number, size: number, brand?: string, filters?: string): Observable<GetResponse> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
+    if (brand) {
+      params = params.set('brand', brand);
+    }
+    if (filters) {
+      params = params.set('filters', filters);
+    }
     return this.http.get<GetResponse>(`${this.baseUrL}/bestsellers`, {params});
   }
 
-  getNewArrivals(page: number, size: number): Observable<GetResponse> {
-    const params = new HttpParams()
+  getNewArrivals(page: number, size: number, brand?: string, filters?: string): Observable<GetResponse> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size)
+    if (brand) {
+      params = params.set('brand', brand);
+    }
+    if (filters) {
+      params = params.set('filters', filters);
+    }
     return this.http.get<GetResponse>(`${this.baseUrL}/new-arrivals`, {params});
+  }
+
+  getFiltersForBestsellers(): Observable<FilterGroup[]> {
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/bestsellers/filters`);
+  }
+
+  getFiltersForNewArrivals(): Observable<FilterGroup[]> {
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/new-arrivals/filters`);
+  }
+
+  getBrandsForBestsellers(): Observable<{brand: string, brandAlias: string}[]> {
+    return this.http.get<{brand: string, brandAlias: string}[]>(`${this.baseUrL}/bestsellers/brands`);
+  }
+
+  getBrandsForNewArrivals(): Observable<{brand: string, brandAlias: string}[]> {
+    return this.http.get<{brand: string, brandAlias: string}[]>(`${this.baseUrL}/new-arrivals/brands`);
   }
 
   getSales(page: number, size: number): Observable<GetResponse> {

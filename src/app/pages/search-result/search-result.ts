@@ -67,13 +67,15 @@ export class SearchResult implements OnInit {
     this.loading.set(true);
     this.productService.smartSearch(this.query(), this.page, this.pageSize).subscribe({
       next: res => {
+        const content = res?.content ?? [];
+        const totalElements = res?.totalElements ?? 0;
         if (this.page === 0) {
-          this.products.set(res.content);
+          this.products.set(content);
         } else {
-          this.products.update(prev => [...prev, ...res.content]);
+          this.products.update(prev => [...prev, ...content]);
         }
-        this.totalElements.set(res.totalElements);
-        this.hasMore.set((this.page + 1) * this.pageSize < res.totalElements);
+        this.totalElements.set(totalElements);
+        this.hasMore.set((this.page + 1) * this.pageSize < totalElements);
         this.loading.set(false);
       },
       error: () => {

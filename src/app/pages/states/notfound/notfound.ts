@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, PLATFORM_ID} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Meta} from '@angular/platform-browser';
 import {RESPONSE_INIT} from '@angular/core';
@@ -17,7 +17,7 @@ import {Language} from '../../../@core/services/language';
   styleUrl: './notfound.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Notfound implements OnInit {
+export class Notfound {
   private metaService = inject(MetaService);
   private meta = inject(Meta);
   public langService = inject(Language);
@@ -32,18 +32,18 @@ export class Notfound implements OnInit {
         response.statusText = 'Not Found';
       }
     }
-  }
 
-  ngOnInit() {
-    const isRo = this.activeLang() === 'ro';
-    this.metaService.updateTitle(
-      isRo ? 'Pagina nu a fost găsită — 404 | Secret Room' : 'Страница не найдена — 404 | Secret Room'
-    );
-    this.metaService.updateDescription(
-      isRo
-        ? 'Pagina pe care o căutați nu există. Reveniți la pagina principală Secret Room Moldova.'
-        : 'Страница, которую вы ищете, не существует. Вернитесь на главную Secret Room Moldova.'
-    );
-    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    effect(() => {
+      const isRo = this.activeLang() === 'ro';
+      this.metaService.updateTitle(
+        isRo ? 'Pagina nu a fost găsită — 404 | Secret Room' : 'Страница не найдена — 404 | Secret Room'
+      );
+      this.metaService.updateDescription(
+        isRo
+          ? 'Pagina pe care o căutați nu există. Reveniți la pagina principală Secret Room Moldova.'
+          : 'Страница, которую вы ищете, не существует. Вернитесь на главную Secret Room Moldova.'
+      );
+      this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    });
   }
 }

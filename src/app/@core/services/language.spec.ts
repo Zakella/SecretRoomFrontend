@@ -1,6 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {TranslocoService} from '@ngneat/transloco';
+import {EMPTY} from 'rxjs';
 import {Language} from './language';
 
 describe('Language', () => {
@@ -9,7 +10,7 @@ describe('Language', () => {
   let translocoSpy: jasmine.SpyObj<TranslocoService>;
 
   beforeEach(() => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate'], {url: '/ro/catalog'});
+    routerSpy = jasmine.createSpyObj('Router', ['navigate'], {url: '/ro/catalog', events: EMPTY});
     translocoSpy = jasmine.createSpyObj('TranslocoService', ['setActiveLang']);
 
     TestBed.configureTestingModule({

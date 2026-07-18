@@ -6,7 +6,7 @@ import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, finalize, map, Observable, shareReplay, switchMap, take} from 'rxjs';
+import {catchError, finalize, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
@@ -75,6 +75,8 @@ export class Catalog implements OnInit, OnDestroy {
   // Pending state for mobile drawer (applied only on "Show results" tap)
   protected pendingBrand = signal<string | null>(null);
   protected pendingFilters = signal<Map<string, Set<string>>>(new Map());
+  protected pendingCount = signal<number | null>(null);
+  private pendingCountRequest$ = new Subject<string>();
 
   protected activeFilterCount = computed(() => {
     let count = 0;
@@ -119,6 +121,11 @@ export class Catalog implements OnInit, OnDestroy {
         this.updateMeta(cat, brand, alias, catName, catData, lang);
       }
     });
+
+    this.pendingCountRequest$.pipe(
+      switchMap(identifier => this.loadByCategory(identifier, 0, 1, true).pipe(catchError(() => of(null)))),
+      takeUntilDestroyed()
+    ).subscribe(res => this.pendingCount.set(res?.totalElements ?? null));
   }
 
   ngOnInit(): void {
@@ -373,6 +380,27 @@ export class Catalog implements OnInit, OnDestroy {
   private loadFilters() {
     const categoryId = this.currentCategoryId;
     const brand = this.brandName();
+    const tag = this.category();
+
+    // Static "new arrivals" / "bestsellers" pages — load facets and brands from the product API
+    if (tag === 'new-arrivals' || tag === 'bestsellers') {
+      const brands$ = tag === 'new-arrivals'
+        ? this.productService.getBrandsForNewArrivals()
+        : this.productService.getBrandsForBestsellers();
+      const filters$ = tag === 'new-arrivals'
+        ? this.productService.getFiltersForNewArrivals()
+        : this.productService.getFiltersForBestsellers();
+
+      brands$.pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError(() => of([]))
+      ).subscribe(brands => this.availableBrands.set(brands));
+      filters$.pipe(
+        takeUntilDestroyed(this.destroyRef),
+        catchError(() => of([]))
+      ).subscribe(filters => this.availableFilters.set(filters));
+      return;
+    }
 
     if (brand) {
       // Brand page — load filters for this brand
@@ -455,11 +483,13 @@ export class Catalog implements OnInit, OnDestroy {
     const copy = new Map<string, Set<string>>();
     this.selectedFilters().forEach((vals, key) => copy.set(key, new Set(vals)));
     this.pendingFilters.set(copy);
+    this.pendingCount.set(null);
     this.filterDrawerVisible = true;
   }
 
   selectPendingBrand(brand: string | null) {
     this.pendingBrand.set(brand);
+    this.refreshPendingCount();
   }
 
   togglePendingFilter(filterSlug: string, valueSlug: string) {
@@ -475,6 +505,7 @@ export class Catalog implements OnInit, OnDestroy {
     }
 
     this.pendingFilters.set(current);
+    this.refreshPendingCount();
   }
 
   isPendingFilterSelected(filterSlug: string, valueSlug: string): boolean {
@@ -484,6 +515,13 @@ export class Catalog implements OnInit, OnDestroy {
   clearPendingFilters() {
     this.pendingBrand.set(null);
     this.pendingFilters.set(new Map());
+    this.refreshPendingCount();
+  }
+
+  private refreshPendingCount() {
+    const categoryIdentifier = this.currentCategoryId || this.category();
+    if (!categoryIdentifier) return;
+    this.pendingCountRequest$.next(categoryIdentifier);
   }
 
   applyFiltersAndClose() {
@@ -499,8 +537,7 @@ export class Catalog implements OnInit, OnDestroy {
     this.filterDrawerVisible = false;
   }
 
-  private buildFiltersParam(): string | undefined {
-    const map = this.selectedFilters();
+  private buildFiltersParam(map: Map<string, Set<string>> = this.selectedFilters()): string | undefined {
     if (map.size === 0) return undefined;
 
     const parts: string[] = [];
@@ -577,23 +614,25 @@ export class Catalog implements OnInit, OnDestroy {
     }, 'item-list');
   }
 
-  private loadByCategory(category: string, page: number, size: number) {
+  private loadByCategory(category: string, page: number, size: number, pending = false) {
+    const brand = (pending ? this.pendingBrand() : this.selectedBrand()) || undefined;
+    const filters = this.buildFiltersParam(pending ? this.pendingFilters() : this.selectedFilters());
     switch (category) {
       case 'vs':
       case 'bb':
         return this.productService.getAllProductsByBrand(category, page, size);
       case 'bestsellers':
-        return this.productService.getBestSellers(page, size);
+        return this.productService.getBestSellers(page, size, brand, filters);
       case 'new-arrivals':
-        return this.productService.getNewArrivals(page, size);
+        return this.productService.getNewArrivals(page, size, brand, filters);
       case 'sales':
         return this.productService.getSales(page, size);
       case 'hero':
         return this.heroService.getHeroProductsById(this.currentHeroId!, page, size);
      case 'brand':
-        return this.brandService.getProductsByBrand(this.brandName()!, page, size, this.buildFiltersParam());
+        return this.brandService.getProductsByBrand(this.brandName()!, page, size, filters);
       default:
-        return this.categoryService.getProductsByGroupId(category, page, size, this.selectedBrand() || undefined, this.buildFiltersParam());
+        return this.categoryService.getProductsByGroupId(category, page, size, brand, filters);
     }
   }
 }

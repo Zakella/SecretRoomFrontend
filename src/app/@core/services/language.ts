@@ -1,6 +1,7 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {TranslocoService} from '@ngneat/transloco';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,12 @@ export class Language {
   public init(): void {
     const lang = this.router.url.split('/')[1] || 'ro';
     this.syncLanguageFromUrl(lang);
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.syncLanguageFromUrl(event.urlAfterRedirects.split('/')[1]);
+      });
   }
 
   public setLanguage(lang: string): void {
