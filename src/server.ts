@@ -122,6 +122,51 @@ async function getCachedCategories(): Promise<any[]> {
   }
 }
 
+/**
+ * Кэш канонических слагов товаров: appId -> slug.
+ *
+ * В индексе 20 товаров живут в двух вариантах: старый percent-encoded адрес
+ * (/ro/product/3739/%20BEAUTY%20LIGHT%20WAND%20PINKGASM) и человекочитаемый kebab-слаг.
+ * Оба отдавали 200 и делили вес. Слаг в URL декоративный — товар резолвится по числовому id
+ * (см. product.resolver.ts), поэтому любой неканонический слаг можно смело 301-редиректить.
+ */
+let productSlugCache: { map: Map<string, string>; ts: number } | null = null;
+let productSlugInflight: Promise<Map<string, string>> | null = null;
+const PRODUCT_SLUG_TTL = 21600000; // 6 hours
+
+function refreshProductSlugs(): Promise<Map<string, string>> {
+  if (!productSlugInflight) {
+    productSlugInflight = (async () => {
+      const res = await fetch(`${API_BASE}products/sitemap`);
+      if (!res.ok) throw new Error(`products/sitemap returned ${res.status}`);
+      const products: any[] = await res.json();
+      const map = new Map<string, string>();
+      for (const product of products) {
+        const slug = slugify(product.name || product.nameRo || '');
+        if (product.appId != null && slug) map.set(String(product.appId), slug);
+      }
+      productSlugCache = { map, ts: Date.now() };
+      return map;
+    })()
+      .catch((e) => {
+        console.error('Product slugs: failed to refresh', e);
+        return productSlugCache?.map ?? new Map<string, string>();
+      })
+      .finally(() => { productSlugInflight = null; });
+  }
+  return productSlugInflight;
+}
+
+/**
+ * Возвращает кэш, если он свежий. Если протух или пуст — запускает обновление в фоне
+ * и отдаёт то, что есть (null на холодном старте), чтобы не блокировать рендер товара.
+ */
+function getProductSlugs(): Map<string, string> | null {
+  const fresh = productSlugCache && Date.now() - productSlugCache.ts < PRODUCT_SLUG_TTL;
+  if (!fresh) void refreshProductSlugs();
+  return productSlugCache?.map ?? null;
+}
+
 async function generateSitemap(): Promise<string> {
   const now = new Date().toISOString().split('T')[0];
   const urls: string[] = [];
@@ -316,6 +361,37 @@ app.get('/contacts', (_req, res) => res.redirect(301, '/ro/contacts'));
 app.get('/about-us', (_req, res) => res.redirect(301, '/ro/about-the-secret-room'));
 app.get('/shipping', (_req, res) => res.redirect(301, '/ro/shipping'));
 app.get('/delivery-terms', (_req, res) => res.redirect(301, '/ro/delivery-terms'));
+
+/**
+ * 301 redirect: неканонический слаг товара → канонический.
+ * /ro/product/3739/%20BEAUTY%20LIGHT%20WAND%20PINKGASM → /ro/product/3739/beauty-light-wand-pinkgasm
+ *
+ * Покрывает и legacy percent-encoded адреса, и товары, у которых слаг сменился
+ * после переименования. Товар резолвится по id, слаг в URL — декоративный.
+ */
+app.get('/:lang/product/:id/:slug', async (req, res, next) => {
+  const { lang, id, slug } = req.params;
+  if (!LANGUAGES.includes(lang) || !/^\d+$/.test(id)) return next();
+
+  // «Грязный» слаг — заведомо неканоничен (пробелы, верхний регистр, не-slug символы).
+  const isDirty = slug !== slugify(slug);
+
+  try {
+    let slugs = getProductSlugs();
+    // Ради грязных адресов (их мало, и это именно они сидят в индексе дважды)
+    // можно подождать прогрева кэша; чистые слаги пропускаем без блокировки.
+    if (!slugs && isDirty) slugs = await refreshProductSlugs();
+    if (!slugs) return next();
+
+    const canonical = slugs.get(id);
+    if (!canonical || canonical === slug) return next();
+
+    const query = req.originalUrl.slice(req.path.length);
+    res.redirect(301, `/${lang}/product/${id}/${canonical}${query}`);
+    return;
+  } catch { /* fallback to Angular */ }
+  next();
+});
 
 /**
  * 301 redirect: wrong-language category slug → correct slug.

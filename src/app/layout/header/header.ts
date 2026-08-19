@@ -159,9 +159,14 @@ export class Header implements OnInit {
     });
   }
 
-  goToBrandList(brand: Brand) {
+  /** Навигация — через routerLink в шаблоне (нужен реальный <a href> для краулера).
+   *  Здесь остаётся только подсветка активного бренда. */
+  setActiveBrand(brand: Brand) {
     this.activeBrand.set(brand);
-    this.router.navigate(['/', this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
+  }
+
+  brandSlug(brand: Brand): string {
+    return this.brandService.toSlug(brand.brand);
   }
 
   goToCategoryList() {

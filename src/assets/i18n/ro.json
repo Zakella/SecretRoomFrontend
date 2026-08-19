@@ -102,7 +102,6 @@
   "Loading...": "Se încarcă...",
   "Success": "Succes",
   "Email has been sent!": "Emailul a fost trimis!",
-
   "Change password": "Schimbă parola",
   "Your new password": "Noua ta parolă",
   "Repeat password": "Repetă parola",
@@ -122,12 +121,10 @@
     "description": "Ne pare rău, nu am putut găsi pagina.",
     "button": "Mergi la pagina principală"
   },
-
   "errors": {
     "userWithEmail": "Utilizatorul cu emailul {{email}} nu a fost găsit",
     "serverError": "A apărut o eroare pe server. Vă rugăm să încercați mai târziu."
   },
-
   "forgotPassword": {
     "title": "Resetare parolă",
     "description": "Introduceți emailul asociat contului dvs. Vă vom trimite un link pentru resetarea parolei.",
@@ -164,7 +161,6 @@
     "errorOccurred": "A apărut o eroare la resetarea parolei",
     "tokenMissing": "Lipsește tokenul"
   },
-
   "AllRightReserved": "Toate drepturile rezervate",
   "Contacts": "Contacte",
   "DeliveryTerms": "Termeni și condiții",
@@ -339,7 +335,7 @@
   "BestSellers": "Cele mai vândute",
   "Sale": "Sale",
   "RecentlyViewed": "Vizualizate recent",
-  "Filters" : "Filtre",
+  "Filters": "Filtre",
   "ClearAll": "Șterge tot",
   "ShowResults": "Arată rezultate",
   "AllBrands": "Toate",
@@ -423,5 +419,15 @@
       "title": "Informații importante",
       "content": "<p>La primirea produselor, vă rugăm în prezența curierului să verificați:</p><ul><li>Integritatea ambalajului</li><li>Corespondența produselor cu comanda</li><li>Prezența bonului fiscal</li></ul><p>Orice pretenție ulterioară cu privire la aceste aspecte nu vor fi acceptate.</p><p>Conform Hotărârii Guvernului nr. 1465 din 08.12.2003, <strong>articolele de parfumerie și cosmetică nu pot fi schimbate sau returnate</strong>.</p><p>Pentru întrebări legate de livrare, ne puteți contacta la <strong>061 029 933</strong> sau prin email la <strong>support@secretroom.md</strong>.</p>"
     }
+  },
+  "catalog": {
+    "otherBrands": "Alte branduri",
+    "allBrands": "Toate brandurile"
+  },
+  "homeBrands": {
+    "eyebrow": "Branduri",
+    "title": "Brandurile din magazin",
+    "description": "Produse originale de la brandurile pe care le aducem în Moldova.",
+    "viewAll": "Vezi toate brandurile"
   }
 }

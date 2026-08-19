@@ -8,6 +8,7 @@ import {BestSellers} from './sections/best-sellers/best-sellers';
 import {NewArrivals} from './sections/new-arrivals/new-arrivals';
 import {Sales} from './sections/sales/sales';
 import {Categories} from './sections/categories/categories';
+import {BrandsSection} from './sections/brands/brands-section';
 import {InstagramFeed} from './sections/instagram-feed/instagram-feed';
 import {HeroService} from '../../@core/api/hero';
 import {MetaService} from '../../@core/services/meta.service';
@@ -23,6 +24,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
     NewArrivals,
     Sales,
     Categories,
+    BrandsSection,
     InstagramFeed,
     AsyncPipe,
     TranslocoPipe

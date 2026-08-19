@@ -11,6 +11,7 @@ import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {Slugify} from '../../../../@core/services/slugify';
+import {BrandService} from '../../../../@core/api/brand';
 import {ProductPrice} from '../product-price/product-price';
 
 @Component({
@@ -24,6 +25,7 @@ export class ProductCard {
   private langService = inject(Language);
   private cartService = inject(CartUi);
   private slugify = inject(Slugify);
+  private brandService = inject(BrandService);
   public favoritesService = inject(FavoritesService);
   public activeLang = this.langService.currentLanguage
   product = input<Product>();
@@ -60,6 +62,13 @@ export class ProductCard {
     const p = this.product();
     if (!p?.id) return null;
     return this.slugify.productUrl(this.activeLang(), p.id, p.name ?? '');
+  });
+
+  /** Ссылка на брендовую страницу товара. null — если бренд не удалось сопоставить. */
+  brandUrl = computed(() => {
+    const slug = this.brandService.slugForAlias(this.product()?.brandAlias);
+    if (!slug) return null;
+    return ['/', this.activeLang(), 'catalog', 'brand', slug];
   });
 
   queryParams = computed(() => {

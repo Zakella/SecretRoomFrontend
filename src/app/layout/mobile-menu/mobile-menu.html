@@ -131,11 +131,19 @@
         @if (brands().length > 0) {
           <div class="brands-grid">
             @for (brand of brands(); track brand.brand) {
-              <button class="brand-item" (click)="goToBrandList(brand)">
+              <a class="brand-item"
+                 [routerLink]="['/', activeLang(), 'catalog', 'brand', brandSlug(brand)]"
+                 (click)="handleNavClick()">
                 {{ brand.brandAlias }}
                 <i class="ri-arrow-right-s-line"></i>
-              </button>
+              </a>
             }
+            <a class="brand-item brand-item--all"
+               [routerLink]="['/', activeLang(), 'brands']"
+               (click)="handleNavClick()">
+              {{ 'catalog.allBrands' | transloco }}
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
           </div>
         }
       }

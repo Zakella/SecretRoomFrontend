@@ -4,7 +4,7 @@ import {ProductList} from '../../../shared/components/product/product-list/produ
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, finalize, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
@@ -13,7 +13,9 @@ import {CategoryService} from '../../../@core/api/category';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Language} from '../../../@core/services/language';
 import {Slugify} from '../../../@core/services/slugify';
-import {Category} from '../../../entities/category';
+import {Category, Brand} from '../../../entities/category';
+import {getBrandSeo, BrandSeoLocale} from '../../../@core/configs/brand-seo';
+import {getCategorySeo} from '../../../@core/configs/category-seo';
 import {of} from 'rxjs';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
@@ -31,6 +33,7 @@ import {ProductCardSkeleton} from '../../../shared/components/product/product-ca
     EmptyState,
     DrawerModule,
     ProductCardSkeleton,
+    RouterLink,
   ],
   providers: [ProductService],
   templateUrl: './catalog.html',
@@ -61,6 +64,9 @@ export class Catalog implements OnInit, OnDestroy {
 
   // Brand filter
   protected availableBrands = signal<{brand: string, brandAlias: string}[]>([]);
+
+  // Полный список брендов каталога — для блока перелинковки внизу брендовой страницы
+  protected allBrands = signal<Brand[]>([]);
   protected selectedBrand = signal<string | null>(null);
 
   // Product filters
@@ -96,6 +102,29 @@ export class Catalog implements OnInit, OnDestroy {
     const cat = this.categoryData();
     if (!cat) return this.categoryName();
     return (this.activeLang() === 'ro' ? cat.nameRo : cat.nameRu) || cat.name;
+  });
+
+  /** Слаг бренда в URL — ключ словаря BRAND_SEO. */
+  protected brandSlugValue = computed(() => {
+    const brand = this.brandName();
+    return brand ? this.brandService.toSlug(brand) : null;
+  });
+
+  /** Ручной SEO-текст бренда (h2 + абзацы). null → работает generic-шаблон. */
+  protected brandSeo = computed<BrandSeoLocale | null>(() =>
+    getBrandSeo(this.brandSlugValue(), this.activeLang())
+  );
+
+  /** Перелинковка: остальные бренды каталога, ссылками с брендовой страницы. */
+  protected otherBrands = computed(() => {
+    const current = this.brandSlugValue();
+    if (!current) return [];
+    return this.allBrands()
+      .filter(b => this.brandService.toSlug(b.brand) !== current)
+      .map(b => ({
+        slug: this.brandService.toSlug(b.brand),
+        label: b.brandAlias || b.brand
+      }));
   });
 
   protected hasFilters = computed(() => {
@@ -142,6 +171,8 @@ export class Catalog implements OnInit, OnDestroy {
         if (slug) {
           return this.brandService.gerAllBrands().pipe(
             map(brands => {
+              // держим весь список — нужен блоку перелинковки «другие бренды»
+              this.allBrands.set(brands);
               const original = brands.find(b => this.brandService.toSlug(b.brand) === slug);
               return {
                 tag: 'brand',
@@ -208,20 +239,35 @@ export class Catalog implements OnInit, OnDestroy {
     const displayBrand = alias || brand;
 
     if (displayBrand) {
-      if (isRo) {
-        title = `${displayBrand} Moldova — Produse Originale | Secret Room`;
-        description = `${displayBrand} în Moldova: lenjerie, parfumuri, loțiuni, cosmetice originale. Magazin Secret Room, livrare în Chișinău și toată țara.`;
+      // Ручные тексты по бренду, если бренд есть в словаре; иначе — общий шаблон
+      const brandSeo = getBrandSeo(brand ? this.brandService.toSlug(brand) : null, lang);
+      if (brandSeo) {
+        title = brandSeo.title;
+        description = brandSeo.description;
+        keywords = brandSeo.keywords;
       } else {
-        title = `${displayBrand} Молдова — Оригинальная продукция | Secret Room`;
-        description = `${displayBrand} в Молдове: бельё, парфюмы, лосьоны, косметика — оригинал. Магазин Secret Room, доставка по Кишинёву и всей стране.`;
+        if (isRo) {
+          title = `${displayBrand} Moldova — Produse Originale | Secret Room`;
+          description = `${displayBrand} în Moldova: produse originale la Secret Room. Comandă online cu livrare în Chișinău și toată Moldova.`;
+        } else {
+          title = `${displayBrand} Молдова — Оригинальная продукция | Secret Room`;
+          description = `${displayBrand} в Молдове: оригинальные товары в Secret Room. Заказ онлайн с доставкой по Кишинёву и всей Молдове.`;
+        }
+        keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, купить ${displayBrand} молдова, ${displayBrand} кишинев`;
       }
-      keywords = `${displayBrand}, ${displayBrand} moldova, ${displayBrand} chisinau, ${displayBrand} pret, купить ${displayBrand} молдова, ${displayBrand} кишинев`;
     } else if (category) {
       const localizedName = catData
         ? (isRo ? catData.nameRo : catData.nameRu) || catData.name
         : catName;
 
-      if (localizedName) {
+      // Ручные тексты по конкретной категории (сломанные сниппеты из Search Console)
+      const categorySeo = getCategorySeo(catData?.id, lang);
+
+      if (categorySeo) {
+        title = categorySeo.title;
+        description = categorySeo.description;
+        keywords = categorySeo.keywords;
+      } else if (localizedName) {
         // Dynamic category with known name
         if (isRo) {
           title = `${localizedName} Victoria's Secret și Bath & Body Works — Moldova | Secret Room`;

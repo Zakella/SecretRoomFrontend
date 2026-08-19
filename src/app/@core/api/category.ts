@@ -17,16 +17,27 @@ export class CategoryService {
   private apiUrl = environment.apiUrl + "web-categories";
   private previewUrl = this.apiUrl + '/parents/product-preview';
 
+  /** TTL кэша категорий. Совпадает с TTL кэша каталога на сервере. */
+  private static readonly CACHE_TTL = 300000; // 5 минут
+
   private categoriesCache: Category[] = [];
+  private categoriesCachedAt = 0;
   private categories$: Observable<Category[]> | null = null;
 
   getCategories(): Observable<Category[]> {
-    if (this.categoriesCache.length > 0) {
+    // Кэш свежий — отдаём синхронно.
+    if (this.categoriesCache.length > 0 && Date.now() - this.categoriesCachedAt < CategoryService.CACHE_TTL) {
       return of(this.categoriesCache);
     }
+    // Кэш пуст или протух. shareReplay склеивает параллельные вызовы (header/footer/меню
+    // дёргают этот эндпоинт одновременно) — без него был лишний запрос на каждого подписчика.
     if (!this.categories$) {
       this.categories$ = this.http.get<Category[]>(this.apiUrl + '/hierarchy/active').pipe(
-        tap(categories => { this.categoriesCache = categories; this.categories$ = null; }),
+        tap(categories => {
+          this.categoriesCache = categories;
+          this.categoriesCachedAt = Date.now();
+          this.categories$ = null;
+        }),
         shareReplay(1)
       );
     }

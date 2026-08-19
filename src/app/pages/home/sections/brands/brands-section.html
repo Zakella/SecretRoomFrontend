@@ -1,0 +1,26 @@
+@if (brands().length > 0) {
+  <section class="brands-section">
+    <div class="brands-section__header">
+      <span class="eyebrow">{{ 'homeBrands.eyebrow' | transloco }}</span>
+      <h2>{{ 'homeBrands.title' | transloco }}</h2>
+      <p>{{ 'homeBrands.description' | transloco }}</p>
+    </div>
+
+    <ul class="brands-section__grid">
+      @for (brand of brands(); track brand.brand) {
+        <li>
+          <a class="brand-tile" [routerLink]="['/', currentLanguage(), 'catalog', 'brand', brandSlug(brand)]">
+            <span class="brand-tile__name">{{ displayName(brand) }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <div class="brands-section__footer">
+      <a class="brands-section__all" [routerLink]="['/', currentLanguage(), 'brands']">
+        {{ 'homeBrands.viewAll' | transloco }}
+        <i class="ri-arrow-right-line"></i>
+      </a>
+    </div>
+  </section>
+}

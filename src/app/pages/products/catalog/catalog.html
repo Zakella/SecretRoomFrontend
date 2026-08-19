@@ -275,7 +275,12 @@
     </div>
   } @else if (brandName()) {
     <div class="seo-text-block">
-      @if (activeLang() === 'ro') {
+      @if (brandSeo(); as seo) {
+        <h2>{{ seo.heading }}</h2>
+        @for (paragraph of seo.paragraphs; track paragraph) {
+          <p>{{ paragraph }}</p>
+        }
+      } @else if (activeLang() === 'ro') {
         <h2>{{ brandAlias() || brandName() }} în Moldova</h2>
         <p>
           Produse originale <strong>{{ brandAlias() || brandName() }}</strong> în Secret Room — noutăți și clasice, la prețuri bune.
@@ -359,5 +364,24 @@
         </p>
       }
     </div>
+  }
+
+  <!-- Перелинковка брендов: настоящие <a href>, входящие ссылки на брендовые страницы -->
+  @if (otherBrands().length > 0) {
+    <nav class="other-brands" [attr.aria-label]="'catalog.otherBrands' | transloco">
+      <h2 class="other-brands__title">{{ 'catalog.otherBrands' | transloco }}</h2>
+      <ul class="other-brands__list">
+        @for (b of otherBrands(); track b.slug) {
+          <li>
+            <a class="other-brands__link" [routerLink]="['/', activeLang(), 'catalog', 'brand', b.slug]">{{ b.label }}</a>
+          </li>
+        }
+        <li>
+          <a class="other-brands__link other-brands__link--all" [routerLink]="['/', activeLang(), 'brands']">
+            {{ 'catalog.allBrands' | transloco }}
+          </a>
+        </li>
+      </ul>
+    </nav>
   }
 </div>

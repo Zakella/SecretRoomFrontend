@@ -347,6 +347,15 @@
       }
     }
 
+    // .info стал <div>: ссылка на товар живёт в .info-main, ссылка на бренд — отдельным <a>
+    .info-main {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      text-decoration: none;
+      color: inherit;
+    }
+
     .brand-name {
       font-family: var(--font-body);
       font-size: 11px;
@@ -355,6 +364,17 @@
       letter-spacing: 0.12em;
       color: var(--gold, #b8956c);
       margin: 0 0 8px;
+
+      .brand-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: var(--text-dark, #2c2421);
+          text-decoration: underline;
+        }
+      }
     }
 
     .name {

@@ -265,6 +265,8 @@
     border: 1px solid rgba(0, 0, 0, 0.03);
     box-shadow: 0 4px 15px rgba(212, 163, 115, 0.1);
     color: #333;
+    text-decoration: none; // элемент стал <a> ради реальной ссылки на бренд
+    box-sizing: border-box;
 
     padding: 14px 18px;
     border-radius: 12px;

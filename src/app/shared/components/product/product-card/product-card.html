@@ -69,16 +69,25 @@
     </a>
   </div>
 
-  <a class="info" [routerLink]="productUrl()" [queryParams]="queryParams()">
+  <div class="info">
 
+    <!-- Ссылка на бренд отдельным <a>: у каждого товара есть бренд, это самый массовый
+         источник входящих внутренних ссылок на /{lang}/catalog/brand/{slug}.
+         Вложить её в ссылку на товар нельзя — <a> внутри <a> невалиден. -->
     <h2 class="brand-name">
-      <span>
-        {{ product()?.brandAlias }}</span>
+      @if (brandUrl(); as url) {
+        <a class="brand-link" [routerLink]="url">{{ product()?.brandAlias }}</a>
+      } @else {
+        <span>{{ product()?.brandAlias }}</span>
+      }
     </h2>
-    <h3 class="name">{{ product() | localizedName }}</h3>
 
-    <product-price [price]="price()!" [oldPrice]="oldPrice()"/>
-  </a>
+    <a class="info-main" [routerLink]="productUrl()" [queryParams]="queryParams()">
+      <h3 class="name">{{ product() | localizedName }}</h3>
+
+      <product-price [price]="price()!" [oldPrice]="oldPrice()"/>
+    </a>
+  </div>
 
   <div class="product-info">
     @if (isOutOfStock()) {

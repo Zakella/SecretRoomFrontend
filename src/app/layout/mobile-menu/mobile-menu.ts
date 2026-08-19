@@ -127,9 +127,9 @@ export class MobileMenu  implements OnInit{
     });
   }
 
-  goToBrandList(brand: Brand) {
-    this.router.navigate(['/', this.activeLang(), 'catalog', 'brand', this.brandService.toSlug(brand.brand)]);
-    this.visible = false;
+  /** Навигация по брендам — через routerLink в шаблоне (реальный <a href> для краулера). */
+  brandSlug(brand: Brand): string {
+    return this.brandService.toSlug(brand.brand);
   }
 
   goToCategory(category: Category) {
