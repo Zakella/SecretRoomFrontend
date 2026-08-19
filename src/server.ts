@@ -126,6 +126,26 @@ async function generateSitemap(): Promise<string> {
   const now = new Date().toISOString().split('T')[0];
   const urls: string[] = [];
 
+  // Бэкенд отдаёт updatedAt массивом [yyyy, M, d, ...] (Jackson без JavaTimeModule),
+  // но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
+  const toLastmod = (value: unknown, fallback: string): string => {
+    try {
+      if (Array.isArray(value) && value.length >= 3) {
+        const [y, m, d] = value as number[];
+        return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      }
+      if (typeof value === 'string' && value.length >= 10) {
+        return value.split('T')[0];
+      }
+      if (typeof value === 'number') {
+        return new Date(value).toISOString().split('T')[0];
+      }
+    } catch {
+      // формат неизвестен — ниже вернём fallback
+    }
+    return fallback;
+  };
+
   const addUrl = (path: string, changefreq: string, priority: string, lastmod: string = now) => {
     const entries: string[] = [];
     for (const lang of LANGUAGES) {
@@ -160,15 +180,18 @@ async function generateSitemap(): Promise<string> {
   // Dynamic: products (lightweight sitemap endpoint, no stock filter)
   try {
     const productsRes = await fetch(`${API_BASE}products/sitemap`);
-    if (productsRes.ok) {
+    if (!productsRes.ok) {
+      console.error(`Sitemap: products endpoint returned ${productsRes.status}`);
+    } else {
       const products: any[] = await productsRes.json();
+      if (!products.length) {
+        console.error('Sitemap: products endpoint returned an empty list');
+      }
       for (const product of products) {
         const slug = slugify(product.name || product.nameRo || '');
-        const productLastmod = product.updatedAt
-          ? product.updatedAt.split('T')[0]
-          : now;
-        addUrl(`/product/${product.appId}/${slug}`, 'weekly', '0.8', productLastmod);
+        addUrl(`/product/${product.appId}/${slug}`, 'weekly', '0.8', toLastmod(product.updatedAt, now));
       }
+      console.log(`Sitemap: ${products.length} products added`);
     }
   } catch (e) {
     console.error('Sitemap: failed to fetch products', e);
