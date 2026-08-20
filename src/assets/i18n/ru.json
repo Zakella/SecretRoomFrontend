@@ -424,7 +424,13 @@
   },
   "catalog": {
     "otherBrands": "Другие бренды",
-    "allBrands": "Все бренды"
+    "allBrands": "Все бренды",
+    "h1": {
+      "bestsellers": "Хиты продаж",
+      "newArrivals": "Новинки",
+      "sales": "Скидки",
+      "default": "Каталог"
+    }
   },
   "homeBrands": {
     "eyebrow": "Бренды",

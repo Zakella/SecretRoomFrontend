@@ -73,7 +73,15 @@ const API_BASE = process.env['SSR_API_URL'] || 'https://api.secretroom.md/api/';
 const SITE_URL = 'https://secretroom.md';
 const LANGUAGES = ['ro', 'ru'];
 
-let sitemapCache: { xml: string; timestamp: number } | null = null;
+/**
+ * Sitemap разбит на секции: /sitemap.xml — индекс, секции лежат по /sitemap-<section>.xml.
+ * Так в Search Console видно покрытие отдельно по товарам, категориям, брендам и статике:
+ * если товары снова перестанут попадать в карту (как было с updatedAt-массивом), это будет
+ * видно сразу по счётчику своей секции, а не размажется по общему числу URL.
+ */
+type SitemapSection = 'static' | 'categories' | 'brands' | 'products';
+const SITEMAP_SECTIONS: SitemapSection[] = ['static', 'categories', 'brands', 'products'];
+const sitemapCache = new Map<SitemapSection, { xml: string; lastmod: string | null; timestamp: number }>();
 const SITEMAP_TTL = 21600000; // 6 hours
 
 function slugify(value: string): string {
@@ -167,136 +175,187 @@ function getProductSlugs(): Map<string, string> | null {
   return productSlugCache?.map ?? null;
 }
 
-async function generateSitemap(): Promise<string> {
-  const now = new Date().toISOString().split('T')[0];
-  const urls: string[] = [];
-
-  // Бэкенд отдаёт updatedAt массивом [yyyy, M, d, ...] (Jackson без JavaTimeModule),
-  // но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
-  const toLastmod = (value: unknown, fallback: string): string => {
-    try {
-      if (Array.isArray(value) && value.length >= 3) {
-        const [y, m, d] = value as number[];
+/**
+ * lastmod из updatedAt. Бэкенд отдаёт его массивом [yyyy, M, d, ...] (Jackson без JavaTimeModule),
+ * но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
+ * Дату определить не удалось → null: тег не выводим вовсе, это честнее подстановки «сегодня».
+ */
+function toLastmod(value: unknown): string | null {
+  try {
+    if (Array.isArray(value) && value.length >= 3) {
+      const [y, m, d] = value as number[];
+      if ([y, m, d].every(n => Number.isFinite(n))) {
         return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       }
-      if (typeof value === 'string' && value.length >= 10) {
-        return value.split('T')[0];
-      }
-      if (typeof value === 'number') {
-        return new Date(value).toISOString().split('T')[0];
-      }
-    } catch {
-      // формат неизвестен — ниже вернём fallback
     }
-    return fallback;
-  };
-
-  const addUrl = (path: string, changefreq: string, priority: string, lastmod: string = now) => {
-    const entries: string[] = [];
-    for (const lang of LANGUAGES) {
-      const loc = `${SITE_URL}/${lang}${path}`;
-      const alternates = LANGUAGES.map(
-        l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`
-      ).join('');
-      const xDefault = `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
-      entries.push(`<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}${xDefault}</url>`);
+    if (typeof value === 'string' && value.length >= 10) {
+      return value.slice(0, 10);
     }
-    urls.push(...entries);
-  };
-
-  // Static pages
-  const staticPages = [
-    { path: '', changefreq: 'daily', priority: '1.0' },
-    { path: '/about-the-secret-room', changefreq: 'monthly', priority: '0.6' },
-    { path: '/contacts', changefreq: 'monthly', priority: '0.5' },
-    { path: '/delivery-terms', changefreq: 'monthly', priority: '0.5' },
-    { path: '/brands', changefreq: 'weekly', priority: '0.7' },
-    { path: '/catalog/vs', changefreq: 'daily', priority: '0.9' },
-    { path: '/catalog/bb', changefreq: 'daily', priority: '0.9' },
-    { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
-    { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
-    { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
-  ];
-
-  for (const page of staticPages) {
-    addUrl(page.path, page.changefreq, page.priority);
+    if (typeof value === 'number') {
+      return new Date(value).toISOString().split('T')[0];
+    }
+  } catch {
+    // формат неизвестен — ниже вернём null
   }
+  return null;
+}
 
-  // Dynamic: products (lightweight sitemap endpoint, no stock filter)
-  try {
-    const productsRes = await fetch(`${API_BASE}products/sitemap`);
-    if (!productsRes.ok) {
-      console.error(`Sitemap: products endpoint returned ${productsRes.status}`);
-    } else {
-      const products: any[] = await productsRes.json();
-      if (!products.length) {
-        console.error('Sitemap: products endpoint returned an empty list');
-      }
-      for (const product of products) {
-        const slug = slugify(product.name || product.nameRo || '');
-        addUrl(`/product/${product.appId}/${slug}`, 'weekly', '0.8', toLastmod(product.updatedAt, now));
-      }
-      console.log(`Sitemap: ${products.length} products added`);
-    }
-  } catch (e) {
-    console.error('Sitemap: failed to fetch products', e);
-  }
+function lastmodTag(lastmod: string | null): string {
+  return lastmod ? `<lastmod>${lastmod}</lastmod>` : '';
+}
 
-  // Dynamic: categories (language-aware slugs)
-  try {
-    const categoriesRes = await fetch(`${API_BASE}web-categories/hierarchy/active`);
-    if (categoriesRes.ok) {
-      const categories: any[] = await categoriesRes.json();
-      const flatCategories = categories.flatMap((cat: any) => [cat, ...(cat.children || [])]);
-      for (const cat of flatCategories) {
-        const roSlug = categorySlug(cat, 'ro');
-        const ruSlug = categorySlug(cat, 'ru');
-        const roLoc = `${SITE_URL}/ro/catalog/${roSlug}`;
-        const ruLoc = `${SITE_URL}/ru/catalog/${ruSlug}`;
-        const alternates = `<xhtml:link rel="alternate" hreflang="ro" href="${escapeXml(roLoc)}" />`
-          + `<xhtml:link rel="alternate" hreflang="ru" href="${escapeXml(ruLoc)}" />`
-          + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(roLoc)}" />`;
-        urls.push(`<url><loc>${escapeXml(roLoc)}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
-        urls.push(`<url><loc>${escapeXml(ruLoc)}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
-      }
-    }
-  } catch (e) {
-    console.error('Sitemap: failed to fetch categories', e);
-  }
-
-  // Dynamic: brands
-  try {
-    const brandsRes = await fetch(`${API_BASE}products/brands`);
-    if (brandsRes.ok) {
-      const brands: any[] = await brandsRes.json();
-      for (const brand of brands) {
-        const slug = brandSlug(brand.brand || '');
-        addUrl(`/catalog/brand/${slug}`, 'weekly', '0.7');
-      }
-    }
-  } catch (e) {
-    console.error('Sitemap: failed to fetch brands', e);
-  }
-
+function urlset(urls: string[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>`;
 }
 
-app.get('/sitemap.xml', async (req, res) => {
-  try {
-    if (sitemapCache && Date.now() - sitemapCache.timestamp < SITEMAP_TTL) {
-      res.set('Content-Type', 'application/xml');
-      res.send(sitemapCache.xml);
-      return;
+/** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится. */
+function langUrls(path: string, changefreq: string, priority: string, lastmod: string | null = null): string[] {
+  const alternates = LANGUAGES
+    .map(l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`)
+    .join('')
+    + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
+
+  return LANGUAGES.map(lang =>
+    `<url><loc>${escapeXml(`${SITE_URL}/${lang}${path}`)}</loc>${lastmodTag(lastmod)}`
+    + `<changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}</url>`
+  );
+}
+
+interface SitemapPart { xml: string; lastmod: string | null }
+
+const STATIC_PAGES = [
+  { path: '', changefreq: 'daily', priority: '1.0' },
+  { path: '/about-the-secret-room', changefreq: 'monthly', priority: '0.6' },
+  { path: '/contacts', changefreq: 'monthly', priority: '0.5' },
+  { path: '/delivery-terms', changefreq: 'monthly', priority: '0.5' },
+  { path: '/brands', changefreq: 'weekly', priority: '0.7' },
+  { path: '/catalog/vs', changefreq: 'daily', priority: '0.9' },
+  { path: '/catalog/bb', changefreq: 'daily', priority: '0.9' },
+  { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
+  { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
+  { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
+];
+
+/**
+ * Статика: даты изменения взять неоткуда — страницы собираются из шаблонов Angular.
+ * lastmod не выводим (спецификация sitemap его не требует).
+ */
+function generateStaticSitemap(): SitemapPart {
+  const urls = STATIC_PAGES.flatMap(page => langUrls(page.path, page.changefreq, page.priority));
+  return { xml: urlset(urls), lastmod: null };
+}
+
+/** Товары — единственная секция с настоящим lastmod: он приходит в products/sitemap. */
+async function generateProductsSitemap(): Promise<SitemapPart> {
+  const res = await fetch(`${API_BASE}products/sitemap`);
+  if (!res.ok) throw new Error(`products/sitemap returned ${res.status}`);
+  const products: any[] = await res.json();
+  // Пустой ответ — не повод публиковать пустую секцию: пусть отдаётся прошлая версия.
+  if (!products.length) throw new Error('products/sitemap returned an empty list');
+
+  const urls: string[] = [];
+  let newest: string | null = null;
+  for (const product of products) {
+    const slug = slugify(product.name || product.nameRo || '');
+    const lastmod = toLastmod(product.updatedAt);
+    if (lastmod && (!newest || lastmod > newest)) newest = lastmod;
+    urls.push(...langUrls(`/product/${product.appId}/${slug}`, 'weekly', '0.8', lastmod));
+  }
+  console.log(`Sitemap: ${products.length} products added`);
+  return { xml: urlset(urls), lastmod: newest };
+}
+
+/**
+ * Категории: слаг зависит от языка, поэтому URL собираем вручную, а не через langUrls.
+ * lastmod нет — /web-categories/hierarchy/active не отдаёт дату изменения, а подставлять
+ * текущую дату значит помечать все категории «изменёнными» при каждой перегенерации.
+ */
+async function generateCategoriesSitemap(): Promise<SitemapPart> {
+  const res = await fetch(`${API_BASE}web-categories/hierarchy/active`);
+  if (!res.ok) throw new Error(`web-categories/hierarchy/active returned ${res.status}`);
+  const categories: any[] = await res.json();
+  const flatCategories = categories.flatMap((cat: any) => [cat, ...(cat.children || [])]);
+
+  const urls: string[] = [];
+  for (const cat of flatCategories) {
+    const roLoc = `${SITE_URL}/ro/catalog/${categorySlug(cat, 'ro')}`;
+    const ruLoc = `${SITE_URL}/ru/catalog/${categorySlug(cat, 'ru')}`;
+    const alternates = `<xhtml:link rel="alternate" hreflang="ro" href="${escapeXml(roLoc)}" />`
+      + `<xhtml:link rel="alternate" hreflang="ru" href="${escapeXml(ruLoc)}" />`
+      + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(roLoc)}" />`;
+    for (const loc of [roLoc, ruLoc]) {
+      urls.push(`<url><loc>${escapeXml(loc)}</loc><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
     }
-    const xml = await generateSitemap();
-    sitemapCache = { xml, timestamp: Date.now() };
-    res.set('Content-Type', 'application/xml');
-    res.send(xml);
+  }
+  return { xml: urlset(urls), lastmod: null };
+}
+
+/** Бренды: products/brands отдаёт только brand + brandAlias, даты изменения нет. */
+async function generateBrandsSitemap(): Promise<SitemapPart> {
+  const res = await fetch(`${API_BASE}products/brands`);
+  if (!res.ok) throw new Error(`products/brands returned ${res.status}`);
+  const brands: any[] = await res.json();
+  const urls = brands.flatMap((brand: any) =>
+    langUrls(`/catalog/brand/${brandSlug(brand.brand || '')}`, 'weekly', '0.7')
+  );
+  return { xml: urlset(urls), lastmod: null };
+}
+
+const SITEMAP_GENERATORS: Record<SitemapSection, () => SitemapPart | Promise<SitemapPart>> = {
+  static: generateStaticSitemap,
+  categories: generateCategoriesSitemap,
+  brands: generateBrandsSitemap,
+  products: generateProductsSitemap,
+};
+
+async function getSitemapSection(section: SitemapSection): Promise<SitemapPart> {
+  const cached = sitemapCache.get(section);
+  if (cached && Date.now() - cached.timestamp < SITEMAP_TTL) return cached;
+
+  try {
+    const part = await SITEMAP_GENERATORS[section]();
+    sitemapCache.set(section, { ...part, timestamp: Date.now() });
+    return part;
   } catch (e) {
-    console.error('Sitemap generation error:', e);
+    console.error(`Sitemap: section "${section}" failed`, e);
+    // Протухшая, но валидная секция лучше пустой. Кэш не перезаписываем — retry на следующем запросе.
+    if (cached) return cached;
+    return { xml: urlset([]), lastmod: null };
+  }
+}
+
+async function generateSitemapIndex(): Promise<string> {
+  const entries = await Promise.all(
+    SITEMAP_SECTIONS.map(async section => {
+      const { lastmod } = await getSitemapSection(section);
+      return `<sitemap><loc>${SITE_URL}/sitemap-${section}.xml</loc>${lastmodTag(lastmod)}</sitemap>`;
+    })
+  );
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.join('\n')}\n</sitemapindex>`;
+}
+
+app.get('/sitemap.xml', async (_req, res) => {
+  try {
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.send(await generateSitemapIndex());
+  } catch (e) {
+    console.error('Sitemap index generation error:', e);
     res.status(500).send('Error generating sitemap');
   }
 });
+
+for (const section of SITEMAP_SECTIONS) {
+  app.get(`/sitemap-${section}.xml`, async (_req, res) => {
+    try {
+      const { xml } = await getSitemapSection(section);
+      res.set('Content-Type', 'application/xml; charset=utf-8');
+      res.send(xml);
+    } catch (e) {
+      console.error(`Sitemap section "${section}" error:`, e);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+}
 
 app.get('/robots.txt', (req, res) => {
   const host = req.hostname;

@@ -1,20 +1,20 @@
 <div appFadeUp class="catalog-page">
-  <h1 class="visually-hidden">
+  <!-- Видимый h1: заголовок страницы каталога, согласован с началом <title>. -->
+  <h1 class="catalog-title">
     @if (brandAlias() || brandName()) {
       {{ brandAlias() || brandName() }}
     } @else if (localizedCategoryName()) {
-      {{ localizedCategoryName() }} Victoria's Secret
+      {{ localizedCategoryName() }}
     } @else {
       @switch (category()) {
-        @case ('vs') { Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice }
-        @case ('bb') { Bath & Body Works Moldova — Lumânări, Loțiuni, Cosmetice }
-        @case ('bestsellers') { Bestsellere Victoria's Secret și Bath & Body Works }
-        @case ('new-arrivals') { Noutăți Victoria's Secret și Bath & Body Works }
-        @case ('sales') { Reduceri Victoria's Secret și Bath & Body Works }
-        @default { Catalog }
+        @case ('vs') { Victoria's Secret }
+        @case ('bb') { Bath & Body Works }
+        @case ('bestsellers') { {{ 'catalog.h1.bestsellers' | transloco }} }
+        @case ('new-arrivals') { {{ 'catalog.h1.newArrivals' | transloco }} }
+        @case ('sales') { {{ 'catalog.h1.sales' | transloco }} }
+        @default { {{ 'catalog.h1.default' | transloco }} }
       }
     }
-    — Secret Room Moldova
   </h1>
 
   @if (hasFilters()) {

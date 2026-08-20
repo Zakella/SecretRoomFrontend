@@ -22,6 +22,7 @@ export class MetaService {
     ).subscribe(() => {
       this.updateCanonicalUrl();
       this.autoUpdateAlternateTags();
+      this.updateOpenGraphLocaleAndType();
     });
   }
 
@@ -104,6 +105,24 @@ export class MetaService {
 
   clearAlternateOverride() {
     this.alternateOverride = false;
+  }
+
+  /**
+   * og:locale и og:type выводим из URL — единственный источник правды и на SSR, и в SPA.
+   * До этого оба тега были захардкожены в index.html: русские страницы отдавались как ro_MD,
+   * а карточка товара — как website.
+   *
+   * ru_MD, а не ru_RU: обе локали сайта указывают на один рынок — Молдову; ru_RU увёл бы
+   * русскую версию в российский регион, хотя и товары, и доставка, и цены здесь молдавские.
+   */
+  private updateOpenGraphLocaleAndType() {
+    const segments = this.router.url.split('?')[0].split('#')[0].split('/');
+    const lang = segments[1] === 'ru' ? 'ru' : 'ro';
+    const locales: Record<string, string> = { ro: 'ro_MD', ru: 'ru_MD' };
+
+    this.meta.updateTag({ property: 'og:locale', content: locales[lang] });
+    this.meta.updateTag({ property: 'og:locale:alternate', content: locales[lang === 'ro' ? 'ru' : 'ro'] });
+    this.meta.updateTag({ property: 'og:type', content: segments[2] === 'product' ? 'product' : 'website' });
   }
 
   /** Auto-generate hreflang alternates from current URL by swapping the lang segment */
