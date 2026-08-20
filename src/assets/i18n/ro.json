@@ -422,7 +422,13 @@
   },
   "catalog": {
     "otherBrands": "Alte branduri",
-    "allBrands": "Toate brandurile"
+    "allBrands": "Toate brandurile",
+    "h1": {
+      "bestsellers": "Bestsellere",
+      "newArrivals": "Noutăți",
+      "sales": "Reduceri",
+      "default": "Catalog"
+    }
   },
   "homeBrands": {
     "eyebrow": "Branduri",
