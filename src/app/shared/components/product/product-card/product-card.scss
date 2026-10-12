@@ -163,6 +163,38 @@
     }
   }
 
+  // «+N цветов» — плашка в левом нижнем углу фото: поверх изображения, в поток не входит,
+  // поэтому плитки без optionCount выглядят как раньше, а высота плитки не меняется.
+  .more-options {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 10;
+    max-width: calc(100% - 72px); // место под сердечко справа
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-black, #2c2421);
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    @media (max-width: 768px) {
+      left: 8px;
+      bottom: 10px;
+      max-width: calc(100% - 56px);
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+  }
+
   // ─────────────────────────────────────────────────────────────
   // BADGES
   // ─────────────────────────────────────────────────────────────

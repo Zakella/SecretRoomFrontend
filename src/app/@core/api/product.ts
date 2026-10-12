@@ -6,6 +6,10 @@ import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
 import {FilterGroup} from '../../entities/filter-group';
 
+export interface ProductRedirect {
+  redirectToAppId: number;
+}
+
 @Injectable(
   {
     providedIn: 'root'
@@ -42,6 +46,14 @@ export class ProductService {
 
   getProductById(id: string | null): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
+  }
+
+  /**
+   * Куда переехала погашенная карточка модели. 200 → {redirectToAppId}, 404 → редиректа нет.
+   * Публичный метод, без токена. Спрашивать только после 404 от findProduct.
+   */
+  getRedirect(id: string | null): Observable<ProductRedirect> {
+    return this.http.get<ProductRedirect>(`${this.baseUrL}/redirect/${id}`)
   }
 
   getBestSellers(page: number, size: number, brand?: string, filters?: string): Observable<GetResponse> {

@@ -61,6 +61,10 @@
       <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
+    @if (extraOptions(); as extra) {
+      <span class="more-options">{{ extra.key | transloco: {count: extra.count} }}</span>
+    }
+
     <a class="img-container" [routerLink]="productUrl()" [queryParams]="queryParams()">
       <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
       @if (hoverImageUrl()) {

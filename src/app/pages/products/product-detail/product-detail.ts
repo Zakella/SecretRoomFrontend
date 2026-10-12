@@ -117,7 +117,8 @@ export class ProductDetail {
     if (!product) {
       this.productNotFound.set(true);
       this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
-      if (this.responseInit) {
+      // 301 на мастера уже выставлен резолвером (погашенная карточка модели): не затираем его 404
+      if (this.responseInit && this.responseInit.status !== 301) {
         this.responseInit.status = 404;
         this.responseInit.statusText = 'Not Found';
       }

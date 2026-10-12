@@ -1,7 +1,7 @@
 @if (visible()) {
   <div class="product-swatches">
-    <span class="swatches-label">{{ typeKey() | transloco }}:</span>
-    <ul class="swatches-list">
+    <span class="swatches-label" [id]="labelId">{{ typeKey() | transloco }}:</span>
+    <ul class="swatches-list" [attr.aria-labelledby]="labelId">
       @for (item of items(); track item.sibling.appId) {
         <li>
           @if (item.sibling.current) {

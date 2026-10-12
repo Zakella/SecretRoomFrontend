@@ -13,6 +13,7 @@ import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {Slugify} from '../../../../@core/services/slugify';
 import {BrandService} from '../../../../@core/api/brand';
 import {ProductPrice} from '../product-price/product-price';
+import {extraOptionsCount, moreOptionsKey} from './option-count-label';
 
 @Component({
   selector: 'product-card',
@@ -74,6 +75,13 @@ export class ProductCard {
   queryParams = computed(() => {
     const variantId = this.product()?.selectedVariantAppId;
     return variantId ? {variant: variantId} : {};
+  });
+
+  /** «+N» других карточек модели; null — плашки нет (optionCount пуст или < 2). */
+  extraOptions = computed(() => {
+    const count = extraOptionsCount(this.product()?.optionCount);
+    if (count === null) return null;
+    return {count, key: moreOptionsKey(this.product()?.optionType, count, this.activeLang())};
   });
 
   toggleFavorite(event: Event) {
