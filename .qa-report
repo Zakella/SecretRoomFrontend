@@ -1,5 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-12T11:45:35+03:00
-Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды); перепроверка: реальный адрес Atrium et.2 but.2018 + текст Nayomi
-Checks: UI/SSR ✓ (ro/ru), Map/route coords ✓, JSON-LD ✓, i18n ✓, Security ✓
-### Tree: 8c89bb3ac7732615635efad1ad30b37adfbf948f
+Date: 2026-10-13T02:20:00+03:00
+Task: SR-97 — склейка /catalog/vs|bb в /catalog/brand/victorias-secret|bath-and-body (301 в server.ts, SEO-тексты в brand-seo.ts, noindex для hero)
+Checks: 301 одним хопом ✓, легаси ✓, не задетые маршруты ✓, brand-мета/SEO-блок ✓, sitemap ✓, hero robots ✓, ссылки (grep) ✓, раскладка 1280/390 ✓
+Notes: легаси со слэшем (/vs/) — 2 хопа (известно, не баг). Product-detail «Назад в каталог» проверен по диффу (ветка not-found), в живую не кликалась.
+### Tree: bac755ffc15761538f77e7b572c869bfb2bb22b8
