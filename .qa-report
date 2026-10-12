@@ -1,5 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-10-12T11:26:18+03:00
-Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды)
-Checks: UI ✓ (ro/ru, 1440/375), Lightbox ✓, SSR/JSON-LD ✓, i18n ✓, Security ✓, Regression Atrium/Eminescu ✓
-### Tree: e642bc21c4aefabf6be17abcb94a70d76f1bc07c
+Date: 2026-10-12T11:45:35+03:00
+Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды); перепроверка: реальный адрес Atrium et.2 but.2018 + текст Nayomi
+Checks: UI/SSR ✓ (ro/ru), Map/route coords ✓, JSON-LD ✓, i18n ✓, Security ✓
+### Tree: 8c89bb3ac7732615635efad1ad30b37adfbf948f

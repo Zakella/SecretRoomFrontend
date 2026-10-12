@@ -98,12 +98,11 @@ export class Contacts implements OnInit {
       id: 3,
       name: 'Secret Angel',
       imgUrl: 'https://secretroom.md/stores/secret-angel/3-entrance-desktop.jpg',
-      // TODO(SR-77): real address and coordinates from the owner
-      location: 'Chișinău, Moldova',
+      location: 'Atrium, et. 2, but. 2018, str. Albişoara 4, Chișinău, Moldova',
       workTime:  '10:00 - 21:00',
       contact: '060099775',
-      latitude: 47.0105,
-      longitude: 28.8638,
+      latitude: 47.015438488623985,
+      longitude: 28.856022676715895,
       isNew: true,
       layout: 'collage',
       photos: [

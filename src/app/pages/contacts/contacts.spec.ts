@@ -59,6 +59,13 @@ describe('Contacts', () => {
       expect(eminescu.photos).toEqual([{desktop: '/stores/eminescu/1.jpeg'}]);
     });
 
+    it('should place Secret Angel on the second floor of Atrium at the Atrium map point', () => {
+      const [atrium, , angel] = contacts.stores;
+      expect(angel.location).toBe('Atrium, et. 2, but. 2018, str. Albişoara 4, Chișinău, Moldova');
+      expect(angel.latitude).toBe(atrium.latitude);
+      expect(angel.longitude).toBe(atrium.longitude);
+    });
+
     it('should describe Secret Angel as a collage card with four photos', () => {
       const angel = contacts.stores[2];
       expect(angel.name).toBe('Secret Angel');

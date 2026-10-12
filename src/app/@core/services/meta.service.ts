@@ -297,7 +297,7 @@ export class MetaService {
           "name": "Secret Angel",
           "address": {
             "@type": "PostalAddress",
-            // TODO(SR-77): streetAddress from the owner
+            "streetAddress": "Strada Albișoara 4, CC Atrium, et. 2, but. 2018",
             "addressLocality": "Chișinău",
             "addressCountry": "MD"
           }
