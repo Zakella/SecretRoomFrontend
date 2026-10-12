@@ -110,6 +110,24 @@ describe('ProductSwatches', () => {
     expect(imgs[0].getAttribute('width')).toBe('52');
   });
 
+  it('a11y: список связан с подписью типа через aria-labelledby, id уникален между экземплярами', () => {
+    render(THREE);
+    const list = el().querySelector('ul.swatches-list') as HTMLElement;
+    const labelId = list.getAttribute('aria-labelledby');
+    expect(labelId).toBeTruthy();
+    const label = el().querySelector(`#${labelId}`) as HTMLElement;
+    expect(label).not.toBeNull();
+    expect(label.classList.contains('swatches-label')).toBeTrue();
+    expect(label.textContent).toContain(':');
+
+    const second = TestBed.createComponent(ProductSwatches);
+    second.componentRef.setInput('siblings', THREE);
+    second.detectChanges();
+    const secondId = (second.nativeElement as HTMLElement).querySelector('ul.swatches-list')!.getAttribute('aria-labelledby');
+    expect(secondId).toBeTruthy();
+    expect(secondId).not.toBe(labelId);
+  });
+
   it('подпись типа по optionType', () => {
     expect(optionTypeLabelKey('COLOR')).toBe('OptionTypeColor');
     expect(optionTypeLabelKey('SCENT')).toBe('OptionTypeScent');

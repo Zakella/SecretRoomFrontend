@@ -33,6 +33,9 @@ interface SwatchView {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductSwatches {
+  private static nextId = 0;
+  /** Уникальный id подписи типа: на странице может быть несколько блоков (aria-labelledby списка). */
+  protected readonly labelId = `swatches-label-${ProductSwatches.nextId++}`;
   private slugify = inject(Slugify);
   private activeLang = inject(Language).currentLanguage;
 
