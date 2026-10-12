@@ -1,28 +1,20 @@
-# QA report SR-92 (свотчи соседних карточек модели)
+ALL CLEAR ✓
+Date: 2026-10-12
+Task: SR-92 — свотчи цвета/аромата соседних карточек модели в карточке товара (product-swatches)
 
-## Ревью git diff --cached
-- SSR: window/document/localStorage в product-swatches.ts и variant-selection.ts нет. Язык берётся из сигнала Language.currentLanguage.
-- `any` в новом коде нет. Типы: ProductSibling, input<ProductSibling[] | null | undefined>.
-- i18n: OptionTypeColor/Scent/Shade/Variant добавлены парой в ru.json и ro.json, оба файла валидный JSON. Ключ OutOfStock уже есть в обоих.
-- Блок при siblings < 2: в product-detail.html обёртка `@if (hasSwatches())`, внутри компонента `@if (visible())`. Пустого враппера нет (тест проверяет пустой innerHTML для undefined, null, [], одного элемента).
-- Активный свотч: `<span aria-current="true">`, не ссылка. Остальные `<a routerLink>`.
-- Распроданный остаётся ссылкой (a.swatch.out-of-stock), в title и visually-hidden есть «Нет на складе / Indisponibil».
-- ?size= переносится через queryParams, при отсутствии размера параметр null. Предвыбор по размеру: findVariantBySize требует available && inStock, иначе откат на прежнюю логику.
-- ?variant= не изменён: preselected имеет приоритет, sameSize считается только при его отсутствии.
-- Замечание (не баг): selector `product-swatches` без префикса `app`, даёт 1 lint warning component-selector. Остальные компоненты shared используют тот же стиль (в проекте 172 warning).
+Стенд: production-сборка копии в scratchpad (apiUrl -> мок на :4421), SSR на :4422, репозиторий не менялся. Мок: A=1001 (+1002 синий, 1003 зелёный без M, 1004 распродан), B=2001 (siblings нет), C=2002 (siblings:[]), D=2003 (1 элемент), E=3001..3012 (12 соседей, 3005 распродан).
+Скриншоты: /Users/zakella/.claude/jobs/269c6547/tmp/
 
-## Тесты
-`ng test` (product-swatches.spec, variant-selection.spec, product-card.spec): TOTAL 20 SUCCESS.
+Проверки:
+1. SSR ✓ — curl /ru/product/1001/...: 3 <a href="/ru/product/100X/...?size=S"> + <span aria-current="true"> у активного; распроданный: title «Чёрный — Нет на складе» + visually-hidden. В браузере нет NG0500 и ошибок гидрации/JS; в консоли только 404 на assets/fonts/PublicSans-Light.woff (файла нет в репо, к задаче не относится, есть и на карточках без свотчей).
+2. Вид ✓ — 1280 и 375: блок под ценой/артикулом, активный с рамкой, распроданный перечёркнут диагональю и приглушён, подпись «Нет на складе» в title и скринридере. scrollWidth == clientWidth на обоих (нет горизонтального скролла). E (12): 2 строки на 1280, 3 строки на 375. Скрины: view-A-1280.png, view-E-1280.png, view-E-375.png, view-A-375.png, view-Aro-1280.png, view-Aro-375.png, shot-A-1280.png, shot-A-375.png, shot-E-*.png, shot-*-swatches.png
+3. Клик ✓ — A(M)->B: /1002?size=M, выбран M, h1/цена/главное фото/миниатюры соседа; A(L)->C: size=L выбран L; A(M)->C (нет M): выбран S (первый доступный как раньше); ?size=l без регистра работает; ?size=L&variant=10021 -> выбран M (variant главнее); клик по распроданному 1004: страница 200, ни одного появления .product-not-found (MutationObserver), все findProduct 200. Прокрутка: после клика scrollY=0 (глобальный scrollPositionRestoration:'top' при любой смене URL, галерея сверху), лишних повторных прыжков не замечено.
+4. B, C, D ✓ — в DOM (SSR и после гидрации) нет product-swatches и .product-swatches; CLS и вёрстка совпадают со свотчной карточкой за вычетом блока.
+5. RO ✓ — заголовки «Culoare:» (COLOR) / «Aromă:» (SCENT), href /ro/product/..., title «Negru — Indisponibil».
+6. CLS ✓ (layout-shift, без hadRecentInput, 1280/375): A 0.0091/0.0415, A-ro 0.0096/0.0436, E 0.0091/0.0425, B 0.0092/0.0407, C 0.0092/0.0407, D 0.0092/0.0408. Свотчи сдвига не добавляют (разница на уровне шума).
 
-## Lint
-`ng lint`: 0 errors, 172 warnings (по новым файлам только component-selector выше).
-
-## Build
-Не перезапускался, по условию зелёный.
-
-## Баги
-Не найдено.
-
-ALL CLEAR
-
+Замечания (не баги):
+- Ссылки несут ?size= даже без явного выбора пользователя (подставляется авто-выбранный первый доступный размер). Если у соседа этот размер есть, он будет выбран вместо его «первого доступного»; безвредно, если порядок размеров одинаковый.
+- Распроданный сосед ведёт на свою страницу: если реальный бэк на нём отдаст 404 (неактивный/скрытый товар), пользователь получит страницу «не найдено» — проверить на бэке, в моке не проверить.
+- Для распроданной карточки (все размеры недоступны) активной остаётся первая кнопка размера с disabled — старое поведение страницы.
 ### Tree: 999168b1a81bcc407c92204624e0f3db4d507091
