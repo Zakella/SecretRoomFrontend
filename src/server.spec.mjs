@@ -36,7 +36,7 @@ const BRANDS = [
 
 /** Сколько <url> обязана отдать каждая секция на этих фикстурах (по 2 языка на адрес). */
 const EXPECTED_SECTION_URLS = {
-  static: 20,      // 10 статических страниц
+  static: 16,      // 8 статических страниц (vs/bb склеены 301 на brand-URL, SR-97)
   categories: 4,   // родитель + ребёнок
   brands: 4,       // 2 бренда
   products: 4,     // 2 товара
@@ -527,7 +527,7 @@ describe('server.ts — видимый H1 каталога', () => {
   });
 
   it('на странице бренда ровно один h1, и он не спрятан', async () => {
-    const {res, body} = await getText('/ro/catalog/vs');
+    const {res, body} = await getText('/ro/catalog/brand/victorias-secret');
     assert.equal(res.status, 200);
 
     const headings = [...body.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)];
@@ -747,7 +747,7 @@ describe('server.ts — SR-96: каталог «не найдено» тольк
     });
   }
 
-  for (const path of ['/ro/catalog/brand/victorias-secret', '/ro/catalog/vs', '/ro/catalog/bestsellers']) {
+  for (const path of ['/ro/catalog/brand/victorias-secret', '/ro/catalog/bestsellers']) {
     it(`${path} → 200 с canonical и hreflang`, async () => {
       const {res, body} = await getText(path);
       assert.equal(res.status, 200);
@@ -780,6 +780,98 @@ describe('server.ts — SR-96: сбой API — «не знаем», а не 404
       assert.doesNotMatch(body, NOINDEX);
     } finally {
       categoriesEmpty = false;
+    }
+  });
+});
+
+describe('server.ts — склейка /catalog/vs и /catalog/bb на brand-страницы (SR-97)', () => {
+  before(async () => {
+    clockOffset = 0;
+    sitemapCalls = 0;
+    sitemapGate = null;
+    sitemapFails = false;
+    sitemapEmpty = false;
+    categoriesEmpty = false;
+    await startServer();
+  });
+
+  after(async () => {
+    if (server) await new Promise(resolve => server.close(resolve));
+    server = null;
+  });
+
+  const VS = '/catalog/brand/victorias-secret';
+  const BB = '/catalog/brand/bath-and-body';
+
+  /** Один хоп: 301 и Location сразу на конечный адрес, который сам уже не редиректит. */
+  async function assertSingleHop(from, to) {
+    const res = await get(from);
+    assert.equal(res.status, 301, `${from} → ${res.status}`);
+    assert.equal(res.headers.get('location'), to, `${from} увёл не туда`);
+    const next = await get(to.split('?')[0]);
+    assert.ok(![301, 302, 307, 308].includes(next.status), `${to} редиректит дальше — цепочка`);
+  }
+
+  for (const lang of ['ro', 'ru']) {
+    it(`/${lang}/catalog/vs → 301 /${lang}${VS}`, async () => {
+      await assertSingleHop(`/${lang}/catalog/vs`, `/${lang}${VS}`);
+    });
+
+    it(`/${lang}/catalog/bb → 301 /${lang}${BB}`, async () => {
+      await assertSingleHop(`/${lang}/catalog/bb`, `/${lang}${BB}`);
+    });
+  }
+
+  it('query string переживает редирект', async () => {
+    let res = await get('/ru/catalog/bb?x=1&utm_source=fb');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), `/ru${BB}?x=1&utm_source=fb`);
+
+    res = await get('/ro/catalog/vs/?page=2');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), `/ro${VS}?page=2`);
+  });
+
+  it('хвостовой слэш и верхний регистр — тоже один хоп, без промежуточного /catalog/vs', async () => {
+    await assertSingleHop('/ro/catalog/vs/', `/ro${VS}`);
+    await assertSingleHop('/ru/catalog/bb/', `/ru${BB}`);
+    await assertSingleHop('/RO/catalog/VS', `/ro${VS}`);
+  });
+
+  it('чужой язык и похожие теги не перехватываются', async () => {
+    const res = await get('/en/catalog/vs');
+    assert.notEqual(res.headers.get('location'), `/en${VS}`);
+    for (const path of ['/ro/catalog/vsx', '/ro/catalog/constructor', '/ro/catalog/bestsellers']) {
+      const r = await get(path);
+      assert.ok(!String(r.headers.get('location') || '').includes('/catalog/brand/'), `${path} ушёл на бренд`);
+    }
+  });
+
+  it('легаси-адреса ведут сразу на brand-URL, без цепочки через /catalog/vs|bb', async () => {
+    const cases = [
+      ['/vs', `/ro${VS}`],
+      ['/bb', `/ro${BB}`],
+      ['/vs/all-vs-products', `/ro${VS}`],
+      ['/bb/all-bb-products', `/ro${BB}`],
+      ['/vs/category/5', `/ro${VS}`],
+      ['/bb/category/5', `/ro${BB}`],
+    ];
+    for (const [from, to] of cases) await assertSingleHop(from, to);
+  });
+
+  it('sitemap: нет /catalog/vs и /catalog/bb, brand-URL — ровно по разу на язык', async () => {
+    const xmls = [];
+    for (const section of ['static', 'categories', 'brands', 'products']) {
+      xmls.push((await getText(`/sitemap-${section}.xml`)).body);
+    }
+    const all = xmls.join('\n');
+    assert.doesNotMatch(all, /<loc>[^<]*\/catalog\/(vs|bb)<\/loc>/);
+    assert.doesNotMatch(all, /href="[^"]*\/catalog\/(vs|bb)"/);
+    for (const lang of ['ro', 'ru']) {
+      for (const path of [VS, BB]) {
+        const loc = `<loc>https://secretroom.md/${lang}${path}</loc>`;
+        assert.equal(all.split(loc).length - 1, 1, `${loc} встречается не один раз`);
+      }
     }
   });
 });

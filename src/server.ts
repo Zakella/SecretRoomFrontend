@@ -47,6 +47,26 @@ app.use((req, res, next) => {
 });
 
 /**
+ * SR-97: /{lang}/catalog/vs and /{lang}/catalog/bb duplicated the brand pages — glue them with 301.
+ * Registered BEFORE the lowercase (SR-96) and trailing-slash middlewares on purpose: Express routing is non-strict and
+ * case-insensitive, so /ro/catalog/vs/ and /RO/catalog/VS land here too and get ONE hop straight
+ * to the final brand URL (no slash → brand chain). Query string is kept as is.
+ */
+const BRAND_PAGE_BY_LEGACY_TAG = new Map<string, string>([
+  ['vs', '/catalog/brand/victorias-secret'],
+  ['bb', '/catalog/brand/bath-and-body'],
+]);
+
+app.get('/:lang/catalog/:tag', (req, res, next) => {
+  const lang = req.params['lang'].toLowerCase();
+  const target = BRAND_PAGE_BY_LEGACY_TAG.get(req.params['tag'].toLowerCase());
+  if (!LANGUAGES.includes(lang) || !target) return next();
+  const queryStart = req.originalUrl.indexOf('?');
+  const query = queryStart >= 0 ? req.originalUrl.slice(queryStart) : '';
+  res.redirect(301, `/${lang}${target}${query}`);
+});
+
+/**
  * SR-96: адрес с заглавными буквами → 301 на lowercase, query сохраняется.
  * /RO/catalog/Sutiene/?a=1 → /ro/catalog/sutiene?a=1 — один хоп вместе со снятием слэша,
  * поэтому стоит ДО middleware слэша (иначе слэш и регистр дали бы цепочку из двух 301).
@@ -270,8 +290,6 @@ const STATIC_PAGES = [
   { path: '/contacts', changefreq: 'monthly', priority: '0.5' },
   { path: '/delivery-terms', changefreq: 'monthly', priority: '0.5' },
   { path: '/brands', changefreq: 'weekly', priority: '0.7' },
-  { path: '/catalog/vs', changefreq: 'daily', priority: '0.9' },
-  { path: '/catalog/bb', changefreq: 'daily', priority: '0.9' },
   { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
   { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
   { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
@@ -442,7 +460,7 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
     }
   } catch { /* fallback below */ }
 
-  res.redirect(301, `/ro/catalog/${brand}`);
+  res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get(brand)}`);
 });
 
 /**
@@ -475,20 +493,20 @@ app.get('/:lang/product-detail/:id', async (req, res, next) => {
 /**
  * 301 redirects for legacy category URLs.
  * Old: /vs/category/ID or /bb/category/ID
- * New: /ro/catalog/vs or /ro/catalog/bb (brand page)
+ * New: /ro/catalog/brand/victorias-secret or /ro/catalog/brand/bath-and-body (final URL, one hop)
  */
 app.get(['/vs/category/:id', '/bb/category/:id'], (req, res) => {
   const brand = req.path.startsWith('/vs') ? 'vs' : 'bb';
-  res.redirect(301, `/ro/catalog/${brand}`);
+  res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get(brand)}`);
 });
 
 /**
- * 301 redirects for legacy brand root and "all products" pages.
+ * 301 redirects for legacy brand root and "all products" pages — straight to the brand page.
  */
-app.get('/vs', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
-app.get('/bb', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
-app.get('/vs/all-vs-products', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
-app.get('/bb/all-bb-products', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
+app.get('/vs', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('vs')}`));
+app.get('/bb', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('bb')}`));
+app.get('/vs/all-vs-products', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('vs')}`));
+app.get('/bb/all-bb-products', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('bb')}`));
 
 /**
  * 301 redirects for legacy pages without language prefix.

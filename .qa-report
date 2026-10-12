@@ -1,5 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-13
-Task: SR-96 повторный прогон после NEEDS_FIXES (503 на product-detail при пустом кэше слагов; пустой список категорий не даёт 404)
-Checks: product-detail 503+Retry-After+no-store (API лежит) ✓, 301 одним хопом / 404 неизвестный id (API жив) ✓, catalog 404+noindex без canonical/hreflang и 200 с canonical+hreflang ✓, catalog при лежащем API 200 ✓, node --test src/server.spec.mjs 58/58 ✓, ревью диффа ✓
-### Tree: 5448fd6c3aa5b432b475ce697322e75565ab9ba4
+Date: 2026-10-13T03:00:00+03:00
+Task: SR-97 — повторный прогон по слиянию с SR-96 (origin/epic/seo): 301 /catalog/vs|bb на brand + lowercase-301, ro/ru, soft-404, hero noindex
+Checks: lowercase+brand за один 301 ✓ (/RO/catalog/VS, /Ru/Catalog/Bb/, /RO/catalog/vs/?utm=1 с query), /en|/EN/catalog/vs -> 404 без редиректа ✓, /ro/catalog/vs и /ru/catalog/bb один 301 ✓, SR-96 цел (/RO/catalog/Sutiene 1x301, nu-exista 404+noindex, brand и bestsellers 200 + canonical + hreflang) ✓, hero/1 200 и один meta robots "noindex, follow" ✓, легаси /vs и /bb/category/7 один 301 ✓
+Notes: стенд PORT=4421 на dist/secret-room (сборка из текущего дерева), сервер остановлен.
+### Tree: f28670c9b36187293ce0e62508f82492c1e6c5f6
