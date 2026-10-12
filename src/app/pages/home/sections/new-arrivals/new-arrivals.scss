@@ -124,6 +124,9 @@ $bg: #fdfdfd;
 }
 
 .product-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
   min-width: 320px;
   flex-shrink: 0;
   opacity: 0.6;
@@ -135,6 +138,11 @@ $bg: #fdfdfd;
 
   &.active {
     opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--gold, #b8956c);
+    outline-offset: -2px; // мобильный трек со scroll по x обрезает внешнее кольцо
   }
 
   &:hover {
