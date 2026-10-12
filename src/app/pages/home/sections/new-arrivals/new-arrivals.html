@@ -32,10 +32,10 @@
       <div class="slider-viewport">
         <div class="slider-track" [style.transform]="'translateX(' + translateX + 'px)'">
           @for (item of newArrivals(); track item.id; let i = $index) {
-            <div
+            <a
               class="product-card"
               [class.active]="i === currentIndex"
-              [routerLink]="['/', currentLanguage(), 'product-detail', item.id]"
+              [routerLink]="productUrl(item)"
             >
               <div class="image-wrapper">
                 <div class="img-container">
@@ -61,7 +61,7 @@
                 <h3 class="name">{{ item | localizedName }}</h3>
                 <product-price [price]="item.price" [oldPrice]="item.oldPrice"/>
               </div>
-            </div>
+            </a>
           }
 
         </div>

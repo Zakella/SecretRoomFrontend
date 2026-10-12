@@ -53,6 +53,7 @@ let sitemapGate = null;
 let sitemapFails = false;
 /** Апстрим жив, но отдаёт пустой список — секция не должна публиковать пустоту. */
 let sitemapEmpty = false;
+let categoriesEmpty = false;
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -80,7 +81,7 @@ before(() => {
       if (sitemapFails) return new Response('upstream down', {status: 503});
       return json(sitemapEmpty ? [] : PRODUCTS);
     }
-    if (url.includes('web-categories/hierarchy/active')) return json(CATEGORIES);
+    if (url.includes('web-categories/hierarchy/active')) return json(categoriesEmpty ? [] : CATEGORIES);
     if (url.endsWith('products/brands')) return json(BRANDS);
     return json([]);
   };
@@ -540,6 +541,249 @@ describe('server.ts — видимый H1 каталога', () => {
   });
 });
 
+/** Общая подготовка SR-96-блоков: чистое состояние заглушки и свежий инстанс сервера. */
+function sr96Server() {
+  before(async () => {
+    clockOffset = 0;
+    sitemapCalls = 0;
+    sitemapGate = null;
+    sitemapFails = false;
+    sitemapEmpty = false;
+    categoriesEmpty = false;
+    await startServer();
+  });
+
+  after(async () => {
+    if (server) await new Promise(resolve => server.close(resolve));
+    server = null;
+  });
+}
+
+const hasCanonical = html => /<link rel="canonical"/.test(html);
+const hasHreflang = html => /<link rel="alternate"[^>]*hreflang/.test(html);
+const NOINDEX = /<meta name="robots" content="noindex, nofollow"/;
+
+describe('server.ts — SR-96: lowercase-301', () => {
+  sr96Server();
+
+  it('заглавные в пути → 301 на lowercase', async () => {
+    const res = await get('/RO/catalog/Sutiene');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro/catalog/sutiene');
+  });
+
+  it('query сохраняется как есть (регистр значений тоже)', async () => {
+    const res = await get('/RO/catalog/Sutiene?Brand=VS&a=1');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro/catalog/sutiene?Brand=VS&a=1');
+  });
+
+  it('слэш в конце + заглавные — один хоп, а не цепочка', async () => {
+    const res = await get('/RO/catalog/Sutiene/?a=1');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro/catalog/sutiene?a=1');
+  });
+
+  it('путь уже в нижнем регистре — без редиректа', async () => {
+    const res = await get('/ro/contacts');
+    assert.equal(res.status, 200);
+  });
+
+  it('ассеты и файлы с расширением не трогает (регистр имён сохраняется)', async () => {
+    for (const path of ['/favicon.ico', '/stores/atrium/Atrium-Collage.JPG', '/Manifest.webmanifest', '/Sitemap.xml']) {
+      const res = await get(path);
+      assert.notEqual(res.status, 301, `${path} не должен редиректиться`);
+    }
+  });
+
+  it('/api не трогает', async () => {
+    const res = await get('/api/Products/Brands');
+    assert.notEqual(res.status, 301);
+  });
+
+  it('номер заказа и поисковый запрос — регистр параметра сохраняется', async () => {
+    let res = await get('/RO/order-success/AbC123');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro/order-success/AbC123');
+    res = await get('/ro/search/Bombshell');
+    assert.notEqual(res.status, 301);
+  });
+
+  it('чужой язык в верхнем регистре — сразу 404, без лишнего хопа', async () => {
+    const res = await get('/EN/Contacts');
+    assert.equal(res.status, 404);
+  });
+
+  it('percent-escape в верхнем регистре не считается заглавными', async () => {
+    const res = await get('/ru/catalog/%D0%B1');
+    assert.notEqual(res.status, 301);
+  });
+});
+
+describe('server.ts — SR-96: язык только ro/ru', () => {
+  sr96Server();
+
+  for (const path of ['/en', '/xx/contacts']) {
+    it(`${path} → 404 с noindex и без canonical/hreflang`, async () => {
+      const {res, body} = await getText(path);
+      assert.equal(res.status, 404);
+      assert.match(body, NOINDEX);
+      assert.ok(!hasCanonical(body), 'canonical на 404');
+      assert.ok(!hasHreflang(body), 'hreflang на 404');
+    });
+  }
+
+  for (const path of ['/ro', '/ru/contacts']) {
+    it(`${path} → 200 с canonical и hreflang`, async () => {
+      const {res, body} = await getText(path);
+      assert.equal(res.status, 200);
+      assert.ok(hasCanonical(body));
+      assert.ok(hasHreflang(body));
+    });
+  }
+});
+
+describe('server.ts — SR-96: легаси product-detail и /index.html', () => {
+  sr96Server();
+
+  it('/ro/product-detail/:id → 301 одним хопом на канонический адрес товара', async () => {
+    const res = await get('/ro/product-detail/12');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro/product/12/bombshell-eau-de-parfum');
+    const target = await get(res.headers.get('location'));
+    assert.equal(target.status, 200, 'на цели второго 301 быть не должно');
+  });
+
+  it('/ru/product-detail/:id сохраняет язык и query', async () => {
+    const res = await get('/ru/product-detail/3739?variant=5');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ru/product/3739/beauty-light-wand-pinkgasm?variant=5');
+  });
+
+  it('неизвестный id — не 301, а 404 Angular', async () => {
+    const res = await get('/ro/product-detail/999999');
+    assert.equal(res.status, 404);
+  });
+
+  it('/index.html → 301 /ro', async () => {
+    const res = await get('/index.html');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro');
+  });
+
+  it('/ro/index.html → 301 /ro', async () => {
+    const res = await get('/ro/index.html');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ro');
+  });
+
+  it('//host/index.html не уводит на чужой хост (не open redirect)', async () => {
+    const res = await get('//evil.example/index.html');
+    assert.notEqual(res.headers.get('location'), '//evil.example');
+    assert.ok(!(res.headers.get('location') ?? '').startsWith('//'));
+  });
+});
+
+describe('server.ts — SR-96: карточка товара, 404 против сбоя API', () => {
+  sr96Server();
+
+  /** Ответ findProduct для теста; null — отдаёт базовая заглушка. */
+  let findProduct = null;
+  let stubFetch = null;
+  before(() => {
+    stubFetch = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+      if (findProduct && String(input).includes('products/findProduct/')) return findProduct();
+      return stubFetch(input, init);
+    };
+  });
+  after(() => {
+    globalThis.fetch = stubFetch;
+  });
+
+  it('API ответил 404 → 404 + noindex, без canonical/hreflang', async () => {
+    findProduct = () => json({message: 'not found'}, 404);
+    const {res, body} = await getText('/ro/product/12/bombshell-eau-de-parfum');
+    assert.equal(res.status, 404);
+    assert.match(body, NOINDEX);
+    assert.ok(!hasCanonical(body));
+    assert.ok(!hasHreflang(body));
+  });
+
+  for (const [name, respond] of [
+    ['500', () => new Response('boom', {status: 500})],
+    ['сеть недоступна', () => Promise.reject(new TypeError('fetch failed'))],
+  ]) {
+    it(`сбой API (${name}) → 503 с Retry-After, no-store, без noindex и canonical`, async () => {
+      findProduct = respond;
+      const {res, body} = await getText('/ro/product/12/bombshell-eau-de-parfum');
+      assert.equal(res.status, 503);
+      assert.equal(res.headers.get('retry-after'), '120');
+      assert.equal(res.headers.get('cache-control'), 'no-store');
+      assert.doesNotMatch(body, NOINDEX);
+      assert.ok(!hasCanonical(body));
+      assert.ok(!hasHreflang(body));
+    });
+  }
+
+  it('рабочая карточка — 200 с canonical и hreflang, как раньше', async () => {
+    findProduct = null;
+    const {res, body} = await getText('/ro/product/12/bombshell-eau-de-parfum');
+    assert.equal(res.status, 200);
+    assert.ok(hasCanonical(body));
+  });
+});
+
+describe('server.ts — SR-96: каталог «не найдено» только по успешному ответу API', () => {
+  sr96Server();
+
+  for (const path of ['/ro/catalog/nu-exista', '/ro/catalog/brand/nu-exista']) {
+    it(`${path} → 404 + noindex, без canonical/hreflang`, async () => {
+      const {res, body} = await getText(path);
+      assert.equal(res.status, 404);
+      assert.match(body, NOINDEX);
+      assert.ok(!hasCanonical(body));
+      assert.ok(!hasHreflang(body));
+    });
+  }
+
+  for (const path of ['/ro/catalog/brand/victorias-secret', '/ro/catalog/bestsellers']) {
+    it(`${path} → 200 с canonical и hreflang`, async () => {
+      const {res, body} = await getText(path);
+      assert.equal(res.status, 200);
+      assert.ok(hasCanonical(body));
+      assert.ok(hasHreflang(body));
+    });
+  }
+});
+
+describe('server.ts — SR-96: сбой API — «не знаем», а не 404', () => {
+  sr96Server();
+
+  it('product-detail при лежащем API на холодном старте → 503, не 404', async () => {
+    sitemapFails = true;
+    try {
+      const res = await get('/ro/product-detail/12');
+      assert.equal(res.status, 503);
+      assert.ok(res.headers.get('retry-after'));
+      assert.equal(res.headers.get('cache-control'), 'no-store');
+    } finally {
+      sitemapFails = false;
+    }
+  });
+
+  it('пустой список категорий от API — каталог не уходит в 404', async () => {
+    categoriesEmpty = true;
+    try {
+      const {res, body} = await getText('/ro/catalog/sutiene');
+      assert.notEqual(res.status, 404);
+      assert.doesNotMatch(body, NOINDEX);
+    } finally {
+      categoriesEmpty = false;
+    }
+  });
+});
+
 describe('server.ts — склейка /catalog/vs и /catalog/bb на brand-страницы (SR-97)', () => {
   before(async () => {
     clockOffset = 0;
@@ -547,6 +791,7 @@ describe('server.ts — склейка /catalog/vs и /catalog/bb на brand-с�
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    categoriesEmpty = false;
     await startServer();
   });
 

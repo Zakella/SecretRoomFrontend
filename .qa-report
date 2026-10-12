@@ -1,6 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-13T02:20:00+03:00
-Task: SR-97 — склейка /catalog/vs|bb в /catalog/brand/victorias-secret|bath-and-body (301 в server.ts, SEO-тексты в brand-seo.ts, noindex для hero)
-Checks: 301 одним хопом ✓, легаси ✓, не задетые маршруты ✓, brand-мета/SEO-блок ✓, sitemap ✓, hero robots ✓, ссылки (grep) ✓, раскладка 1280/390 ✓
-Notes: легаси со слэшем (/vs/) — 2 хопа (известно, не баг). Product-detail «Назад в каталог» проверен по диффу (ветка not-found), в живую не кликалась.
-### Tree: bac755ffc15761538f77e7b572c869bfb2bb22b8
+Date: 2026-10-13T03:00:00+03:00
+Task: SR-97 — повторный прогон по слиянию с SR-96 (origin/epic/seo): 301 /catalog/vs|bb на brand + lowercase-301, ro/ru, soft-404, hero noindex
+Checks: lowercase+brand за один 301 ✓ (/RO/catalog/VS, /Ru/Catalog/Bb/, /RO/catalog/vs/?utm=1 с query), /en|/EN/catalog/vs -> 404 без редиректа ✓, /ro/catalog/vs и /ru/catalog/bb один 301 ✓, SR-96 цел (/RO/catalog/Sutiene 1x301, nu-exista 404+noindex, brand и bestsellers 200 + canonical + hreflang) ✓, hero/1 200 и один meta robots "noindex, follow" ✓, легаси /vs и /bb/category/7 один 301 ✓
+Notes: стенд PORT=4421 на dist/secret-room (сборка из текущего дерева), сервер остановлен.
+### Tree: f28670c9b36187293ce0e62508f82492c1e6c5f6

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, RESPONSE_INIT, signal} from '@angular/core';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
@@ -54,6 +54,10 @@ export class Catalog implements OnInit, OnDestroy {
   private slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage;
   private destroyRef = inject(DestroyRef);
+  private responseInit = inject(RESPONSE_INIT, {optional: true});
+
+  /** Категория/бренд не найдены по успешному ответу API → 404 + noindex, без canonical/hreflang. */
+  protected notFound = signal(false);
 
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
@@ -151,6 +155,8 @@ export class Catalog implements OnInit, OnDestroy {
 
       if (cat || brand) {
         this.updateMeta(cat, brand, alias, catName, catData, lang);
+        // updateMeta ставит canonical/hreflang — на 404 снимаем их следом
+        if (this.notFound()) this.metaService.removeCanonicalAndAlternates();
       }
     });
 
@@ -179,6 +185,8 @@ export class Catalog implements OnInit, OnDestroy {
               const original = brands.find(b => this.brandService.toSlug(b.brand) === slug);
               return {
                 tag: 'brand',
+                // ответ API успешный, а такого бренда нет (пустой список за «нет» не считаем)
+                notFound: brands.length > 0 && !original,
                 brandName: original?.brand ?? slug,
                 brandAlias: original?.brandAlias ?? original?.brand ?? slug,
                 categoryId: null,
@@ -195,9 +203,14 @@ export class Catalog implements OnInit, OnDestroy {
         }
 
         if (tag) {
-          return this.categoryService.getCategoryBySlug(tag).pipe(
-            map(cat => ({
+          // список категорий (кэш сервиса) — чтобы пустой ответ API не считать «такой категории нет»
+          return this.categoryService.getCategories().pipe(
+            switchMap(all => this.categoryService.getCategoryBySlug(tag).pipe(map(cat => ({ cat, known: all.length > 0 })))),
+            map(({ cat, known }) => ({
               tag: tag,
+              // getCategoryBySlug: ошибка API летит ошибкой, null — успешный ответ без совпадения;
+              // пустой список за «нет» не считаем (как у брендов)
+              notFound: known && !cat,
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,
@@ -209,7 +222,10 @@ export class Catalog implements OnInit, OnDestroy {
 
         return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
       })
-    ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName, categoryObj }) => {
+    ).subscribe(result => {
+      const { tag, brandName, brandAlias, categoryId, categoryName, categoryObj } = result;
+      this.setNotFound('notFound' in result && result.notFound);
+
       // Redirect to correct language slug if needed
       if (categoryObj && tag) {
         const lang = this.langService.currentLanguage();
@@ -228,6 +244,18 @@ export class Catalog implements OnInit, OnDestroy {
       this.updateRobots(tag);
       this.setCategory(tag!);
     });
+  }
+
+  /** 404 + noindex по образцу product-detail; canonical/hreflang снимает эффект меты. */
+  private setNotFound(notFound: boolean): void {
+    this.notFound.set(notFound);
+    if (!notFound) return;
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    this.metaService.removeCanonicalAndAlternates();
+    if (this.responseInit) {
+      this.responseInit.status = 404;
+      this.responseInit.statusText = 'Not Found';
+    }
   }
 
   ngOnDestroy(): void {
