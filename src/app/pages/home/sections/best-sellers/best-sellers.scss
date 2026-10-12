@@ -51,12 +51,20 @@
   gap: 24px;
 
   .product {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     position: relative;
     overflow: hidden;
     border-radius: 24px;
     background: white;
     cursor: pointer;
     transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--gold, #b8956c);
+      outline-offset: 2px;
+    }
 
     &:hover {
       transform: translateY(-4px);
