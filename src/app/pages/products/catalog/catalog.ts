@@ -5,6 +5,7 @@ import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, finalize, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
@@ -48,6 +49,7 @@ export class Catalog implements OnInit, OnDestroy {
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
   private metaService = inject(MetaService);
+  private meta = inject(Meta);
   private langService = inject(Language);
   private slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage;
@@ -133,6 +135,7 @@ export class Catalog implements OnInit, OnDestroy {
 
   private currentCategoryId: string | null = null;
   private currentHeroId: number | null = null;
+  private robotsNoindex = false;
   private currentPage = 0;
   private readonly itemsPerPage = 24;
   private prefetched: { page: number; request$: Observable<any> } | null = null;
@@ -222,12 +225,28 @@ export class Catalog implements OnInit, OnDestroy {
       this.categoryName.set(categoryName);
       this.categoryData.set(categoryObj ?? null);
       this.currentCategoryId = categoryId;
+      this.updateRobots(tag);
       this.setCategory(tag!);
     });
   }
 
   ngOnDestroy(): void {
     this.metaService.clearAlternateOverride();
+    if (this.robotsNoindex) this.meta.removeTag("name='robots'");
+  }
+
+  /**
+   * Hero collections (/catalog/hero/:id) are promo selections of products already listed
+   * in regular catalog pages — keep them out of the index, but let crawlers follow product links.
+   */
+  private updateRobots(tag: string | null) {
+    if (tag === 'hero') {
+      this.meta.updateTag({name: 'robots', content: 'noindex, follow'});
+      this.robotsNoindex = true;
+    } else if (this.robotsNoindex) {
+      this.meta.removeTag("name='robots'");
+      this.robotsNoindex = false;
+    }
   }
 
   private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string) {
@@ -281,26 +300,6 @@ export class Catalog implements OnInit, OnDestroy {
         keywords = `${nameRo}, ${nameRu}, victoria secret ${nameRo.toLowerCase()}, ${nameRo.toLowerCase()} moldova, ${nameRo.toLowerCase()} chisinau, купить ${nameRu.toLowerCase()} молдова, ${nameRu.toLowerCase()} кишинев`;
       } else {
         switch (category) {
-          case 'vs':
-            if (isRo) {
-              title = "Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice | Secret Room";
-              description = "Victoria's Secret în Moldova: sutiene, chiloți, pijamale, parfumuri, loțiuni, spray-uri — originale din SUA. Magazin Secret Room, Chișinău.";
-            } else {
-              title = "Victoria's Secret Молдова — Бельё, парфюмы, косметика | Secret Room";
-              description = "Victoria's Secret в Молдове: бюстгальтеры, трусики, пижамы, парфюмы, лосьоны, спреи — оригинал из США. Магазин Secret Room, Кишинёв.";
-            }
-            keywords = "victoria secret, victoria secret moldova, lenjerie victoria secret, sutiene victoria secret, parfum victoria secret, victoria secret chisinau, белье victoria secret, бюстгальтеры victoria secret, парфюм victoria secret молдова";
-            break;
-          case 'bb':
-            if (isRo) {
-              title = "Bath & Body Works Moldova — Lumânări, Loțiuni, Geluri de Duș | Secret Room";
-              description = "Bath & Body Works în Moldova: lumânări cu 3 fitile, loțiuni, geluri de duș, săpunuri spumante — originale din SUA. Magazin Secret Room, Chișinău.";
-            } else {
-              title = "Bath & Body Works Молдова — Свечи, лосьоны, гели для душа | Secret Room";
-              description = "Bath & Body Works в Молдове: свечи с 3 фитилями, лосьоны, гели для душа, пенящееся мыло — оригинал из США. Магазин Secret Room, Кишинёв.";
-            }
-            keywords = "bath body works, bath body works moldova, lumanari bath body works, lotiuni bath body works, bath body works chisinau, bath body works молдова, свечи bath body works";
-            break;
           case 'bestsellers':
             if (isRo) {
               title = "Bestsellere Victoria's Secret și Bath & Body Works | Secret Room Moldova";

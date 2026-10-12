@@ -3,6 +3,7 @@ import {TestBed} from '@angular/core/testing';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideRouter} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
 import {ProductService} from '../../../@core/api/product';
 import {Language} from '../../../@core/services/language';
 import {Brand} from '../../../entities/category';
@@ -16,6 +17,8 @@ interface CatalogInternals {
   brandSlugValue: Signal<string | null>;
   brandSeo: Signal<BrandSeoLocale | null>;
   otherBrands: Signal<{slug: string, label: string}[]>;
+  updateRobots(tag: string | null): void;
+  ngOnDestroy(): void;
 }
 
 const BRANDS: Brand[] = [
@@ -110,6 +113,46 @@ describe('Catalog', () => {
       catalog.allBrands.set([]);
       catalog.brandName.set('VictoriasSecret');
       expect(catalog.otherBrands()).toEqual([]);
+    });
+  });
+
+  describe('robots on hero pages', () => {
+    let meta: Meta;
+    const robots = () => meta.getTag("name='robots'")?.content ?? null;
+
+    beforeEach(() => {
+      meta = TestBed.inject(Meta);
+      meta.removeTag("name='robots'");
+    });
+
+    afterEach(() => meta.removeTag("name='robots'"));
+
+    it('should mark a hero collection as noindex, follow', () => {
+      catalog.updateRobots('hero');
+      expect(robots()).toBe('noindex, follow');
+    });
+
+    it('should not add robots on regular catalog pages', () => {
+      catalog.updateRobots('bestsellers');
+      expect(robots()).toBeNull();
+    });
+
+    it('should drop noindex when leaving a hero for another catalog page', () => {
+      catalog.updateRobots('hero');
+      catalog.updateRobots('brand');
+      expect(robots()).toBeNull();
+    });
+
+    it('should drop noindex when the hero page is destroyed', () => {
+      catalog.updateRobots('hero');
+      catalog.ngOnDestroy();
+      expect(robots()).toBeNull();
+    });
+
+    it('should not touch a robots tag it did not set', () => {
+      meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+      catalog.ngOnDestroy();
+      expect(robots()).toBe('noindex, nofollow');
     });
   });
 });
