@@ -1,5 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-12T11:45:35+03:00
-Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды); перепроверка: реальный адрес Atrium et.2 but.2018 + текст Nayomi
-Checks: UI/SSR ✓ (ro/ru), Map/route coords ✓, JSON-LD ✓, i18n ✓, Security ✓
-### Tree: 8c89bb3ac7732615635efad1ad30b37adfbf948f
+Date: 2026-10-13
+Task: SR-96 URL hygiene (lang matcher ro/ru, lowercase 301, /index.html, product-detail legacy 301, 404/503 for product, 404 for catalog, canonical/hreflang removal on 404)
+Checks: curl vs SSR dist (live API :9090 + dead API) scenarios 1-7 ✓, diff review (open redirect/Location injection, SSR-safe, secrets) ✓
+Notes (minor, not blocking): 404 catalog pages still carry JSON-LD breadcrumb/collection; /stores has no uppercase filenames to test the file exemption (checked /stores/Atrium/X.jpg -> 404, no redirect).
+### Tree: e67422f4507371c0740db66ea373430406cfb79d

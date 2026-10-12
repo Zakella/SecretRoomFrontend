@@ -47,6 +47,47 @@ app.use((req, res, next) => {
 });
 
 /**
+ * SR-96: адрес с заглавными буквами → 301 на lowercase, query сохраняется.
+ * /RO/catalog/Sutiene/?a=1 → /ro/catalog/sutiene?a=1 — один хоп вместе со снятием слэша,
+ * поэтому стоит ДО middleware слэша (иначе слэш и регистр дали бы цепочку из двух 301).
+ *
+ * Трогаем только страницы сайта — первый сегмент ro/ru в любом регистре. Поэтому мимо идут
+ * /api, ассеты из browser dist и public/ (favicon.ico, stores/… — регистр имён сохраняется),
+ * sitemap, легаси /vs, /bb (их маршруты Express и так регистронезависимы) и чужие языки
+ * (/EN/… → 404 без лишнего хопа). Плюс не трогаем не-GET/HEAD и файлы с расширением.
+ * Percent-escape (%D0%B1) не считаем заглавными — иначе Cloudflare-нормализация зациклит редирект.
+ * Карточку товара с языком в нижнем регистре оставляем слаг-middleware: он сам ведёт
+ * на канонический слаг одним хопом. Номер заказа и поисковый запрос — регистр сохраняем.
+ */
+const CASE_SENSITIVE_SECTIONS = new Set(['order', 'order-success', 'search']);
+
+function toLowercasePath(path: string): string {
+  const lower = (part: string) => part.replace(/(%[0-9A-Fa-f]{2})|[^%]+/g, (m, esc) => esc ?? m.toLowerCase());
+  const segments = path.split('/');
+  if (segments.length > 3 && CASE_SENSITIVE_SECTIONS.has(lower(segments[2]))) {
+    return [...segments.slice(0, 3).map(lower), ...segments.slice(3)].join('/');
+  }
+  return lower(path);
+}
+
+function redirectToLowercase(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  const path = req.path;
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  if (!/[A-Z]/.test(path.replace(/%[0-9A-Fa-f]{2}/g, ''))) return next();
+  if (!/^\/(ro|ru)(\/|$)/i.test(path)) return next();
+  const segments = path.split('/');
+  if (/\.[A-Za-z0-9]+$/.test(segments[segments.length - 1])) return next();
+  if (/^\/(ro|ru)\/product\/\d+\//.test(path)) return next();
+
+  let target = toLowercasePath(path);
+  if (target !== '/' && target.endsWith('/')) target = target.replace(/\/+$/, '') || '/';
+  if (target === path) return next();
+  res.redirect(301, target + req.originalUrl.slice(req.path.length));
+}
+
+app.use(redirectToLowercase);
+
+/**
  * Remove trailing slashes (301 redirect) to avoid duplicate URLs.
  */
 app.use((req, res, next) => {
@@ -367,6 +408,15 @@ app.get('/robots.txt', (req, res) => {
 });
 
 /**
+ * SR-96: /index.html → 301 /ro. Без этого Angular SSR сам срезал /index.html до «/»,
+ * а роутерный редирект '' → 'ro' отдавал 302. /ro/index.html, /ru/index.html — 301 на язык.
+ */
+app.get(/^\/(?:(ro|ru)\/)?index\.html$/, (req, res) => {
+  // Цель — только /ro или /ru: адрес из пути не берём, иначе //evil.com/index.html дал бы open redirect.
+  res.redirect(301, `/${req.params[0] ?? 'ro'}` + req.originalUrl.slice(req.path.length));
+});
+
+/**
  * Permanent redirect: root → /ro (instead of Angular's 302)
  */
 app.get('/', (req, res) => {
@@ -393,6 +443,28 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
   } catch { /* fallback below */ }
 
   res.redirect(301, `/ro/catalog/${brand}`);
+});
+
+/**
+ * SR-96: легаси /:lang/product-detail/:id → 301 на /:lang/product/:id/:slug одним хопом
+ * (слаг канонический, из того же кэша, что у слаг-middleware, — второго 301 не будет).
+ * Раньше Angular отвечал 302 на битый адрес /ro/product-detail/product/:id/details.
+ * id неизвестен → дальше в Angular (404).
+ */
+app.get('/:lang/product-detail/:id', async (req, res, next) => {
+  const { lang, id } = req.params;
+  if (!LANGUAGES.includes(lang) || !/^\d+$/.test(id)) return next();
+
+  try {
+    const slugs = getProductSlugs() ?? await refreshProductSlugs();
+    const slug = slugs.get(id);
+    if (!slug) return next();
+
+    const query = req.originalUrl.slice(req.path.length);
+    res.redirect(301, `/${lang}/product/${id}/${slug}${query}`);
+    return;
+  } catch { /* fallback to Angular */ }
+  next();
 });
 
 /**

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Router, NavigationEnd, NavigationCancel, NavigationError, NavigationSkipped } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
@@ -96,6 +96,32 @@ export class MetaService {
     linkDefault.setAttribute('hreflang', 'x-default');
     linkDefault.setAttribute('href', roUrl);
     head.appendChild(linkDefault);
+  }
+
+  /**
+   * Снимает ВСЕ link[rel=canonical] и link[rel=alternate][hreflang] — для страниц «не найдено»
+   * и временного сбоя (404/503): каноникал и альтернативы у несуществующего адреса сбивают краулер.
+   * Снимается и шаблонный canonical из index.html.
+   *
+   * Если вызвано посреди навигации (конструктор страницы, резолвер), MetaService ещё поставит
+   * теги в своём обработчике NavigationEnd — поэтому снимаем ещё раз сразу после него
+   * (подписка MetaService сделана в конструкторе, раньше этой, и отрабатывает первой).
+   */
+  removeCanonicalAndAlternates() {
+    const remove = () => this.document
+      .querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]')
+      .forEach(el => el.remove());
+    remove();
+
+    if (this.router.currentNavigation()) {
+      this.router.events.pipe(
+        filter(e => e instanceof NavigationEnd || e instanceof NavigationCancel
+          || e instanceof NavigationError || e instanceof NavigationSkipped),
+        take(1)
+      ).subscribe(e => {
+        if (e instanceof NavigationEnd) remove();
+      });
+    }
   }
 
   setAlternateOverride(roUrl: string, ruUrl: string) {
