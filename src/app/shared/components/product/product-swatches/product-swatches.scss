@@ -20,9 +20,9 @@
 .swatches-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px 8px;
   margin: 0;
-  padding: 0;
+  padding: 4px 4px 0;
   list-style: none;
 }
 
@@ -30,28 +30,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  width: 64px;
-  min-height: 44px;
+  gap: 8px;
+  width: 76px;
   text-decoration: none;
   color: var(--text-dark, #2c2421);
   font-family: var(--font-body, 'Inter', sans-serif);
-  font-size: 11px;
-  line-height: 1.2;
+  font-size: 12px;
+  line-height: 1.25;
   text-align: center;
   cursor: pointer;
 
   .swatch-thumb {
     position: relative;
     display: block;
-    width: 52px;
-    height: 52px;
+    width: 66px;
+    height: 66px;
     overflow: hidden;
-    border: 2px solid transparent;
-    border-radius: 4px;
+    border: 1px solid rgba(184, 149, 108, 0.28);
+    border-radius: 10px;
     background: var(--bg-cream, #f5f0ea);
+    box-shadow: 0 1px 4px rgba(44, 36, 33, 0.08);
     box-sizing: border-box;
-    transition: border-color 0.2s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   }
 
   .swatch-img {
@@ -62,24 +62,43 @@
   }
 
   .swatch-caption {
+    display: -webkit-box;
     max-width: 100%;
+    min-height: 2.5em;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow-wrap: anywhere;
+    transition: color 0.2s ease;
   }
 
-  &:hover .swatch-thumb,
-  &:focus-visible .swatch-thumb {
+  &:hover .swatch-thumb {
     border-color: var(--gold, #b8956c);
+    box-shadow: 0 4px 12px rgba(184, 149, 108, 0.3);
+    transform: translateY(-2px);
   }
 
   &:focus-visible {
     outline: none;
+
+    .swatch-thumb {
+      border-color: var(--gold, #b8956c);
+      box-shadow: 0 0 0 2px var(--bg-white, #fff), 0 0 0 4px var(--gold-dark, #8b6b3f);
+    }
   }
 
   &.active {
     cursor: default;
 
     .swatch-thumb {
-      border-color: var(--text-black, #1a1a1a);
+      border-color: transparent;
+      box-shadow: 0 0 0 2px var(--bg-white, #fff), 0 0 0 3.5px var(--gold, #b8956c);
+      transform: none;
+    }
+
+    .swatch-caption {
+      color: var(--text-black, #1a1a1a);
+      font-weight: 600;
     }
   }
 
@@ -102,6 +121,31 @@
       );
       pointer-events: none;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .swatches-list {
+    gap: 12px 8px;
+  }
+
+  .swatch {
+    width: 72px;
+
+    .swatch-thumb {
+      width: 62px;
+      height: 62px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swatch .swatch-thumb {
+    transition: none;
+  }
+
+  .swatch:hover .swatch-thumb {
+    transform: none;
   }
 }
 

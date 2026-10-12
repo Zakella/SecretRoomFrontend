@@ -107,7 +107,7 @@ describe('ProductSwatches', () => {
     render([sibling({appId: 1, current: true}), sibling({appId: 2, thumbnail: null})]);
     const imgs = el().querySelectorAll('img.swatch-img');
     expect(imgs.length).toBe(1);
-    expect(imgs[0].getAttribute('width')).toBe('52');
+    expect(imgs[0].getAttribute('width')).toBe('66');
   });
 
   it('a11y: список связан с подписью типа через aria-labelledby, id уникален между экземплярами', () => {
@@ -135,5 +135,12 @@ describe('ProductSwatches', () => {
     expect(optionTypeLabelKey('OTHER')).toBe('OptionTypeVariant');
     expect(optionTypeLabelKey(null)).toBe('OptionTypeVariant');
     expect(optionTypeLabelKey(undefined)).toBe('OptionTypeVariant');
+  });
+
+  it('полное название варианта — в title подписи и текущего свотча', () => {
+    render(THREE);
+    const captions = Array.from(el().querySelectorAll('.swatch-caption')) as HTMLElement[];
+    expect(captions.every(c => c.getAttribute('title') === c.textContent!.trim())).toBeTrue();
+    expect(el().querySelector('.swatch.active')!.getAttribute('title')).toBeTruthy();
   });
 });
