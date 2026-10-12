@@ -1,5 +1,28 @@
-ALL CLEAR ✓
-Date: 2026-10-12T11:45:35+03:00
-Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды); перепроверка: реальный адрес Atrium et.2 but.2018 + текст Nayomi
-Checks: UI/SSR ✓ (ro/ru), Map/route coords ✓, JSON-LD ✓, i18n ✓, Security ✓
-### Tree: 8c89bb3ac7732615635efad1ad30b37adfbf948f
+# QA report SR-92 (свотчи соседних карточек модели)
+
+## Ревью git diff --cached
+- SSR: window/document/localStorage в product-swatches.ts и variant-selection.ts нет. Язык берётся из сигнала Language.currentLanguage.
+- `any` в новом коде нет. Типы: ProductSibling, input<ProductSibling[] | null | undefined>.
+- i18n: OptionTypeColor/Scent/Shade/Variant добавлены парой в ru.json и ro.json, оба файла валидный JSON. Ключ OutOfStock уже есть в обоих.
+- Блок при siblings < 2: в product-detail.html обёртка `@if (hasSwatches())`, внутри компонента `@if (visible())`. Пустого враппера нет (тест проверяет пустой innerHTML для undefined, null, [], одного элемента).
+- Активный свотч: `<span aria-current="true">`, не ссылка. Остальные `<a routerLink>`.
+- Распроданный остаётся ссылкой (a.swatch.out-of-stock), в title и visually-hidden есть «Нет на складе / Indisponibil».
+- ?size= переносится через queryParams, при отсутствии размера параметр null. Предвыбор по размеру: findVariantBySize требует available && inStock, иначе откат на прежнюю логику.
+- ?variant= не изменён: preselected имеет приоритет, sameSize считается только при его отсутствии.
+- Замечание (не баг): selector `product-swatches` без префикса `app`, даёт 1 lint warning component-selector. Остальные компоненты shared используют тот же стиль (в проекте 172 warning).
+
+## Тесты
+`ng test` (product-swatches.spec, variant-selection.spec, product-card.spec): TOTAL 20 SUCCESS.
+
+## Lint
+`ng lint`: 0 errors, 172 warnings (по новым файлам только component-selector выше).
+
+## Build
+Не перезапускался, по условию зелёный.
+
+## Баги
+Не найдено.
+
+ALL CLEAR
+
+### Tree: 999168b1a81bcc407c92204624e0f3db4d507091

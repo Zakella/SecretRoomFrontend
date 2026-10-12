@@ -1,0 +1,36 @@
+@if (visible()) {
+  <div class="product-swatches">
+    <span class="swatches-label">{{ typeKey() | transloco }}:</span>
+    <ul class="swatches-list">
+      @for (item of items(); track item.sibling.appId) {
+        <li>
+          @if (item.sibling.current) {
+            <span class="swatch active" [class.out-of-stock]="!item.sibling.inStock" aria-current="true">
+              <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>
+            </span>
+          } @else {
+            <a class="swatch"
+               [class.out-of-stock]="!item.sibling.inStock"
+               [routerLink]="item.link"
+               [queryParams]="queryParams()"
+               [attr.title]="item.sibling.inStock ? item.label : item.label + ' — ' + ('OutOfStock' | transloco)">
+              <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>
+            </a>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+<ng-template #swatchBody let-item>
+  <span class="swatch-thumb">
+    @if (item.sibling.thumbnail) {
+      <img class="swatch-img" [src]="item.sibling.thumbnail" alt="" width="52" height="52" loading="lazy"/>
+    }
+  </span>
+  <span class="swatch-caption">{{ item.label }}</span>
+  @if (!item.sibling.inStock) {
+    <span class="visually-hidden">({{ 'OutOfStock' | transloco }})</span>
+  }
+</ng-template>
