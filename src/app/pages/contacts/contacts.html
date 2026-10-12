@@ -5,9 +5,41 @@
 
   <div class="store-list">
     @for (store of stores; track store.id; let i = $index) {
-      <div class="store-item" [class.store-item--reverse]="i % 2 !== 0">
+      <div class="store-item"
+           [class.store-item--reverse]="i % 2 !== 0"
+           [class.store-item--collage]="store.layout === 'collage'">
         <div class="store-item__media">
-          @if (store.photos.length > 0) {
+          @if (store.layout === 'collage') {
+            <div class="store-collage" role="group" [attr.aria-label]="'StorePhotos' | transloco">
+              @for (photo of store.photos; track photo.desktop; let pi = $index) {
+                <button type="button"
+                        class="store-collage__item"
+                        (click)="openLightbox(store.photos, pi)"
+                        [attr.aria-label]="'ViewPhoto' | transloco">
+                  <picture>
+                    @if (photo.mobileWebp) {
+                      <source media="(max-width: 900px)" type="image/webp" [srcset]="photo.mobileWebp">
+                    }
+                    @if (photo.mobile) {
+                      <source media="(max-width: 900px)" [srcset]="photo.mobile">
+                    }
+                    @if (photo.desktopWebp) {
+                      <source type="image/webp" [srcset]="photo.desktopWebp">
+                    }
+                    <img [src]="photo.desktop"
+                         [alt]="store.name + ' — ' + store.location"
+                         width="720"
+                         height="960"
+                         loading="lazy"
+                         decoding="async">
+                  </picture>
+                  <span class="store-collage__zoom">
+                    <i class="ri-zoom-in-line"></i>
+                  </span>
+                </button>
+              }
+            </div>
+          } @else if (store.photos.length > 0) {
             <div class="store-photos"
                  [class.store-photos--landscape]="store.photos[0].landscape">
               @for (photo of store.photos; track photo.desktop; let pi = $index) {
@@ -69,6 +101,20 @@
               <span>{{ store.workTime }}</span>
             </div>
           </div>
+
+          @if (store.brands?.length) {
+            <div class="store-brands">
+              <h4 class="store-brands__title">{{ 'storeBrands.title' | transloco }}</h4>
+              <ul class="store-brands__list">
+                @for (brand of store.brands; track brand.name) {
+                  <li class="store-brands__item">
+                    <span class="store-brands__name">{{ brand.name }}</span>
+                    <span class="store-brands__text">{{ brand.descriptionKey | transloco }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
 
           <a [href]="'https://maps.google.com/?q=' + store.latitude + ',' + store.longitude"
              target="_blank"

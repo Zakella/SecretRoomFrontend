@@ -24,7 +24,7 @@ export class OurStory implements OnInit {
       ? 'Secret Room Chișinău — magazin Victoria\'s Secret și Bath & Body Works'
       : 'О Нас — Secret Room | Victoria\'s Secret и Bath & Body Works Молдова');
     this.metaService.updateDescription(isRo
-      ? 'Două magazine în Chișinău — Atrium și Eminescu 56 — și livrare în toată Moldova. Produse originale Victoria\'s Secret, Bath & Body Works, PINK, Kiko Milano.'
+      ? 'Trei magazine în Chișinău — Atrium, Eminescu 56 și Secret Angel — și livrare în toată Moldova. Produse originale Victoria\'s Secret, Bath & Body Works, PINK, Kiko Milano.'
       : 'Secret Room — оригинальная продукция Victoria\'s Secret и Bath & Body Works в Молдове. Парфюмы, косметика, бельё. Быстрая доставка по всей стране.');
     this.metaService.updateKeywords('Secret Room Moldova, despre noi, Victoria\'s Secret, Bath & Body Works, parfumuri originale, Chișinău, оригинальная продукция');
     this.metaService.updateImage('https://secretroom.md/assets/images/SR-transparent.png');

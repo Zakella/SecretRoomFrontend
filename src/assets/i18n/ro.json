@@ -346,6 +346,14 @@
   "ClosePhoto": "Închide",
   "PreviousPhoto": "Fotografia anterioară",
   "NextPhoto": "Fotografia următoare",
+  "storeBrands": {
+    "title": "Branduri în magazin",
+    "bathAndBody": "Brand american de arome pentru corp și casă: spray-uri, loțiuni și creme de corp, geluri de duș și lumânări parfumate.",
+    "kikoMilano": "Brand italian de cosmetice din Milano: produse de machiaj și de îngrijire pentru fiecare zi.",
+    "nayomi": "Brand din Emiratele Arabe Unite: lenjerie, pijamale și haine de casă — comode și feminine, pentru acasă și pentru somn.",
+    "annSummers": "Brand britanic de lenjerie: sutiene, chiloți și seturi din dantelă cu o croială îndrăzneață.",
+    "pink": "Linia tânără a Victoria's Secret: lenjerie, haine pentru casă și relaxare, arome pentru corp."
+  },
   "reviews": {
     "ofReviews": "din {{count}} recenzii",
     "excellent": "Excelent",
