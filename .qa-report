@@ -1,5 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-10-12T11:45:35+03:00
-Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды); перепроверка: реальный адрес Atrium et.2 but.2018 + текст Nayomi
-Checks: UI/SSR ✓ (ro/ru), Map/route coords ✓, JSON-LD ✓, i18n ✓, Security ✓
-### Tree: 8c89bb3ac7732615635efad1ad30b37adfbf948f
+Date: 2026-10-13
+Task: SR-96 повторный прогон после NEEDS_FIXES (503 на product-detail при пустом кэше слагов; пустой список категорий не даёт 404)
+Checks: product-detail 503+Retry-After+no-store (API лежит) ✓, 301 одним хопом / 404 неизвестный id (API жив) ✓, catalog 404+noindex без canonical/hreflang и 200 с canonical+hreflang ✓, catalog при лежащем API 200 ✓, node --test src/server.spec.mjs 58/58 ✓, ревью диффа ✓
+### Tree: 5448fd6c3aa5b432b475ce697322e75565ab9ba4
