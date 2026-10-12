@@ -291,6 +291,16 @@ export class MetaService {
             "addressLocality": "Chișinău",
             "addressCountry": "MD"
           }
+        },
+        {
+          "@type": "Store",
+          "name": "Secret Angel",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Strada Albișoara 4, CC Atrium, et. 2, but. 2018",
+            "addressLocality": "Chișinău",
+            "addressCountry": "MD"
+          }
         }
       ]
     }, 'organization');
