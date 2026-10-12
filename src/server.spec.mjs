@@ -53,6 +53,7 @@ let sitemapGate = null;
 let sitemapFails = false;
 /** Апстрим жив, но отдаёт пустой список — секция не должна публиковать пустоту. */
 let sitemapEmpty = false;
+let categoriesEmpty = false;
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -80,7 +81,7 @@ before(() => {
       if (sitemapFails) return new Response('upstream down', {status: 503});
       return json(sitemapEmpty ? [] : PRODUCTS);
     }
-    if (url.includes('web-categories/hierarchy/active')) return json(CATEGORIES);
+    if (url.includes('web-categories/hierarchy/active')) return json(categoriesEmpty ? [] : CATEGORIES);
     if (url.endsWith('products/brands')) return json(BRANDS);
     return json([]);
   };
@@ -548,6 +549,7 @@ function sr96Server() {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    categoriesEmpty = false;
     await startServer();
   });
 
@@ -753,4 +755,31 @@ describe('server.ts — SR-96: каталог «не найдено» тольк
       assert.ok(hasHreflang(body));
     });
   }
+});
+
+describe('server.ts — SR-96: сбой API — «не знаем», а не 404', () => {
+  sr96Server();
+
+  it('product-detail при лежащем API на холодном старте → 503, не 404', async () => {
+    sitemapFails = true;
+    try {
+      const res = await get('/ro/product-detail/12');
+      assert.equal(res.status, 503);
+      assert.ok(res.headers.get('retry-after'));
+      assert.equal(res.headers.get('cache-control'), 'no-store');
+    } finally {
+      sitemapFails = false;
+    }
+  });
+
+  it('пустой список категорий от API — каталог не уходит в 404', async () => {
+    categoriesEmpty = true;
+    try {
+      const {res, body} = await getText('/ro/catalog/sutiene');
+      assert.notEqual(res.status, 404);
+      assert.doesNotMatch(body, NOINDEX);
+    } finally {
+      categoriesEmpty = false;
+    }
+  });
 });

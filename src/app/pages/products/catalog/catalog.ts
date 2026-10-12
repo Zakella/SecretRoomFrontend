@@ -202,11 +202,14 @@ export class Catalog implements OnInit, OnDestroy {
         }
 
         if (tag) {
-          return this.categoryService.getCategoryBySlug(tag).pipe(
-            map(cat => ({
+          // список категорий (кэш сервиса) — чтобы пустой ответ API не считать «такой категории нет»
+          return this.categoryService.getCategories().pipe(
+            switchMap(all => this.categoryService.getCategoryBySlug(tag).pipe(map(cat => ({ cat, known: all.length > 0 })))),
+            map(({ cat, known }) => ({
               tag: tag,
-              // getCategoryBySlug: ошибка API летит ошибкой, null — успешный ответ без совпадения
-              notFound: !cat,
+              // getCategoryBySlug: ошибка API летит ошибкой, null — успешный ответ без совпадения;
+              // пустой список за «нет» не считаем (как у брендов)
+              notFound: known && !cat,
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,

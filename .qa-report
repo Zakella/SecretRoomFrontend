@@ -1,6 +1,5 @@
 ALL CLEAR ✓
 Date: 2026-10-13
-Task: SR-96 URL hygiene (lang matcher ro/ru, lowercase 301, /index.html, product-detail legacy 301, 404/503 for product, 404 for catalog, canonical/hreflang removal on 404)
-Checks: curl vs SSR dist (live API :9090 + dead API) scenarios 1-7 ✓, diff review (open redirect/Location injection, SSR-safe, secrets) ✓
-Notes (minor, not blocking): 404 catalog pages still carry JSON-LD breadcrumb/collection; /stores has no uppercase filenames to test the file exemption (checked /stores/Atrium/X.jpg -> 404, no redirect).
-### Tree: e67422f4507371c0740db66ea373430406cfb79d
+Task: SR-96 повторный прогон после NEEDS_FIXES (503 на product-detail при пустом кэше слагов; пустой список категорий не даёт 404)
+Checks: product-detail 503+Retry-After+no-store (API лежит) ✓, 301 одним хопом / 404 неизвестный id (API жив) ✓, catalog 404+noindex без canonical/hreflang и 200 с canonical+hreflang ✓, catalog при лежащем API 200 ✓, node --test src/server.spec.mjs 58/58 ✓, ревью диффа ✓
+### Tree: 5448fd6c3aa5b432b475ce697322e75565ab9ba4

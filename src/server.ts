@@ -449,7 +449,7 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
  * SR-96: легаси /:lang/product-detail/:id → 301 на /:lang/product/:id/:slug одним хопом
  * (слаг канонический, из того же кэша, что у слаг-middleware, — второго 301 не будет).
  * Раньше Angular отвечал 302 на битый адрес /ro/product-detail/product/:id/details.
- * id неизвестен → дальше в Angular (404).
+ * id неизвестен → дальше в Angular (404); кэш слагов пуст (сбой API) → 503.
  */
 app.get('/:lang/product-detail/:id', async (req, res, next) => {
   const { lang, id } = req.params;
@@ -457,6 +457,11 @@ app.get('/:lang/product-detail/:id', async (req, res, next) => {
 
   try {
     const slugs = getProductSlugs() ?? await refreshProductSlugs();
+    if (slugs.size === 0) {
+      // кэш слагов пуст (API лежит на холодном старте) — «не знаем», а не «нет такого товара»
+      res.set({ 'Retry-After': '120', 'Cache-Control': 'no-store' }).status(503).send('Service Unavailable');
+      return;
+    }
     const slug = slugs.get(id);
     if (!slug) return next();
 
