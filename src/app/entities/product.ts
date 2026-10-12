@@ -4,6 +4,7 @@ import {Size} from './size';
 import {ProductVariant} from './product-variant';
 import {ProductFilterItem} from './product-filter';
 import {ProductCompositionItem} from './product-composition';
+import {ProductSibling} from './product-sibling';
 
 export interface Product {
   id?: string,
@@ -40,4 +41,10 @@ export interface Product {
   compositions?: ProductCompositionItem[],
   discontinued?: boolean,
   selectedVariantAppId?: number,
+  modelKey?: string,
+  optionType?: string,
+  optionLabelRu?: string,
+  optionLabelRo?: string,
+  siblings?: ProductSibling[],
+  optionCount?: number,
 }

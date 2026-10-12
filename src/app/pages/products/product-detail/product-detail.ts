@@ -24,10 +24,12 @@ import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
+import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
+import {findVariantBySize} from './variant-selection';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -57,6 +59,7 @@ export class ProductDetail {
     }
     return this.product()?.unitsInStock;
   });
+  protected hasSwatches = computed(() => (this.product()?.siblings?.length ?? 0) >= MIN_SWATCHES);
   protected isDiscontinued = computed(() => {
     return this.product()?.discontinued === true;
   });
@@ -133,7 +136,9 @@ export class ProductDetail {
         const preselected = variantParam
           ? product.variants.find(v => String(v.appId) === variantParam)
           : null;
-        const firstAvailable = preselected || product.variants.find(v => v.available && v.inStock) || product.variants[0];
+        // ?size= приходит со свотча соседней карточки модели: берём тот же размер, если он в наличии
+        const sameSize = preselected ? undefined : findVariantBySize(product.variants, this.route.snapshot.queryParamMap.get('size'));
+        const firstAvailable = preselected || sameSize || product.variants.find(v => v.available && v.inStock) || product.variants[0];
         this.selectVariant(firstAvailable);
       }
     }
