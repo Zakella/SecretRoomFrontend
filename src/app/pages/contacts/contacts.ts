@@ -14,6 +14,12 @@ interface StorePhoto {
   landscape?: boolean;
 }
 
+interface StoreBrand {
+  name: string;
+  /** Transloco key of the short brand description. */
+  descriptionKey: string;
+}
+
 interface Store {
   id: number;
   name: string;
@@ -25,6 +31,19 @@ interface Store {
   longitude: number;
   isNew: boolean;
   photos: StorePhoto[];
+  /** 'collage' renders photos as a grid above the map instead of the polaroid stack over it. */
+  layout?: 'collage';
+  brands?: StoreBrand[];
+}
+
+function secretAngelPhoto(name: string): StorePhoto {
+  const base = `/stores/secret-angel/${name}`;
+  return {
+    desktop: `${base}-desktop.jpg`,
+    desktopWebp: `${base}-desktop.webp`,
+    mobile: `${base}-mobile.jpg`,
+    mobileWebp: `${base}-mobile.webp`,
+  };
 }
 
 @Component({
@@ -73,6 +92,32 @@ export class Contacts implements OnInit {
       isNew: true,
       photos: [
         { desktop: '/stores/eminescu/1.jpeg' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Secret Angel',
+      imgUrl: 'https://secretroom.md/stores/secret-angel/3-entrance-desktop.jpg',
+      // TODO(SR-77): real address and coordinates from the owner
+      location: 'Chișinău, Moldova',
+      workTime:  '10:00 - 21:00',
+      contact: '060099775',
+      latitude: 47.0105,
+      longitude: 28.8638,
+      isNew: true,
+      layout: 'collage',
+      photos: [
+        secretAngelPhoto('3-entrance'),
+        secretAngelPhoto('1-bbw-shelves'),
+        secretAngelPhoto('2-pajamas-kiko'),
+        secretAngelPhoto('4-lingerie-wall'),
+      ],
+      brands: [
+        { name: 'Bath & Body Works', descriptionKey: 'storeBrands.bathAndBody' },
+        { name: 'KIKO Milano', descriptionKey: 'storeBrands.kikoMilano' },
+        { name: 'Nayomi', descriptionKey: 'storeBrands.nayomi' },
+        { name: 'Ann Summers', descriptionKey: 'storeBrands.annSummers' },
+        { name: 'PINK', descriptionKey: 'storeBrands.pink' },
       ]
     },
   ];

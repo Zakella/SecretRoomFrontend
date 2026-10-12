@@ -1,34 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-08-20T21:47:00+03:00
-Task: Перепрогон QA перед merge в main (прод secretroom.md) — предыдущий ALL CLEAR отклонён TeamLead-гейтом по формальному признаку (отчёт старше 2 часов), код с момента прогона не менялся. Фикс db7bc53 «Язык страницы ломался query-параметром на главной» (src/app/@core/services/language.ts, +18/-5) + dbc69b0 (14 тестов на регресс).
-Env: local, worktree .../scratchpad/deploy/lang, branch hotfix/lang-query-param, HEAD dbc69b0 (fast-forward от origin/main 68201c2)
-Checks: Build ✓, TSC ✓, Lint ✓ (0 errors), Unit Tests ✓, SSR Tests ✓, Live SSR ✓, Security ✓, Diff scope ✓
-
-## Повторный прогон (без разбора находок с нуля — код не менялся, см. предыдущий отчёт от 19:20 в истории коммитов для полного разбора и мутационной проверки)
-
-- `node_modules` уже на месте и целы (Angular 20.3.12, 461 пакет) — `npm ci --legacy-peer-deps` пропущен.
-- `npm run build` → успех, только пре-существующие предупреждения о бюджете SCSS (12 файлов, те же, что и раньше).
-- `npx tsc --noEmit` → 0 ошибок.
-- `npx ng lint` → 0 errors, 171 warnings (все пре-существующие `no-explicit-any` в server.ts, число не изменилось).
-- `npx ng test --watch=false --browsers=ChromeHeadless` → **TOTAL: 108 SUCCESS** (совпадает с прошлым прогоном).
-- `node --test src/server.spec.mjs` (на свежесобранном бандле) → tests 28, pass 28, fail 0.
-- `git diff --stat origin/main..HEAD -- src/` → только `language.ts` (+23/-10 с учётом обеих правок) и `language.spec.ts` (+135); grep по diff (password/secret/api_key/token/Bearer) — 0 совпадений.
-
-## Живая проверка собранного SSR (PORT=4321, node dist/secret-room/server/server.mjs, боевой API)
-
-| Адрес | http | html lang | og:locale | H1 |
-|---|---|---|---|---|
-| `/ru` | 200 | ru | ru_MD | Secret Room — Магазин Косметики, Парфюме… |
-| `/ru?fbclid=abc` | 200 | ru | ru_MD | Secret Room — Магазин Косметики, Парфюме… |
-| `/ru?utm_source=instagram` | 200 | ru | ru_MD | Secret Room — Магазин Косметики, Парфюме… |
-| `/ru/brands?fbclid=abc` | 200 | ru | ru_MD | Наши Бренды |
-| `/ro` | 200 | ro | ro_MD | Secret Room — Magazin de Cosmetice, Parf… |
-
-Все три `/ru*`-адреса и вложенный `/ru/brands?fbclid=abc` — русские (html lang, og:locale и H1 согласованы, видимый текст кириллический, румынских диакритиков в видимом тексте нет). `/ro` остался румынским (html lang=ro, og:locale=ro_MD, H1 и видимый текст румынские, 85 ro-диакритиков в видимом тексте). Регрессии, которую чинит фикс (query-параметр ломал главную на румынский), нет ни на одном адресе.
-
-## FINDING (не блокирует, вне скоупа фикса)
-
-[minor] На `/ro` в служебных атрибутах (meta keywords, `aria-label` строки поиска, `alt` у картинок каталога — «Мисты и лосьоны», «Люксовая коллекция», «Бюстгальтеры», «Трусы», «Пижамы» и т.д.) и в путях файлов картинок остаётся нетранслированный русский текст — контентная проблема данных каталога/API, не связана с роутингом языка в этом диффе (`language.ts` его не трогает, `git diff --stat` подтверждает scope только `language.ts`/`language.spec.ts`). Не наблюдалось в прошлом прогоне, вероятно каталог на боевом API изменился между прогонами (не воспроизводится сборкой — контент приходит с бэкенда). Кандидат на отдельный тикет по i18n контента каталога, не блокирует этот хотфикс.
-
-## Повторяет прошлый прогон (19:20) без изменений
-Мутационная проверка (3/3 мутанта убиты), контрольная сборка на db7bc53~1 (воспроизводит боевой баг), безопасность, i18n словарей, дублирование, второй FINDING про registration.ts:39 — см. предыдущую версию отчёта в git-истории коммита `.qa-report`. Код с тех пор не менялся, повторный разбор не требовался по заданию.
+Date: 2026-10-12T11:26:18+03:00
+Task: SR-77 — Secret Angel в разделе магазинов (коллаж, карта, бренды)
+Checks: UI ✓ (ro/ru, 1440/375), Lightbox ✓, SSR/JSON-LD ✓, i18n ✓, Security ✓, Regression Atrium/Eminescu ✓
+### Tree: e642bc21c4aefabf6be17abcb94a70d76f1bc07c

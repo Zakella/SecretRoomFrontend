@@ -291,6 +291,16 @@ export class MetaService {
             "addressLocality": "Chișinău",
             "addressCountry": "MD"
           }
+        },
+        {
+          "@type": "Store",
+          "name": "Secret Angel",
+          "address": {
+            "@type": "PostalAddress",
+            // TODO(SR-77): streetAddress from the owner
+            "addressLocality": "Chișinău",
+            "addressCountry": "MD"
+          }
         }
       ]
     }, 'organization');
