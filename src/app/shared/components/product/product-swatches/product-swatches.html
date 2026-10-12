@@ -5,7 +5,7 @@
       @for (item of items(); track item.sibling.appId) {
         <li>
           @if (item.sibling.current) {
-            <span class="swatch active" [class.out-of-stock]="!item.sibling.inStock" aria-current="true">
+            <span class="swatch active" [class.out-of-stock]="!item.sibling.inStock" aria-current="true" [attr.title]="item.label">
               <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>
             </span>
           } @else {
@@ -26,10 +26,10 @@
 <ng-template #swatchBody let-item>
   <span class="swatch-thumb">
     @if (item.sibling.thumbnail) {
-      <img class="swatch-img" [src]="item.sibling.thumbnail" alt="" width="52" height="52" loading="lazy"/>
+      <img class="swatch-img" [src]="item.sibling.thumbnail" alt="" width="66" height="66" loading="lazy"/>
     }
   </span>
-  <span class="swatch-caption">{{ item.label }}</span>
+  <span class="swatch-caption" [attr.title]="item.label">{{ item.label }}</span>
   @if (!item.sibling.inStock) {
     <span class="visually-hidden">({{ 'OutOfStock' | transloco }})</span>
   }
