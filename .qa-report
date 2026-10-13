@@ -1,5 +1,10 @@
-ALL CLEAR ✓
-Date: 2026-10-13T01:05:00+03:00
-Task: SR-99 CWV главной (после rebase на epic/seo с SR-97, SR-103) — резерв места, eager/fetchpriority, шрифты без @import, withEventReplay, бюджет initial (без смены вида)
-Checks: (1) главная /ro: CLS mobile 0 (было 0.89), desktop 0.0014 (было 0.036); replay: queued 1, после гидратации active=2, jsaction 0. (2) визуал 390 и 1440, 4461 vs 4462: mobile fold/full и desktop fold — 0 px; desktop full — 64 px (1px линия-подчёркивание плитки «Sutiene», момент анимации), смены вида нет. (3) каталог brand/victorias-secret и ?page=2: 24 карточки, первая eager+fetchpriority=high, 2–4 eager, 20 lazy, у всех width/height 800x1000; canonical, prev/next на месте; «Încarcă mai mult» догружает до 48, карточки с индекса 24 — lazy, кнопка и сетка пиксель-в-пиксель как на 4461 (API через прокси с CORS-заглушкой, только GET). (4) /ro/catalog/vs — 301 на /ro/catalog/brand/victorias-secret. Ведущий: build 1.24 MB, ng test 77/77, server.spec 86/86, lint 0 errors
-### Tree: e5735400b3a3ce6236ee5304d0c0051c7f06bbbe
+# QA report: SR-101 image-sitemap (normalizeImageUrl)
+
+## ALL CLEAR
+
+- Дифф src/server.ts + src/server.spec.mjs проверен. node --test src/server.spec.mjs: 91 pass / 0 fail.
+- normalizeImageUrl: ?query и #hash отбрасываются, кириллица и пробел в пути кодируются, %20 не двоится, trim работает, & в пути экранируется escapeXml на выводе (XML валиден).
+- Относительный/невалидный URL: уходит как есть (после trim), без нормализации, но через escapeXml. Не баг (в данных ожидаются абсолютные URL), замечание некритичное.
+- Тесты осмысленные: покрывают ?w=, ?v=, кириллицу+пробел, уже закодированное %20 + #hash, лимит 3, мусор, отсутствие кириллицы/query в теле.
+
+### Tree: 0e47496a734bfd518def00af3e75f02e3b526eb0
