@@ -480,6 +480,13 @@
 }
 
 .load-more-btn {
+  // SR-103: rendered as <a href="?page=N"> — keep the look of the former <button>
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  // the former <button> did not inherit the page font: Arial, line-height normal
+  font-family: Arial, sans-serif;
+  line-height: normal;
   padding: 14px 32px;
   font-size: 14px;
   text-transform: uppercase;
@@ -492,17 +499,33 @@
   transition: all 0.3s ease;
   min-width: 200px;
 
-  &:hover:not(:disabled) {
+  &:hover:not(:disabled):not(.is-disabled) {
     background: #b8956c;
     color: #000;
     border-color: #b8956c;
   }
 
-  &:disabled {
+  &:disabled,
+  &.is-disabled {
     opacity: 0.5;
     cursor: default;
     border-color: #333;
     color: #666;
+  }
+}
+
+// SR-103: link back to the previous page, only when the list starts from ?page=N
+.prev-page-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+
+  &:hover {
+    color: #b8956c;
   }
 }
 
