@@ -1,6 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-13T03:00:00+03:00
-Task: SR-97 — повторный прогон по слиянию с SR-96 (origin/epic/seo): 301 /catalog/vs|bb на brand + lowercase-301, ro/ru, soft-404, hero noindex
-Checks: lowercase+brand за один 301 ✓ (/RO/catalog/VS, /Ru/Catalog/Bb/, /RO/catalog/vs/?utm=1 с query), /en|/EN/catalog/vs -> 404 без редиректа ✓, /ro/catalog/vs и /ru/catalog/bb один 301 ✓, SR-96 цел (/RO/catalog/Sutiene 1x301, nu-exista 404+noindex, brand и bestsellers 200 + canonical + hreflang) ✓, hero/1 200 и один meta robots "noindex, follow" ✓, легаси /vs и /bb/category/7 один 301 ✓
-Notes: стенд PORT=4421 на dist/secret-room (сборка из текущего дерева), сервер остановлен.
-### Tree: f28670c9b36187293ce0e62508f82492c1e6c5f6
+Date: 2026-10-13
+Task: SR-103 пагинация каталога через ?page=N
+Checks: SSR ✓ (canonical/hreflang/title/prev/next, последняя страница, 404 noindex), редиректы ✓ (один 301, utm, vs/bb->brand), brand/new-arrivals ✓, браузер 1280 (24->48->72 на месте, URL, Cmd-клик, история) ✓, вид кнопки vs прод 1280/390 normal+hover ✓ (после фикса: font-family Arial, line-height normal; размеры идентичны), прямой заход ?page=2 + prev ✓, гидрация без повторного запроса списка ✓
+Notes: replaceState — Назад уходит до каталога (по ТЗ); 404 PublicSans-Light.woff не связан с задачей
+### Tree: 832d0ca6edeb65a8da5e0e3ad064f02d7c7baab6

@@ -185,6 +185,14 @@
     }
 
     <div class="product-list-panel">
+      <!-- SR-103: entered on ?page=N — a quiet link back to the previous page (page 1 = clean URL) -->
+      @if (firstPage() > 1 && products().length > 0) {
+        <a class="prev-page-link" [routerLink]="basePath()" [queryParams]="prevPageQuery()">
+          <i class="ri-arrow-left-s-line"></i>
+          {{ 'catalog.prevPage' | transloco }}
+        </a>
+      }
+
       @if (products().length > 0) {
         <product-list [products]="products()"/>
       } @else if (isLoading()) {
@@ -193,22 +201,25 @@
         <app-empty-state/>
       }
 
-      @if (!allLoaded() && products().length > 0) {
+      <!-- SR-103: a real link to the next page for crawlers; a plain click appends it in place (loadMore) -->
+      @if (hasNextPage()) {
         <div class="load-more">
-          <button
+          <a
             class="load-more-btn"
-            [disabled]="isLoading()"
+            [attr.href]="nextPageHref()"
+            [class.is-disabled]="isLoading()"
+            [attr.aria-disabled]="isLoading() || null"
             (mouseenter)="prefetchNext()"
             (focus)="prefetchNext()"
             (touchstart)="prefetchNext()"
-            (click)="loadMore()"
+            (click)="loadMore($event)"
           >
             @if (isLoading()) {
               {{ 'Loading...' | transloco }}
             } @else {
               {{ 'Load more' | transloco }}
             }
-          </button>
+          </a>
         </div>
       }
     </div>

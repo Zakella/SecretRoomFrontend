@@ -4,6 +4,7 @@ import { Router, NavigationEnd, NavigationCancel, NavigationError, NavigationSki
 import { filter, take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { catalogPageQuery, parseCatalogPage } from './catalog-page';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,35 @@ export class MetaService {
   /** Build full absolute URL from router path (works in SSR and browser) */
   private getFullUrl(): string {
     const path = this.router.url.split('?')[0].split('#')[0];
-    return `${this.siteUrl}${path}`;
+    return `${this.siteUrl}${path}${this.catalogPageQuery()}`;
+  }
+
+  /**
+   * SR-103: '?page=N' of a paginated catalog listing (N >= 2) — part of its self-canonical and hreflang;
+   * '' for page 1, junk values and every non-catalog page (other query params never reach canonical).
+   */
+  private catalogPageQuery(): string {
+    const [path, query = ''] = this.router.url.split('#')[0].split('?');
+    if (!/^\/(ro|ru)\/catalog\//.test(path)) return '';
+    return catalogPageQuery(parseCatalogPage(new URLSearchParams(query).get('page')) ?? 1);
+  }
+
+  /** SR-103: <link rel="prev|next"> of a paginated listing (site-relative paths); null removes the link. */
+  setPaginationLinks(prevPath: string | null, nextPath: string | null) {
+    const head = this.document.getElementsByTagName('head')[0];
+    for (const [rel, path] of [['prev', prevPath], ['next', nextPath]] as const) {
+      let link = this.document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
+      if (!path) {
+        link?.remove();
+        continue;
+      }
+      if (!link) {
+        link = this.document.createElement('link');
+        link.setAttribute('rel', rel);
+        head.appendChild(link);
+      }
+      link.setAttribute('href', `${this.siteUrl}${path}`);
+    }
   }
 
   updateTitle(title: string) {
@@ -109,7 +138,7 @@ export class MetaService {
    */
   removeCanonicalAndAlternates() {
     const remove = () => this.document
-      .querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]')
+      .querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang], link[rel="prev"], link[rel="next"]')
       .forEach(el => el.remove());
     remove();
 
@@ -160,8 +189,9 @@ export class MetaService {
     if (segments.length >= 2 && (segments[1] === 'ro' || segments[1] === 'ru')) {
       const pathWithoutLang = segments.slice(2).join('/');
       const suffix = pathWithoutLang ? `/${pathWithoutLang}` : '';
-      const roUrl = `${this.siteUrl}/ro${suffix}`;
-      const ruUrl = `${this.siteUrl}/ru${suffix}`;
+      const pageQuery = this.catalogPageQuery();
+      const roUrl = `${this.siteUrl}/ro${suffix}${pageQuery}`;
+      const ruUrl = `${this.siteUrl}/ru${suffix}${pageQuery}`;
       this.updateAlternateTags(roUrl, ruUrl);
     }
   }

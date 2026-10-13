@@ -47,6 +47,42 @@ app.use((req, res, next) => {
 });
 
 /**
+ * SR-103: catalog pagination lives in ?page=N. Only an integer N >= 2 without leading zeros is a page
+ * (same rule as src/app/@core/services/catalog-page.ts); page 1 is the clean URL.
+ * page=1, 0, -2, abc, 02, an empty or repeated page → 301 to the same path without it.
+ * Every redirect that lands on a catalog URL builds its query with catalogQuery(), so a junk page is dropped
+ * in the same hop (no chain like /catalog/vs?page=1 → brand?page=1 → brand).
+ */
+const CATALOG_PATH = /^\/(ro|ru)\/catalog\//i;
+const CATALOG_PAGE = /^[1-9]\d{0,8}$/;
+
+function isPageParam(part: string): boolean {
+  const key = part.split('=')[0];
+  try {
+    return decodeURIComponent(key) === 'page';
+  } catch {
+    return false;
+  }
+}
+
+/** Query string ('?…' or '') of a catalog URL with a junk page parameter dropped; other parameters kept verbatim. */
+function catalogQuery(originalUrl: string): string {
+  const start = originalUrl.indexOf('?');
+  if (start < 0) return '';
+  const parts = originalUrl.slice(start + 1).split('&').filter(Boolean);
+  const pages = parts.filter(isPageParam);
+  const value = pages.length === 1 ? pages[0].slice(pages[0].indexOf('=') + 1) : '';
+  const keepPage = pages.length === 1 && pages[0].includes('=') && CATALOG_PAGE.test(value) && value !== '1';
+  const kept = keepPage ? parts : parts.filter(p => !isPageParam(p));
+  return kept.length ? `?${kept.join('&')}` : '';
+}
+
+/** Query to carry over when redirecting to `targetPath`: catalog URLs get the page clean-up, others stay as is. */
+function queryFor(targetPath: string, originalUrl: string, path: string): string {
+  return CATALOG_PATH.test(targetPath) ? catalogQuery(originalUrl) : originalUrl.slice(path.length);
+}
+
+/**
  * SR-97: /{lang}/catalog/vs and /{lang}/catalog/bb duplicated the brand pages — glue them with 301.
  * Registered BEFORE the lowercase (SR-96) and trailing-slash middlewares on purpose: Express routing is non-strict and
  * case-insensitive, so /ro/catalog/vs/ and /RO/catalog/VS land here too and get ONE hop straight
@@ -61,9 +97,7 @@ app.get('/:lang/catalog/:tag', (req, res, next) => {
   const lang = req.params['lang'].toLowerCase();
   const target = BRAND_PAGE_BY_LEGACY_TAG.get(req.params['tag'].toLowerCase());
   if (!LANGUAGES.includes(lang) || !target) return next();
-  const queryStart = req.originalUrl.indexOf('?');
-  const query = queryStart >= 0 ? req.originalUrl.slice(queryStart) : '';
-  res.redirect(301, `/${lang}${target}${query}`);
+  res.redirect(301, `/${lang}${target}${catalogQuery(req.originalUrl)}`);
 });
 
 /**
@@ -102,7 +136,7 @@ function redirectToLowercase(req: express.Request, res: express.Response, next: 
   let target = toLowercasePath(path);
   if (target !== '/' && target.endsWith('/')) target = target.replace(/\/+$/, '') || '/';
   if (target === path) return next();
-  res.redirect(301, target + req.originalUrl.slice(req.path.length));
+  res.redirect(301, target + queryFor(target, req.originalUrl, req.path));
 }
 
 app.use(redirectToLowercase);
@@ -112,11 +146,25 @@ app.use(redirectToLowercase);
  */
 app.use((req, res, next) => {
   if (req.path !== '/' && req.path.endsWith('/')) {
-    const query = req.url.slice(req.path.length);
-    res.redirect(301, req.path.slice(0, -1) + query);
+    const target = req.path.slice(0, -1);
+    const query = CATALOG_PATH.test(target) ? catalogQuery(req.url) : req.url.slice(req.path.length);
+    res.redirect(301, target + query);
   } else {
     next();
   }
+});
+
+/**
+ * SR-103: junk ?page on a catalog URL (page=1, 0, -2, abc, 02…) → one 301 to the same path without it,
+ * other query parameters kept. A valid page=N (N >= 2) goes on to SSR; a page past the last one is a 404 there.
+ */
+app.use((req, res, next) => {
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || !CATALOG_PATH.test(req.path)) return next();
+  const start = req.originalUrl.indexOf('?');
+  if (start < 0 || !req.originalUrl.slice(start + 1).split('&').some(isPageParam)) return next();
+  const query = catalogQuery(req.originalUrl);
+  if (query.slice(1).split('&').some(isPageParam)) return next();
+  res.redirect(301, req.path + query);
 });
 
 /**
@@ -571,7 +619,8 @@ app.get('/:lang/catalog/:slug', async (req, res, next) => {
 
     const expectedSlug = categorySlug(cat, lang);
     if (expectedSlug && urlSlug !== expectedSlug) {
-      res.redirect(301, `/${lang}/catalog/${expectedSlug}`);
+      // SR-103: keep the query (?page=N) — the wrong-language slug of page 3 is page 3 of the right one
+      res.redirect(301, `/${lang}/catalog/${expectedSlug}${catalogQuery(req.originalUrl)}`);
       return;
     }
   } catch { /* fallback to Angular */ }

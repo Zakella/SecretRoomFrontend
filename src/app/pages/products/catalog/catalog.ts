@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, RESPONSE_INIT, signal} from '@angular/core';
+import {Location} from '@angular/common';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router, RouterLink} from '@angular/router';
 import {Meta} from '@angular/platform-browser';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, finalize, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
@@ -18,7 +19,8 @@ import {Category, Brand} from '../../../entities/category';
 import {getBrandSeo, BrandSeoLocale} from '../../../@core/configs/brand-seo';
 import {getCategorySeo} from '../../../@core/configs/category-seo';
 import {of} from 'rxjs';
-import {TranslocoPipe} from '@ngneat/transloco';
+import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
+import {catalogPageQuery, parseCatalogPage} from '../../../@core/services/catalog-page';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
 import {DrawerModule} from 'primeng/drawer';
@@ -52,6 +54,8 @@ export class Catalog implements OnInit, OnDestroy {
   private meta = inject(Meta);
   private langService = inject(Language);
   private slugify = inject(Slugify);
+  private location = inject(Location);
+  private transloco = inject(TranslocoService);
   public activeLang = this.langService.currentLanguage;
   private destroyRef = inject(DestroyRef);
   private responseInit = inject(RESPONSE_INIT, {optional: true});
@@ -137,9 +141,40 @@ export class Catalog implements OnInit, OnDestroy {
     return this.availableBrands().length > 1 || this.availableFilters().length > 0;
   });
 
+  // SR-103: pagination via ?page=N (1-based; page 1 = clean URL)
+  /** Page the list starts from: ?page=N on entry. Drives title, canonical, hreflang and the prev link. */
+  protected firstPage = signal(1);
+  /** Last page loaded into the list ("Load more" appends pages after firstPage). */
+  protected lastPage = signal(1);
+  /** Listing path without language and query, e.g. "catalog/brand/victorias-secret". */
+  private listingTail = signal<string | null>(null);
+
+  protected basePath = computed(() => {
+    const tail = this.listingTail();
+    return tail ? `/${this.activeLang()}/${tail}` : null;
+  });
+
+  /** Known total → exact; unknown total → keep offering the next page until an empty one comes back (as before). */
+  protected hasNextPage = computed(() => {
+    if (this.allLoaded() || this.products().length === 0) return false;
+    const total = this.totalProductCount();
+    return total > 0 ? this.lastPage() * this.itemsPerPage < total : true;
+  });
+
+  protected prevPageQuery = computed(() => {
+    const prev = this.firstPage() - 1;
+    return prev >= 2 ? {page: prev} : {};
+  });
+
+  protected nextPageHref = computed(() => `${this.basePath()}${catalogPageQuery(this.lastPage() + 1)}`);
+
   private currentCategoryId: string | null = null;
   private currentHeroId: number | null = null;
   private robotsNoindex = false;
+  /** Route params the list was loaded for — tells a page-only change (same listing) from a new listing. */
+  private loadedParamsKey: string | null = null;
+  /** Page currently shown in the address bar. */
+  private urlPage = 1;
   private currentPage = 0;
   private readonly itemsPerPage = 24;
   private prefetched: { page: number; request$: Observable<any> } | null = null;
@@ -152,12 +187,28 @@ export class Catalog implements OnInit, OnDestroy {
       const catName = this.categoryName();
       const catData = this.categoryData();
       const lang = this.langService.currentLanguage();
+      const page = this.firstPage();
 
       if (cat || brand) {
-        this.updateMeta(cat, brand, alias, catName, catData, lang);
+        this.updateMeta(cat, brand, alias, catName, catData, lang, page);
         // updateMeta ставит canonical/hreflang — на 404 снимаем их следом
         if (this.notFound()) this.metaService.removeCanonicalAndAlternates();
       }
+    });
+
+    // <link rel="prev|next"> describe the page the visitor landed on; none on 404
+    effect(() => {
+      const base = this.basePath();
+      const first = this.firstPage();
+      const total = this.totalProductCount();
+      if (!base || this.notFound()) {
+        this.metaService.setPaginationLinks(null, null);
+        return;
+      }
+      this.metaService.setPaginationLinks(
+        first >= 2 ? base + catalogPageQuery(first - 1) : null,
+        total > first * this.itemsPerPage ? base + catalogPageQuery(first + 1) : null
+      );
     });
 
     this.pendingCountRequest$.pipe(
@@ -205,7 +256,9 @@ export class Catalog implements OnInit, OnDestroy {
         if (tag) {
           // список категорий (кэш сервиса) — чтобы пустой ответ API не считать «такой категории нет»
           return this.categoryService.getCategories().pipe(
-            switchMap(all => this.categoryService.getCategoryBySlug(tag).pipe(map(cat => ({ cat, known: all.length > 0 })))),
+            // lookup in the list already loaded: an empty API answer leaves the service cache empty,
+            // and getCategoryBySlug() would request hierarchy/active a second time
+            map(all => ({ cat: this.categoryService.findCategoryBySlug(all, tag), known: all.length > 0 })),
             map(({ cat, known }) => ({
               tag: tag,
               // getCategoryBySlug: ошибка API летит ошибкой, null — успешный ответ без совпадения;
@@ -231,7 +284,7 @@ export class Catalog implements OnInit, OnDestroy {
         const lang = this.langService.currentLanguage();
         const expectedSlug = this.slugify.categorySlug(categoryObj, lang);
         if (expectedSlug && tag !== expectedSlug) {
-          this.router.navigate(['/', lang, 'catalog', expectedSlug], { replaceUrl: true });
+          this.router.navigate(['/', lang, 'catalog', expectedSlug], { replaceUrl: true, queryParamsHandling: 'preserve' });
           return;
         }
       }
@@ -242,8 +295,51 @@ export class Catalog implements OnInit, OnDestroy {
       this.categoryData.set(categoryObj ?? null);
       this.currentCategoryId = categoryId;
       this.updateRobots(tag);
+
+      const params = this.route.snapshot.paramMap;
+      const heroId = params.get('heroId');
+      const brandSlug = params.get('brandName');
+      this.listingTail.set(heroId ? `catalog/hero/${heroId}` : brandSlug ? `catalog/brand/${brandSlug}` : `catalog/${tag}`);
+      this.loadedParamsKey = this.paramsKey(params);
+      this.setPage(parseCatalogPage(this.route.snapshot.queryParamMap.get('page')) ?? 1);
       this.setCategory(tag!);
     });
+
+    // Same listing, only ?page changed (prev link, browser back/forward): paramMap stays silent — reload from that page.
+    // A new listing is handled above (it reads ?page itself); our own "Load more" URL update doesn't go through the router.
+    this.route.queryParamMap.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      map(q => parseCatalogPage(q.get('page')) ?? 1)
+    ).subscribe(page => {
+      if (this.loadedParamsKey !== this.paramsKey(this.route.snapshot.paramMap) || page === this.urlPage) return;
+      this.setPage(page);
+      this.reset();
+      this.fetchProducts();
+    });
+  }
+
+  private paramsKey(params: ParamMap): string {
+    return params.keys.map(k => `${k}=${params.get(k)}`).join('&');
+  }
+
+  private setPage(page: number): void {
+    this.firstPage.set(page);
+    this.lastPage.set(page);
+    this.urlPage = page;
+  }
+
+  /**
+   * Mirrors the loaded page in the address bar. Location, not the router: a router navigation would
+   * scroll to top (scrollPositionRestoration) and fire page views — the list must just grow in place.
+   */
+  private syncUrlPage(page: number): void {
+    if (page === this.urlPage) return;
+    this.urlPage = page;
+    const tree = this.router.parseUrl(this.location.path());
+    const rest = {...tree.queryParams};
+    delete rest['page'];
+    tree.queryParams = page >= 2 ? {...rest, page: String(page)} : rest;
+    this.location.replaceState(this.router.serializeUrl(tree), '', this.location.getState());
   }
 
   /** 404 + noindex по образцу product-detail; canonical/hreflang снимает эффект меты. */
@@ -260,6 +356,7 @@ export class Catalog implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.metaService.clearAlternateOverride();
+    this.metaService.setPaginationLinks(null, null);
     if (this.robotsNoindex) this.meta.removeTag("name='robots'");
   }
 
@@ -277,7 +374,7 @@ export class Catalog implements OnInit, OnDestroy {
     }
   }
 
-  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string) {
+  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string, page = 1) {
     let title = 'Catalog | Secret Room';
     let description = 'Catalog de produse Secret Room';
     let keywords = 'cosmetice, lenjerie, moldova, chisinau';
@@ -362,17 +459,24 @@ export class Catalog implements OnInit, OnDestroy {
       }
     }
 
-    this.metaService.updateTitle(title);
-    this.metaService.updateDescription(description);
+    // Page N >= 2: own title/description ("— pagina N"), otherwise every page of a listing shares one title
+    const pageTitle = page >= 2 ? this.withPageSuffix(title, page, lang) : title;
+    const pageDescription = page >= 2
+      ? `${description.replace(/[.\s]+$/, '')} ${this.pageSuffix(page, lang)}`
+      : description;
+
+    this.metaService.updateTitle(pageTitle);
+    this.metaService.updateDescription(pageDescription);
     this.metaService.updateKeywords(keywords);
     this.metaService.updateCanonicalUrl();
 
     if (catData) {
       const roSlug = this.slugify.categorySlug(catData, 'ro');
       const ruSlug = this.slugify.categorySlug(catData, 'ru');
+      const pageQuery = catalogPageQuery(page);
       this.metaService.setAlternateOverride(
-        `https://secretroom.md/ro/catalog/${roSlug}`,
-        `https://secretroom.md/ru/catalog/${ruSlug}`
+        `https://secretroom.md/ro/catalog/${roSlug}${pageQuery}`,
+        `https://secretroom.md/ru/catalog/${ruSlug}${pageQuery}`
       );
     } else {
       this.metaService.clearAlternateOverride();
@@ -386,6 +490,24 @@ export class Catalog implements OnInit, OnDestroy {
     }, 'collection');
 
     this.updateBreadcrumbs(category, brand, alias, catData, lang);
+  }
+
+  /**
+   * selectTranslate, not translate(): it loads the language first. Translations are bundled (static loader),
+   * so it emits synchronously — also during SSR, before any transloco pipe has loaded the active language.
+   */
+  private pageSuffix(page: number, lang: string): string {
+    let suffix = '';
+    this.transloco.selectTranslate('catalog.pageSuffix', {page}, lang).pipe(take(1))
+      .subscribe(value => suffix = value);
+    return suffix;
+  }
+
+  /** "Name — pagina 2 | Secret Room": the suffix goes before the site part so it survives SERP truncation. */
+  private withPageSuffix(title: string, page: number, lang: string): string {
+    const suffix = this.pageSuffix(page, lang);
+    const site = title.indexOf(' | ');
+    return site >= 0 ? `${title.slice(0, site)} ${suffix}${title.slice(site)}` : `${title} ${suffix}`;
   }
 
   private updateBreadcrumbs(category: string | null, brand: string | null, alias: string | null, catData: Category | null, lang: string) {
@@ -442,7 +564,8 @@ export class Catalog implements OnInit, OnDestroy {
   }
 
   private reset() {
-    this.currentPage = 0;
+    this.currentPage = this.firstPage() - 1;
+    this.lastPage.set(this.firstPage());
     this.allLoaded.set(false);
     this.products.set([]);
     this.selectedBrand.set(null);
@@ -510,10 +633,7 @@ export class Catalog implements OnInit, OnDestroy {
 
   selectBrand(brand: string | null) {
     this.selectedBrand.set(brand);
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.restartFromFirstPage();
   }
 
   toggleFilter(filterSlug: string, valueSlug: string) {
@@ -531,10 +651,7 @@ export class Catalog implements OnInit, OnDestroy {
     }
 
     this.selectedFilters.set(current);
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.restartFromFirstPage();
   }
 
   isFilterSelected(filterSlug: string, valueSlug: string): boolean {
@@ -544,10 +661,7 @@ export class Catalog implements OnInit, OnDestroy {
   clearAllFilters() {
     this.selectedBrand.set(null);
     this.selectedFilters.set(new Map());
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.restartFromFirstPage();
   }
 
   openFilterDrawer() {
@@ -603,11 +717,19 @@ export class Catalog implements OnInit, OnDestroy {
     const copy = new Map<string, Set<string>>();
     this.pendingFilters().forEach((vals, key) => copy.set(key, new Set(vals)));
     this.selectedFilters.set(copy);
+    this.restartFromFirstPage();
+    this.filterDrawerVisible = false;
+  }
+
+  /** Filter change: the filtered list starts over from page 1, and so does the URL. */
+  private restartFromFirstPage() {
+    this.firstPage.set(1);
+    this.lastPage.set(1);
+    this.syncUrlPage(1);
     this.currentPage = 0;
     this.allLoaded.set(false);
     this.products.set([]);
     this.fetchProducts();
-    this.filterDrawerVisible = false;
   }
 
   private buildFiltersParam(map: Map<string, Set<string>> = this.selectedFilters()): string | undefined {
@@ -620,7 +742,11 @@ export class Catalog implements OnInit, OnDestroy {
     return parts.join(',');
   }
 
-  loadMore(): void {
+  /** "Load more" is a real link to ?page=N+1 (crawlers follow it); a plain click appends the page in place. */
+  loadMore(event?: MouseEvent): void {
+    // modified/middle click — let the browser open the link itself
+    if (event && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
+    event?.preventDefault();
     this.fetchProducts(true);
   }
 
@@ -641,7 +767,7 @@ export class Catalog implements OnInit, OnDestroy {
   fetchProducts(append = false) {
     if (this.isLoading() || this.allLoaded()) return;
 
-    const page = append ? this.currentPage + 1 : 0;
+    const page = append ? this.currentPage + 1 : this.firstPage() - 1;
     const category = this.category();
     const categoryIdentifier = this.currentCategoryId || category;
 
@@ -666,10 +792,15 @@ export class Catalog implements OnInit, OnDestroy {
 
     if (!items.length) {
       this.allLoaded.set(true);
+      // landed on ?page=N past the last page: a successful empty page (empty content or 204, as bestsellers/sales
+      // answer) is "not found". An API error never gets here — the first-page request has no catchError.
+      if (!append && page > 0) this.setNotFound(true);
       return;
     }
 
     this.currentPage = page;
+    this.lastPage.set(page + 1);
+    if (append) this.syncUrlPage(page + 1);
     this.products.set(append ? [...this.products(), ...items] : items);
     this.setItemListJsonLd(this.products());
   }

@@ -55,6 +55,19 @@ let sitemapFails = false;
 let sitemapEmpty = false;
 let categoriesEmpty = false;
 
+/** SR-103: bestsellers listing of 30 products — API page 0 holds 24, page 1 the last 6, further pages are empty. */
+const BESTSELLERS_TOTAL = 30;
+function bestsellersPage(params) {
+  const page = Number(params.get('page'));
+  const size = Number(params.get('size'));
+  const from = page * size;
+  const count = Math.max(0, Math.min(size, BESTSELLERS_TOTAL - from));
+  const content = Array.from({length: count}, (_, i) => ({
+    id: String(1000 + from + i), name: `Bestseller ${from + i}`, price: 100, imageURL: null, size: null,
+  }));
+  return {content, totalElements: BESTSELLERS_TOTAL, pageable: {pageNumber: page, pageSize: size}};
+}
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -83,6 +96,11 @@ before(() => {
     }
     if (url.includes('web-categories/hierarchy/active')) return json(categoriesEmpty ? [] : CATEGORIES);
     if (url.endsWith('products/brands')) return json(BRANDS);
+    if (url.includes('products/bestsellers?')) return json(bestsellersPage(new URL(url).searchParams));
+    // реальный API sales/bestsellers отвечает на пустую страницу 204 без тела
+    if (url.includes('products/sales?') && new URL(url).searchParams.get('page') !== '0') {
+      return new Response(null, {status: 204});
+    }
     return json([]);
   };
 });
@@ -874,4 +892,109 @@ describe('server.ts — склейка /catalog/vs и /catalog/bb на brand-с�
       }
     }
   });
+});
+
+describe('server.ts — SR-103: пагинация каталога ?page=N', () => {
+  sr96Server();
+
+  const LIST = '/ro/catalog/bestsellers';
+  const REDIRECTS = [301, 302, 307, 308];
+
+  /** Один 301 сразу на `to`, и сам `to` дальше не редиректит. */
+  async function assertSingleHop(from, to) {
+    const res = await get(from);
+    assert.equal(res.status, 301, `${from} → ${res.status}`);
+    assert.equal(res.headers.get('location'), to, `${from} увёл не туда`);
+    const next = await get(to);
+    assert.ok(!REDIRECTS.includes(next.status), `${to} редиректит дальше (${next.status}) — цепочка`);
+  }
+
+  for (const junk of ['1', '0', '-2', 'abc', '02', '', '2.5']) {
+    it(`?page=${junk} → 301 на адрес без page`, async () => {
+      await assertSingleHop(`${LIST}?page=${junk}`, LIST);
+    });
+  }
+
+  it('прочие query-параметры сохраняются, уходит только page', async () => {
+    await assertSingleHop(`${LIST}?utm_source=fb&page=1&x=A%20b`, `${LIST}?utm_source=fb&x=A%20b`);
+  });
+
+  it('повторённый page — тоже мусор', async () => {
+    await assertSingleHop(`${LIST}?page=2&page=3`, LIST);
+  });
+
+  it('?page=2 проходит в SSR без редиректа (вместе с прочими параметрами)', async () => {
+    for (const path of [`${LIST}?page=2`, `${LIST}?page=2&utm_source=fb`]) {
+      const res = await get(path);
+      assert.equal(res.status, 200, `${path} → ${res.status}`);
+    }
+  });
+
+  it('вне каталога page не трогаем', async () => {
+    const res = await get('/ro/brands?page=1');
+    assert.ok(!REDIRECTS.includes(res.status));
+  });
+
+  it('vs/bb + ?page=3 → один 301 на brand-URL с сохранённым page', async () => {
+    await assertSingleHop('/ro/catalog/vs?page=3', '/ro/catalog/brand/victorias-secret?page=3');
+    await assertSingleHop('/ru/catalog/bb/?utm_source=fb&page=3', '/ru/catalog/brand/bath-and-body?utm_source=fb&page=3');
+  });
+
+  it('vs/bb + мусорный page → один 301 сразу на чистый brand-URL', async () => {
+    await assertSingleHop('/ro/catalog/vs?page=1', '/ro/catalog/brand/victorias-secret');
+  });
+
+  it('регистр/слэш + мусорный page → один хоп', async () => {
+    await assertSingleHop('/RO/catalog/Bestsellers?page=1', LIST);
+    await assertSingleHop(`${LIST}/?page=0&a=1`, `${LIST}?a=1`);
+    await assertSingleHop('/RO/catalog/Bestsellers?page=2', `${LIST}?page=2`);
+  });
+
+  it('слаг категории не того языка → 301 с сохранённым ?page', async () => {
+    const res = await get('/ru/catalog/sutiene?page=3');
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get('location'), '/ru/catalog/byustgaltery?page=3');
+  });
+
+  it('страница 2: 200, self-canonical и hreflang с ?page=2, свой title, prev-ссылка, товары второй страницы', async () => {
+    const {res, body} = await getText(`${LIST}?page=2`);
+    assert.equal(res.status, 200);
+    assert.match(body, /<link rel="canonical" href="https:\/\/secretroom\.md\/ro\/catalog\/bestsellers\?page=2">/);
+    assert.match(body, /hreflang="ru" href="https:\/\/secretroom\.md\/ru\/catalog\/bestsellers\?page=2"/);
+    assert.match(body, /<title>[^<]*— pagina 2[^<]*<\/title>/);
+    assert.match(body, /<meta name="robots" content="index, follow/);
+    assert.doesNotMatch(body, /noindex/);
+    // 30 товаров по 24: вторая страница последняя — prev на чистый адрес, next нет
+    const prev = body.match(/<a\b[^>]*class="prev-page-link[^"]*"[^>]*>/);
+    assert.ok(prev, 'нет ссылки на предыдущую страницу');
+    assert.match(prev[0], /href="\/ro\/catalog\/bestsellers"/);
+    assert.doesNotMatch(body, /class="load-more-btn/);
+    assert.match(body, /<link rel="prev" href="https:\/\/secretroom\.md\/ro\/catalog\/bestsellers">/);
+    assert.doesNotMatch(body, /<link rel="next"/);
+    assert.ok(body.includes('Bestseller 24'), 'нет товаров второй страницы');
+    assert.ok(!/Bestseller [0-9]\b/.test(body), 'в HTML товары первой страницы');
+  });
+
+  it('страница 1: canonical без page, next-ссылка на ?page=2, prev нет', async () => {
+    const {res, body} = await getText(LIST);
+    assert.equal(res.status, 200);
+    assert.match(body, /<link rel="canonical" href="https:\/\/secretroom\.md\/ro\/catalog\/bestsellers">/);
+    assert.doesNotMatch(body, /<title>[^<]*pagina/);
+    const next = body.match(/<a\b[^>]*class="load-more-btn[^"]*"[^>]*>/);
+    assert.ok(next, 'нет ссылки «Încarcă mai multe»');
+    assert.match(next[0], /href="\/ro\/catalog\/bestsellers\?page=2"/);
+    assert.doesNotMatch(body, /class="prev-page-link/);
+    assert.match(body, /<link rel="next" href="https:\/\/secretroom\.md\/ro\/catalog\/bestsellers\?page=2">/);
+  });
+
+  for (const path of [`${LIST}?page=999`, '/ro/catalog/sales?page=2']) {
+    it(`страница за последней (${path}) → 404 + noindex, без canonical/hreflang/prev/next, не 5xx`, async () => {
+      const {res, body} = await getText(path);
+      assert.equal(res.status, 404);
+      assert.match(body, NOINDEX);
+      assert.ok(!hasCanonical(body));
+      assert.ok(!hasHreflang(body));
+      assert.doesNotMatch(body, /<link rel="(prev|next)"/);
+    });
+  }
 });
