@@ -1,5 +1,5 @@
 <div class="product-list">
-  @for (product of products(); track product.id) {
+  @for (product of products(); track product.id; let i = $index) {
     <product-card
       [product]="product"
       [imageUrl]="product.imageURL!"
@@ -8,6 +8,7 @@
       [oldPrice]="product.oldPrice"
       [discountPercent]="product.discountPercent"
       [isBestSeller]="product.isBestSeller"
-      [isNew]="product.isNew"/>
+      [isNew]="product.isNew"
+      [loadingPriority]="i === 0 ? 'high' : (i < 4 ? 'eager' : 'lazy')"/>
   }
 </div>

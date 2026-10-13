@@ -44,6 +44,8 @@
                     [alt]="item | localizedName"
                     class="main-img"
                     loading="lazy"
+                    width="800"
+                    height="1000"
                     (error)="onImageError($event)"
                   />
                   @if (getHoverImage(item)) {
@@ -52,6 +54,8 @@
                       [alt]="item | localizedName"
                       class="hover-img"
                       loading="lazy"
+                      width="800"
+                      height="1000"
                     />
                   }
                 </div>

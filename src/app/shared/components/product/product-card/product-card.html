@@ -62,9 +62,11 @@
     </button>
 
     <a class="img-container" [routerLink]="productUrl()" [queryParams]="queryParams()">
-      <img [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
+      <img [attr.loading]="loadingPriority() === 'lazy' ? 'lazy' : 'eager'"
+           [attr.fetchpriority]="loadingPriority() === 'high' ? 'high' : null"
+           [src]="imageUrl()" [alt]="product() | localizedName" class="main-img" width="800" height="1000"/>
       @if (hoverImageUrl()) {
-        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy"/>
+        <img [src]="hoverImageUrl()" [alt]="product() | localizedName" class="hover-img" loading="lazy" width="800" height="1000"/>
       }
     </a>
   </div>
