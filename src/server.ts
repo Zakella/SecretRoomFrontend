@@ -309,11 +309,24 @@ function urlset(urls: string[]): string {
 /** SR-101: фото товара для image-sitemap — не больше 3 на URL, пустые и не-строки пропускаем. */
 const MAX_SITEMAP_IMAGES = 3;
 
+/** image:loc: без изменчивого ?v=/хэша и с percent-encoding кириллицы в пути (URL не кодирует уже закодированное). */
+function normalizeImageUrl(raw: string): string {
+  try {
+    const u = new URL(raw.trim());
+    u.search = '';
+    u.hash = '';
+    return u.href;
+  } catch {
+    return raw.trim();
+  }
+}
+
 function sitemapImages(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
     .filter((url): url is string => typeof url === 'string' && url.trim() !== '')
-    .slice(0, MAX_SITEMAP_IMAGES);
+    .slice(0, MAX_SITEMAP_IMAGES)
+    .map(normalizeImageUrl);
 }
 
 /** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится; images → image:image в каждом языке. */

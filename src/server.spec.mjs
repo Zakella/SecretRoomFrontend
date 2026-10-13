@@ -23,10 +23,10 @@ const PRODUCTS = [
   {
     appId: 3739, name: ' BEAUTY LIGHT WAND PINKGASM',
     updatedAt: LYING_UPDATED_AT, contentUpdatedAt: [2025, 3, 7, 12, 30],
-    // 5 годных URL + мусор: в карту уходят первые 3 годных, & экранируется
+    // 5 годных URL + мусор: в карту уходят первые 3 годных; ?query/хэш (в т.ч. ?v=) отбрасываются, кириллица в пути кодируется
     imageUrls: [
       'https://cdn.secretroom.md/p/3739-main.jpg?w=800&h=600', '', null, 42,
-      'https://cdn.secretroom.md/p/3739-2.jpg', 'https://cdn.secretroom.md/p/3739-3.jpg',
+      'https://cdn.secretroom.md/p/фото 3739.jpg?v=1699999999', 'https://cdn.secretroom.md/p/3739-3%20x.jpg#a',
       'https://cdn.secretroom.md/p/3739-4.jpg', 'https://cdn.secretroom.md/p/3739-5.jpg',
     ],
   },
@@ -436,9 +436,9 @@ describe('server.ts — sitemap-индекс', () => {
       const wand = urlEntry(body, `/${lang}/product/3739/beauty-light-wand-pinkgasm`);
       // пустые и не-строки пропущены, из 5 годных взяты первые 3
       assert.deepEqual(imageLocs(wand), [
-        'https://cdn.secretroom.md/p/3739-main.jpg?w=800&amp;h=600',
-        'https://cdn.secretroom.md/p/3739-2.jpg',
-        'https://cdn.secretroom.md/p/3739-3.jpg',
+        'https://cdn.secretroom.md/p/3739-main.jpg',
+        'https://cdn.secretroom.md/p/%D1%84%D0%BE%D1%82%D0%BE%203739.jpg',
+        'https://cdn.secretroom.md/p/3739-3%20x.jpg',
       ]);
       // loc первым, image:image — после loc/lastmod
       assert.match(wand, /^<url><loc>[^<]+<\/loc><lastmod>[^<]+<\/lastmod>/);
@@ -449,7 +449,8 @@ describe('server.ts — sitemap-индекс', () => {
       assert.deepEqual(imageLocs(urlEntry(body, `/${lang}/product/501/pure-seduction-mist`)), []);
       assert.deepEqual(imageLocs(urlEntry(body, `/${lang}/product/502/love-spell-lotion`)), []);
     }
-    assert.doesNotMatch(body, /\?w=800&h=600/, 'сырой & в XML');
+    assert.doesNotMatch(body, /\?(w|v)=/, 'изменчивые query в image:loc не нужны');
+    assert.doesNotMatch(body, /image:loc>[^<]*[а-яё]/i, 'кириллица в image:loc закодирована');
     assert.equal((body.match(/<image:image>/g) || []).length, 8);
   });
 

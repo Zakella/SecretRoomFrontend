@@ -1,5 +1,10 @@
-ALL CLEAR ✓
-Date: 2026-10-13
-Task: SR-101 фронт sitemap (lastmod из contentUpdatedAt, image:image до 3, без changefreq/priority, /shipping)
-Checks: curl на живом SSR-бандле со стабом API ✓ (новый бэкенд: lastmod массив+ISO, null и без поля — тега нет, updatedAt игнорируется, 3 из 5 image:image, & -> &amp;, xmlns:image есть; старый бэкенд: 200, без lastmod/image; индекс: lastmod товаров = самый свежий contentUpdatedAt, у старого бэкенда нет; все 5 XML проходят xmllint, changefreq/priority = 0; /ro/shipping и /ru/shipping с hreflang), node --test src/server.spec.mjs 91/91 ✓, Security ✓ (все URL через escapeXml), Duplication ✓
-### Tree: 7dde03742dd04d1a428e7ff6c1d08ce9d726e4e9
+# QA report: SR-101 image-sitemap (normalizeImageUrl)
+
+## ALL CLEAR
+
+- Дифф src/server.ts + src/server.spec.mjs проверен. node --test src/server.spec.mjs: 91 pass / 0 fail.
+- normalizeImageUrl: ?query и #hash отбрасываются, кириллица и пробел в пути кодируются, %20 не двоится, trim работает, & в пути экранируется escapeXml на выводе (XML валиден).
+- Относительный/невалидный URL: уходит как есть (после trim), без нормализации, но через escapeXml. Не баг (в данных ожидаются абсолютные URL), замечание некритичное.
+- Тесты осмысленные: покрывают ?w=, ?v=, кириллицу+пробел, уже закодированное %20 + #hash, лимит 3, мусор, отсутствие кириллицы/query в теле.
+
+### Tree: 0e47496a734bfd518def00af3e75f02e3b526eb0
