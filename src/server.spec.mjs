@@ -951,10 +951,12 @@ describe('server.ts — SR-103: пагинация каталога ?page=N', ()
   });
 
   it('слаг категории не того языка → 301 с сохранённым ?page', async () => {
-    const res = await get('/ru/catalog/sutiene?page=3');
-    assert.equal(res.status, 301);
-    assert.equal(res.headers.get('location'), '/ru/catalog/byustgaltery?page=3');
+    await assertSingleHop('/ru/catalog/sutiene?page=3', '/ru/catalog/byustgaltery?page=3');
   });
+
+  it('слаг не того языка + мусорный page → один 301 сразу на чистый адрес, а не два подряд', async () => {
+    await assertSingleHop('/ru/catalog/sutiene?page=1', '/ru/catalog/byustgaltery');
+    await assertSingleHop('/ru/catalog/sutiene?page=abc&utm_source=fb', '/ru/catalog/byustgaltery?utm_source=fb');  });
 
   it('страница 2: 200, self-canonical и hreflang с ?page=2, свой title, prev-ссылка, товары второй страницы', async () => {
     const {res, body} = await getText(`${LIST}?page=2`);

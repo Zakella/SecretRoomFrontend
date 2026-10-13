@@ -155,19 +155,6 @@ app.use((req, res, next) => {
 });
 
 /**
- * SR-103: junk ?page on a catalog URL (page=1, 0, -2, abc, 02…) → one 301 to the same path without it,
- * other query parameters kept. A valid page=N (N >= 2) goes on to SSR; a page past the last one is a 404 there.
- */
-app.use((req, res, next) => {
-  if ((req.method !== 'GET' && req.method !== 'HEAD') || !CATALOG_PATH.test(req.path)) return next();
-  const start = req.originalUrl.indexOf('?');
-  if (start < 0 || !req.originalUrl.slice(start + 1).split('&').some(isPageParam)) return next();
-  const query = catalogQuery(req.originalUrl);
-  if (query.slice(1).split('&').some(isPageParam)) return next();
-  res.redirect(301, req.path + query);
-});
-
-/**
  * Serve static files from /browser
  */
 app.use(
@@ -625,6 +612,21 @@ app.get('/:lang/catalog/:slug', async (req, res, next) => {
     }
   } catch { /* fallback to Angular */ }
   next();
+});
+
+/**
+ * SR-103: junk ?page on a catalog URL (page=1, 0, -2, abc, 02…) → one 301 to the same path without it,
+ * other query parameters kept. A valid page=N (N >= 2) goes on to SSR; a page past the last one is a 404 there.
+ * Registered AFTER every other catalog redirect (vs/bb, lowercase, trailing slash, wrong-language slug): those build
+ * their query with catalogQuery() and drop a junk page in the same hop, so only a URL that is otherwise final lands here.
+ */
+app.use((req, res, next) => {
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || !CATALOG_PATH.test(req.path)) return next();
+  const start = req.originalUrl.indexOf('?');
+  if (start < 0 || !req.originalUrl.slice(start + 1).split('&').some(isPageParam)) return next();
+  const query = catalogQuery(req.originalUrl);
+  if (query.slice(1).split('&').some(isPageParam)) return next();
+  res.redirect(301, req.path + query);
 });
 
 /**
