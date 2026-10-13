@@ -10,8 +10,7 @@
 @use 'styles/variables' as *;
 @use 'styles/mixins';
 
-// Google Fonts (single request for all families)
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Public+Sans:wght@300;400;500;600&display=swap');
+// Google Fonts are linked from index.html (one request, inlined by the production build)
 
 // Third-party
 @tailwind base;

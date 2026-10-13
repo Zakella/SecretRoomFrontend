@@ -1,6 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-10-13
-Task: SR-103 довесок — junk ?page чистится после редиректа слага (один 301); при активном фильтре "Încarcă mai multe" без href/?page, role=button, Enter/Space
-Checks: curl-редиректы ✓ (sutiene?page=1 -> byustgaltery; page=abc&utm -> byustgaltery?utm_source=fb; page=3 -> byustgaltery?page=3; ro sutiene page=1 -> sutiene; ro vs?page=1 -> brand/victorias-secret; page=2 200; page=999 404; без 5xx), UI ✓ (фильтр Negru: подгрузка 24->48->58, URL без ?page, href нет, role=button tabindex=0, Enter подгружает, вид кнопки 221x46 14px как без фильтра; после сброса href и ?page=2 вернулись; без фильтров 24->48 без прыжка наверх), Security ✓, i18n ✓, Performance ✓, Duplication ✓
-Note: единственная ошибка консоли — 404 шрифта PublicSans-Light.woff, к диффу не относится
-### Tree: f26f9780073afb57962ec98d1bf2f7efcdc8b109
+Date: 2026-10-13T01:05:00+03:00
+Task: SR-99 CWV главной (после rebase на epic/seo с SR-97, SR-103) — резерв места, eager/fetchpriority, шрифты без @import, withEventReplay, бюджет initial (без смены вида)
+Checks: (1) главная /ro: CLS mobile 0 (было 0.89), desktop 0.0014 (было 0.036); replay: queued 1, после гидратации active=2, jsaction 0. (2) визуал 390 и 1440, 4461 vs 4462: mobile fold/full и desktop fold — 0 px; desktop full — 64 px (1px линия-подчёркивание плитки «Sutiene», момент анимации), смены вида нет. (3) каталог brand/victorias-secret и ?page=2: 24 карточки, первая eager+fetchpriority=high, 2–4 eager, 20 lazy, у всех width/height 800x1000; canonical, prev/next на месте; «Încarcă mai mult» догружает до 48, карточки с индекса 24 — lazy, кнопка и сетка пиксель-в-пиксель как на 4461 (API через прокси с CORS-заглушкой, только GET). (4) /ro/catalog/vs — 301 на /ro/catalog/brand/victorias-secret. Ведущий: build 1.24 MB, ng test 77/77, server.spec 86/86, lint 0 errors
+### Tree: e5735400b3a3ce6236ee5304d0c0051c7f06bbbe
