@@ -1,6 +1,5 @@
 ALL CLEAR ✓
 Date: 2026-10-13
-Task: SR-103 довесок — junk ?page чистится после редиректа слага (один 301); при активном фильтре "Încarcă mai multe" без href/?page, role=button, Enter/Space
-Checks: curl-редиректы ✓ (sutiene?page=1 -> byustgaltery; page=abc&utm -> byustgaltery?utm_source=fb; page=3 -> byustgaltery?page=3; ro sutiene page=1 -> sutiene; ro vs?page=1 -> brand/victorias-secret; page=2 200; page=999 404; без 5xx), UI ✓ (фильтр Negru: подгрузка 24->48->58, URL без ?page, href нет, role=button tabindex=0, Enter подгружает, вид кнопки 221x46 14px как без фильтра; после сброса href и ?page=2 вернулись; без фильтров 24->48 без прыжка наверх), Security ✓, i18n ✓, Performance ✓, Duplication ✓
-Note: единственная ошибка консоли — 404 шрифта PublicSans-Light.woff, к диффу не относится
-### Tree: f26f9780073afb57962ec98d1bf2f7efcdc8b109
+Task: SR-101 фронт sitemap (lastmod из contentUpdatedAt, image:image до 3, без changefreq/priority, /shipping)
+Checks: curl на живом SSR-бандле со стабом API ✓ (новый бэкенд: lastmod массив+ISO, null и без поля — тега нет, updatedAt игнорируется, 3 из 5 image:image, & -> &amp;, xmlns:image есть; старый бэкенд: 200, без lastmod/image; индекс: lastmod товаров = самый свежий contentUpdatedAt, у старого бэкенда нет; все 5 XML проходят xmllint, changefreq/priority = 0; /ro/shipping и /ru/shipping с hreflang), node --test src/server.spec.mjs 91/91 ✓, Security ✓ (все URL через escapeXml), Duplication ✓
+### Tree: 7dde03742dd04d1a428e7ff6c1d08ce9d726e4e9
