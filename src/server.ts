@@ -174,6 +174,7 @@ const LANGUAGES = ['ro', 'ru'];
  * Так в Search Console видно покрытие отдельно по товарам, категориям, брендам и статике:
  * если товары снова перестанут попадать в карту (как было с updatedAt-массивом), это будет
  * видно сразу по счётчику своей секции, а не размажется по общему числу URL.
+ * changefreq и priority не выводим (SR-101): Google их игнорирует.
  */
 type SitemapSection = 'static' | 'categories' | 'brands' | 'products';
 const SITEMAP_SECTIONS: SitemapSection[] = ['static', 'categories', 'brands', 'products'];
@@ -272,8 +273,8 @@ function getProductSlugs(): Map<string, string> | null {
 }
 
 /**
- * lastmod из updatedAt. Бэкенд отдаёт его массивом [yyyy, M, d, ...] (Jackson без JavaTimeModule),
- * но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
+ * lastmod из даты бэкенда (у товаров — contentUpdatedAt). Бэкенд отдаёт её массивом [yyyy, M, d, ...]
+ * (Jackson без JavaTimeModule), но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
  * Дату определить не удалось → null: тег не выводим вовсе, это честнее подстановки «сегодня».
  */
 function toLastmod(value: unknown): string | null {
@@ -300,34 +301,46 @@ function lastmodTag(lastmod: string | null): string {
   return lastmod ? `<lastmod>${lastmod}</lastmod>` : '';
 }
 
+/** xmlns:image объявлен во всех секциях (без вреда), image:image есть только у товаров. */
 function urlset(urls: string[]): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
 }
 
-/** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится. */
-function langUrls(path: string, changefreq: string, priority: string, lastmod: string | null = null): string[] {
+/** SR-101: фото товара для image-sitemap — не больше 3 на URL, пустые и не-строки пропускаем. */
+const MAX_SITEMAP_IMAGES = 3;
+
+function sitemapImages(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((url): url is string => typeof url === 'string' && url.trim() !== '')
+    .slice(0, MAX_SITEMAP_IMAGES);
+}
+
+/** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится; images → image:image в каждом языке. */
+function langUrls(path: string, lastmod: string | null = null, images: string[] = []): string[] {
   const alternates = LANGUAGES
     .map(l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`)
     .join('')
     + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
+  const imageTags = images.map(url => `<image:image><image:loc>${escapeXml(url)}</image:loc></image:image>`).join('');
 
   return LANGUAGES.map(lang =>
-    `<url><loc>${escapeXml(`${SITE_URL}/${lang}${path}`)}</loc>${lastmodTag(lastmod)}`
-    + `<changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}</url>`
+    `<url><loc>${escapeXml(`${SITE_URL}/${lang}${path}`)}</loc>${lastmodTag(lastmod)}${alternates}${imageTags}</url>`
   );
 }
 
 interface SitemapPart { xml: string; lastmod: string | null }
 
-const STATIC_PAGES = [
-  { path: '', changefreq: 'daily', priority: '1.0' },
-  { path: '/about-the-secret-room', changefreq: 'monthly', priority: '0.6' },
-  { path: '/contacts', changefreq: 'monthly', priority: '0.5' },
-  { path: '/delivery-terms', changefreq: 'monthly', priority: '0.5' },
-  { path: '/brands', changefreq: 'weekly', priority: '0.7' },
-  { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
-  { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
-  { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
+const STATIC_PAGES: { path: string }[] = [
+  { path: '' },
+  { path: '/about-the-secret-room' },
+  { path: '/contacts' },
+  { path: '/delivery-terms' },
+  { path: '/shipping' },
+  { path: '/brands' },
+  { path: '/catalog/bestsellers' },
+  { path: '/catalog/new-arrivals' },
+  { path: '/catalog/sales' },
 ];
 
 /**
@@ -335,11 +348,16 @@ const STATIC_PAGES = [
  * lastmod не выводим (спецификация sitemap его не требует).
  */
 function generateStaticSitemap(): SitemapPart {
-  const urls = STATIC_PAGES.flatMap(page => langUrls(page.path, page.changefreq, page.priority));
+  const urls = STATIC_PAGES.flatMap(page => langUrls(page.path));
   return { xml: urlset(urls), lastmod: null };
 }
 
-/** Товары — единственная секция с настоящим lastmod: он приходит в products/sitemap. */
+/**
+ * Товары — единственная секция с настоящим lastmod: contentUpdatedAt из products/sitemap (дата реального
+ * изменения содержимого). updatedAt не берём — он врёт (меняется у всех товаров разом). Нет contentUpdatedAt
+ * (null или старый бэкенд без поля) → тега нет. lastmod секции в индексе — самый свежий contentUpdatedAt или null.
+ * imageUrls → image:image (у старого бэкенда поля нет — тегов нет).
+ */
 async function generateProductsSitemap(): Promise<SitemapPart> {
   const res = await fetch(`${API_BASE}products/sitemap`);
   if (!res.ok) throw new Error(`products/sitemap returned ${res.status}`);
@@ -351,9 +369,9 @@ async function generateProductsSitemap(): Promise<SitemapPart> {
   let newest: string | null = null;
   for (const product of products) {
     const slug = slugify(product.name || product.nameRo || '');
-    const lastmod = toLastmod(product.updatedAt);
+    const lastmod = toLastmod(product.contentUpdatedAt);
     if (lastmod && (!newest || lastmod > newest)) newest = lastmod;
-    urls.push(...langUrls(`/product/${product.appId}/${slug}`, 'weekly', '0.8', lastmod));
+    urls.push(...langUrls(`/product/${product.appId}/${slug}`, lastmod, sitemapImages(product.imageUrls)));
   }
   console.log(`Sitemap: ${products.length} products added`);
   return { xml: urlset(urls), lastmod: newest };
@@ -378,7 +396,7 @@ async function generateCategoriesSitemap(): Promise<SitemapPart> {
       + `<xhtml:link rel="alternate" hreflang="ru" href="${escapeXml(ruLoc)}" />`
       + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(roLoc)}" />`;
     for (const loc of [roLoc, ruLoc]) {
-      urls.push(`<url><loc>${escapeXml(loc)}</loc><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
+      urls.push(`<url><loc>${escapeXml(loc)}</loc>${alternates}</url>`);
     }
   }
   return { xml: urlset(urls), lastmod: null };
@@ -390,7 +408,7 @@ async function generateBrandsSitemap(): Promise<SitemapPart> {
   if (!res.ok) throw new Error(`products/brands returned ${res.status}`);
   const brands: any[] = await res.json();
   const urls = brands.flatMap((brand: any) =>
-    langUrls(`/catalog/brand/${brandSlug(brand.brand || '')}`, 'weekly', '0.7')
+    langUrls(`/catalog/brand/${brandSlug(brand.brand || '')}`)
   );
   return { xml: urlset(urls), lastmod: null };
 }

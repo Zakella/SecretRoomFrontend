@@ -15,13 +15,35 @@ import {after, afterEach, before, beforeEach, describe, it} from 'node:test';
 
 const BUNDLE = new URL('../dist/secret-room/server/server.mjs', import.meta.url);
 
+/** updatedAt врёт (у всех «сегодня»), поэтому в фикстурах он нарочно самый свежий: lastmod его брать не должен. */
+const LYING_UPDATED_AT = [2026, 9, 30, 4, 0];
+
 const PRODUCTS = [
-  // updatedAt в двух форматах, которые реально приходят с бэка: массив Jackson и ISO-строка.
-  {appId: 3739, name: ' BEAUTY LIGHT WAND PINKGASM', updatedAt: [2025, 3, 7, 12, 30]},
-  {appId: 12, name: 'Bombshell Eau de Parfum', updatedAt: '2024-11-02T08:15:00'},
+  // SR-101: contentUpdatedAt в двух форматах, которые реально приходят с бэка: массив Jackson и ISO-строка.
+  {
+    appId: 3739, name: ' BEAUTY LIGHT WAND PINKGASM',
+    updatedAt: LYING_UPDATED_AT, contentUpdatedAt: [2025, 3, 7, 12, 30],
+    // 5 годных URL + мусор: в карту уходят первые 3 годных, & экранируется
+    imageUrls: [
+      'https://cdn.secretroom.md/p/3739-main.jpg?w=800&h=600', '', null, 42,
+      'https://cdn.secretroom.md/p/3739-2.jpg', 'https://cdn.secretroom.md/p/3739-3.jpg',
+      'https://cdn.secretroom.md/p/3739-4.jpg', 'https://cdn.secretroom.md/p/3739-5.jpg',
+    ],
+  },
+  {
+    appId: 12, name: 'Bombshell Eau de Parfum',
+    updatedAt: '2026-09-30T04:00:00', contentUpdatedAt: '2024-11-02T08:15:00',
+    imageUrls: ['https://cdn.secretroom.md/p/12-main.jpg'],
+  },
+  // дата изменения содержимого неизвестна — lastmod не выводим, даже при наличии updatedAt
+  {appId: 501, name: 'Pure Seduction Mist', updatedAt: LYING_UPDATED_AT, contentUpdatedAt: null, imageUrls: []},
+  // старый бэкенд: новых полей нет вовсе
+  {appId: 502, name: 'Love Spell Lotion', updatedAt: LYING_UPDATED_AT},
 ];
-/** Самая свежая дата из PRODUCTS — её индекс обязан показать у секции товаров. */
+/** Самый свежий contentUpdatedAt из PRODUCTS — его индекс обязан показать у секции товаров. */
 const NEWEST_PRODUCT_LASTMOD = '2025-03-07';
+/** Ответ старого бэкенда: products/sitemap без contentUpdatedAt и imageUrls. */
+const LEGACY_PRODUCTS = PRODUCTS.map(({contentUpdatedAt, imageUrls, ...rest}) => rest);
 
 const CATEGORIES = [
   {
@@ -36,10 +58,10 @@ const BRANDS = [
 
 /** Сколько <url> обязана отдать каждая секция на этих фикстурах (по 2 языка на адрес). */
 const EXPECTED_SECTION_URLS = {
-  static: 16,      // 8 статических страниц (vs/bb склеены 301 на brand-URL, SR-97)
+  static: 18,      // 9 статических страниц (vs/bb склеены 301 на brand-URL, SR-97; /shipping — SR-101)
   categories: 4,   // родитель + ребёнок
   brands: 4,       // 2 бренда
-  products: 4,     // 2 товара
+  products: 8,     // 4 товара
 };
 const EXPECTED_TOTAL_URLS = Object.values(EXPECTED_SECTION_URLS).reduce((a, b) => a + b, 0);
 
@@ -53,6 +75,8 @@ let sitemapGate = null;
 let sitemapFails = false;
 /** Апстрим жив, но отдаёт пустой список — секция не должна публиковать пустоту. */
 let sitemapEmpty = false;
+/** Апстрим — старый бэкенд без contentUpdatedAt и imageUrls (SR-101). */
+let sitemapLegacy = false;
 let categoriesEmpty = false;
 
 /** SR-103: bestsellers listing of 30 products — API page 0 holds 24, page 1 the last 6, further pages are empty. */
@@ -92,7 +116,7 @@ before(() => {
       sitemapCalls++;
       if (sitemapGate) await sitemapGate;
       if (sitemapFails) return new Response('upstream down', {status: 503});
-      return json(sitemapEmpty ? [] : PRODUCTS);
+      return json(sitemapEmpty ? [] : sitemapLegacy ? LEGACY_PRODUCTS : PRODUCTS);
     }
     if (url.includes('web-categories/hierarchy/active')) return json(categoriesEmpty ? [] : CATEGORIES);
     if (url.endsWith('products/brands')) return json(BRANDS);
@@ -133,6 +157,9 @@ async function getText(path) {
 
 const countUrls = xml => (xml.match(/<url>/g) || []).length;
 const lastmods = xml => [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(m => m[1]);
+/** <url>…</url> секции, чей loc заканчивается на `path`. */
+const urlEntry = (xml, path) => (xml.match(/<url>[\s\S]*?<\/url>/g) || []).find(u => u.includes(`${path}</loc>`));
+const imageLocs = xml => [...xml.matchAll(/<image:image><image:loc>([^<]*)<\/image:loc><\/image:image>/g)].map(m => m[1]);
 const today = () => new Date(realNow.call(Date)).toISOString().slice(0, 10);
 
 /** og-теги отрендеренной страницы: property -> content. */
@@ -161,6 +188,7 @@ describe('server.ts — канонический слаг товара', () => {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -253,6 +281,7 @@ describe('server.ts — TTL кэша слагов', () => {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -292,6 +321,7 @@ describe('server.ts — дедупликация одновременных за
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -326,6 +356,7 @@ describe('server.ts — sitemap-индекс', () => {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -373,14 +404,84 @@ describe('server.ts — sitemap-индекс', () => {
     }
   });
 
-  it('lastmod у товаров настоящий, а не сегодняшняя дата', async () => {
+  it('lastmod у товаров — из contentUpdatedAt (массив и ISO), а не из updatedAt и не сегодняшняя дата', async () => {
     const {body} = await getText('/sitemap-products.xml');
-    const dates = lastmods(body);
 
-    assert.equal(dates.length, EXPECTED_SECTION_URLS.products, 'lastmod есть не у всех товаров');
-    // Обе формы updatedAt с бэка разобраны, а не подменены «сегодня».
-    assert.deepEqual([...new Set(dates)].sort(), ['2024-11-02', '2025-03-07']);
+    for (const lang of ['ro', 'ru']) {
+      assert.deepEqual(lastmods(urlEntry(body, `/${lang}/product/3739/beauty-light-wand-pinkgasm`)), ['2025-03-07']);
+      assert.deepEqual(lastmods(urlEntry(body, `/${lang}/product/12/bombshell-eau-de-parfum`)), ['2024-11-02']);
+    }
+    const dates = lastmods(body);
+    assert.equal(dates.length, 4, 'lastmod только у двух товаров с contentUpdatedAt, по 2 языка');
+    assert.ok(!dates.includes('2026-09-30'), 'lastmod взят из updatedAt');
     assert.ok(!dates.includes(today()), 'lastmod подставлен текущей датой');
+  });
+
+  it('contentUpdatedAt null или нет поля — lastmod не выводится, даже если updatedAt есть', async () => {
+    const {body} = await getText('/sitemap-products.xml');
+    for (const lang of ['ro', 'ru']) {
+      for (const path of [`/${lang}/product/501/pure-seduction-mist`, `/${lang}/product/502/love-spell-lotion`]) {
+        const entry = urlEntry(body, path);
+        assert.ok(entry, `в секции нет ${path}`);
+        assert.doesNotMatch(entry, /<lastmod>/, `${path}: lastmod без contentUpdatedAt`);
+      }
+    }
+  });
+
+  it('image-sitemap: xmlns:image объявлен, фото товара в каждом языке, & экранирован, не больше 3', async () => {
+    const {body} = await getText('/sitemap-products.xml');
+    assert.match(body, /<urlset\b[^>]*xmlns:image="http:\/\/www\.google\.com\/schemas\/sitemap-image\/1\.1"/);
+
+    for (const lang of ['ro', 'ru']) {
+      const wand = urlEntry(body, `/${lang}/product/3739/beauty-light-wand-pinkgasm`);
+      // пустые и не-строки пропущены, из 5 годных взяты первые 3
+      assert.deepEqual(imageLocs(wand), [
+        'https://cdn.secretroom.md/p/3739-main.jpg?w=800&amp;h=600',
+        'https://cdn.secretroom.md/p/3739-2.jpg',
+        'https://cdn.secretroom.md/p/3739-3.jpg',
+      ]);
+      // loc первым, image:image — после loc/lastmod
+      assert.match(wand, /^<url><loc>[^<]+<\/loc><lastmod>[^<]+<\/lastmod>/);
+      assert.deepEqual(
+        imageLocs(urlEntry(body, `/${lang}/product/12/bombshell-eau-de-parfum`)),
+        ['https://cdn.secretroom.md/p/12-main.jpg'],
+      );
+      assert.deepEqual(imageLocs(urlEntry(body, `/${lang}/product/501/pure-seduction-mist`)), []);
+      assert.deepEqual(imageLocs(urlEntry(body, `/${lang}/product/502/love-spell-lotion`)), []);
+    }
+    assert.doesNotMatch(body, /\?w=800&h=600/, 'сырой & в XML');
+    assert.equal((body.match(/<image:image>/g) || []).length, 8);
+  });
+
+  it('старый бэкенд без contentUpdatedAt и imageUrls — секция собирается без lastmod и image-тегов', async () => {
+    sitemapLegacy = true;
+    try {
+      const {res, body} = await getText('/sitemap-products.xml');
+      assert.equal(res.status, 200);
+      assert.equal(countUrls(body), EXPECTED_SECTION_URLS.products);
+      assert.doesNotMatch(body, /<image:image>/);
+      assert.deepEqual(lastmods(body), []);
+
+      const index = await getText('/sitemap.xml');
+      assert.equal(index.res.status, 200);
+      assert.deepEqual(lastmods(index.body), [], 'индекс выдумал lastmod секции товаров');
+    } finally {
+      sitemapLegacy = false;
+    }
+  });
+
+  it('changefreq и priority не выводятся ни в одной секции', async () => {
+    for (const section of ['static', 'categories', 'brands', 'products']) {
+      const {body} = await getText(`/sitemap-${section}.xml`);
+      assert.doesNotMatch(body, /changefreq|priority/, `секция ${section} выводит changefreq/priority`);
+    }
+  });
+
+  it('/shipping есть в статической секции обоими языками', async () => {
+    const {body} = await getText('/sitemap-static.xml');
+    for (const lang of ['ro', 'ru']) {
+      assert.ok(body.includes(`<loc>https://secretroom.md/${lang}/shipping</loc>`), `нет /${lang}/shipping`);
+    }
   });
 
   it('у секций без реальной даты изменения lastmod не выводится', async () => {
@@ -408,6 +509,7 @@ describe('server.ts — фолбэк секции sitemap при сбое апс
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -486,6 +588,7 @@ describe('server.ts — og:locale и og:type отрендеренной стра
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -536,6 +639,7 @@ describe('server.ts — видимый H1 каталога', () => {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     await startServer();
   });
 
@@ -567,6 +671,7 @@ function sr96Server() {
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     categoriesEmpty = false;
     await startServer();
   });
@@ -809,6 +914,7 @@ describe('server.ts — склейка /catalog/vs и /catalog/bb на brand-с�
     sitemapGate = null;
     sitemapFails = false;
     sitemapEmpty = false;
+    sitemapLegacy = false;
     categoriesEmpty = false;
     await startServer();
   });
