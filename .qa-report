@@ -1,6 +1,6 @@
 ALL CLEAR ✓
 Date: 2026-10-13
-Task: SR-103 пагинация каталога через ?page=N
-Checks: SSR ✓ (canonical/hreflang/title/prev/next, последняя страница, 404 noindex), редиректы ✓ (один 301, utm, vs/bb->brand), brand/new-arrivals ✓, браузер 1280 (24->48->72 на месте, URL, Cmd-клик, история) ✓, вид кнопки vs прод 1280/390 normal+hover ✓ (после фикса: font-family Arial, line-height normal; размеры идентичны), прямой заход ?page=2 + prev ✓, гидрация без повторного запроса списка ✓
-Notes: replaceState — Назад уходит до каталога (по ТЗ); 404 PublicSans-Light.woff не связан с задачей
-### Tree: 832d0ca6edeb65a8da5e0e3ad064f02d7c7baab6
+Task: SR-103 довесок — junk ?page чистится после редиректа слага (один 301); при активном фильтре "Încarcă mai multe" без href/?page, role=button, Enter/Space
+Checks: curl-редиректы ✓ (sutiene?page=1 -> byustgaltery; page=abc&utm -> byustgaltery?utm_source=fb; page=3 -> byustgaltery?page=3; ro sutiene page=1 -> sutiene; ro vs?page=1 -> brand/victorias-secret; page=2 200; page=999 404; без 5xx), UI ✓ (фильтр Negru: подгрузка 24->48->58, URL без ?page, href нет, role=button tabindex=0, Enter подгружает, вид кнопки 221x46 14px как без фильтра; после сброса href и ?page=2 вернулись; без фильтров 24->48 без прыжка наверх), Security ✓, i18n ✓, Performance ✓, Duplication ✓
+Note: единственная ошибка консоли — 404 шрифта PublicSans-Light.woff, к диффу не относится
+### Tree: f26f9780073afb57962ec98d1bf2f7efcdc8b109

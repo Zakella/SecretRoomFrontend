@@ -337,6 +337,40 @@ describe('Catalog pagination (SR-103)', () => {
     expect(nextLink()?.getAttribute('href')).toBe('/ro/catalog/bestsellers?page=4');
   });
 
+  it('active filter: "Load more" appends in place but leaves ?page out of the URL and the link (filters are not in it)', async () => {
+    await open('/ro/catalog/bestsellers');
+    (harness.routeDebugElement!.componentInstance as Catalog).selectBrand('VictoriasSecret');
+    expect(flushProducts(100)).toBe(0);
+    harness.detectChanges();
+    expect(nextLink()?.hasAttribute('href')).toBeFalse();
+    expect(nextLink()?.getAttribute('role')).toBe('button');
+
+    nextLink()!.dispatchEvent(new MouseEvent('click', {button: 0, cancelable: true}));
+    expect(flushProducts(100)).toBe(1);
+    harness.detectChanges();
+    expect(listed().length).toBe(2 * PAGE_SIZE);
+    expect(location.path()).toBe('/ro/catalog/bestsellers');
+
+    nextLink()!.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
+    expect(flushProducts(100)).toBe(2);
+    expect(location.path()).toBe('/ro/catalog/bestsellers');
+  });
+
+  it('filter cleared: "Load more" moves the URL to ?page=N again', async () => {
+    await open('/ro/catalog/bestsellers');
+    const catalog = harness.routeDebugElement!.componentInstance as Catalog;
+    catalog.selectBrand('VictoriasSecret');
+    flushProducts(100);
+    catalog.clearAllFilters();
+    flushProducts(100);
+    harness.detectChanges();
+    expect(nextLink()?.getAttribute('href')).toBe('/ro/catalog/bestsellers?page=2');
+
+    nextLink()!.dispatchEvent(new MouseEvent('click', {button: 0, cancelable: true}));
+    flushProducts(100);
+    expect(location.path()).toBe('/ro/catalog/bestsellers?page=2');
+  });
+
   it('a modified click (new tab) is left to the browser', async () => {
     await open('/ro/catalog/bestsellers');
     // called directly: dispatching a real ctrl-click on <a href> would make the test browser navigate

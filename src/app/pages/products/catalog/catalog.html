@@ -201,18 +201,23 @@
         <app-empty-state/>
       }
 
-      <!-- SR-103: a real link to the next page for crawlers; a plain click appends it in place (loadMore) -->
+      <!-- SR-103: a real link to the next page for crawlers; a plain click appends it in place (loadMore).
+           A filtered list has no href (filters are not in the URL), so it acts as a button: role, tabindex, Enter/Space -->
       @if (hasNextPage()) {
         <div class="load-more">
           <a
             class="load-more-btn"
             [attr.href]="nextPageHref()"
+            [attr.role]="nextPageHref() ? null : 'button'"
+            [attr.tabindex]="nextPageHref() ? null : 0"
             [class.is-disabled]="isLoading()"
             [attr.aria-disabled]="isLoading() || null"
             (mouseenter)="prefetchNext()"
             (focus)="prefetchNext()"
             (touchstart)="prefetchNext()"
             (click)="loadMore($event)"
+            (keydown.enter)="loadMoreByKey($event)"
+            (keydown.space)="loadMoreByKey($event)"
           >
             @if (isLoading()) {
               {{ 'Loading...' | transloco }}

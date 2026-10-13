@@ -166,7 +166,13 @@ export class Catalog implements OnInit, OnDestroy {
     return prev >= 2 ? {page: prev} : {};
   });
 
-  protected nextPageHref = computed(() => `${this.basePath()}${catalogPageQuery(this.lastPage() + 1)}`);
+  /**
+   * Filters live only in component state, not in the URL: ?page=N of a filtered list would open a different listing.
+   * So a filtered list gets no href (no new-tab/copy-link to the wrong page) and keeps the address bar as is.
+   * Crawlers never see filters — SSR always renders the plain listing with the real link.
+   */
+  protected nextPageHref = computed(() =>
+    this.activeFilterCount() > 0 ? null : `${this.basePath()}${catalogPageQuery(this.lastPage() + 1)}`);
 
   private currentCategoryId: string | null = null;
   private currentHeroId: number | null = null;
@@ -744,10 +750,17 @@ export class Catalog implements OnInit, OnDestroy {
 
   /** "Load more" is a real link to ?page=N+1 (crawlers follow it); a plain click appends the page in place. */
   loadMore(event?: MouseEvent): void {
-    // modified/middle click — let the browser open the link itself
-    if (event && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
+    // modified/middle click on a real link — let the browser open it itself
+    if (event && this.nextPageHref() && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
     event?.preventDefault();
     this.fetchProducts(true);
+  }
+
+  /** Enter/Space on the href-less (filtered) button; a real link handles Enter itself via click. */
+  loadMoreByKey(event: Event): void {
+    if (this.nextPageHref()) return;
+    event.preventDefault();
+    this.loadMore();
   }
 
   prefetchNext(): void {
@@ -800,7 +813,7 @@ export class Catalog implements OnInit, OnDestroy {
 
     this.currentPage = page;
     this.lastPage.set(page + 1);
-    if (append) this.syncUrlPage(page + 1);
+    if (append && !this.activeFilterCount()) this.syncUrlPage(page + 1);
     this.products.set(append ? [...this.products(), ...items] : items);
     this.setItemListJsonLd(this.products());
   }
