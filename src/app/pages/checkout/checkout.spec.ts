@@ -1,0 +1,122 @@
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
+import {signal} from '@angular/core';
+import {BehaviorSubject, of} from 'rxjs';
+import {provideTransloco} from '@ngneat/transloco';
+import {MessageService} from 'primeng/api';
+import {Checkout} from './checkout';
+import {CartUi} from '../../shared/components/cart/services/cart';
+import {CartItem} from '../../entities/cart-item';
+import {Product} from '../../entities/product';
+import {Size} from '../../entities/size';
+import {Language} from '../../@core/services/language';
+import {Shipping} from '../../@core/api/shipping';
+import {PurchaseService} from '../../@core/api/purchase';
+import {ProductService} from '../../@core/api/product';
+import {GoogleAnalytics} from '../../@core/services/google-analytics';
+
+const noop = (): void => undefined;
+
+describe('Checkout order summary', () => {
+  let fixture: ComponentFixture<Checkout>;
+  let items$: BehaviorSubject<CartItem[]>;
+  const el = () => fixture.nativeElement as HTMLElement;
+
+  const makeItem = (n: number, sizeType?: string) =>
+    new CartItem(
+      {id: `p${n}`, name: `Robe ${n}`, price: 10, imageURL: `img/${n}.jpg`} as Product,
+      1,
+      sizeType ? new Size(sizeType) : undefined
+    );
+  const makeItems = (count: number) => Array.from({length: count}, (_, i) => makeItem(i + 1));
+
+  async function setup(initial: CartItem[]) {
+    items$ = new BehaviorSubject<CartItem[]>(initial);
+    const cart = {
+      cartItems: items$,
+      totalAmount: new BehaviorSubject<number>(0),
+      totalQuantity: new BehaviorSubject<number>(0),
+      cartModified: new BehaviorSubject<boolean>(false),
+      loadCartItemsFromStorage: () => items$.value,
+      computeCartTotals: noop,
+      deleteItemFromCart: noop,
+      getMaxStock: () => 10,
+      recalculateCartItem: noop,
+    };
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}}),
+        MessageService,
+        {provide: CartUi, useValue: cart},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop}},
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(Checkout);
+    fixture.detectChanges();
+  }
+
+  it('photo and name link to the product in a new tab', async () => {
+    await setup(makeItems(2));
+    const rows = el().querySelectorAll('.cart-item');
+    expect(rows.length).toBe(2);
+    rows.forEach((row, i) => {
+      const links = row.querySelectorAll<HTMLAnchorElement>('a');
+      expect(links.length).toBe(2);
+      links.forEach(a => {
+        expect(a.getAttribute('href')).toContain(`/ru/product/p${i + 1}/robe-${i + 1}`);
+        expect(a.target).toBe('_blank');
+        expect(a.rel).toContain('noopener');
+      });
+      expect(row.querySelector('.item-quantity-badge')!.closest('a')).toBeNull();
+    });
+  });
+
+  it('falls back to no-image.png when the image fails to load', async () => {
+    await setup(makeItems(1));
+    const img = el().querySelector('.cart-item img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('img/1.jpg');
+    img.dispatchEvent(new Event('error'));
+    expect(img.getAttribute('src')).toBe('assets/images/no-image.png');
+    img.dispatchEvent(new Event('error'));
+    expect(img.getAttribute('src')).toBe('assets/images/no-image.png');
+  });
+
+  it('uses no-image.png when imageURL is missing', async () => {
+    const item = makeItem(1);
+    item.product.imageURL = null;
+    await setup([item]);
+    expect(el().querySelector('.cart-item img')!.getAttribute('src')).toBe('assets/images/no-image.png');
+  });
+
+  it('shows size only for items with a size type', async () => {
+    await setup([makeItem(1, 'M'), makeItem(2)]);
+    const rows = el().querySelectorAll('.cart-item');
+    expect(rows[0].querySelector('.item-size')!.textContent).toContain('M');
+    expect(rows[1].querySelector('.item-size')).toBeNull();
+  });
+
+  it('scrolling modifier only above 8 items', async () => {
+    await setup(makeItems(3));
+    expect(el().querySelector('.cart-items')!.classList).not.toContain('cart-items--many');
+    items$.next(makeItems(8));
+    fixture.detectChanges();
+    expect(el().querySelector('.cart-items')!.classList).not.toContain('cart-items--many');
+    items$.next(makeItems(9));
+    fixture.detectChanges();
+    expect(el().querySelector('.cart-items')!.classList).toContain('cart-items--many');
+  });
+
+  it('summary is static with more than 3 items, sticky otherwise', async () => {
+    await setup(makeItems(3));
+    expect(el().querySelector('.order-summary')!.classList).not.toContain('order-summary--static');
+    items$.next(makeItems(4));
+    fixture.detectChanges();
+    expect(el().querySelector('.order-summary')!.classList).toContain('order-summary--static');
+  });
+});
