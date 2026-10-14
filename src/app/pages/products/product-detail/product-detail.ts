@@ -25,6 +25,7 @@ import {RecentlyViewedService} from '../../../@core/services/recently-viewed.ser
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
+import {hasSizeLabel} from '../../../shared/utils/size-label';
 import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
 import {compareSizes} from '../../../shared/utils/size-order';
 
@@ -69,6 +70,7 @@ export class ProductDetail {
     return left;
   });
   /** Варианты с непустой подписью размера (SR-168); блок «Размер» показываем при >= 2. */
+  protected readonly hasSizeLabel = hasSizeLabel;
   protected sizedVariants = computed(() => sizedVariants(this.product()?.variants));
   protected showSizeBlock = computed(() => hasSizeChoice(this.product()?.variants));
   protected hasSwatches = computed(() => (this.product()?.siblings?.length ?? 0) >= MIN_SWATCHES);

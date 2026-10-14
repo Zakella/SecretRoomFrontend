@@ -67,6 +67,33 @@ describe('sizedVariants / hasSizeChoice (SR-168)', () => {
     expect(hasSizeChoice(undefined)).toBeFalse();
     expect(hasSizeChoice([])).toBeFalse();
   });
+
+  it('заглушки NA, One, ONE SIZE, " o/s " не подпись, "236 ml" подпись', () => {
+    expect(sizedVariants(mk('NA', 'One', 'ONE SIZE', ' o/s ')).length).toBe(0);
+    expect(sizedVariants(mk('236 ml')).map(x => x.size)).toEqual(['236 ml']);
+  });
+
+  it('["236 ml","NA"]: блока нет', () => {
+    expect(hasSizeChoice(mk('236 ml', 'NA'))).toBeFalse();
+  });
+
+  it('["One","One"]: блока нет', () => {
+    expect(hasSizeChoice(mk('One', 'One'))).toBeFalse();
+  });
+
+  it('["368 ml","One","One"]: блока нет', () => {
+    expect(hasSizeChoice(mk('368 ml', 'One', 'One'))).toBeFalse();
+  });
+
+  it('["S","M","One"]: две плашки', () => {
+    const v = mk('S', 'M', 'One');
+    expect(sizedVariants(v).map(x => x.size)).toEqual(['S', 'M']);
+    expect(hasSizeChoice(v)).toBeTrue();
+  });
+
+  it('одинаковые подписи ["236 ml","236 ml"]: различных одна, блока нет', () => {
+    expect(hasSizeChoice(mk('236 ml', '236 ML'))).toBeFalse();
+  });
 });
 
 describe('pickInitialVariant (SR-168)', () => {

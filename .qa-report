@@ -1,17 +1,18 @@
 ALL CLEAR
 Date: 2026-10-14
-Task: SR-168 empty size variant, re-check #2 of the 3331 fix (product-detail.ts passes product.appId ?? product.id to pickInitialVariant). KB #719 format.
+Task: SR-168 empty size variant, round 2 (TeamLead fixes: size placeholders One/NA/ONE SIZE/O/S/OS/N/A treated as empty; "Размер" block only with >=2 distinct real labels). KB #719 format, only changed behaviour.
 Env: local | Frontend http://localhost:4490 | API http://localhost:9090 (GET only, no orders)
 
-Scenarios (this run, only the fixed bug):
-1. PASS: /ru/product/3331/details after hard reload: no .variant-selector (size block hidden), stock text "Осталась 1 шт." (3331's own stock, not 3).
-2. PASS: localStorage.cartItems cleared, "Добавить в корзину" clicked: cartItems = [{variantAppId: 3331, product.id: 3331, product.size: ""}], no size.
-3. PASS: cart drawer for this item shows only name "Баттер для тела In the Stars Glowtion", 350 MDL, no size label or empty size text.
-4. PASS (regression): /ru/product/2839/details: plates 70A,70B,75A,75C,80B,80C; first (70A) active; click 70B -> active, added to cart: size 70B, variantAppId 2839.
-5. PASS (regression): /ru/product/2839/details?size=75A preselects 75A.
-Console: only 404 on assets/fonts/PublicSans-Light.woff (unrelated) and NG0913 image warnings.
+Scenarios (this run):
+1. PASS: API variants vs page. 3869 (236 ml, NA), 3875 (236 ml, NA), 2131 (368 ml, One), 2479 (250 ml, One), 2603 (236 ml, One): each has only 1 real label, pages show no .variant-selector at all, so no plate with placeholder and no empty plate. 2890: N/A, 404 in the API copy (page falls back to generic title).
+2. PASS: 3869, "Добавить в корзину": cartItems entry variantAppId 3869 (page's own id), product.size "236 ml" (own real size, no NA/One). No "NA"/"One" text anywhere on the page/cart UI after add.
+3. PASS (regression): 3331 no size block; cart gets {variantAppId 3331, product.id 3331, size ""}.
+4. PASS (regression): 2839 shows 6 plates 70A,70B,75A,75C,80B,80C, 70A active first; click 80B -> active 80B, cart gets variantAppId 3519 (= 80B in API), product.id 2839. 2839/details?size=75A preselects 75A.
+5. PASS: backend run be-tests.sh: exit=0, Tests run 132, Failures 0, Errors 0, Skipped 1 (LoadedProductsUpdateSmokeTest, pre-existing skip), BUILD SUCCESS. No Mockito MockUtil flake this time.
+Notes: localStorage.cartItems cannot be cleared from outside the app (the app rewrites it from memory), so the cart held earlier items too; each tested item was verified by its own entry. Console: only unrelated font 404 / NG0913 image warnings.
 
 Earlier scenarios:
+PASS (previous run): /ru/product/3331/details after hard reload: no size block, stock "Осталась 1 шт.", cart variantAppId 3331 with no size, cart drawer shows no size label.
 PASS (previous run): /ru/product/2839/details: first plate active, click 70B -> cart size 70B, variantAppId 2839; ?size=75A preselects 75A (/ru/product/2839?size=75A without /details gives 404, a route issue, not the component).
 PASS (previous run): 2539 with a single size - no .variant-selector, no plates.
 PASS (previous run): loaded_products product_id 30/2700/3868 -> rows 4020/4021/4022, one each, PUBLISHED, deleted=f; parents 2241/2239/2314 PUBLISHED; no variants links; dry-run 0 rows created, ROLLBACK.
@@ -19,4 +20,4 @@ PASS (previous run): 2839 swatches (siblings=4) render.
 N/A: 3332 unavailable in the API copy (9090 returns 404), the site copy has no such product. Same logic as 3331, now fixed.
 Not checked: checkout (redirects without login); no orders created.
 Previous BUG (3331 fell back to variant 2700, stock "3") fixed: confirmed.
-### Tree: 681d8233c47ef1f301669d4d77680b7bc906c5ef
+### Tree: b3b6b2689ca269072ce384fcdf61899423620194

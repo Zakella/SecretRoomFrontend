@@ -108,7 +108,7 @@
               </div>
             </div>
             }
-          } @else if (product()?.size?.trim()) {
+          } @else if (hasSizeLabel(product()?.size)) {
             <div class="variant-selector">
               <span class="variant-label">{{ 'Size' | transloco }}:</span>
               <div class="variant-options">

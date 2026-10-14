@@ -1,4 +1,5 @@
 import {ProductVariant} from '../../../entities/product-variant';
+import {hasSizeLabel, normalizedSizeLabel} from '../../../shared/utils/size-label';
 
 /**
  * Предвыбор варианта по размеру, перенесённому со свотча соседней карточки (?size=).
@@ -10,9 +11,9 @@ export function findVariantBySize(variants: ProductVariant[] | undefined, size: 
   return variants.find(v => v.size?.trim().toLowerCase() === wanted && v.available && v.inStock);
 }
 
-/** Подпись размера варианта: null/undefined/пробелы дают пустую строку. */
+/** Подпись размера варианта: null/undefined/пробелы и заглушки (One, NA, ONE SIZE, O/S...) дают пустую строку. */
 export function sizeLabel(variant: ProductVariant): string {
-  return variant.size?.trim() ?? '';
+  return hasSizeLabel(variant.size) ? variant.size!.trim() : '';
 }
 
 /**
@@ -23,8 +24,9 @@ export function sizedVariants(variants: ProductVariant[] | undefined): ProductVa
   return (variants ?? []).filter(v => sizeLabel(v) !== '');
 }
 
+/** Выбор есть, если различных подписей не меньше двух (две одинаковые «236 ml» выбором не считаются). */
 export function hasSizeChoice(variants: ProductVariant[] | undefined): boolean {
-  return sizedVariants(variants).length >= 2;
+  return new Set(sizedVariants(variants).map(v => normalizedSizeLabel(v.size))).size >= 2;
 }
 
 /**
