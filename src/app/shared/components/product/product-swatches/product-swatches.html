@@ -22,7 +22,7 @@
       @if (toggleDesktop() || toggleMobile()) {
         <li class="swatches-toggle" [class.toggle-desktop]="toggleDesktop()" [class.toggle-mobile]="toggleMobile()">
           <button type="button" class="swatch swatch-more" [attr.aria-expanded]="expanded()" (click)="toggle()">
-            <span class="swatch-thumb">
+            <span class="swatch-thumb" aria-hidden="true">
               <span class="more-text">
                 @if (expanded()) {
                   <span>−</span>

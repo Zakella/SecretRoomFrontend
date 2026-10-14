@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, signal} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
@@ -71,6 +71,11 @@ export class ProductSwatches {
   });
 
   protected expanded = signal(false);
+  /** Роутер может переиспользовать компонент при переходе на другой товар: сворачиваем заново. */
+  private resetOnSiblingsChange = effect(() => {
+    this.siblings();
+    this.expanded.set(false);
+  });
   private total = computed(() => this.siblings()?.length ?? 0);
   protected toggleDesktop = computed(() => needsToggle(this.total(), DESKTOP_LIMIT));
   protected toggleMobile = computed(() => needsToggle(this.total(), MOBILE_LIMIT));

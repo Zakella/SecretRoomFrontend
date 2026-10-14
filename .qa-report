@@ -1,6 +1,6 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-156 swatches "Ещё N" — sort in-stock first, 10/8 limit, toggle button
-Checks: unit ✓ (17/17), diff review ✓, UI static fixture ✓, Security ✓, i18n ✓ (ru/ro; en.json not present in repo), Duplication ✓
-Not covered: real stand (no 20+ variant data on local API) — static fixture only.
-### Tree: 80621d4178a49bad8809891400489ba7cd9d547d
+Task: SR-156 — перепроверка круга 1 (merge origin/epic/product-models, i18n, reset expanded, aria-hidden)
+Checks: i18n merge ✓ (ru/ro валидны, маркеров нет, StockLeftOne/Many + SwatchesMore/Collapse есть, LastItemHurry/LowInStockDetail нет), product-swatches tests 19/19 ✓, ng build ✓ (раньше), diff vs origin/epic/product-models в product-swatches и i18n без лишнего ✓
+Not covered: реального стенда нет, UI в живом браузере не проверялся.
+### Tree: a03947eb1ce9e76b8ebab7d174c5b171c3f6fd78

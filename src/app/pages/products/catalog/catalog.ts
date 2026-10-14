@@ -22,6 +22,7 @@ import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
 import {DrawerModule} from 'primeng/drawer';
 import {ProductCardSkeleton} from '../../../shared/components/product/product-card-skeleton/product-card-skeleton';
+import {BRAND_SECTION_KEY, buildFilterSections, FilterSectionView} from './catalog-filters.util';
 
 @Component({
   selector: 'app-catalog',
@@ -76,7 +77,12 @@ export class Catalog implements OnInit, OnDestroy {
   // Mobile filter drawer
   filterDrawerVisible = false;
   protected totalProductCount = signal<number>(0);
-  brandSectionOpen = true;
+
+  // Аккордеон разделов фильтров (в памяти страницы). Ключ — слаг группы или BRAND_SECTION_KEY.
+  // Клик пользователя поверх дефолта; сбрасывается при смене категории.
+  protected readonly brandKey = BRAND_SECTION_KEY;
+  private openOverrides = signal<Map<string, boolean>>(new Map());
+  private expandedKeys = signal<Set<string>>(new Set());
 
   // Pending state for mobile drawer (applied only on "Show results" tap)
   protected pendingBrand = signal<string | null>(null);
@@ -127,8 +133,48 @@ export class Catalog implements OnInit, OnDestroy {
       }));
   });
 
-  protected hasFilters = computed(() => {
-    return this.availableBrands().length > 1 || this.availableFilters().length > 0;
+  /** Разделы сайдбара: структура и отметки — по применённому выбору. */
+  protected sections = computed<FilterSectionView[]>(() => buildFilterSections({
+    brands: this.availableBrands(),
+    groups: this.availableFilters(),
+    appliedBrand: this.selectedBrand(),
+    appliedFilters: this.selectedFilters(),
+    markBrand: this.selectedBrand(),
+    markFilters: this.selectedFilters(),
+    openOverrides: this.openOverrides(),
+    expandedKeys: this.expandedKeys(),
+  }));
+
+  /** Разделы нижней панели: структура фиксирована применённым выбором, отметки — pending. */
+  protected drawerSections = computed<FilterSectionView[]>(() => buildFilterSections({
+    brands: this.availableBrands(),
+    groups: this.availableFilters(),
+    appliedBrand: this.selectedBrand(),
+    appliedFilters: this.selectedFilters(),
+    markBrand: this.pendingBrand(),
+    markFilters: this.pendingFilters(),
+    openOverrides: this.openOverrides(),
+    expandedKeys: this.expandedKeys(),
+  }));
+
+  protected hasFilters = computed(() => this.sections().length > 0);
+
+  /** Чипы выбранных фильтров над списком товаров. */
+  protected activeChips = computed(() => {
+    const chips: {kind: 'brand' | 'group'; groupSlug: string; valueSlug: string; value?: unknown; label?: string}[] = [];
+    const brand = this.selectedBrand();
+    if (brand) {
+      const found = this.availableBrands().find(b => b.brand === brand);
+      chips.push({kind: 'brand', groupSlug: BRAND_SECTION_KEY, valueSlug: brand, label: found?.brandAlias || brand});
+    }
+    for (const group of this.availableFilters()) {
+      for (const v of group.values) {
+        if (this.selectedFilters().get(group.slug)?.has(v.slug)) {
+          chips.push({kind: 'group', groupSlug: group.slug, valueSlug: v.slug, value: v});
+        }
+      }
+    }
+    return chips;
   });
 
   private currentCategoryId: string | null = null;
@@ -420,6 +466,8 @@ export class Catalog implements OnInit, OnDestroy {
     this.products.set([]);
     this.selectedBrand.set(null);
     this.selectedFilters.set(new Map());
+    this.openOverrides.set(new Map());
+    this.expandedKeys.set(new Set());
     this.prefetched = null;
   }
 
@@ -479,6 +527,32 @@ export class Catalog implements OnInit, OnDestroy {
     ).subscribe(filters => {
       this.availableFilters.set(filters);
     });
+  }
+
+  /** Клик по заголовку раздела: переопределяет дефолт. */
+  toggleSection(section: FilterSectionView) {
+    const next = new Map(this.openOverrides());
+    next.set(section.key, !section.open);
+    this.openOverrides.set(next);
+  }
+
+  /** Раздел, где пользователь что-то выбрал, не должен схлопнуться, когда выбор снят. */
+  pinOpen(key: string) {
+    if (this.openOverrides().get(key) === true) return;
+    this.openOverrides.set(new Map(this.openOverrides()).set(key, true));
+  }
+
+  /** «Ещё N» / «Свернуть» — переключает показ всех значений раздела. */
+  toggleExpanded(key: string) {
+    const next = new Set(this.expandedKeys());
+    if (!next.delete(key)) next.add(key);
+    this.expandedKeys.set(next);
+  }
+
+  /** Убрать чип выбранного фильтра. */
+  removeChip(chip: {kind: 'brand' | 'group'; groupSlug: string; valueSlug: string}) {
+    if (chip.kind === 'brand') this.selectBrand(null);
+    else this.toggleFilter(chip.groupSlug, chip.valueSlug);
   }
 
   selectBrand(brand: string | null) {

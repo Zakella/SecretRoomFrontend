@@ -47,8 +47,8 @@
   "Add to Cart": "Adaugă în coș",
   "LastItem": "Ultimul articol",
   "LowInStock": "Stoc limitat",
-  "LastItemHurry": "Ultimul articol — grăbește-te!",
-  "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
+  "StockLeftOne": "A rămas {{count}} buc.",
+  "StockLeftMany": "Au rămas {{count}} buc.",
   "SwatchesMore": "Încă",
   "SwatchesCollapse": "Restrânge",
   "OutOfStock": "Indisponibil",
@@ -267,6 +267,7 @@
     "freeShippingRemaining": "Mai aveți nevoie de",
     "freeShippingGoal": "pentru livrare gratuită",
     "freeShippingAchieved": "Felicitări! Livrarea este gratuită!",
+    "addedToCart": "Adăugat în coș",
     "emptyMessage": "Coșul tău este gol",
     "startShopping": "Începe cumpărăturile"
   },
@@ -447,6 +448,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Încă {{count}}",
+      "less": "Restrânge",
+      "reset": "Resetează",
+      "showProducts": "Arată produsele",
+      "showProductsN": "Arată produsele ({{count}})"
+    },
     "otherBrands": "Alte branduri",
     "allBrands": "Toate brandurile",
     "h1": {

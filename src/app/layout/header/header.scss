@@ -6,6 +6,16 @@
   align-items: $ai;
 }
 
+@keyframes badgeBump {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.5) translateY(-3px); }
+  70% { transform: scale(0.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-bump { animation: none !important; }
+}
+
 @keyframes logoShine {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
@@ -178,6 +188,10 @@
             &:hover {
               transform: scale(1.1);
               box-shadow: 0 4px 12px rgba(230, 179, 168, 0.45);
+            }
+
+            &.badge-bump {
+              animation: badgeBump 0.4s ease;
             }
           }
         }

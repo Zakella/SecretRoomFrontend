@@ -214,6 +214,20 @@ describe('ProductSwatches', () => {
       expect(items.slice(firstOut).every(i => i.classList.contains('out-of-stock'))).toBeTrue();
     });
 
+    it('смена списка вариантов сворачивает раскрытый блок', () => {
+      render(many(25));
+      (el().querySelector('button.swatch-more') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      expect(hiddenD()).toBe(0);
+      render(many(26));
+      expect(hiddenD()).toBe(16);
+    });
+
+    it('плитка кнопки скрыта от скринридера', () => {
+      render(many(25));
+      expect(el().querySelector('button.swatch-more .swatch-thumb')!.getAttribute('aria-hidden')).toBe('true');
+    });
+
     it('текущий вариант за лимитом остаётся видимым', () => {
       render(many(25, {current: 20}));
       const current = el().querySelector('[aria-current="true"]')!.closest('li')!;

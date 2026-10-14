@@ -47,8 +47,8 @@
   "Add to Cart": "Добавить в корзину",
   "LastItem": "Последний",
   "LowInStock": "Мало на складе",
-  "LastItemHurry": "Последний товар — спешите!",
-  "LowInStockDetail": "Товар заканчивается — спешите!",
+  "StockLeftOne": "Осталась {{count}} шт.",
+  "StockLeftMany": "Осталось {{count}} шт.",
   "SwatchesMore": "Ещё",
   "SwatchesCollapse": "Свернуть",
   "OutOfStock": "Нет на складе",
@@ -269,6 +269,7 @@
     "freeShippingRemaining": "Вам осталось",
     "freeShippingGoal": "до бесплатной доставки",
     "freeShippingAchieved": "Поздравляем! Доставка бесплатная!",
+    "addedToCart": "Добавлено в корзину",
     "emptyMessage": "Ваша корзина пуста",
     "startShopping": "Начать покупки"
   },
@@ -449,6 +450,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Ещё {{count}}",
+      "less": "Свернуть",
+      "reset": "Сбросить",
+      "showProducts": "Показать товары",
+      "showProductsN": "Показать товары ({{count}})"
+    },
     "otherBrands": "Другие бренды",
     "allBrands": "Все бренды",
     "h1": {
