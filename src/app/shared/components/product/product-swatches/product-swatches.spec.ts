@@ -83,7 +83,7 @@ describe('ProductSwatches', () => {
     expect(out.tagName).toBe('A');
     expect(out.getAttribute('href')).toContain('/ru/product/3/bra-black');
     expect(out.getAttribute('title')).toContain('Чёрный');
-    expect(out.querySelector('.visually-hidden')).not.toBeNull();
+    expect(out.getAttribute('aria-label')).toContain('Чёрный');
     expect(el().querySelectorAll('.swatch.out-of-stock').length).toBe(1);
   });
 
@@ -93,7 +93,7 @@ describe('ProductSwatches', () => {
     currentLanguage.set('ro');
     fixture.detectChanges();
     expect((el().querySelectorAll('a.swatch')[0] as HTMLAnchorElement).getAttribute('href')).toBe('/ro/product/2/bra-blue');
-    expect(el().querySelectorAll('.swatch-caption')[1].textContent).toContain('Albastru');
+    expect(el().querySelectorAll('a.swatch')[0].getAttribute('aria-label')).toContain('Albastru');
   });
 
   it('переносит выбранный размер в ?size=, без размера параметра нет', () => {
@@ -117,7 +117,7 @@ describe('ProductSwatches', () => {
     expect(labelId).toBeTruthy();
     const label = el().querySelector(`#${labelId}`) as HTMLElement;
     expect(label).not.toBeNull();
-    expect(label.classList.contains('swatches-label')).toBeTrue();
+    expect(label.classList.contains('swatches-heading')).toBeTrue();
     expect(label.textContent).toContain(':');
 
     const second = TestBed.createComponent(ProductSwatches);
@@ -145,11 +145,26 @@ describe('ProductSwatches', () => {
     expect(key()).toBe('OptionTypeColor');
   });
 
-  it('полное название варианта — в title подписи и текущего свотча', () => {
+  it('SR-166: подписи под плитками нет; название — в title и aria-label ссылки', () => {
     render(THREE);
-    const captions = Array.from(el().querySelectorAll('.swatch-caption')) as HTMLElement[];
-    expect(captions.every(c => c.getAttribute('title') === c.textContent!.trim())).toBeTrue();
+    expect(el().querySelector('.swatch-caption')).toBeNull();
+    const links = Array.from(el().querySelectorAll('a.swatch')) as HTMLElement[];
+    expect(links.length).toBe(2);
+    for (const a of links) {
+      expect(a.getAttribute('title')).toBeTruthy();
+      expect(a.getAttribute('aria-label')).toBe(a.getAttribute('title'));
+    }
     expect(el().querySelector('.swatch.active')!.getAttribute('title')).toBeTruthy();
+  });
+
+  it('SR-166: название выбранного варианта — после заголовка типа, меняется язык', () => {
+    render(THREE);
+    const cur = THREE.find(s => s.current)!;
+    const value = el().querySelector('.swatches-heading .swatches-value')!;
+    expect(value.textContent!.trim()).toBe(cur.optionLabelRu!);
+    currentLanguage.set('ro');
+    fixture.detectChanges();
+    expect(el().querySelector('.swatches-heading .swatches-value')!.textContent!.trim()).toBe(cur.optionLabelRo!);
   });
 
   describe('много вариантов (SR-156)', () => {
