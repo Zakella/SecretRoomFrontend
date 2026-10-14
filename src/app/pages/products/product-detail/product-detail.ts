@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, DestroyRef, RESPONSE_INIT} from '@angular/core';
-import {NgClass, Location} from '@angular/common';
+import {Location} from '@angular/common';
 import {Meta} from '@angular/platform-browser';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -10,6 +10,7 @@ import {ShareModal} from '../../../shared/components/modals/share-modal/share-mo
 import {RecommendedProducts} from '../../../shared/components/product/recommended-products/recommended-products';
 import {Language} from '../../../@core/services/language';
 import {CartUi} from '../../../shared/components/cart/services/cart';
+import {ProductImage} from '../../../entities/product-image';
 import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
@@ -23,6 +24,7 @@ import {Slugify} from '../../../@core/services/slugify';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
+import {ProductGallery} from '../../../shared/components/product/product-gallery/product-gallery';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
 import {findVariantBySize} from './variant-selection';
@@ -30,7 +32,7 @@ import {compareSizes} from '../../../shared/utils/size-order';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -81,9 +83,23 @@ export class ProductDetail {
     }
     return (p.unitsInStock ?? 0) <= 0;
   });
+  /** Фото галереи: основное фото (imageURL) первым, как было главным до галереи, дальше остальные без повторов. */
+  galleryImages = computed<ProductImage[]>(() => {
+    const p = this.product();
+    if (!p) return [];
+    const all = [...(p.imageURL ? [{imageUrl: p.imageURL, description: ''}] : []), ...(p.productImagesWebStore ?? [])];
+    const seen = new Set<string>();
+    const unique = all.filter(image => {
+      const key = (image.imageUrl ?? '').split('?')[0];
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    // без единого фото галерея покажет заглушку unavailable.jpg
+    return unique.length ? unique : [{imageUrl: '', description: ''}];
+  });
   quantity: number = 1;
   currentSize: string | undefined;
-  mainImage: string | null = null;
 
   private destroyRef = inject(DestroyRef);
 
@@ -131,7 +147,6 @@ export class ProductDetail {
       if (product.variants?.length) {
         product.variants.sort((a, b) => compareSizes(a.size, b.size));
       }
-      this.mainImage = product.imageURL;
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
       if (product.variants && product.variants.length > 0) {
