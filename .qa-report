@@ -1,6 +1,6 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-156 — перепроверка круга 1 (merge origin/epic/product-models, i18n, reset expanded, aria-hidden)
-Checks: i18n merge ✓ (ru/ro валидны, маркеров нет, StockLeftOne/Many + SwatchesMore/Collapse есть, LastItemHurry/LowInStockDetail нет), product-swatches tests 19/19 ✓, ng build ✓ (раньше), diff vs origin/epic/product-models в product-swatches и i18n без лишнего ✓
-Not covered: реального стенда нет, UI в живом браузере не проверялся.
-### Tree: a03947eb1ce9e76b8ebab7d174c5b171c3f6fd78
+Task: SR-155 листание фото в карточке каталога (перепроверка фикса .img-container overflow:hidden)
+Checks: UI ✓ (768/1280 hover, слайд 1 и 2: видимая часть соседнего слайда = 0, hover-zoom scale(1.05) сохранён; 375: <=5 точек, нет пересечений dots с wishlist/more-options, стрелка листает, клик ведёт на товар; консоль без NG05xx), Security n/a, i18n n/a, Performance n/a, Duplication n/a
+Ранее пройдено (прошлый прогон): окно точек, свайп, 768/1280/главная, добавление в корзину, нет hydration/Duplicate key
+### Tree: 461af38785791c70166be34bef6bfd5a5a7b1473
