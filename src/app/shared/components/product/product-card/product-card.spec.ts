@@ -293,5 +293,12 @@ describe('ProductCard', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('.badge-low-stock')).toBeNull();
     });
+
+    it('unitsInStock=1 без variants: бейджа «Последний» нет (остаток — только на странице товара)', () => {
+      setProduct(product({unitsInStock: 1, variants: undefined}));
+      fixture.componentRef.setInput('price', 100);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.badge-last-item')).toBeNull();
+    });
   });
 });

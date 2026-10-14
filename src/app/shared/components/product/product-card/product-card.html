@@ -45,11 +45,6 @@
         <i class="ri-close-circle-fill"></i>
         <span>{{ 'OutOfStock' | transloco }}</span>
       </div>
-    } @else if (!product()?.variants?.length && product()?.unitsInStock === 1) {
-      <div class="badge badge-status badge-last-item">
-        <i class="ri-error-warning-fill"></i>
-        <span>{{ 'LastItem' | transloco }}</span>
-      </div>
     }
 
     <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">
