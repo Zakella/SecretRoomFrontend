@@ -58,16 +58,6 @@
                 <i class="ri-close-circle-fill"></i>
                 <span>{{ 'OutOfStockMessage' | transloco }}</span>
               </div>
-            } @else if (effectiveStock() === 1) {
-              <div class="stock-warning stock-critical">
-                <i class="ri-error-warning-fill"></i>
-                <span>{{ 'LastItemHurry' | transloco }}</span>
-              </div>
-            } @else if (effectiveStock() !== undefined && effectiveStock()! <= 3 && effectiveStock()! > 0) {
-              <div class="stock-warning stock-low">
-                <i class="ri-fire-fill"></i>
-                <span>{{ 'LowInStockDetail' | transloco }}</span>
-              </div>
             }
 
             @if (selectedVariant()?.article || product()?.article) {
@@ -125,6 +115,10 @@
                 </button>
               </div>
             </div>
+          }
+
+          @if (stockNote(); as left) {
+            <span class="stock-note">{{ (left === 1 ? 'StockLeftOne' : 'StockLeftMany') | transloco: {count: left} }}</span>
           }
 
           @if (hasSwatches()) {
