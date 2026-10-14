@@ -49,6 +49,8 @@
   "LowInStock": "Мало на складе",
   "StockLeftOne": "Осталась {{count}} шт.",
   "StockLeftMany": "Осталось {{count}} шт.",
+  "SwatchesMore": "Ещё",
+  "SwatchesCollapse": "Свернуть",
   "OutOfStock": "Нет на складе",
   "OutOfStockMessage": "Товар временно отсутствует на складе",
   "Discontinued": "Товар снят с продажи",

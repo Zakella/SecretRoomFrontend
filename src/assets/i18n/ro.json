@@ -49,6 +49,8 @@
   "LowInStock": "Stoc limitat",
   "StockLeftOne": "A rămas {{count}} buc.",
   "StockLeftMany": "Au rămas {{count}} buc.",
+  "SwatchesMore": "Încă",
+  "SwatchesCollapse": "Restrânge",
   "OutOfStock": "Indisponibil",
   "OutOfStockMessage": "Produsul este temporar indisponibil",
   "Discontinued": "Produs retras din vânzare",
