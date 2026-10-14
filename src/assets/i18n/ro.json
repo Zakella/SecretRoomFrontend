@@ -445,6 +445,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Încă {{count}}",
+      "less": "Restrânge",
+      "reset": "Resetează",
+      "showProducts": "Arată produsele",
+      "showProductsN": "Arată produsele ({{count}})"
+    },
     "otherBrands": "Alte branduri",
     "allBrands": "Toate brandurile",
     "h1": {

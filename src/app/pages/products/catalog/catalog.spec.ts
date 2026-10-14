@@ -7,7 +7,9 @@ import {ProductService} from '../../../@core/api/product';
 import {Language} from '../../../@core/services/language';
 import {Brand} from '../../../entities/category';
 import {BRAND_SEO, BrandSeoLocale} from '../../../@core/configs/brand-seo';
+import {FilterGroup} from '../../../entities/filter-group';
 import {Catalog} from './catalog';
+import {FilterSectionView} from './catalog-filters.util';
 
 /** brandSlugValue/brandSeo/otherBrands объявлены protected — тест смотрит на них напрямую. */
 interface CatalogInternals {
@@ -16,6 +18,11 @@ interface CatalogInternals {
   brandSlugValue: Signal<string | null>;
   brandSeo: Signal<BrandSeoLocale | null>;
   otherBrands: Signal<{slug: string, label: string}[]>;
+  availableFilters: WritableSignal<FilterGroup[]>;
+  sections: Signal<FilterSectionView[]>;
+  toggleSection(section: FilterSectionView): void;
+  toggleExpanded(key: string): void;
+  pinOpen(key: string): void;
 }
 
 const BRANDS: Brand[] = [
@@ -75,6 +82,45 @@ describe('Catalog', () => {
       catalog.brandName.set('AnnSummers');
       currentLanguage.set('ru');
       expect(catalog.brandSeo()).toBe(BRAND_SEO['ann-summers'].ru);
+    });
+  });
+
+  describe('filter accordion', () => {
+    const manyValues = (n: number) => Array.from({length: n}, (_, i) => ({slug: `v${i + 1}`, count: 1}));
+
+    beforeEach(() => {
+      catalog.availableFilters.set([
+        {slug: 'size', values: manyValues(9)},
+        {slug: 'color', values: manyValues(3)},
+        {slug: 'scent', values: manyValues(3)},
+      ]);
+    });
+
+    it('should open the first two sections by default and fold long lists', () => {
+      const sections = catalog.sections();
+      expect(sections.map(s => [s.key, s.open])).toEqual([['size', true], ['color', true], ['scent', false]]);
+      expect(sections[0].items.length).toBe(6);
+      expect(sections[0].hiddenCount).toBe(3);
+    });
+
+    it('should toggle a section on header click and keep the override', () => {
+      catalog.toggleSection(catalog.sections()[2]);
+      expect(catalog.sections()[2].open).toBe(true);
+      catalog.toggleSection(catalog.sections()[0]);
+      expect(catalog.sections()[0].open).toBe(false);
+    });
+
+    it('should show all values after "more" and fold back', () => {
+      catalog.toggleExpanded('size');
+      expect(catalog.sections()[0].items.length).toBe(9);
+      expect(catalog.sections()[0].canCollapse).toBe(true);
+      catalog.toggleExpanded('size');
+      expect(catalog.sections()[0].items.length).toBe(6);
+    });
+
+    it('should keep a section open after its selection is removed (pinOpen)', () => {
+      catalog.pinOpen('scent');
+      expect(catalog.sections()[2].open).toBe(true);
     });
   });
 
