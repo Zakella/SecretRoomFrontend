@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
 import {CarouselModule} from 'primeng/carousel';
 import {Product} from '../../../../entities/product';
-import {CartItem} from '../../../../entities/cart-item';
-import {CartUi} from '../../cart/services/cart';
+import {QuickAddToCart} from '../../cart/services/quick-add-to-cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {RecentlyViewedService} from '../../../../@core/services/recently-viewed.service';
@@ -21,7 +20,7 @@ import {ProductPrice} from '../product-price/product-price';
 })
 export class RecentlyViewed {
   private recentlyViewedService = inject(RecentlyViewedService);
-  private cartService = inject(CartUi);
+  private quickAdd = inject(QuickAddToCart);
   private router = inject(Router);
   public favoritesService = inject(FavoritesService);
   public slugify = inject(Slugify);
@@ -54,8 +53,7 @@ export class RecentlyViewed {
   ];
 
   protected addToCart(product: Product) {
-    const cartItem = new CartItem(product, 1);
-    this.cartService.addToCart(cartItem);
+    this.quickAdd.add(product);
   }
 
   protected goToProduct(product: Product) {

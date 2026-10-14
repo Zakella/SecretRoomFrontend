@@ -6,10 +6,9 @@ import {CarouselModule} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
 import {TagModule} from 'primeng/tag';
 import {Product} from '../../../../entities/product';
-import {CartItem} from '../../../../entities/cart-item';
 import {RESPONSIVE_OPTIONS} from '../../../../@core/options/responsive-options';
 import {RecommendedProductService} from './recommended-product-service';
-import {CartUi} from '../../cart/services/cart';
+import {QuickAddToCart} from '../../cart/services/quick-add-to-cart';
 import {FavoritesService} from '../../../../@core/services/favorites';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
 import {Slugify} from '../../../../@core/services/slugify';
@@ -26,7 +25,7 @@ import {ProductPrice} from '../product-price/product-price';
 })
 export class RecommendedProducts {
   private recommendedService = inject(RecommendedProductService);
-  private cartService = inject(CartUi);
+  private quickAdd = inject(QuickAddToCart);
   private slugify = inject(Slugify);
   private langService = inject(Language);
   public favoritesService = inject(FavoritesService);
@@ -48,8 +47,7 @@ export class RecommendedProducts {
   }
 
   protected addToCart(product: Product) {
-    const cartItem = new CartItem(product, 1);
-    this.cartService.addToCart(cartItem);
+    this.quickAdd.add(product);
   }
 
   protected toggleFavorite(product: Product) {
