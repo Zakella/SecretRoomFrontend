@@ -1,8 +1,9 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-161 catalog facets — FINAL SMOKE (code unchanged since previous ALL CLEAR round; re-verified on current state)
-Checks: API ✓, UI ✓ (desktop 1280 + mobile 390), Console ✓ (only font 404 noise)
-- RU /ru/catalog/kosmetika-i-uhod: Крем (32) -> listing totalElements 32 (24 cards + "Показать ещё"); size facet counts changed (236 ML 18->0, 226 G 5->3); deselect -> base counts back (449 / Крем 32).
-- Two quick clicks (Лосьон + Victoria's Secret, no wait): both applied (product-type:lotion + brand=VictoriasSecret), listing total 33 == Лосьон (33); other counts recalculated; "Сбросить все" -> no pressed chips, base counts restored.
-- 390px drawer: toggle Крем -> "Показать товары (32)" (was 449); close w/o apply -> reopen shows 449, Крем not pressed, no chip; toggle again + "Показать товары" -> applied, chip "Тип товара: Крем", 32 results.
-### Tree: 4fb7a77964d20b62dfa9f6358f28bfd7cd829807
+Task: SR-161 catalog facets — catch-up merge origin/epic/product-models into feature/sr-161-facets (uncommitted merge)
+Checks:
+- git status: no unmerged paths, merge ready to commit.
+- diff vs origin/epic/product-models (staged): only src/app/@core/api/{brand,category,product}.ts, src/app/pages/products/catalog/*, .qa-report.
+- node_modules present; `npx ng build` (via heavy.sh): OK, only SCSS budget warnings.
+- `npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/products/catalog/**/*.spec.ts'`: 51 of 51 SUCCESS.
+### Tree: 1665b56c29afd0f16ed9931e91734e9aa797eafd

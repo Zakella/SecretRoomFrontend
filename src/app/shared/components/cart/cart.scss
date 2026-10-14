@@ -281,6 +281,8 @@
         gap: 1.25rem;
         margin-bottom: 1.5rem;
         padding: 1rem;
+        // reserve room for the absolute remove button so the price never sits under it
+        padding-right: 3rem;
         position: relative;
         background: rgba(255, 255, 255, 0.6);
         border-radius: 12px;

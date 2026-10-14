@@ -170,4 +170,128 @@ describe('ProductCard', () => {
       expect(el.parentElement!.classList.contains('image-wrapper')).toBeTrue();
     });
   });
+
+  describe('галерея фото', () => {
+    const img = (imageUrl: string) => ({imageUrl}) as never;
+
+    function renderGallery(main: string, urls: string[], visible = true): HTMLElement {
+      fixture.componentRef.setInput('imageUrl', main);
+      setProduct(product({productImagesWebStore: urls.map(img)}));
+      fixture.componentRef.setInput('price', 100);
+      component.imagesVisible.set(visible);
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    }
+
+    it('images: imageUrl первым, дубли и пустые отброшены, порядок сохранён', () => {
+      fixture.componentRef.setInput('imageUrl', 'b.jpg');
+      setProduct(product({productImagesWebStore: [img('a.jpg'), img('b.jpg'), img(''), img('c.jpg'), img('a.jpg')]}));
+      expect(component.images()).toEqual(['b.jpg', 'a.jpg', 'c.jpg']);
+    });
+
+    it('одно фото: нет стрелок и точек', () => {
+      const el = renderGallery('a.jpg', ['a.jpg']);
+      expect(el.querySelectorAll('.nav').length).toBe(0);
+      expect(el.querySelectorAll('.dot').length).toBe(0);
+      expect(el.querySelectorAll('.gallery-track img').length).toBe(1);
+    });
+
+    it('5 фото: 5 точек, первая активна, 2 стрелки', () => {
+      const el = renderGallery('1.jpg', ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg']);
+      const dots = el.querySelectorAll('.dot');
+      expect(dots.length).toBe(5);
+      expect(dots[0].classList.contains('active')).toBeTrue();
+      expect(el.querySelectorAll('.dot.active').length).toBe(1);
+      expect(el.querySelectorAll('.nav').length).toBe(2);
+      expect(el.querySelectorAll('.gallery-track img').length).toBe(5);
+    });
+
+    it('9 фото: 5 точек, первая активна, последняя edge', () => {
+      const urls = Array.from({length: 9}, (_, k) => `${k}.jpg`);
+      const el = renderGallery('0.jpg', urls);
+      const dots = el.querySelectorAll('.dot');
+      expect(dots.length).toBe(5);
+      expect(dots[0].classList.contains('active')).toBeTrue();
+      expect(dots[4].classList.contains('edge')).toBeTrue();
+      expect(el.querySelectorAll('.dot.edge').length).toBe(1);
+
+      component.selectImage(8, el.querySelector('.gallery-track') as HTMLElement);
+      fixture.detectChanges();
+      expect(component.visibleDots()).toEqual([4, 5, 6, 7, 8]);
+      const after = el.querySelectorAll('.dot');
+      expect(after[4].classList.contains('active')).toBeTrue();
+      expect(after[0].classList.contains('edge')).toBeTrue();
+    });
+
+    it('3 фото: 3 точки без edge', () => {
+      const el = renderGallery('1.jpg', ['1.jpg', '2.jpg', '3.jpg']);
+      expect(el.querySelectorAll('.dot').length).toBe(3);
+      expect(el.querySelectorAll('.dot.edge').length).toBe(0);
+    });
+
+    it('пока карточка не в зоне видимости — только первое фото', () => {
+      const el = renderGallery('1.jpg', ['1.jpg', '2.jpg', '3.jpg'], false);
+      expect(el.querySelectorAll('.gallery-track img').length).toBe(1);
+      expect(el.querySelectorAll('.dot').length).toBe(0);
+    });
+
+    it('клик по стрелке и точке не всплывает и не переходит по ссылке', () => {
+      const el = renderGallery('1.jpg', ['1.jpg', '2.jpg', '3.jpg']);
+      const targets = [el.querySelector('.nav-next')!, el.querySelector('.nav-prev')!, el.querySelectorAll('.dot')[1]];
+      for (const target of targets) {
+        const event = new MouseEvent('click', {bubbles: true, cancelable: true});
+        const prevent = spyOn(event, 'preventDefault').and.callThrough();
+        const stop = spyOn(event, 'stopPropagation').and.callThrough();
+        target.dispatchEvent(event);
+        expect(prevent).toHaveBeenCalled();
+        expect(stop).toHaveBeenCalled();
+      }
+    });
+
+    it('клик по точке выбирает фото', () => {
+      const el = renderGallery('1.jpg', ['1.jpg', '2.jpg', '3.jpg']);
+      (el.querySelectorAll('.dot')[2] as HTMLElement).click();
+      fixture.detectChanges();
+      expect(component.selectedImageIndex()).toBe(2);
+      expect(el.querySelectorAll('.dot')[2].classList.contains('active')).toBeTrue();
+    });
+  });
+
+  describe('галерея фото на сервере (SSR)', () => {
+    it('рендерится только первое фото', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideRouter([]),
+          provideTransloco({
+            config: {availableLangs: ['ro', 'ru'], defaultLang: 'ro'},
+            loader: TranslocateHttpLoader,
+          }),
+          {provide: PLATFORM_ID, useValue: 'server'},
+          {provide: Language, useValue: {currentLanguage}},
+        ],
+      });
+      const serverFixture = TestBed.createComponent(ProductCard);
+      serverFixture.componentRef.setInput('imageUrl', '1.jpg');
+      serverFixture.componentRef.setInput('product', product({productImagesWebStore: [{imageUrl: '2.jpg'}, {imageUrl: '3.jpg'}] as never}));
+      serverFixture.componentRef.setInput('price', 100);
+      serverFixture.detectChanges();
+
+      const el = serverFixture.nativeElement as HTMLElement;
+      expect(el.querySelectorAll('.gallery-track img').length).toBe(1);
+      expect(el.querySelectorAll('.dot').length).toBe(0);
+      expect(serverFixture.componentInstance.imagesVisible()).toBeFalse();
+    });
+  });
+
+  describe('плашки остатка', () => {
+    it('unitsInStock=2 без variants: плашка «мало на складе» не рендерится', () => {
+      setProduct(product({unitsInStock: 2, variants: undefined}));
+      fixture.componentRef.setInput('price', 100);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.badge-low-stock')).toBeNull();
+    });
+  });
 });
