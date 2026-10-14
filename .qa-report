@@ -1,6 +1,17 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-167 блок «Ваш заказ» на checkout (ссылки на товар, заглушка no-image, прокрутка при >8 поз., static при >3)
-Checks: 1 (5 поз., 1440: без прокрутки, сумма сходится, static; 3 поз. sticky) ✓, 2 (10 поз.: cart-items--many, 630px = 70vh, overflow-y auto, overflow-x hidden) ✓, 3 (битый и пустой imageURL -> no-image.png 70x90, scrollWidth == clientWidth) ✓, 4 (ссылки /ru/product/id/slug, _blank, noopener; клик открыл вкладку, email/телефон в форме сохранились; +/удалить меняют «В корзине»; бейдж и кнопки вне <a>) ✓, 5 (Размер только при size.sizeType) ✓, 6 (390: без горизонтали, 302/302) ✓, 7 (ng test checkout.spec: 6/6) ✓
-Not run: скриншоты (Playwright MCP не пишет вне репо), заказ не оформлялся
-### Tree: a570487d3a3e07e7809ec2b6fd95b06ed97dde4a
+Task: SR-169 quick add to cart with size picker (+ fix: size from product.size when variants/productSizes empty)
+Checks: UI ✓, i18n ✓ (RU toast/labels), Console ✓ (only image/font 404, NG0506)
+Scenarios:
+ 1 PASS recommendations on product page (976): panel, 75B disabled, nothing added before choice; 75C -> toast, cart size 75C variantAppId 976
+ 2 PASS close by X / Esc / backdrop click, cart unchanged
+ 3 N/A "Recently viewed" has no cart button in template (pre-existing, not a regression); 3835 covered via catalog (XS disabled, order XS,S,M,L, M -> 3835:M:3866)
+ 4 PASS catalog/search: sized 3356 -> panel -> 75C:3374; single size 3283 -> instant; no-variant 327 -> instant + toast
+ 5 PASS cart recommendations: no-variant items added instantly (4472 -> 75B from product.size)
+ 6 PASS mobile 390x844: bottom sheet, 6 size buttons wrap in two rows (x 21..356), no horizontal scroll; restored 1280x800
+ 7 PASS console: no quick-add/picker errors
+ A PASS 4218 (variants empty, size XS) -> added instantly with size XS; 3319 -> added with size 75C (product.size)
+ B PASS cart recs without variants added with product.size
+ C PASS live: sized pajama in cart recommendations -> panel above cart drawer (screenshot qa-c-panel-over-cart.png), picking M works (3835:M:3866)
+Not verified in UI: product 2479 (250 ml / One) is not reachable from any list; covered by unit tests per coordinator.
+### Tree: ff50994c3de0ed9b9b441c21e58dcc1f73fbf32d
