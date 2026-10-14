@@ -91,10 +91,11 @@
           }
 
           @if (product()?.variants && product()!.variants!.length > 0) {
+            @if (showSizeBlock()) {
             <div class="variant-selector">
               <span class="variant-label">{{ 'Size' | transloco }}:</span>
               <div class="variant-options">
-                @for (variant of product()!.variants; track variant.appId) {
+                @for (variant of sizedVariants(); track variant.appId) {
                   <button
                     class="variant-btn"
                     [class.active]="selectedVariant()?.appId === variant.appId"
@@ -106,7 +107,8 @@
                 }
               </div>
             </div>
-          } @else if (product()?.size) {
+            }
+          } @else if (product()?.size?.trim()) {
             <div class="variant-selector">
               <span class="variant-label">{{ 'Size' | transloco }}:</span>
               <div class="variant-options">

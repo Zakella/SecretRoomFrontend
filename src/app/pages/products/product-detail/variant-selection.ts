@@ -9,3 +9,33 @@ export function findVariantBySize(variants: ProductVariant[] | undefined, size: 
   if (!wanted || !variants?.length) return undefined;
   return variants.find(v => v.size?.trim().toLowerCase() === wanted && v.available && v.inStock);
 }
+
+/** Подпись размера варианта: null/undefined/пробелы дают пустую строку. */
+export function sizeLabel(variant: ProductVariant): string {
+  return variant.size?.trim() ?? '';
+}
+
+/**
+ * Варианты, у которых есть подпись размера (SR-168). Блок «Размер» рисуется только при двух и более таких вариантах:
+ * вариант с пустым size не должен превращаться в пустую плашку.
+ */
+export function sizedVariants(variants: ProductVariant[] | undefined): ProductVariant[] {
+  return (variants ?? []).filter(v => sizeLabel(v) !== '');
+}
+
+export function hasSizeChoice(variants: ProductVariant[] | undefined): boolean {
+  return sizedVariants(variants).length >= 2;
+}
+
+/**
+ * Вариант по умолчанию (SR-168).
+ * Выбора размера нет (блок скрыт): берём вариант самой страницы по ownAppId, иначе первый доступный.
+ * Выбор есть: первый доступный среди вариантов с подписью (безымянные не кликабельны, предвыбирать их нельзя).
+ */
+export function pickInitialVariant(variants: ProductVariant[] | undefined, ownAppId: string | number | null | undefined): ProductVariant | undefined {
+  if (!variants?.length) return undefined;
+  const firstAvailable = (list: ProductVariant[]) => list.find(v => v.available && v.inStock) ?? list[0];
+  if (hasSizeChoice(variants)) return firstAvailable(sizedVariants(variants));
+  const own = ownAppId == null || ownAppId === '' ? undefined : variants.find(v => String(v.appId) === String(ownAppId));
+  return own ?? firstAvailable(variants);
+}

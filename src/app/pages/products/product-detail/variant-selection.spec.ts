@@ -1,5 +1,5 @@
 import {ProductVariant} from '../../../entities/product-variant';
-import {findVariantBySize} from './variant-selection';
+import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants} from './variant-selection';
 
 describe('findVariantBySize', () => {
   const variants: ProductVariant[] = [
@@ -28,5 +28,67 @@ describe('findVariantBySize', () => {
     expect(findVariantBySize(variants, '')).toBeUndefined();
     expect(findVariantBySize(undefined, 'S')).toBeUndefined();
     expect(findVariantBySize([], 'S')).toBeUndefined();
+  });
+});
+
+describe('sizedVariants / hasSizeChoice (SR-168)', () => {
+  const mk = (...sizes: (string | null | undefined)[]): ProductVariant[] =>
+    sizes.map((size, i) => ({appId: i + 1, size: size as string, available: true, inStock: true}));
+
+  it('(a) ["", "6.5 oz/ 185 g"]: блок «Размер» не рисуется', () => {
+    const v = mk('', '6.5 oz/ 185 g');
+    expect(sizedVariants(v).map(x => x.size)).toEqual(['6.5 oz/ 185 g']);
+    expect(hasSizeChoice(v)).toBeFalse();
+  });
+
+  it('(b) ["S","M",""]: две плашки, пустой нет', () => {
+    const v = mk('S', 'M', '');
+    expect(sizedVariants(v).map(x => x.size)).toEqual(['S', 'M']);
+    expect(hasSizeChoice(v)).toBeTrue();
+  });
+
+  it('(c) ["S","M"]: две плашки (регрессия)', () => {
+    const v = mk('S', 'M');
+    expect(sizedVariants(v).length).toBe(2);
+    expect(hasSizeChoice(v)).toBeTrue();
+  });
+
+  it('(d) один вариант с размером: блока нет', () => {
+    expect(hasSizeChoice(mk('M'))).toBeFalse();
+  });
+
+  it('пробелы, null и undefined считаются пустыми', () => {
+    const v = mk('  ', null, undefined, 'S', 'M');
+    expect(sizedVariants(v).map(x => x.size)).toEqual(['S', 'M']);
+    expect(hasSizeChoice(mk('  ', null, 'S'))).toBeFalse();
+  });
+
+  it('нет вариантов: блока нет', () => {
+    expect(hasSizeChoice(undefined)).toBeFalse();
+    expect(hasSizeChoice([])).toBeFalse();
+  });
+});
+
+describe('pickInitialVariant (SR-168)', () => {
+  const v = (appId: number, size: string, ok = true): ProductVariant => ({appId, size, available: ok, inStock: ok});
+
+  it('(a) ["" own 3331, "6.5 oz" 2700]: берёт собственный 3331', () => {
+    expect(pickInitialVariant([v(2700, '6.5 oz/ 185 g'), v(3331, '')], '3331')?.appId).toBe(3331);
+  });
+
+  it('(b) S, M, L own=M: прежнее поведение, первый доступный', () => {
+    expect(pickInitialVariant([v(1, 'S'), v(2, 'M'), v(3, 'L')], '2')?.appId).toBe(1);
+    expect(pickInitialVariant([v(1, 'S', false), v(2, 'M'), v(3, 'L')], '3')?.appId).toBe(2);
+  });
+
+  it('(c) S, M, "" own="": выбирает размерный, не пустой', () => {
+    expect(pickInitialVariant([v(1, 'S'), v(2, 'M'), v(3, '')], '3')?.appId).toBe(1);
+    expect(pickInitialVariant([v(1, 'S', false), v(2, 'M', false), v(3, '')], '3')?.appId).toBe(1);
+  });
+
+  it('(d) нет совпадения own: первый доступный', () => {
+    expect(pickInitialVariant([v(1, 'M', false), v(2, 'L')], '99')?.appId).toBe(2);
+    expect(pickInitialVariant([v(1, 'M', false), v(2, 'L')], undefined)?.appId).toBe(2);
+    expect(pickInitialVariant([], '1')).toBeUndefined();
   });
 });
