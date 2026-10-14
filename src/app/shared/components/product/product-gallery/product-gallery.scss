@@ -4,8 +4,9 @@
 
 .viewport {
   position: relative;
+  width: 100%;
+  max-width: 550px;
   aspect-ratio: 1 / 1;
-  max-height: 550px;
   overflow: hidden;
   cursor: zoom-in;
   outline-offset: 2px;
@@ -91,8 +92,8 @@
   display: flex;
   gap: 12px;
   margin-top: 16px;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  // переносом, а не прокруткой: активная миниатюра всегда на виду, а center на телефоне не обрезает крайние
+  flex-wrap: wrap;
 }
 
 .thumb {
@@ -243,7 +244,9 @@
 
 @media (max-width: 768px) {
   .viewport {
-    max-height: 400px;
+    max-width: none;
+    aspect-ratio: auto;
+    height: 400px;
   }
 
   .thumbnails {
@@ -267,7 +270,7 @@
 
 @media (max-width: 480px) {
   .viewport {
-    max-height: 320px;
+    height: 320px;
   }
 
   .thumb {

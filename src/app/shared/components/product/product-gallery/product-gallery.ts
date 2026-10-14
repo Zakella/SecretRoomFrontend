@@ -1,11 +1,12 @@
 import {
-  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, PLATFORM_ID, computed, effect, inject, input, signal, viewChild,
+  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, PLATFORM_ID, afterNextRender, afterRenderEffect, computed, effect,
+  inject, input, signal, untracked, viewChild,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {ProductImage} from '../../../../entities/product-image';
 
-export const UNAVAILABLE_IMAGE = 'assets/images/unavailable.jpg';
+export const UNAVAILABLE_IMAGE = 'assets/images/no-image.png';
 
 interface GallerySlide {
   url: string;
@@ -60,12 +61,16 @@ export class ProductGallery {
   readonly count = computed(() => this.items().length);
   readonly multiple = computed(() => this.count() > 1);
 
+  /** Клоны по краям добавляются только в браузере после первой отрисовки: SSR и первый кадр совпадают (первое фото на scrollLeft=0). */
+  readonly clonesReady = signal(false);
+  private readonly hasClones = computed(() => this.clonesReady() && this.count() > 1);
+
   readonly slides = computed<GallerySlide[]>(() => {
     const items = this.items();
     const make = (i: number, clone: boolean, tag: string): GallerySlide => ({
       url: items[i].url, alt: items[i].alt, originalIndex: i, clone, key: `${tag}-${i}-${items[i].url}`,
     });
-    if (items.length < 2) {
+    if (!this.hasClones()) {
       return items.map((_, i) => make(i, false, 'single'));
     }
     const last = items.length - 1;
@@ -75,8 +80,6 @@ export class ProductGallery {
   private animationFrames = new WeakMap<HTMLElement, number>();
   private scrollFrame: number | null = null;
   private zoomScrollFrame: number | null = null;
-  private pendingMainScroll = false;
-  private pendingZoomScroll = false;
   private zoomPointers = new Map<number, Point>();
   private pinchStartDistance = 0;
   private pinchStartScale = 1;
@@ -87,11 +90,12 @@ export class ProductGallery {
   constructor() {
     // Смена списка (другой товар/вариант): на первое фото, без анимации.
     effect(() => {
-      const images = this.images();
-      this.selectedIndex.set(0);
-      this.resetZoom();
-      this.zoomOpen.set(false);
-      this.pendingMainScroll = images.length > 0;
+      this.images();
+      untracked(() => {
+        this.selectedIndex.set(0);
+        this.resetZoom();
+        this.zoomOpen.set(false);
+      });
     });
 
     effect(() => {
@@ -100,19 +104,26 @@ export class ProductGallery {
       if (!this.isBrowser || !dialog) return;
       if (open && !dialog.open && typeof dialog.showModal === 'function') {
         dialog.showModal();
-        this.pendingZoomScroll = true;
       } else if (!open && dialog.open) {
         dialog.close();
       }
     });
 
-    // После отрисовки ставим ленты на текущий слайд (учитывая клон в начале).
-    effect(() => {
-      this.slides();
-      this.mainTrack();
-      this.zoomTrack();
-      if (!this.isBrowser) return;
-      queueMicrotask(() => this.applyPendingScroll());
+    if (this.isBrowser) afterNextRender(() => this.clonesReady.set(true));
+
+    // После отрисовки (до paint) ставим ленты на текущий слайд без анимации: при смене слайдов/лент
+    // (другой товар, появление клонов, открытие лайтбокса). Текущий индекс читаем без подписки.
+    afterRenderEffect({
+      write: () => {
+        this.slides();
+        const main = this.mainTrack()?.nativeElement;
+        const zoom = this.zoomTrack()?.nativeElement;
+        untracked(() => {
+          const virtual = this.virtualIndex(this.selectedIndex());
+          if (main) this.jumpTo(main, virtual);
+          if (zoom) this.jumpTo(zoom, virtual);
+        });
+      },
     });
 
     this.destroyRef.onDestroy(() => {
@@ -146,6 +157,8 @@ export class ProductGallery {
     this.resetZoom();
     this.selectedIndex.set((selected + step + length) % length);
     // Через край — едем на клон, после остановки лента незаметно перепрыгнет на настоящий слайд.
+    // Пока клонов нет — обычное зацикливание на настоящий слайд.
+    if (!this.hasClones()) return this.scrollTracksTo(this.selectedIndex());
     if (step > 0 && selected === length - 1) return this.scrollTracksTo(length + 1);
     if (step < 0 && selected === 0) return this.scrollTracksTo(0);
     this.scrollTracksTo(this.virtualIndex(this.selectedIndex()));
@@ -162,6 +175,12 @@ export class ProductGallery {
   }
 
   // ===== Разметка =====
+
+  /** Файл фото не отдался (404 на serveFile) — заглушка вместо сломанной картинки. */
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (!img.src.endsWith(UNAVAILABLE_IMAGE)) img.src = UNAVAILABLE_IMAGE;
+  }
 
   isEager(slide: GallerySlide): boolean {
     return !slide.clone && slide.originalIndex === 0;
@@ -201,25 +220,13 @@ export class ProductGallery {
     });
   }
 
-  private applyPendingScroll(): void {
-    const main = this.mainTrack()?.nativeElement;
-    if (this.pendingMainScroll && main) {
-      this.pendingMainScroll = false;
-      this.jumpTo(main, this.virtualIndex(this.selectedIndex()));
-    }
-    const zoom = this.zoomTrack()?.nativeElement;
-    if (this.pendingZoomScroll && zoom) {
-      this.pendingZoomScroll = false;
-      this.jumpTo(zoom, this.virtualIndex(this.selectedIndex()));
-    }
-  }
-
   private virtualIndex(index: number): number {
-    return this.count() > 1 ? index + 1 : index;
+    return this.hasClones() ? index + 1 : index;
   }
 
   private originalIndex(virtual: number, length: number): number {
     if (length < 2) return 0;
+    if (!this.hasClones()) return this.clamp(virtual, 0, length - 1);
     if (virtual <= 0) return length - 1;
     if (virtual >= length + 1) return 0;
     return virtual - 1;
@@ -276,8 +283,8 @@ export class ProductGallery {
       this.resetZoom();
       this.selectedIndex.set(index);
     }
-    if (length > 1 && virtual <= 0) this.jumpTo(track, length);
-    else if (length > 1 && virtual >= length + 1) this.jumpTo(track, 1);
+    if (this.hasClones() && virtual <= 0) this.jumpTo(track, length);
+    else if (this.hasClones() && virtual >= length + 1) this.jumpTo(track, 1);
     return index;
   }
 

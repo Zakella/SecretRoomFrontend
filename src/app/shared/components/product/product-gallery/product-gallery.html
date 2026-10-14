@@ -17,6 +17,7 @@
               [attr.fetchpriority]="isEager(slide) ? 'high' : null"
               decoding="async"
               draggable="false"
+              (error)="onImageError($event)"
             />
           </div>
         }
@@ -45,7 +46,7 @@
             [attr.aria-label]="item.alt"
             (click)="select($index)"
           >
-            <img [src]="item.url" alt="" loading="lazy" width="80" height="80"/>
+            <img [src]="item.url" alt="" loading="lazy" width="80" height="80" (error)="onImageError($event)"/>
           </button>
         }
       </div>
@@ -78,6 +79,7 @@
                 loading="lazy"
                 decoding="async"
                 draggable="false"
+                (error)="onImageError($event)"
                 [style.transform]="zoomTransform(slide)"
                 (dblclick)="onZoomDoubleClick($event)"
                 (pointerdown)="onZoomPointerDown($event)"

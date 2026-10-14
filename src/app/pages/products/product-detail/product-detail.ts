@@ -95,7 +95,7 @@ export class ProductDetail {
       seen.add(key);
       return true;
     });
-    // без единого фото галерея покажет заглушку unavailable.jpg
+    // без единого фото галерея покажет заглушку no-image.png
     return unique.length ? unique : [{imageUrl: '', description: ''}];
   });
   quantity: number = 1;

@@ -1,6 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-10-14T18:50:00+03:00
+Date: 2026-10-14T15:56:21Z
 Task: SR-170 галерея фото на странице товара (product-gallery)
-Checks: UI desktop+375 ✓, zoom ✓, swatch switch ✓, SSR/SEO ✓, i18n ✓, Security ✓
-Recheck after rebase on epic/product-models (SR-169, вне галереи): ng build (SSR) ✓, product-gallery spec 10/10 ✓, SSR /ru/product/3819 — product-gallery + eager first photo ✓
-### Tree: f7acd97514b2c9c5b2fa7408c1b208f355a8094e
+Checks: SSR first slide eager/no clones ✓, desktop 1280 two columns + loop ✓, 375 full width/start/swipe ✓, zoom ✓, swatch switch ✓, placeholder + onerror ✓, single photo ✓
+### Tree: 2f056b25193c8d76e753fe0e71d0fe08c47a47ce
