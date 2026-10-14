@@ -29,6 +29,13 @@ import {ProductService} from '../../@core/api/product';
 import {MessageService} from 'primeng/api';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {ProductPrice} from '../../shared/components/product/product-price/product-price';
+import {Slugify} from '../../@core/services/slugify';
+
+/** Above this many items the order summary list gets its own scroll. */
+export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
+/** Above this many items the order summary card stops being sticky. */
+export const SUMMARY_STATIC_ITEMS_THRESHOLD = 3;
+const NO_IMAGE = 'assets/images/no-image.png';
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -83,9 +90,25 @@ export class Checkout implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private ga = inject(GoogleAnalytics);
   private platformId = inject(PLATFORM_ID);
+  private slugify = inject(Slugify);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
+
+  readonly noImage = NO_IMAGE;
+  readonly manyItemsThreshold = SUMMARY_MANY_ITEMS_THRESHOLD;
+  readonly staticItemsThreshold = SUMMARY_STATIC_ITEMS_THRESHOLD;
+
+  itemUrl(item: CartItem): string[] {
+    return this.slugify.productUrl(this.activeLang(), item.product.id!, item.product.name ?? '');
+  }
+
+  onItemImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.getAttribute('src') !== NO_IMAGE) {
+      img.src = NO_IMAGE;
+    }
+  }
 
   ngOnInit(): void {
     this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
