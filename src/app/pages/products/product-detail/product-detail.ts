@@ -59,6 +59,14 @@ export class ProductDetail {
     }
     return this.product()?.unitsInStock;
   });
+  /** Спокойная пометка «осталось N шт.» для размера/товара: только при остатке 1–3 и если товар не снят и не закончился. */
+  protected stockNote = computed(() => {
+    const left = this.effectiveStock();
+    if (this.isDiscontinued() || this.isOutOfStock() || left === undefined || left < 1 || left > 3) {
+      return null;
+    }
+    return left;
+  });
   protected hasSwatches = computed(() => (this.product()?.siblings?.length ?? 0) >= MIN_SWATCHES);
   protected isDiscontinued = computed(() => {
     return this.product()?.discontinued === true;

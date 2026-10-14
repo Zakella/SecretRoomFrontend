@@ -1,6 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-12
-Task: SR-92 swatches polish (product-swatches html/scss/spec)
-Checks: unit 9/9 ✓, UI 1280/390 ✓, no-siblings page ✓, i18n ✓, console ✓
-Notes: showcase comparison not applicable (no showcase in this repo). Only console error: 404 assets/fonts/PublicSans-Light.woff (pre-existing, unrelated).
-### Tree: 2a3208093d183243facfa321ec8ffd777084d223
+Date: 2026-10-14
+Task: SR-149 спокойная надпись об остатке
+Checks: 1) остаток 1/2/3 RU+RO, текст и стиль (#8B7355, без рамки/иконки/анимации) ✓; 2) >3 и 0 без строки, при 0 плашка «Нет в наличии» как раньше ✓; 3) discontinued: плашка, строки нет ✓; 4) переключение размеров, без вариантов (с size и без size) ✓; 5) цена слева на 1280, по центру на 375, без hscroll ✓; 6) консоль без новых ошибок ✓
+Notes: SSR не проверен (карточка рисуется на клиенте), в «до»-кадрах другая обрезка. Единственная ошибка консоли: 404 assets/fonts/PublicSans-Light.woff (к правке не относится).
+### Tree: 4eb99b1ae4dab3e13763efc2730faf9b0e4f7808
