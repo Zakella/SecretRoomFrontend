@@ -8,6 +8,21 @@
   gap: 10px;
 }
 
+.swatches-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+
+.swatches-value {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-black, #1a1a1a);
+  overflow-wrap: anywhere;
+}
+
 .swatches-label {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 12px;
@@ -20,7 +35,7 @@
 .swatches-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 8px;
+  gap: 8px;
   margin: 0;
   padding: 4px 4px 0;
   list-style: none;
@@ -30,8 +45,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 76px;
+  width: 66px;
   text-decoration: none;
   color: var(--text-dark, #2c2421);
   font-family: var(--font-body, 'Inter', sans-serif);
@@ -61,17 +75,6 @@
     object-fit: cover;
   }
 
-  .swatch-caption {
-    display: -webkit-box;
-    max-width: 100%;
-    min-height: 2.5em;
-    overflow: hidden;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow-wrap: anywhere;
-    transition: color 0.2s ease;
-  }
-
   &:hover .swatch-thumb {
     border-color: var(--gold, #b8956c);
     box-shadow: 0 4px 12px rgba(184, 149, 108, 0.3);
@@ -95,16 +98,10 @@
       box-shadow: 0 0 0 2px var(--bg-white, #fff), 0 0 0 3.5px var(--gold, #b8956c);
       transform: none;
     }
-
-    .swatch-caption {
-      color: var(--text-black, #1a1a1a);
-      font-weight: 600;
-    }
   }
 
   &.out-of-stock {
-    .swatch-img,
-    .swatch-caption {
+    .swatch-img {
       opacity: 0.45;
     }
 
@@ -126,11 +123,11 @@
 
 @media (max-width: 480px) {
   .swatches-list {
-    gap: 12px 8px;
+    gap: 8px;
   }
 
   .swatch {
-    width: 72px;
+    width: 62px;
 
     .swatch-thumb {
       width: 62px;

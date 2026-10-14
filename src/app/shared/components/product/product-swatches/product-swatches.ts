@@ -67,6 +67,8 @@ export class ProductSwatches {
   /** Тип у самого товара может быть null (старый ответ карточки): тогда берём первый заданный у соседей. */
   protected typeKey = computed(() => optionTypeLabelKey(
     this.optionType() || this.siblings()?.find(s => !!s.optionType)?.optionType));
+  /** Название выбранного варианта: показывается после заголовка типа («Аромат: Midnight Blooms»). */
+  protected currentLabel = computed(() => this.items().find(i => i.sibling.current)?.label ?? '');
   protected queryParams = computed(() => {
     const size = this.selectedSize();
     return size ? {size} : null;
