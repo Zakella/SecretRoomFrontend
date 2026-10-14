@@ -45,7 +45,6 @@
   "Items": "produse",
   "Check out": "Finalizare comandă",
   "Add to Cart": "Adaugă în coș",
-  "LastItem": "Ultimul articol",
   "StockLeftOne": "A rămas {{count}} buc.",
   "StockLeftMany": "Au rămas {{count}} buc.",
   "SwatchesMore": "Încă",

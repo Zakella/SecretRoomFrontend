@@ -137,6 +137,14 @@ describe('ProductSwatches', () => {
     expect(optionTypeLabelKey(undefined)).toBe('OptionTypeVariant');
   });
 
+  it('optionType товара null — тип подписи берётся у соседей', () => {
+    const key = () => (fixture.componentInstance as unknown as {typeKey(): string}).typeKey();
+    render([sibling({appId: 1, current: true, optionType: undefined as unknown as string}), sibling({appId: 2, optionType: 'SCENT'}), sibling({appId: 3, optionType: 'SCENT'})]);
+    expect(key()).toBe('OptionTypeScent');
+    render(THREE, {optionType: 'COLOR'});
+    expect(key()).toBe('OptionTypeColor');
+  });
+
   it('полное название варианта — в title подписи и текущего свотча', () => {
     render(THREE);
     const captions = Array.from(el().querySelectorAll('.swatch-caption')) as HTMLElement[];

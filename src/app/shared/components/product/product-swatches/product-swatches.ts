@@ -64,7 +64,9 @@ export class ProductSwatches {
   readonly selectedSize = input<string | null | undefined>();
 
   protected visible = computed(() => (this.siblings()?.length ?? 0) >= MIN_SWATCHES);
-  protected typeKey = computed(() => optionTypeLabelKey(this.optionType()));
+  /** Тип у самого товара может быть null (старый ответ карточки): тогда берём первый заданный у соседей. */
+  protected typeKey = computed(() => optionTypeLabelKey(
+    this.optionType() || this.siblings()?.find(s => !!s.optionType)?.optionType));
   protected queryParams = computed(() => {
     const size = this.selectedSize();
     return size ? {size} : null;
