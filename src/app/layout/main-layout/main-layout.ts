@@ -3,6 +3,7 @@ import {Header} from '../header/header';
 import {Footer} from '../footer/footer';
 import {RouterOutlet} from '@angular/router';
 import {Cart} from '../../shared/components/cart/cart';
+import {AddedToCartToast} from '../../shared/components/cart/added-to-cart/added-to-cart';
 import {Loader} from '../../shared/components/loader/loader';
 import {CartUi} from '../../shared/components/cart/services/cart';
 import {MobileMenu} from '../mobile-menu/mobile-menu';
@@ -17,6 +18,7 @@ import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
     Footer,
     RouterOutlet,
     Cart,
+    AddedToCartToast,
     Loader,
     MobileMenu,
     Breadcrumb,

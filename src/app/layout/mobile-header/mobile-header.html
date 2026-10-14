@@ -19,7 +19,10 @@
     <button class="header-icon-btn" (click)="openCart()">
       <i class="ri-shopping-bag-3-line"></i>
       @if (cartCount() > 0) {
-        <span class="icon-badge">{{ cartCount() }}</span>
+        <!-- tracking by tick re-creates the badge and restarts the bump animation -->
+        @for (tick of [addedTick()]; track tick) {
+          <span class="icon-badge" [class.badge-bump]="tick > 0">{{ cartCount() }}</span>
+        }
       }
     </button>
   </div>
