@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
@@ -19,10 +19,29 @@ export function optionTypeLabelKey(optionType: string | null | undefined): strin
   }
 }
 
+/** Сколько вариантов видно в свёрнутом виде: десктоп (2 ряда по 5) и мобильный (<768). */
+export const DESKTOP_LIMIT = 10;
+export const MOBILE_LIMIT = 8;
+/** Если вариантов не больше лимит + SLACK — кнопка не нужна (не прячем 1–2 плитки). */
+export const SWATCHES_SLACK = 2;
+
+/** В наличии — первыми, распроданные в конец; порядок внутри групп сохраняется (sort стабилен). */
+export function sortInStockFirst<T extends {inStock: boolean}>(list: readonly T[]): T[] {
+  return [...list].sort((a, b) => Number(b.inStock) - Number(a.inStock));
+}
+
+/** Нужна ли кнопка «Ещё» при данном лимите. */
+export function needsToggle(total: number, limit: number): boolean {
+  return total > limit + SWATCHES_SLACK;
+}
+
 interface SwatchView {
   sibling: ProductSibling;
   link: string[];
   label: string;
+  /** За лимитом десктопа / мобильного: прячет CSS (в DOM остаётся для SEO). Текущий вариант не скрывается никогда. */
+  hideDesktop: boolean;
+  hideMobile: boolean;
 }
 
 @Component({
@@ -51,10 +70,26 @@ export class ProductSwatches {
     return size ? {size} : null;
   });
 
+  protected expanded = signal(false);
+  private total = computed(() => this.siblings()?.length ?? 0);
+  protected toggleDesktop = computed(() => needsToggle(this.total(), DESKTOP_LIMIT));
+  protected toggleMobile = computed(() => needsToggle(this.total(), MOBILE_LIMIT));
+  protected hiddenDesktop = computed(() => this.items().filter(i => i.hideDesktop).length);
+  protected hiddenMobile = computed(() => this.items().filter(i => i.hideMobile).length);
+
+  protected toggle(): void {
+    this.expanded.update(v => !v);
+  }
+
   protected items = computed<SwatchView[]>(() => {
     const lang = this.activeLang();
-    return (this.siblings() ?? []).map(sibling => ({
+    const collapsed = !this.expanded();
+    const hideD = collapsed && this.toggleDesktop();
+    const hideM = collapsed && this.toggleMobile();
+    return sortInStockFirst(this.siblings() ?? []).map((sibling, index) => ({
       sibling,
+      hideDesktop: hideD && index >= DESKTOP_LIMIT && !sibling.current,
+      hideMobile: hideM && index >= MOBILE_LIMIT && !sibling.current,
       link: this.slugify.productUrl(lang, String(sibling.appId), sibling.name),
       label: (lang === 'ro' ? sibling.optionLabelRo : sibling.optionLabelRu)
         || sibling.optionLabelRu || sibling.optionLabelRo || sibling.name

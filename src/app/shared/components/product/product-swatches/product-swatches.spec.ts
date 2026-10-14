@@ -7,7 +7,7 @@ import {provideTransloco} from '@ngneat/transloco';
 import {TranslocateHttpLoader} from '../../../../@core/configs/transloco-config';
 import {Language} from '../../../../@core/services/language';
 import {ProductSibling} from '../../../../entities/product-sibling';
-import {optionTypeLabelKey, ProductSwatches} from './product-swatches';
+import {needsToggle, optionTypeLabelKey, ProductSwatches, sortInStockFirst} from './product-swatches';
 
 function sibling(overrides: Partial<ProductSibling> = {}): ProductSibling {
   return {
@@ -142,5 +142,84 @@ describe('ProductSwatches', () => {
     const captions = Array.from(el().querySelectorAll('.swatch-caption')) as HTMLElement[];
     expect(captions.every(c => c.getAttribute('title') === c.textContent!.trim())).toBeTrue();
     expect(el().querySelector('.swatch.active')!.getAttribute('title')).toBeTruthy();
+  });
+
+  describe('много вариантов (SR-156)', () => {
+    function many(n: number, opts: {outOfStock?: number[]; current?: number} = {}): ProductSibling[] {
+      return Array.from({length: n}, (_, i) => sibling({
+        appId: i + 1, name: `Mist ${i + 1}`, optionLabelRu: `Аромат ${i + 1}`,
+        inStock: !(opts.outOfStock ?? []).includes(i + 1), current: (opts.current ?? 1) === i + 1
+      }));
+    }
+    const hiddenD = () => el().querySelectorAll('li.hide-desktop').length;
+    const hiddenM = () => el().querySelectorAll('li.hide-mobile').length;
+
+    it('sortInStockFirst: в наличии первыми, порядок внутри групп сохранён', () => {
+      const r = sortInStockFirst([
+        {id: 1, inStock: false}, {id: 2, inStock: true}, {id: 3, inStock: false}, {id: 4, inStock: true}
+      ]);
+      expect(r.map(x => x.id)).toEqual([2, 4, 1, 3]);
+    });
+
+    it('needsToggle: ≤ лимит+2 — без кнопки', () => {
+      expect(needsToggle(12, 10)).toBeFalse();
+      expect(needsToggle(13, 10)).toBeTrue();
+      expect(needsToggle(10, 8)).toBeFalse();
+      expect(needsToggle(11, 8)).toBeTrue();
+    });
+
+    it('3 варианта: без кнопки и без скрытых', () => {
+      render(THREE);
+      expect(el().querySelector('.swatches-toggle')).toBeNull();
+      expect(hiddenD() + hiddenM()).toBe(0);
+    });
+
+    it('12 вариантов: десктоп без кнопки, мобильный прячет 4 и кнопка только для мобильного', () => {
+      render(many(12));
+      expect(hiddenD()).toBe(0);
+      expect(hiddenM()).toBe(4);
+      const toggle = el().querySelector('.swatches-toggle')!;
+      expect(toggle.classList.contains('toggle-mobile')).toBeTrue();
+      expect(toggle.classList.contains('toggle-desktop')).toBeFalse();
+    });
+
+    it('25 вариантов: все ссылки в DOM, прячется 15 (десктоп) / 17 (мобильный), счётчики в кнопке', () => {
+      render(many(25));
+      expect(el().querySelectorAll('li:not(.swatches-toggle)').length).toBe(25);
+      expect(hiddenD()).toBe(15);
+      expect(hiddenM()).toBe(17);
+      const btn = el().querySelector('button.swatch-more') as HTMLButtonElement;
+      expect(btn.getAttribute('aria-expanded')).toBe('false');
+      expect(btn.querySelector('.count-desktop')!.textContent).toContain('+15');
+      expect(btn.querySelector('.count-mobile')!.textContent).toContain('+17');
+    });
+
+    it('«Ещё» раскрывает все, «Свернуть» возвращает', () => {
+      render(many(25));
+      const btn = el().querySelector('button.swatch-more') as HTMLButtonElement;
+      btn.click();
+      fixture.detectChanges();
+      expect(hiddenD() + hiddenM()).toBe(0);
+      expect(btn.getAttribute('aria-expanded')).toBe('true');
+      btn.click();
+      fixture.detectChanges();
+      expect(hiddenD()).toBe(15);
+    });
+
+    it('распроданные в конце списка', () => {
+      render(many(15, {outOfStock: [2, 3, 4]}));
+      const items = Array.from(el().querySelectorAll('li:not(.swatches-toggle) .swatch')) as HTMLElement[];
+      const firstOut = items.findIndex(i => i.classList.contains('out-of-stock'));
+      expect(firstOut).toBe(12);
+      expect(items.slice(firstOut).every(i => i.classList.contains('out-of-stock'))).toBeTrue();
+    });
+
+    it('текущий вариант за лимитом остаётся видимым', () => {
+      render(many(25, {current: 20}));
+      const current = el().querySelector('[aria-current="true"]')!.closest('li')!;
+      expect(current.classList.contains('hide-desktop')).toBeFalse();
+      expect(current.classList.contains('hide-mobile')).toBeFalse();
+      expect(hiddenD()).toBe(14);
+    });
   });
 });

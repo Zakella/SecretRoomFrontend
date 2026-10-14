@@ -3,7 +3,7 @@
     <span class="swatches-label" [id]="labelId">{{ typeKey() | transloco }}:</span>
     <ul class="swatches-list" [attr.aria-labelledby]="labelId">
       @for (item of items(); track item.sibling.appId) {
-        <li>
+        <li [class.hide-desktop]="item.hideDesktop" [class.hide-mobile]="item.hideMobile">
           @if (item.sibling.current) {
             <span class="swatch active" [class.out-of-stock]="!item.sibling.inStock" aria-current="true" [attr.title]="item.label">
               <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>
@@ -17,6 +17,31 @@
               <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>
             </a>
           }
+        </li>
+      }
+      @if (toggleDesktop() || toggleMobile()) {
+        <li class="swatches-toggle" [class.toggle-desktop]="toggleDesktop()" [class.toggle-mobile]="toggleMobile()">
+          <button type="button" class="swatch swatch-more" [attr.aria-expanded]="expanded()" (click)="toggle()">
+            <span class="swatch-thumb">
+              <span class="more-text">
+                @if (expanded()) {
+                  <span>−</span>
+                } @else {
+                  <span class="count-desktop">+{{ hiddenDesktop() }}</span>
+                  <span class="count-mobile">+{{ hiddenMobile() }}</span>
+                }
+              </span>
+            </span>
+            <span class="swatch-caption">
+              @if (expanded()) {
+                {{ 'SwatchesCollapse' | transloco }}
+              } @else {
+                {{ 'SwatchesMore' | transloco }}
+                <span class="count-desktop">{{ hiddenDesktop() }}</span>
+                <span class="count-mobile">{{ hiddenMobile() }}</span>
+              }
+            </span>
+          </button>
         </li>
       }
     </ul>
