@@ -447,6 +447,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Ещё {{count}}",
+      "less": "Свернуть",
+      "reset": "Сбросить",
+      "showProducts": "Показать товары",
+      "showProductsN": "Показать товары ({{count}})"
+    },
     "otherBrands": "Другие бренды",
     "allBrands": "Все бренды",
     "h1": {
