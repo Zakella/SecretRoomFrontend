@@ -1,6 +1,6 @@
 ALL CLEAR ✓
-Date: 2026-10-12
-Task: SR-92 swatches polish (product-swatches html/scss/spec)
-Checks: unit 9/9 ✓, UI 1280/390 ✓, no-siblings page ✓, i18n ✓, console ✓
-Notes: showcase comparison not applicable (no showcase in this repo). Only console error: 404 assets/fonts/PublicSans-Light.woff (pre-existing, unrelated).
-### Tree: 2a3208093d183243facfa321ec8ffd777084d223
+Date: 2026-10-14
+Task: SR-156 swatches "Ещё N" — sort in-stock first, 10/8 limit, toggle button
+Checks: unit ✓ (17/17), diff review ✓, UI static fixture ✓, Security ✓, i18n ✓ (ru/ro; en.json not present in repo), Duplication ✓
+Not covered: real stand (no 20+ variant data on local API) — static fixture only.
+### Tree: 80621d4178a49bad8809891400489ba7cd9d547d
