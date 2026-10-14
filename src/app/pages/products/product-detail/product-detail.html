@@ -75,13 +75,6 @@
             }
           </div>
 
-          @if (hasSwatches()) {
-            <product-swatches
-              [siblings]="product()?.siblings"
-              [optionType]="product()?.optionType"
-              [selectedSize]="selectedVariant()?.size"/>
-          }
-
           @if (product() | localizedName:'description') {
             <div class="description" [innerHTML]="(product() | localizedName:'description') | capitalize"></div>
           }
@@ -132,6 +125,13 @@
                 </button>
               </div>
             </div>
+          }
+
+          @if (hasSwatches()) {
+            <product-swatches
+              [siblings]="product()?.siblings"
+              [optionType]="product()?.optionType"
+              [selectedSize]="selectedVariant()?.size"/>
           }
 
           <div class="actions">
