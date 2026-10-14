@@ -13,6 +13,7 @@ import {
 import {FormsModule} from '@angular/forms';
 import {NgTemplateOutlet} from '@angular/common';
 import {CartUi} from './services/cart'
+import {QuickAddToCart} from './services/quick-add-to-cart';
 import {CartItem} from '../../../entities/cart-item';
 import {Subject} from 'rxjs';
 import {Router} from '@angular/router';
@@ -46,6 +47,7 @@ export class Cart implements OnInit, OnDestroy {
   // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
   private cartService = inject(CartUi);
+  private quickAdd = inject(QuickAddToCart);
   private shippingService = inject(Shipping);
   private recommendedService = inject(RecommendedProductService);
   private cdr = inject(ChangeDetectorRef);
@@ -145,8 +147,7 @@ export class Cart implements OnInit, OnDestroy {
   }
 
   protected addRecommendationToCart(product: Product): void {
-    const cartItem = new CartItem(product, 1);
-    this.cartService.addToCart(cartItem);
+    this.quickAdd.add(product);
   }
 
   private subscribeToTotalAmount() {
