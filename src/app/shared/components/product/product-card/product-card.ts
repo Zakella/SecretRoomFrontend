@@ -1,10 +1,8 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
-import {CartUi} from '../../cart/services/cart';
+import {QuickAddToCart} from '../../cart/services/quick-add-to-cart';
 import {Product} from '../../../../entities/product';
-import {CartItem} from '../../../../entities/cart-item';
-import {Size} from '../../../../entities/size';
 import {TranslocoPipe} from '@ngneat/transloco';
 import { SkeletonModule } from 'primeng/skeleton';
 import {AnalyticEvent} from '../../../../@core/directives/analytic-event';
@@ -23,7 +21,7 @@ import {ProductPrice} from '../product-price/product-price';
 })
 export class ProductCard {
   private langService = inject(Language);
-  private cartService = inject(CartUi);
+  private quickAdd = inject(QuickAddToCart);
   private slugify = inject(Slugify);
   private brandService = inject(BrandService);
   public favoritesService = inject(FavoritesService);
@@ -54,8 +52,6 @@ export class ProductCard {
     }
     return null;
   });
-  currentSize: string | undefined;
-  quantity: number = 1;
   loading  = signal<boolean>(false);
 
   productUrl = computed(() => {
@@ -97,19 +93,7 @@ export class ProductCard {
   });
 
   addProductInCart() {
-    let cartItem: CartItem;
-    if (this.product()!.productSizes && this.product()!.productSizes!.length > 0) {
-      if (!this.currentSize || this.currentSize === '') {
-        return;
-      }
-      const size: Size = {
-        sizeType: this.currentSize,
-        available: true
-      };
-      cartItem = new CartItem(this.product()!, this.quantity, size);
-    } else {
-      cartItem = new CartItem(this.product()!, this.quantity);
-    }
-    this.cartService.addToCart(cartItem);
+    const p = this.product();
+    if (p) this.quickAdd.add(p);
   }
 }

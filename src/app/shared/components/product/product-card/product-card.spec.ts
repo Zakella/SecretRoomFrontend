@@ -10,6 +10,7 @@ import {Language} from '../../../../@core/services/language';
 import {Brand} from '../../../../entities/category';
 import {Product} from '../../../../entities/product';
 import {ProductCard} from './product-card';
+import {QuickAddToCart} from '../../cart/services/quick-add-to-cart';
 
 const BRANDS: Brand[] = [
   {brand: 'VictoriasSecret', brandAlias: "Victoria's Secret"},
@@ -97,6 +98,16 @@ describe('ProductCard', () => {
 
       brandService.brands.set(BRANDS);
       expect(component.brandUrl()).toEqual(['/', 'ro', 'catalog', 'brand', 'victorias-secret']);
+    });
+  });
+
+  describe('addProductInCart', () => {
+    it('delegates to QuickAddToCart with the product', () => {
+      const add = spyOn(TestBed.inject(QuickAddToCart), 'add');
+      const p = product();
+      setProduct(p);
+      component.addProductInCart();
+      expect(add).toHaveBeenCalledOnceWith(p);
     });
   });
 
