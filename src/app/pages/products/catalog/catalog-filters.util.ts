@@ -25,6 +25,8 @@ export interface FilterItemView {
   brandLabel?: string;
   count?: number;
   selected: boolean;
+  /** Zero-count value that is not selected: shown muted and not clickable. */
+  disabled: boolean;
 }
 
 export interface FilterSectionView {
@@ -127,12 +129,16 @@ export function buildFilterSections(input: BuildSectionsInput): FilterSectionVie
     const expanded = expandedKeys.has(key);
 
     const all: FilterItemView[] = isBrand
-      ? brands.map(b => ({slug: b.brand, brandLabel: b.brandAlias || b.brand, selected: markBrand === b.brand}))
+      ? brands.map(b => ({slug: b.brand, brandLabel: b.brandAlias || b.brand, selected: markBrand === b.brand, disabled: false}))
       : group!.values.map(v => ({
         slug: v.slug,
         value: v,
         count: v.count,
         selected: markFilters.get(key)?.has(v.slug) ?? false,
+        // A selected (or still applied) value stays clickable even at zero, so it can be unselected
+        disabled: v.count === 0
+          && !(markFilters.get(key)?.has(v.slug) ?? false)
+          && !(appliedFilters.get(key)?.has(v.slug) ?? false),
       }));
 
     const appliedSelected = (slug: string) =>

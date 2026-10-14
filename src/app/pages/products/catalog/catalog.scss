@@ -1,3 +1,6 @@
+// Text on the gold accent (#b8956c): #1a1a1a gives 6.3:1 contrast (WCAG AA needs 4.5:1)
+$on-gold: #1a1a1a;
+
 .catalog-page {
   padding: 285px 80px 100px;
   max-width: 1600px;
@@ -182,8 +185,16 @@
   &.active {
     background: #b8956c;
     border-color: #b8956c;
-    color: #fff;
+    color: $on-gold; // dark on gold: 6.3:1 (white was 2.8:1)
     font-weight: 600;
+  }
+
+  // Zero-count value: visible but not clickable
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #444;
+    color: #999;
   }
 }
 
@@ -270,7 +281,7 @@
   border: 1px solid #b8956c;
   border-radius: 20px;
   background: #b8956c;
-  color: #fff;
+  color: $on-gold;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
@@ -441,16 +452,22 @@
   // Выбранное — залитая строка акцентом сайта
   &.selected {
     background: #b8956c;
-    color: #fff;
+    color: $on-gold;
     font-weight: 500;
 
     .option-check {
-      border-color: #fff;
+      border-color: $on-gold;
 
-      i { color: #fff; }
+      i { color: $on-gold; }
     }
 
-    .option-count { color: rgba(255, 255, 255, 0.85); }
+    .option-count { color: $on-gold; }
+  }
+
+  // Zero-count value: visible but not clickable
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 
   .option-count {

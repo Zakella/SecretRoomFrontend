@@ -1,6 +1,9 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-155 листание фото в карточке каталога (перепроверка фикса .img-container overflow:hidden)
-Checks: UI ✓ (768/1280 hover, слайд 1 и 2: видимая часть соседнего слайда = 0, hover-zoom scale(1.05) сохранён; 375: <=5 точек, нет пересечений dots с wishlist/more-options, стрелка листает, клик ведёт на товар; консоль без NG05xx), Security n/a, i18n n/a, Performance n/a, Duplication n/a
-Ранее пройдено (прошлый прогон): окно точек, свайп, 768/1280/главная, добавление в корзину, нет hydration/Duplicate key
-### Tree: 461af38785791c70166be34bef6bfd5a5a7b1473
+Task: SR-161 catalog facets — catch-up merge origin/epic/product-models into feature/sr-161-facets (uncommitted merge)
+Checks:
+- git status: no unmerged paths, merge ready to commit.
+- diff vs origin/epic/product-models (staged): only src/app/@core/api/{brand,category,product}.ts, src/app/pages/products/catalog/*, .qa-report.
+- node_modules present; `npx ng build` (via heavy.sh): OK, only SCSS budget warnings.
+- `npx ng test --watch=false --browsers=ChromeHeadless --include='src/app/pages/products/catalog/**/*.spec.ts'`: 51 of 51 SUCCESS.
+### Tree: 1665b56c29afd0f16ed9931e91734e9aa797eafd

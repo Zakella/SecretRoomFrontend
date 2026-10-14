@@ -82,12 +82,18 @@ export class ProductService {
     return this.http.get<GetResponse>(`${this.baseUrL}/new-arrivals`, {params});
   }
 
-  getFiltersForBestsellers(): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.baseUrL}/bestsellers/filters`);
+  getFiltersForBestsellers(filters?: string, brand?: string): Observable<FilterGroup[]> {
+    let params = new HttpParams();
+    if (filters) params = params.set('filters', filters);
+    if (brand) params = params.set('brand', brand);
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/bestsellers/filters`, {params});
   }
 
-  getFiltersForNewArrivals(): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.baseUrL}/new-arrivals/filters`);
+  getFiltersForNewArrivals(filters?: string, brand?: string): Observable<FilterGroup[]> {
+    let params = new HttpParams();
+    if (filters) params = params.set('filters', filters);
+    if (brand) params = params.set('brand', brand);
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/new-arrivals/filters`, {params});
   }
 
   getBrandsForBestsellers(): Observable<{brand: string, brandAlias: string}[]> {
