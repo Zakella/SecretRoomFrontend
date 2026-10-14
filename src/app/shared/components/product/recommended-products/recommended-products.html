@@ -23,7 +23,7 @@
               <button type="button" class="action-btn" [class.active]="isFavorite(product)" (pointerdown)="$event.stopPropagation()" (click)="toggleFavorite(product); $event.preventDefault(); $event.stopPropagation()">
                 <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
               </button>
-              <button type="button" class="action-btn" (pointerdown)="$event.stopPropagation()" (click)="addToCart(product); $event.preventDefault(); $event.stopPropagation()">
+              <button type="button" class="action-btn" [class.is-loading]="isAdding(product)" [attr.aria-disabled]="isAdding(product) || null" [attr.aria-busy]="isAdding(product) || null" [attr.aria-label]="isAdding(product) ? ('Loading' | transloco) : null" (pointerdown)="$event.stopPropagation()" (click)="addToCart(product); $event.preventDefault(); $event.stopPropagation()">
                 <i class="ri-shopping-bag-line"></i>
               </button>
             </div>
@@ -48,7 +48,7 @@
           <button type="button" class="action-btn" [class.active]="isFavorite(product)" (click)="toggleFavorite(product); $event.preventDefault(); $event.stopPropagation()">
             <i [class]="isFavorite(product) ? 'ri-heart-fill' : 'ri-heart-line'"></i>
           </button>
-          <button type="button" class="action-btn" (click)="addToCart(product); $event.preventDefault(); $event.stopPropagation()">
+          <button type="button" class="action-btn" [class.is-loading]="isAdding(product)" [attr.aria-disabled]="isAdding(product) || null" [attr.aria-busy]="isAdding(product) || null" [attr.aria-label]="isAdding(product) ? ('Loading' | transloco) : null" (click)="addToCart(product); $event.preventDefault(); $event.stopPropagation()">
             <i class="ri-shopping-bag-line"></i>
           </button>
         </div>

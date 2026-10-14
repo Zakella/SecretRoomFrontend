@@ -146,6 +146,10 @@ export class Cart implements OnInit, OnDestroy {
       });
   }
 
+  protected isAdding(product: Product): boolean {
+    return this.quickAdd.isLoading(product);
+  }
+
   protected addRecommendationToCart(product: Product): void {
     this.quickAdd.add(product);
   }

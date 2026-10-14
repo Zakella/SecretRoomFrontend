@@ -1,5 +1,6 @@
-import {inject, Injectable, signal} from '@angular/core';
-import {Router} from '@angular/router';
+import {DestroyRef, inject, Injectable, signal} from '@angular/core';
+import {NavigationStart, Router} from '@angular/router';
+import {Subscription} from 'rxjs';
 import {ProductService} from '../../../../@core/api/product';
 import {Language} from '../../../../@core/services/language';
 import {Slugify} from '../../../../@core/services/slugify';
@@ -28,17 +29,37 @@ export class QuickAddToCart {
   private readonly lang = inject(Language).currentLanguage;
   private readonly _pending = signal<QuickAddPending | null>(null);
   private readonly _loadingId = signal<string | null>(null);
+  private loadSub?: Subscription;
+
+  constructor() {
+    // The panel must not outlive the page it was opened on.
+    const navSub = this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.cancelLoad();
+        this.close();
+      }
+    });
+    inject(DestroyRef).onDestroy(() => navSub.unsubscribe());
+  }
 
   /** Product waiting for a size choice, null when the panel is closed. */
   readonly pending = this._pending.asReadonly();
   /** Id of the product whose card is being loaded, for button states. */
   readonly loadingId = this._loadingId.asReadonly();
 
+  /** True while the full card of this product is being loaded. */
+  isLoading(product: Product | null | undefined): boolean {
+    const id = product?.id ?? product?.appId;
+    return !!id && this._loadingId() === id;
+  }
+
   add(product: Product): void {
     const id = product.id ?? product.appId;
     if (!id || this._loadingId() === id) return;
+    // Only the latest request counts: a late answer for the previous product is dropped.
+    this.loadSub?.unsubscribe();
     this._loadingId.set(id);
-    this.products.getProductById(id).subscribe({
+    this.loadSub = this.products.getProductById(id).subscribe({
       next: full => {
         this._loadingId.set(null);
         this.handle(full);
@@ -46,7 +67,9 @@ export class QuickAddToCart {
       error: () => {
         this._loadingId.set(null);
         // Never add a sized product blindly: let the shopper pick on the product page.
-        this.router.navigate(this.slugify.productUrl(this.lang(), id, product.name ?? ''));
+        // The click may come from the cart drawer, so close it once we are there.
+        this.router.navigate(this.slugify.productUrl(this.lang(), id, product.name ?? ''))
+          .then(() => this.cartUi.close());
       },
     });
   }
@@ -60,6 +83,11 @@ export class QuickAddToCart {
 
   close(): void {
     this._pending.set(null);
+  }
+
+  private cancelLoad(): void {
+    this.loadSub?.unsubscribe();
+    this._loadingId.set(null);
   }
 
   private handle(full: Product): void {

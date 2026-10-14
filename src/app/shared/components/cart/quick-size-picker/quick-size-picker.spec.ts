@@ -64,4 +64,63 @@ describe('QuickSizePicker', () => {
     (el().querySelector('.picker-backdrop') as HTMLElement).click();
     expect(close).toHaveBeenCalledTimes(3);
   });
+
+  describe('focus', () => {
+    const tab = (shiftKey = false) => {
+      const e = new KeyboardEvent('keydown', {key: 'Tab', shiftKey, cancelable: true});
+      document.dispatchEvent(e);
+      return e;
+    };
+    let opener: HTMLButtonElement;
+
+    beforeEach(() => {
+      pending.set(null);
+      fixture.detectChanges();
+      opener = document.createElement('button');
+      document.body.appendChild(opener);
+      opener.focus();
+    });
+
+    afterEach(() => opener.remove());
+
+    const open = (options: QuickAddOption[]) => {
+      pending.set({product: {id: '1', name: 'Bra', imageURL: null} as never, options});
+      fixture.detectChanges();
+    };
+
+    it('returns focus to the opening button when closed', () => {
+      open([{size: '70A', variantAppId: 1, available: true}]);
+      expect(document.activeElement).toBe(buttons()[0]);
+      pending.set(null);
+      fixture.detectChanges();
+      expect(document.activeElement).toBe(opener);
+    });
+
+    it('does not focus an opener that has left the DOM', () => {
+      open([{size: '70A', variantAppId: 1, available: true}]);
+      opener.remove();
+      pending.set(null);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(document.activeElement).not.toBe(opener);
+    });
+
+    it('Tab from the last size goes to the close button, Shift+Tab back goes to the last available size', () => {
+      open([
+        {size: '70A', variantAppId: 1, available: true},
+        {size: '75B', variantAppId: 2, available: true},
+        {size: '80C', variantAppId: 3, available: false},
+      ]);
+      buttons()[1].focus();
+      expect(tab().defaultPrevented).toBeTrue();
+      const close = el().querySelector<HTMLButtonElement>('.picker-close')!;
+      expect(document.activeElement).toBe(close);
+      expect(tab(true).defaultPrevented).toBeTrue();
+      expect(document.activeElement).toBe(buttons()[1]);
+    });
+
+    it('focuses the close button when every size is unavailable', () => {
+      open([{size: '70A', variantAppId: 1, available: false}]);
+      expect(document.activeElement).toBe(el().querySelector('.picker-close'));
+    });
+  });
 });
