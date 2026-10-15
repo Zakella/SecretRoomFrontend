@@ -525,6 +525,12 @@
   }
 }
 
+@keyframes quickAddSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ADD TO BAG BUTTON — Black with gold text
 // ═══════════════════════════════════════════════════════════════
@@ -567,6 +573,34 @@
 
   &:active {
     transform: translateY(0);
+  }
+
+  // Quick add: the full card is being loaded.
+  &.is-loading {
+    opacity: 0.75;
+    cursor: progress;
+    transform: none;
+    box-shadow: none;
+
+    i {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: quickAddSpin 0.7s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        animation: none;
+      }
+    }
   }
 
   &.out-of-stock-btn {

@@ -119,6 +119,9 @@
     } @else {
       <button
         class="add-to-bag-btn"
+        [class.is-loading]="isAdding()"
+        [attr.aria-disabled]="isAdding() || null"
+        [attr.aria-busy]="isAdding() || null"
         (click)="addProductInCart(); $event.stopPropagation()"
         appAnalyticEvent="buy_click"
       >

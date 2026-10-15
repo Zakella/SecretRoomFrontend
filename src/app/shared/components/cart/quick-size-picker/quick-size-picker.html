@@ -1,11 +1,10 @@
 @let pending = state.pending();
 @if (pending) {
-  <div class="picker-backdrop" (click)="close()">
+  <div class="picker-backdrop" role="presentation" (click)="onBackdropClick($event)">
     <div class="picker"
          role="dialog"
          aria-modal="true"
-         [attr.aria-label]="'cart.chooseSize' | transloco"
-         (click)="$event.stopPropagation()">
+         [attr.aria-label]="'cart.chooseSize' | transloco">
       <button type="button" class="picker-close" [attr.aria-label]="'ClosePhoto' | transloco" (click)="close()">✕</button>
       <div class="picker-body">
         <img [src]="pending.product.imageURL ?? 'assets/images/unavailable.jpg'"

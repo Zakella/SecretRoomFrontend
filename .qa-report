@@ -1,17 +1,13 @@
 ALL CLEAR ✓
 Date: 2026-10-14
-Task: SR-169 quick add to cart with size picker (+ fix: size from product.size when variants/productSizes empty)
-Checks: UI ✓, i18n ✓ (RU toast/labels), Console ✓ (only image/font 404, NG0506)
-Scenarios:
- 1 PASS recommendations on product page (976): panel, 75B disabled, nothing added before choice; 75C -> toast, cart size 75C variantAppId 976
- 2 PASS close by X / Esc / backdrop click, cart unchanged
- 3 N/A "Recently viewed" has no cart button in template (pre-existing, not a regression); 3835 covered via catalog (XS disabled, order XS,S,M,L, M -> 3835:M:3866)
- 4 PASS catalog/search: sized 3356 -> panel -> 75C:3374; single size 3283 -> instant; no-variant 327 -> instant + toast
- 5 PASS cart recommendations: no-variant items added instantly (4472 -> 75B from product.size)
- 6 PASS mobile 390x844: bottom sheet, 6 size buttons wrap in two rows (x 21..356), no horizontal scroll; restored 1280x800
- 7 PASS console: no quick-add/picker errors
- A PASS 4218 (variants empty, size XS) -> added instantly with size XS; 3319 -> added with size 75C (product.size)
- B PASS cart recs without variants added with product.size
- C PASS live: sized pajama in cart recommendations -> panel above cart drawer (screenshot qa-c-panel-over-cart.png), picking M works (3835:M:3866)
-Not verified in UI: product 2479 (250 ml / One) is not reachable from any list; covered by unit tests per coordinator.
-### Tree: ff50994c3de0ed9b9b441c21e58dcc1f73fbf32d
+Task: SR-169 доработка — индикатор загрузки, возврат фокуса, focus trap, закрытие панели при навигации, ошибка из рекомендаций корзины
+Checks: UI ✓ (Playwright, localhost:4491 + API 9090), Security ✓ (не затронуто), i18n ✓, Duplication ✓
+Fix after 1st run: кнопка при загрузке disabled -> aria-disabled="true" (+aria-busy, is-loading); фокус больше не слетает на BODY.
+1 Индикатор (каталог, Вам также понравится, drawer корзины): aria-disabled=true, aria-busy=true, is-loading, disabled=false; повторный клик/Enter — один findProduct; после ответа состояние снято. PASS
+2 Фокус после Esc / крестика / выбора размера возвращается на кнопку: каталог 3835 ✓, рекомендации ✓. Drawer: Esc и крестик ✓; после выбора размера кнопка уходит из списка рекомендаций (товар в корзине), фокус на body, элемента уже нет (не баг). PASS
+3 Focus trap (Tab циклом, Shift+Tab с крестика на последнюю плашку). PASS
+4 Навигация (ссылка в шапке, history.back) закрывает панель. PASS
+5 500 на findProduct из drawer: переход на товар, drawer закрыт, корзина не изменена. PASS
+6 Выбор размера: cartItems {id:3835,size:M,variantAppId:3866}, тост. PASS
+7 Консоль: нет JS-ошибок (только 404 шрифтов/картинок). PASS
+### Tree: 31d53085504a4fb804e0f7edbebbaf99b5be6d13
