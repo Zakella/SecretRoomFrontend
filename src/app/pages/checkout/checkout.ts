@@ -30,6 +30,7 @@ import {MessageService} from 'primeng/api';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 import {Slugify} from '../../@core/services/slugify';
+import {MetaService} from '../../@core/services/meta.service';
 
 /** Above this many items the order summary list gets its own scroll. */
 export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
@@ -78,6 +79,7 @@ export class Checkout implements OnInit, OnDestroy {
 
   private fb = inject(FormBuilder);
   private meta = inject(Meta);
+  private metaService = inject(MetaService);
   private cartService = inject(CartUi);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -112,9 +114,11 @@ export class Checkout implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    this.setPageTitle(this.activeLang());
     // Ensure language is synced with URL
     this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const lang = params['lang'];
+      if (lang === 'ro' || lang === 'ru') this.setPageTitle(lang);
       if (lang && (lang === 'ro' || lang === 'ru') && this.activeLang() !== lang) {
         this.langService.setLanguage(lang);
       }
@@ -149,10 +153,20 @@ export class Checkout implements OnInit, OnDestroy {
     });
   }
 
+  private setPageTitle(lang: string): void {
+    this.metaService.updateTitle(
+      lang === 'ru' ? 'Оформление заказа | Secret Room' : 'Finalizarea comenzii | Secret Room'
+    );
+  }
+
   private loadCart(): void {
     this.cartItems = this.cartService.loadCartItemsFromStorage();
     if (this.cartItems.length === 0) {
-      this.router.navigate(['/', this.activeLang()]);
+      // On the server the cart (localStorage) is always empty — redirecting there would
+      // bounce every direct visit / F5 on /checkout to the home page.
+      if (isPlatformBrowser(this.platformId)) {
+        this.router.navigate(['/', this.activeLang()]);
+      }
       return;
     }
     this.cartService.computeCartTotals();
