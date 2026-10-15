@@ -77,7 +77,7 @@ export class ProductGallery {
     return [make(last, true, 'clone-start'), ...items.map((_, i) => make(i, false, 'real')), make(0, true, 'clone-end')];
   });
 
-  private animationFrames = new WeakMap<HTMLElement, number>();
+  private animationFrames = new Map<HTMLElement, number>();
   private scrollFrame: number | null = null;
   private zoomScrollFrame: number | null = null;
   private zoomPointers = new Map<number, Point>();
@@ -130,6 +130,8 @@ export class ProductGallery {
       if (!this.isBrowser) return;
       if (this.scrollFrame !== null) cancelAnimationFrame(this.scrollFrame);
       if (this.zoomScrollFrame !== null) cancelAnimationFrame(this.zoomScrollFrame);
+      this.animationFrames.forEach(frame => cancelAnimationFrame(frame));
+      this.animationFrames.clear();
     });
   }
 
@@ -172,6 +174,16 @@ export class ProductGallery {
       event.preventDefault();
       this.next();
     }
+  }
+
+  /** Enter/пробел на самом viewport (не на вложенных стрелках) открывает полноэкранный просмотр. */
+  onViewportKeydown(event: KeyboardEvent): void {
+    if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      this.openZoom();
+      return;
+    }
+    this.onKeydown(event);
   }
 
   // ===== Разметка =====

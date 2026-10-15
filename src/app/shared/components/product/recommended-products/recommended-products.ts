@@ -46,6 +46,10 @@ export class RecommendedProducts {
     });
   }
 
+  protected isAdding(product: Product): boolean {
+    return this.quickAdd.isLoading(product);
+  }
+
   protected addToCart(product: Product) {
     this.quickAdd.add(product);
   }

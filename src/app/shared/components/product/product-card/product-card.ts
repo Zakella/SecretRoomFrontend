@@ -164,6 +164,9 @@ export class ProductCard {
     return (p.unitsInStock ?? 0) <= 0;
   });
 
+  /** The full card of this product is being loaded for the quick add. */
+  readonly isAdding = computed(() => this.quickAdd.isLoading(this.product()));
+
   addProductInCart() {
     const product = this.product();
     if (product) this.quickAdd.add(product);

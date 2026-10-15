@@ -131,6 +131,18 @@ describe('ProductGallery', () => {
     expect(cmp.selectedIndex()).toBe(2);
   });
 
+  it('Enter/Space on the viewport opens the lightbox; viewport is an accessible button', () => {
+    setup(imgs(3));
+    const viewport = el().querySelector('.viewport')!;
+    expect(viewport.getAttribute('role')).toBe('button');
+    expect(viewport.getAttribute('aria-label')).toBeTruthy();
+    viewport.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    expect(cmp.zoomOpen()).toBe(true);
+    cmp.closeZoom();
+    viewport.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    expect(cmp.zoomOpen()).toBe(true);
+  });
+
   it('changing images resets the index to 0', () => {
     setup(imgs(3));
     cmp.select(2);
