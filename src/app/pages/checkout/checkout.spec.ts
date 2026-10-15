@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
-import {signal} from '@angular/core';
+import {provideRouter, Router} from '@angular/router';
+import {Title} from '@angular/platform-browser';
+import {PLATFORM_ID, signal} from '@angular/core';
 import {BehaviorSubject, of} from 'rxjs';
 import {provideTransloco} from '@ngneat/transloco';
 import {MessageService} from 'primeng/api';
@@ -118,5 +119,54 @@ describe('Checkout order summary', () => {
     items$.next(makeItems(4));
     fixture.detectChanges();
     expect(el().querySelector('.order-summary')!.classList).toContain('order-summary--static');
+  });
+});
+
+describe('Checkout empty cart / SSR', () => {
+  async function setup(platformId: 'browser' | 'server') {
+    const cart = {
+      cartItems: new BehaviorSubject<CartItem[]>([]),
+      totalAmount: new BehaviorSubject<number>(0),
+      totalQuantity: new BehaviorSubject<number>(0),
+      cartModified: new BehaviorSubject<boolean>(false),
+      loadCartItemsFromStorage: () => [] as CartItem[],
+      computeCartTotals: noop,
+      deleteItemFromCart: noop,
+      getMaxStock: () => 10,
+      recalculateCartItem: noop,
+    };
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}}),
+        MessageService,
+        {provide: PLATFORM_ID, useValue: platformId},
+        {provide: CartUi, useValue: cart},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop}},
+      ],
+    }).compileComponents();
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    TestBed.createComponent(Checkout).detectChanges();
+    return navigate;
+  }
+
+  it('browser with an empty cart redirects to the home page', async () => {
+    const navigate = await setup('browser');
+    expect(navigate).toHaveBeenCalledWith(['/', 'ru']);
+  });
+
+  it('server render with an empty cart does not redirect', async () => {
+    const navigate = await setup('server');
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('sets the checkout page title', async () => {
+    await setup('server');
+    expect(TestBed.inject(Title).getTitle()).toBe('Оформление заказа | Secret Room');
   });
 });

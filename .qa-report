@@ -1,8 +1,9 @@
-# QA Report: SR-168 fe r2 после merge origin/epic/product-models
-## ALL CLEAR
+# QA SR-171 — ALL CLEAR
 
-- Diff против origin/epic/product-models в product-detail/: только правки SR-168 (variant-selection.ts/spec, product-detail.ts/html), 4 файла.
-- Автослитый product-detail.ts/html сохранил SR-170 (ProductGallery, MIN_SWATCHES/ProductSwatches, preselected ?variant=, sameSize ?size=) и SR-168: pickInitialVariant вызывается один раз, логика: свой вариант только при available&&inStock, иначе первый доступный, иначе свой.
-- Маркеров конфликта (<<<<<<<, =======, >>>>>>>) в src нет.
-- ng test src/app/pages/products/**: 87 SUCCESS, ng build ок (прогнано ранее).
-### Tree: 013d78fa801d71aa0ff9ddca14ab4dd6657cc728
+- Дифф (staged): checkout.ts, checkout.spec.ts. validateCart / subscribeToCartChanges, суммы, доставка, оплата, отправка заказа не тронуты. Секретов нет.
+- loadCart(): редирект на главную при пустой корзине только при isPlatformBrowser; на сервере return без редиректа.
+- <title>: MetaService.updateTitle, ru «Оформление заказа | Secret Room», ro «Finalizarea comenzii | Secret Room»; обновляется и при смене lang из route.
+- Спеки: ng test checkout — 9 of 9 SUCCESS (новые: редирект в браузере, нет редиректа на server, title).
+- SSR-проверка лидера (порт 4493) повторно не гонялась.
+
+### Tree: ea08137d7b8406bb90dc4f8d2dfd9ec9cd7d2d98
