@@ -21,21 +21,7 @@
 
     <div class="product-grid">
       <div class="product-images">
-        <div class="main-image">
-          <img [src]="mainImage" [alt]="product() | localizedName" fetchpriority="high" width="550" height="550"/>
-        </div>
-        @defer {
-          <div class="thumbnails">
-            @for (image of product()!.productImagesWebStore; track image) {
-              <img src="{{image.imageUrl}}"
-                   [alt]="(product() | localizedName) + ' - ' + ($index + 1)"
-                   loading="lazy"
-                   [ngClass]="{'active': mainImage === image.imageUrl}"
-                   (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
-              />
-            }
-          </div>
-        }
+        <product-gallery [images]="galleryImages()" [alt]="(product() | localizedName) ?? ''"/>
       </div>
 
         <div class="product-info">

@@ -1,8 +1,8 @@
-# QA Report: SR-168 fe r2 (pickInitialVariant)
+# QA Report: SR-168 fe r2 после merge origin/epic/product-models
 ## ALL CLEAR
 
-- Diff: без выбора размера берётся свой вариант (ownAppId) только при available && inStock; иначе первый доступный; иначе свой/первый. Ветка hasSizeChoice не тронута.
-- product-detail.ts: pickInitialVariant вызывается один раз (после preselected ?variant= и sameSize ?size=); других мест выбора своего варианта нет. addProductInCart берёт selectedVariant().
-- ng test product-detail/**: 36 SUCCESS (ng build пройден ранее).
-- Кейсы (спеки e/f/g): 3875/3874 -> 3874; 1619/1620 -> 1620; 3295/3298 -> 3298; свой в наличии -> свой; все пустые -> свой.
-### Tree: 49350201070fbd852fbc4de46e1a6f5602bc768f
+- Diff против origin/epic/product-models в product-detail/: только правки SR-168 (variant-selection.ts/spec, product-detail.ts/html), 4 файла.
+- Автослитый product-detail.ts/html сохранил SR-170 (ProductGallery, MIN_SWATCHES/ProductSwatches, preselected ?variant=, sameSize ?size=) и SR-168: pickInitialVariant вызывается один раз, логика: свой вариант только при available&&inStock, иначе первый доступный, иначе свой.
+- Маркеров конфликта (<<<<<<<, =======, >>>>>>>) в src нет.
+- ng test src/app/pages/products/**: 87 SUCCESS, ng build ок (прогнано ранее).
+### Tree: 013d78fa801d71aa0ff9ddca14ab4dd6657cc728
