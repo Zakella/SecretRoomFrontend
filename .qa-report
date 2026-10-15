@@ -1,13 +1,13 @@
-ALL CLEAR ✓
-Date: 2026-10-14
-Task: SR-169 доработка — индикатор загрузки, возврат фокуса, focus trap, закрытие панели при навигации, ошибка из рекомендаций корзины
-Checks: UI ✓ (Playwright, localhost:4491 + API 9090), Security ✓ (не затронуто), i18n ✓, Duplication ✓
-Fix after 1st run: кнопка при загрузке disabled -> aria-disabled="true" (+aria-busy, is-loading); фокус больше не слетает на BODY.
-1 Индикатор (каталог, Вам также понравится, drawer корзины): aria-disabled=true, aria-busy=true, is-loading, disabled=false; повторный клик/Enter — один findProduct; после ответа состояние снято. PASS
-2 Фокус после Esc / крестика / выбора размера возвращается на кнопку: каталог 3835 ✓, рекомендации ✓. Drawer: Esc и крестик ✓; после выбора размера кнопка уходит из списка рекомендаций (товар в корзине), фокус на body, элемента уже нет (не баг). PASS
-3 Focus trap (Tab циклом, Shift+Tab с крестика на последнюю плашку). PASS
-4 Навигация (ссылка в шапке, history.back) закрывает панель. PASS
-5 500 на findProduct из drawer: переход на товар, drawer закрыт, корзина не изменена. PASS
-6 Выбор размера: cartItems {id:3835,size:M,variantAppId:3866}, тост. PASS
-7 Консоль: нет JS-ошибок (только 404 шрифтов/картинок). PASS
-### Tree: 31d53085504a4fb804e0f7edbebbaf99b5be6d13
+ALL CLEAR
+
+QA SR-170 (catch-up merge origin/epic/product-models в feature/sr-170-product-gallery)
+
+Проверено:
+- git diff HEAD --stat: 20 файлов, только cart/quick-size-picker/product-card/recommended-products (SR-169 из эпика) + product-gallery + i18n. Мусора и секретов нет.
+- diff product-gallery.ts/.html/.spec.ts: onDestroy отменяет все кадры анимации (Map + forEach cancelAnimationFrame + clear); onViewportKeydown открывает лайтбокс на Enter/пробел только при event.target === currentTarget, остальные клавиши идут в onKeydown; role="button" + aria-label; новый тест покрывает Enter и пробел.
+- OpenPhoto есть в ru.json и ro.json, оба JSON парсятся.
+- git diff origin/epic/product-models --stat: только SR-170 (product-gallery, product-detail, i18n) и .qa-report. SR-169 файлы совпадают с эпиком.
+- product-gallery подключён в product-detail (import + <product-gallery> в html).
+- Маркеров конфликта (<<<<<<<, =======, >>>>>>>) в src нет.
+- Тесты: ng test --include=src/app/pages — 93/93 SUCCESS; ранее ng test product — 68/68, ng build SSR — OK (по данным разработчика).
+### Tree: be98009f3e45e690a685550f82a45d077037baee
