@@ -27,7 +27,8 @@ import {RecentlyViewed} from '../../../shared/components/product/recently-viewed
 import {ProductGallery} from '../../../shared/components/product/product-gallery/product-gallery';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
-import {findVariantBySize} from './variant-selection';
+import {hasSizeLabel} from '../../../shared/utils/size-label';
+import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
 import {compareSizes} from '../../../shared/utils/size-order';
 
 @Component({
@@ -70,6 +71,10 @@ export class ProductDetail {
     }
     return left;
   });
+  /** Варианты с непустой подписью размера (SR-168); блок «Размер» показываем при >= 2. */
+  protected readonly hasSizeLabel = hasSizeLabel;
+  protected sizedVariants = computed(() => sizedVariants(this.product()?.variants));
+  protected showSizeBlock = computed(() => hasSizeChoice(this.product()?.variants));
   protected hasSwatches = computed(() => (this.product()?.siblings?.length ?? 0) >= MIN_SWATCHES);
   protected isDiscontinued = computed(() => {
     return this.product()?.discontinued === true;
@@ -156,7 +161,7 @@ export class ProductDetail {
           : null;
         // ?size= приходит со свотча соседней карточки модели: берём тот же размер, если он в наличии
         const sameSize = preselected ? undefined : findVariantBySize(product.variants, this.route.snapshot.queryParamMap.get('size'));
-        const firstAvailable = preselected || sameSize || product.variants.find(v => v.available && v.inStock) || product.variants[0];
+        const firstAvailable = preselected || sameSize || pickInitialVariant(product.variants, product.appId ?? product.id)!; // API отдаёт id карточки, appId у товара пуст
         this.selectVariant(firstAvailable);
       }
     }
@@ -186,7 +191,9 @@ export class ProductDetail {
     const variant = this.selectedVariant();
 
     if (variant) {
-      const size: Size = { sizeType: variant.size, available: true };
+      // вариант без подписи размера (блок «Размер» скрыт) кладём в корзину как товар без размеров, но с appId
+      const label = sizeLabel(variant);
+      const size: Size | undefined = label ? { sizeType: variant.size, available: true } : undefined;
       cartItem = new CartItem(product, this.quantity, size, variant.appId);
     } else if (product.productSizes && product.productSizes.length > 0) {
       const sizeType = this.currentSize || product.productSizes.find(s => s.available)?.sizeType || product.productSizes[0].sizeType;

@@ -1,13 +1,8 @@
-ALL CLEAR
+# QA Report: SR-168 fe r2 после merge origin/epic/product-models
+## ALL CLEAR
 
-QA SR-170 (catch-up merge origin/epic/product-models в feature/sr-170-product-gallery)
-
-Проверено:
-- git diff HEAD --stat: 20 файлов, только cart/quick-size-picker/product-card/recommended-products (SR-169 из эпика) + product-gallery + i18n. Мусора и секретов нет.
-- diff product-gallery.ts/.html/.spec.ts: onDestroy отменяет все кадры анимации (Map + forEach cancelAnimationFrame + clear); onViewportKeydown открывает лайтбокс на Enter/пробел только при event.target === currentTarget, остальные клавиши идут в onKeydown; role="button" + aria-label; новый тест покрывает Enter и пробел.
-- OpenPhoto есть в ru.json и ro.json, оба JSON парсятся.
-- git diff origin/epic/product-models --stat: только SR-170 (product-gallery, product-detail, i18n) и .qa-report. SR-169 файлы совпадают с эпиком.
-- product-gallery подключён в product-detail (import + <product-gallery> в html).
+- Diff против origin/epic/product-models в product-detail/: только правки SR-168 (variant-selection.ts/spec, product-detail.ts/html), 4 файла.
+- Автослитый product-detail.ts/html сохранил SR-170 (ProductGallery, MIN_SWATCHES/ProductSwatches, preselected ?variant=, sameSize ?size=) и SR-168: pickInitialVariant вызывается один раз, логика: свой вариант только при available&&inStock, иначе первый доступный, иначе свой.
 - Маркеров конфликта (<<<<<<<, =======, >>>>>>>) в src нет.
-- Тесты: ng test --include=src/app/pages — 93/93 SUCCESS; ранее ng test product — 68/68, ng build SSR — OK (по данным разработчика).
-### Tree: be98009f3e45e690a685550f82a45d077037baee
+- ng test src/app/pages/products/**: 87 SUCCESS, ng build ок (прогнано ранее).
+### Tree: 013d78fa801d71aa0ff9ddca14ab4dd6657cc728
