@@ -1,6 +1,6 @@
 import {signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
+import {NavigationStart, Router} from '@angular/router';
 import {Observable, of, Subject, throwError} from 'rxjs';
 import {ProductService} from '../../../../@core/api/product';
 import {Language} from '../../../../@core/services/language';
@@ -20,17 +20,21 @@ describe('QuickAddToCart', () => {
   let service: QuickAddToCart;
   let addToCart: jasmine.Spy;
   let navigate: jasmine.Spy;
+  let close: jasmine.Spy;
+  let events: Subject<unknown>;
   let getProductById: jasmine.Spy<(id: string | null) => Observable<Product>>;
 
   beforeEach(() => {
     addToCart = jasmine.createSpy('addToCart');
-    navigate = jasmine.createSpy('navigate');
+    navigate = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
+    close = jasmine.createSpy('close');
+    events = new Subject<unknown>();
     getProductById = jasmine.createSpy('getProductById').and.returnValue(of(sized));
     TestBed.configureTestingModule({
       providers: [
         {provide: ProductService, useValue: {getProductById}},
-        {provide: CartUi, useValue: {addToCart}},
-        {provide: Router, useValue: {navigate}},
+        {provide: CartUi, useValue: {addToCart, close}},
+        {provide: Router, useValue: {navigate, events}},
         {provide: Language, useValue: {currentLanguage: signal('ro')}},
       ],
     });
@@ -75,10 +79,13 @@ describe('QuickAddToCart', () => {
     expect(service.pending()).toBeNull();
   });
 
-  it('load error navigates to the product page and does not add', () => {
+  it('load error navigates to the product page, then closes the cart drawer', async () => {
     getProductById.and.returnValue(throwError(() => new Error('x')));
     service.add({id: '3523', name: 'Bra'} as Product);
     expect(addToCart).not.toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+    await Promise.resolve();
+    expect(close).toHaveBeenCalledTimes(1);
     expect(navigate).toHaveBeenCalledWith(['/', 'ro', 'product', '3523', jasmine.any(String)]);
     expect(service.loadingId()).toBeNull();
   });
@@ -92,5 +99,35 @@ describe('QuickAddToCart', () => {
     expect(service.loadingId()).toBe('3523');
     subject.next(sized);
     expect(service.loadingId()).toBeNull();
+  });
+
+  it('NavigationStart closes the open picker', () => {
+    service.add({id: '3523'} as Product);
+    expect(service.pending()).not.toBeNull();
+    events.next(new NavigationStart(1, '/ro/somewhere'));
+    expect(service.pending()).toBeNull();
+  });
+
+  it('only the last add counts: the answer for the first product is ignored', () => {
+    const first = new Subject<Product>();
+    const second = new Subject<Product>();
+    getProductById.and.callFake(id => (id === 'a' ? first : second));
+    service.add({id: 'a'} as Product);
+    service.add({id: 'b'} as Product);
+    expect(service.loadingId()).toBe('b');
+    first.next(sized);
+    expect(service.pending()).toBeNull();
+    expect(service.loadingId()).toBe('b');
+    second.next(sized);
+    expect(service.pending()?.product).toBe(sized);
+    expect(service.loadingId()).toBeNull();
+  });
+
+  it('isLoading is true only for the product being loaded', () => {
+    getProductById.and.returnValue(new Subject<Product>());
+    service.add({id: '3523'} as Product);
+    expect(service.isLoading({id: '3523'} as Product)).toBeTrue();
+    expect(service.isLoading({id: '1'} as Product)).toBeFalse();
+    expect(service.isLoading(undefined)).toBeFalse();
   });
 });

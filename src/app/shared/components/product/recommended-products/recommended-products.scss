@@ -30,6 +30,12 @@
   }
 }
 
+@keyframes quickAddSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .action-btn {
   display: inline-flex;
   align-items: center;
@@ -66,6 +72,37 @@
   &.active:hover {
     background: transparent;
     color: var(--gold, #b8956c);
+  }
+
+  // Quick add: the full card is being loaded.
+  &.is-loading {
+    cursor: progress;
+    opacity: 0.75;
+    transform: none;
+
+    i {
+      visibility: hidden;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      margin: -8px 0 0 -8px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: quickAddSpin 0.7s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        animation: none;
+      }
+    }
   }
 }
 

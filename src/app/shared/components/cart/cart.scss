@@ -1,3 +1,9 @@
+@keyframes quickAddSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -135,6 +141,33 @@
           color: var(--gold-light, #d4b896);
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           transform: translateY(-2px);
+        }
+
+        // Quick add: the full card is being loaded.
+        &.is-loading {
+          opacity: 0.75;
+          cursor: progress;
+          transform: none;
+          box-shadow: none;
+
+          &::after {
+            content: '';
+            display: inline-block;
+            width: 0.7rem;
+            height: 0.7rem;
+            margin-left: 0.4rem;
+            vertical-align: -0.1rem;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: quickAddSpin 0.7s linear infinite;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            &::after {
+              animation: none;
+            }
+          }
         }
       }
     }

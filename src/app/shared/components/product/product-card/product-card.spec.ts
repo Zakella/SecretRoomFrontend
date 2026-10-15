@@ -9,6 +9,7 @@ import {BrandService} from '../../../../@core/api/brand';
 import {Language} from '../../../../@core/services/language';
 import {Brand} from '../../../../entities/category';
 import {Product} from '../../../../entities/product';
+import {QuickAddToCart} from '../../cart/services/quick-add-to-cart';
 import {ProductCard} from './product-card';
 
 const BRANDS: Brand[] = [
@@ -299,6 +300,32 @@ describe('ProductCard', () => {
       fixture.componentRef.setInput('price', 100);
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('.badge-last-item')).toBeNull();
+    });
+  });
+
+  describe('quick add loading state', () => {
+    function addButton(): HTMLButtonElement {
+      setProduct(product({unitsInStock: 5}));
+      fixture.componentRef.setInput('price', 100);
+      fixture.detectChanges();
+      return fixture.nativeElement.querySelector('.add-to-bag-btn');
+    }
+
+    it('button stays focusable but aria-disabled and aria-busy while the card is loading', () => {
+      spyOn(TestBed.inject(QuickAddToCart), 'isLoading').and.returnValue(true);
+      const btn = addButton();
+      // Not `disabled`: the browser would drop focus and the size picker could not return it.
+      expect(btn.disabled).toBeFalse();
+      expect(btn.getAttribute('aria-disabled')).toBe('true');
+      expect(btn.getAttribute('aria-busy')).toBe('true');
+      expect(btn.classList).toContain('is-loading');
+    });
+
+    it('button is active when nothing is loading', () => {
+      const btn = addButton();
+      expect(btn.disabled).toBeFalse();
+      expect(btn.hasAttribute('aria-busy')).toBeFalse();
+      expect(btn.hasAttribute('aria-disabled')).toBeFalse();
     });
   });
 });

@@ -12,7 +12,11 @@
                  (click)="navToProduct(item); $event.stopPropagation()"/>
             <p class="title">{{ item | localizedName }}</p>
             <product-price [price]="item.price" [oldPrice]="item.oldPrice" size="sm"/>
-            <button class="btn-add" (click)="addRecommendationToCart(item)">{{ 'Add to Cart' | transloco }}</button>
+            <button class="btn-add"
+                    [class.is-loading]="isAdding(item)"
+                    [attr.aria-disabled]="isAdding(item) || null"
+                    [attr.aria-busy]="isAdding(item) || null"
+                    (click)="addRecommendationToCart(item)">{{ 'Add to Cart' | transloco }}</button>
           </div>
         }
       </aside>

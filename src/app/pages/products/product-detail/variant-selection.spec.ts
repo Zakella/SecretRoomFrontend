@@ -118,4 +118,18 @@ describe('pickInitialVariant (SR-168)', () => {
     expect(pickInitialVariant([v(1, 'M', false), v(2, 'L')], undefined)?.appId).toBe(2);
     expect(pickInitialVariant([], '1')).toBeUndefined();
   });
+
+  it('(e) своя карточка без остатка, соседний вариант в наличии: берёт доступный', () => {
+    expect(pickInitialVariant([v(3875, '236 ml', false), v(3874, 'NA')], '3875')?.appId).toBe(3874);
+    expect(pickInitialVariant([v(1619, 'S', false), v(1620, 'S')], '1619')?.appId).toBe(1620);
+    expect(pickInitialVariant([v(3295, '75B', false), v(3298, '75B')], '3295')?.appId).toBe(3298);
+  });
+
+  it('(f) свой в наличии, сосед тоже: остаётся свой', () => {
+    expect(pickInitialVariant([v(1619, 'S'), v(1620, 'S')], '1620')?.appId).toBe(1620);
+  });
+
+  it('(g) нигде нет в наличии: свой вариант', () => {
+    expect(pickInitialVariant([v(1619, 'S', false), v(1620, 'S', false)], '1620')?.appId).toBe(1620);
+  });
 });

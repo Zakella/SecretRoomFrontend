@@ -31,7 +31,7 @@ export function hasSizeChoice(variants: ProductVariant[] | undefined): boolean {
 
 /**
  * Вариант по умолчанию (SR-168).
- * Выбора размера нет (блок скрыт): берём вариант самой страницы по ownAppId, иначе первый доступный.
+ * Выбора размера нет (блок скрыт): вариант самой страницы по ownAppId, если он в наличии; иначе первый доступный; иначе свой (нет в наличии нигде).
  * Выбор есть: первый доступный среди вариантов с подписью (безымянные не кликабельны, предвыбирать их нельзя).
  */
 export function pickInitialVariant(variants: ProductVariant[] | undefined, ownAppId: string | number | null | undefined): ProductVariant | undefined {
@@ -39,5 +39,6 @@ export function pickInitialVariant(variants: ProductVariant[] | undefined, ownAp
   const firstAvailable = (list: ProductVariant[]) => list.find(v => v.available && v.inStock) ?? list[0];
   if (hasSizeChoice(variants)) return firstAvailable(sizedVariants(variants));
   const own = ownAppId == null || ownAppId === '' ? undefined : variants.find(v => String(v.appId) === String(ownAppId));
-  return own ?? firstAvailable(variants);
+  if (own && own.available && own.inStock) return own;
+  return variants.find(v => v.available && v.inStock) ?? own ?? variants[0];
 }
