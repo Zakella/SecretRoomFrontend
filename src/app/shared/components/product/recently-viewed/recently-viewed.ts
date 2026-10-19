@@ -28,6 +28,11 @@ export class RecentlyViewed {
 
   excludeProductId = input<string>('');
 
+  constructor() {
+    // один раз за сессию (флаг внутри сервиса): убрать снятые с продажи, обновить цену/фото
+    this.recentlyViewedService.revalidate();
+  }
+
   filteredProducts = computed(() => {
     const excludeId = this.excludeProductId();
     const all = this.recentlyViewedService.products();
