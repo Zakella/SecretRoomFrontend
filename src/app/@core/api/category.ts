@@ -66,8 +66,12 @@ export class CategoryService {
     return this.http.get<{brand: string, brandAlias: string}[]>(`${this.apiUrl}/${categoryId}/brands`);
   }
 
-  getFiltersForCategory(categoryId: string): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.apiUrl}/${categoryId}/filters`);
+  /** Facets of a category; `filters` (slug:value,...) makes the counts follow the current selection. */
+  getFiltersForCategory(categoryId: string, filters?: string, brand?: string): Observable<FilterGroup[]> {
+    let params = new HttpParams();
+    if (filters) params = params.set('filters', filters);
+    if (brand) params = params.set('brand', brand);
+    return this.http.get<FilterGroup[]>(`${this.apiUrl}/${categoryId}/filters`, {params});
   }
 
   // Helper to find category ID by slug

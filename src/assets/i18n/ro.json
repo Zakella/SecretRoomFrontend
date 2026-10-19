@@ -9,6 +9,22 @@
   "Quantity": "Cantitate",
   "Product Name": "Nume produs",
   "Size": "Mărime",
+  "OptionTypeColor": "Culoare",
+  "OptionTypeScent": "Aromă",
+  "OptionTypeShade": "Nuanță",
+  "OptionTypeVariant": "Variantă",
+  "MoreColorOne": "+{{count}} culoare",
+  "MoreColorFew": "+{{count}} culori",
+  "MoreColorMany": "+{{count}} de culori",
+  "MoreScentOne": "+{{count}} aromă",
+  "MoreScentFew": "+{{count}} arome",
+  "MoreScentMany": "+{{count}} de arome",
+  "MoreShadeOne": "+{{count}} nuanță",
+  "MoreShadeFew": "+{{count}} nuanțe",
+  "MoreShadeMany": "+{{count}} de nuanțe",
+  "MoreVariantOne": "+{{count}} opțiune",
+  "MoreVariantFew": "+{{count}} opțiuni",
+  "MoreVariantMany": "+{{count}} de opțiuni",
   "Article": "Articol",
   "Characteristics": "Caracteristici",
   "Composition": "Compoziție",
@@ -29,11 +45,12 @@
   "Items": "produse",
   "Check out": "Finalizare comandă",
   "Add to Cart": "Adaugă în coș",
-  "LastItem": "Ultimul articol",
-  "LowInStock": "Stoc limitat",
-  "LastItemHurry": "Ultimul articol — grăbește-te!",
-  "LowInStockDetail": "Produsul se epuizează — grăbește-te!",
+  "StockLeftOne": "A rămas {{count}} buc.",
+  "StockLeftMany": "Au rămas {{count}} buc.",
+  "SwatchesMore": "Încă",
+  "SwatchesCollapse": "Restrânge",
   "OutOfStock": "Indisponibil",
+  "PhotoNumber": "Fotografia {{n}}",
   "OutOfStockMessage": "Produsul este temporar indisponibil",
   "Discontinued": "Produs retras din vânzare",
   "DiscontinuedMessage": "Acest produs nu mai este disponibil pentru comandă",
@@ -241,7 +258,9 @@
     "createAccount": "Creează cont",
     "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul.",
     "outOfStock": "Produsele {{products}} nu sunt disponibile în stoc. Vă rugăm să le eliminați din coș.",
-    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc."
+    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc.",
+    "productUnavailable": "Produsul „{{name}}” nu mai este disponibil, ștergeți-l din coș",
+    "removeUnavailable": "Ștergeți produsele indisponibile din coș"
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
@@ -249,6 +268,8 @@
     "freeShippingRemaining": "Mai aveți nevoie de",
     "freeShippingGoal": "pentru livrare gratuită",
     "freeShippingAchieved": "Felicitări! Livrarea este gratuită!",
+    "addedToCart": "Adăugat în coș",
+    "chooseSize": "Alegeți mărimea",
     "emptyMessage": "Coșul tău este gol",
     "startShopping": "Începe cumpărăturile"
   },
@@ -344,6 +365,7 @@
   "StorePhotos": "Fotografiile magazinului",
   "ViewPhoto": "Deschide fotografia",
   "ClosePhoto": "Închide",
+  "OpenPhoto": "Deschide fotografia pe tot ecranul",
   "PreviousPhoto": "Fotografia anterioară",
   "NextPhoto": "Fotografia următoare",
   "storeBrands": {
@@ -429,6 +451,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Încă {{count}}",
+      "less": "Restrânge",
+      "reset": "Resetează",
+      "showProducts": "Arată produsele",
+      "showProductsN": "Arată produsele ({{count}})"
+    },
     "otherBrands": "Alte branduri",
     "allBrands": "Toate brandurile",
     "h1": {

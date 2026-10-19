@@ -13,8 +13,8 @@ import {
 import {FormsModule} from '@angular/forms';
 import {NgTemplateOutlet} from '@angular/common';
 import {CartUi} from './services/cart'
-import {QuickAddToCart} from './services/quick-add-to-cart';
 import {CartItem} from '../../../entities/cart-item';
+import {QuickAddToCart} from './services/quick-add-to-cart';
 import {Subject} from 'rxjs';
 import {Router} from '@angular/router';
 import {takeUntil} from 'rxjs/operators';
@@ -144,6 +144,10 @@ export class Cart implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  protected isAdding(product: Product): boolean {
+    return this.quickAdd.isLoading(product);
   }
 
   protected addRecommendationToCart(product: Product): void {

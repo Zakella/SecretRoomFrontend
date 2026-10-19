@@ -45,3 +45,8 @@ Thumbs.db
 .claude/
 .team/
 CLAUDE.md
+
+# отчёты агентов — не коммитить
+.qa-report
+.teamlead-report*
+.teamlead-acceptance.md

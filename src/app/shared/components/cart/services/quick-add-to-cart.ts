@@ -1,87 +1,105 @@
-import {inject, Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {Product} from '../../../../entities/product';
-import {CartItem} from '../../../../entities/cart-item';
-import {Size} from '../../../../entities/size';
+import {DestroyRef, inject, Injectable, signal} from '@angular/core';
+import {NavigationStart, Router} from '@angular/router';
+import {Subscription} from 'rxjs';
 import {ProductService} from '../../../../@core/api/product';
-import {Slugify} from '../../../../@core/services/slugify';
 import {Language} from '../../../../@core/services/language';
+import {Slugify} from '../../../../@core/services/slugify';
+import {CartItem} from '../../../../entities/cart-item';
+import {Product} from '../../../../entities/product';
+import {Size} from '../../../../entities/size';
 import {CartUi} from './cart';
+import {QuickAddOption, resolveQuickAdd} from './quick-add-resolver';
 
-const ONE_SIZE = new Set(['one', 'one size', 'onesize', 'os', 'o/s', 'u', 'uni', 'unica', 'unic']);
-
-export type QuickAddResolution =
-  | {action: 'choose'}
-  | {action: 'none'}
-  | {action: 'add'; size?: Size; variantAppId?: number};
-
-/** A size that really needs a choice: non-empty and not a one-size marker. */
-export function isMeaningfulSize(size: string | null | undefined): size is string {
-  const s = size?.trim();
-  return !!s && !ONE_SIZE.has(s.toLowerCase());
-}
-
-/** Decides how a fully loaded product can be added to the cart without a size picker. */
-export function resolveQuickAdd(full: Product): QuickAddResolution {
-  const variants = full.variants ?? [];
-  if (variants.length) {
-    const sizes = new Set(variants.filter(v => isMeaningfulSize(v.size)).map(v => v.size!.trim().toLowerCase()));
-    if (sizes.size > 1) return {action: 'choose'};
-    const v = variants.find(x => x.available !== false && x.inStock !== false && (x.unitsInStock ?? 0) > 0);
-    if (!v) return {action: 'none'};
-    return {
-      action: 'add',
-      size: isMeaningfulSize(v.size) ? {sizeType: v.size, available: true} : undefined,
-      variantAppId: v.appId,
-    };
-  }
-  const sizes = full.productSizes ?? [];
-  if (sizes.length > 1) return {action: 'choose'};
-  if (sizes.length === 1) return {action: 'add', size: {sizeType: sizes[0].sizeType, available: true}};
-  if (isMeaningfulSize(full.size)) return {action: 'add', size: {sizeType: full.size, available: true}};
-  return {action: 'add'};
-}
-
-export function needsSizeChoice(full: Product): boolean {
-  return resolveQuickAdd(full).action === 'choose';
+/** Size-picker panel state: the full product and the sizes to choose from. */
+export interface QuickAddPending {
+  product: Product;
+  options: QuickAddOption[];
 }
 
 /**
- * Quick "add to cart" from product lists. List payloads carry no variants,
- * so the full product is loaded first; sized products go to the product page.
+ * Quick "add to cart" for product lists. Always loads the full card (list payloads
+ * miss variants), then adds right away or asks for a size in the picker panel.
  */
 @Injectable({providedIn: 'root'})
 export class QuickAddToCart {
-  private productService = inject(ProductService);
-  private cartUi = inject(CartUi);
-  private router = inject(Router);
-  private slugify = inject(Slugify);
-  private lang = inject(Language);
-  private pending = new Set<string>();
+  private readonly products = inject(ProductService);
+  private readonly cartUi = inject(CartUi);
+  private readonly router = inject(Router);
+  private readonly slugify = inject(Slugify);
+  private readonly lang = inject(Language).currentLanguage;
+  private readonly _pending = signal<QuickAddPending | null>(null);
+  private readonly _loadingId = signal<string | null>(null);
+  private loadSub?: Subscription;
+
+  constructor() {
+    // The panel must not outlive the page it was opened on.
+    const navSub = this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.cancelLoad();
+        this.close();
+      }
+    });
+    inject(DestroyRef).onDestroy(() => navSub.unsubscribe());
+  }
+
+  /** Product waiting for a size choice, null when the panel is closed. */
+  readonly pending = this._pending.asReadonly();
+  /** Id of the product whose card is being loaded, for button states. */
+  readonly loadingId = this._loadingId.asReadonly();
+
+  /** True while the full card of this product is being loaded. */
+  isLoading(product: Product | null | undefined): boolean {
+    const id = product?.id ?? product?.appId;
+    return !!id && this._loadingId() === id;
+  }
 
   add(product: Product): void {
     const id = product.id ?? product.appId;
-    if (!id || this.pending.has(id)) return;
-    this.pending.add(id);
-    this.productService.getProductById(id).subscribe({
+    if (!id || this._loadingId() === id) return;
+    // Only the latest request counts: a late answer for the previous product is dropped.
+    this.loadSub?.unsubscribe();
+    this._loadingId.set(id);
+    this.loadSub = this.products.getProductById(id).subscribe({
       next: full => {
-        this.pending.delete(id);
-        const r = resolveQuickAdd(full);
-        if (r.action === 'choose') this.goToProduct(product);
-        else if (r.action === 'add') this.cartUi.addToCart(new CartItem(full, 1, r.size, r.variantAppId));
+        this._loadingId.set(null);
+        this.handle(full);
       },
       error: () => {
-        this.pending.delete(id);
-        this.goToProduct(product);
+        this._loadingId.set(null);
+        // Never add a sized product blindly: let the shopper pick on the product page.
+        // The click may come from the cart drawer, so close it once we are there.
+        this.router.navigate(this.slugify.productUrl(this.lang(), id, product.name ?? ''))
+          .then(() => this.cartUi.close());
       },
     });
   }
 
-  private goToProduct(product: Product): void {
-    const id = product.appId || product.id;
-    if (!id) return;
-    // Close the cart drawer too: the quick add may come from its recommendations.
-    this.router.navigate(this.slugify.productUrl(this.lang.currentLanguage(), id, product.name ?? ''))
-      .then(() => this.cartUi.close());
+  choose(option: QuickAddOption): void {
+    const pending = this._pending();
+    if (!pending || !option.available) return;
+    this._pending.set(null);
+    this.cartUi.addToCart(new CartItem(pending.product, 1, this.toSize(option.size), option.variantAppId));
+  }
+
+  close(): void {
+    this._pending.set(null);
+  }
+
+  private cancelLoad(): void {
+    this.loadSub?.unsubscribe();
+    this._loadingId.set(null);
+  }
+
+  private handle(full: Product): void {
+    const result = resolveQuickAdd(full);
+    if (result.kind === 'choose') {
+      this._pending.set({product: full, options: result.options});
+    } else if (result.kind === 'add') {
+      this.cartUi.addToCart(new CartItem(full, 1, this.toSize(result.size), result.variantAppId));
+    }
+  }
+
+  private toSize(size?: string): Size | undefined {
+    return size ? {sizeType: size, available: true} : undefined;
   }
 }

@@ -58,8 +58,9 @@ export class BrandService {
     return this.http.get<GetResponse>(`${this.baseUrL}/brand/${brand}`, {params});
   }
 
-  getFiltersForBrand(brand: string): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.baseUrL}/brand/${brand}/filters`);
+  getFiltersForBrand(brand: string, filters?: string): Observable<FilterGroup[]> {
+    const params = filters ? new HttpParams().set('filters', filters) : undefined;
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/brand/${brand}/filters`, {params});
   }
 
   toSlug(brand: string): string {

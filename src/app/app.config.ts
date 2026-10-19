@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import {provideRouter, withInMemoryScrolling} from '@angular/router';
 import {routes} from './app.routes';
+import {provideKeepScroll} from './@core/services/keep-scroll';
 import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
 
 import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from '@angular/common/http';
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled'
       })
     ),
+    provideKeepScroll(),
     provideAnimationsAsync(),
     provideAnimations(),
     providePrimeNG({

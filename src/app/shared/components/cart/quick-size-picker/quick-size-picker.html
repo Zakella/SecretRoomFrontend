@@ -1,0 +1,32 @@
+@let pending = state.pending();
+@if (pending) {
+  <div class="picker-backdrop" role="presentation" (click)="onBackdropClick($event)">
+    <div class="picker"
+         role="dialog"
+         aria-modal="true"
+         [attr.aria-label]="'cart.chooseSize' | transloco">
+      <button type="button" class="picker-close" [attr.aria-label]="'ClosePhoto' | transloco" (click)="close()">✕</button>
+      <div class="picker-body">
+        <img [src]="pending.product.imageURL ?? 'assets/images/unavailable.jpg'"
+             [alt]="pending.product | localizedName"/>
+        <div class="picker-info">
+          <p class="name">{{ pending.product | localizedName }}</p>
+          <p class="hint">{{ 'cart.chooseSize' | transloco }}</p>
+        </div>
+      </div>
+      <div class="picker-options">
+        @for (option of pending.options; track option.size) {
+          <button type="button"
+                  class="size-btn"
+                  [class.unavailable]="!option.available"
+                  [disabled]="!option.available"
+                  [attr.title]="option.available ? null : ('OutOfStock' | transloco)"
+                  [attr.aria-label]="option.available ? option.size : option.size + ', ' + ('OutOfStock' | transloco)"
+                  (click)="choose(option)">
+            {{ option.size }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
