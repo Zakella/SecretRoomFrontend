@@ -1,8 +1,5 @@
-ALL CLEAR
-
-SR-173 QA, повторная проверка после фикса CORS-блокера.
-- X-No-Loader нигде не осталось (grep по src/app): флаг передаётся через HttpContext (SKIP_LOADER), заголовков в запросе нет (product.spec.ts проверяет headers.keys() == []), preflight не возникает.
-- LoaderInterceptor читает req.context.get(SKIP_LOADER); дефолт токена false, поэтому вызовы без контекста ведут себя как раньше (лоадер показывается/скрывается, X-Loader-Zone по-прежнему из заголовка). AuthInterceptor делает req.clone, контекст при клонировании сохраняется.
-- tsc --noEmit: tsconfig.app.json и tsconfig.spec.json, exit 0.
-- karma ChromeHeadless: product.spec.ts + recently-viewed.service.spec.ts, 5/5 SUCCESS.
-- Остальные выводы первой проверки (SSR-безопасность, гонка с addProduct, lint без ошибок) не менялись.
+ALL CLEAR ✓
+Date: 2026-10-19T14:53:45+03:00
+Task: SR-181 перепроверка NEEDS_FIXES — meta.service использует isProductOutOfStock
+Checks: diff ✓, behavior ✓ (spec 70/70, build ✓), Security ✓, i18n n/a
+### Tree: 2027bcdf6d3cfba6ac2520a523ee9e09617f00b6

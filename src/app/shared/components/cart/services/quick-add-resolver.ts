@@ -26,6 +26,14 @@ function inStock(v: {available?: boolean; inStock?: boolean; unitsInStock?: numb
 }
 
 /**
+ * Card without variants that is explicitly out of stock (SR-181: sold-out model cards are exported too).
+ * Missing stock fields are not "sold out": the cart itself refuses `unitsInStock <= 0`, same rule here.
+ */
+function isSoldOutStandalone(product: Product): boolean {
+  return product.inStock === false || (product.unitsInStock != null && product.unitsInStock <= 0);
+}
+
+/**
  * Decides what the quick "add to cart" does for a FULL product card
  * (list payloads are not reliable): add right away, ask for a size, or nothing.
  */
@@ -53,6 +61,8 @@ export function resolveQuickAdd(product: Product): QuickAddResolution {
       variantAppId: first.appId,
     };
   }
+
+  if (isSoldOutStandalone(product)) return {kind: 'none'};
 
   const legacy = (product.productSizes ?? []).filter(s => !!s.sizeType);
   if (legacy.length > 1) {

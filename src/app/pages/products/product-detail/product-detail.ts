@@ -21,6 +21,7 @@ import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {CapitalizePipe} from '../../../shared/pipes/capitalize.pipe';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Slugify} from '../../../@core/services/slugify';
+import {isProductOutOfStock} from '../../../shared/utils/product-stock';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
@@ -80,11 +81,7 @@ export class ProductDetail {
   protected isOutOfStock = computed(() => {
     const p = this.product();
     if (!p) return false;
-    if (p.discontinued) return true;
-    if (p.variants?.length) {
-      return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
-    }
-    return (p.unitsInStock ?? 0) <= 0;
+    return isProductOutOfStock(p);
   });
   /** Фото галереи: основное фото (imageURL) первым, как было главным до галереи, дальше остальные без повторов. */
   galleryImages = computed<ProductImage[]>(() => {

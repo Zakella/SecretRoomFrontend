@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EMPTY, catchError, finalize, from, mergeMap, tap } from 'rxjs';
 import { ProductService } from '../api/product';
+import { isProductOutOfStock } from '../../shared/utils/product-stock';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,15 @@ export class RecentlyViewedService {
     // Remove if exists to move to top
     const filtered = current.filter(p => p.id !== product.id);
 
+    // SR-181: распроданную карточку не запоминаем (и убираем прежний снимок, если он был в наличии)
+    if (isProductOutOfStock(product)) {
+      if (filtered.length !== current.length) {
+        this.products.set(filtered);
+        this.saveToStorage(filtered);
+      }
+      return;
+    }
+
     // Add to beginning
     const updated = [product, ...filtered].slice(0, this.MAX_ITEMS);
 
@@ -42,7 +52,7 @@ export class RecentlyViewedService {
   /**
    * SR-173: в localStorage лежат снимки Product — товар, снятый с продажи после просмотра,
    * остаётся в карусели. Один раз за сессию перепроверяем сохранённые id: 404 — убираем
-   * из списка и localStorage, успех — подтягиваем свежие данные (цена/фото).
+   * из списка и localStorage, успех — подтягиваем свежие данные (цена/фото). SR-181: товар без наличия (200, но распродан) убираем так же.
    * Отметка проверки лежит в sessionStorage (переживает перезагрузку страницы в той же вкладке),
    * TTL 30 мин — чтобы долгоживущая вкладка тоже иногда обновлялась.
    * Сетевые ошибки и 5xx не повод выбрасывать товар — оставляем как есть.
@@ -61,7 +71,11 @@ export class RecentlyViewedService {
 
     from(ids).pipe(
       mergeMap(id => this.productService.getProductById(id, true).pipe(
-        tap(product => fresh.set(id, product)),
+        tap(product => {
+          // SR-181: товар жив (200), но распродан - в карусели не нужен, как и снятый с продажи
+          if (isProductOutOfStock(product)) gone.add(id);
+          else fresh.set(id, product);
+        }),
         catchError((err: HttpErrorResponse) => {
           if (err.status === 404) gone.add(id);
           return EMPTY;
