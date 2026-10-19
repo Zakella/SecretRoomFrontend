@@ -12,6 +12,8 @@ export class RecentlyViewedService {
   private readonly STORAGE_KEY = 'recently_viewed_products';
   private readonly MAX_ITEMS = 10;
   private readonly CONCURRENCY = 3;
+  private readonly REVALIDATED_KEY = 'recently_viewed_revalidated_at';
+  private readonly REVALIDATE_TTL_MS = 30 * 60 * 1000;
   private platformId = inject(PLATFORM_ID);
   private productService = inject(ProductService);
   private revalidated = false;
@@ -41,11 +43,15 @@ export class RecentlyViewedService {
    * SR-173: в localStorage лежат снимки Product — товар, снятый с продажи после просмотра,
    * остаётся в карусели. Один раз за сессию перепроверяем сохранённые id: 404 — убираем
    * из списка и localStorage, успех — подтягиваем свежие данные (цена/фото).
+   * Отметка проверки лежит в sessionStorage (переживает перезагрузку страницы в той же вкладке),
+   * TTL 30 мин — чтобы долгоживущая вкладка тоже иногда обновлялась.
    * Сетевые ошибки и 5xx не повод выбрасывать товар — оставляем как есть.
    */
   revalidate(): void {
     if (!isPlatformBrowser(this.platformId) || this.revalidated) return;
     this.revalidated = true;
+    if (this.wasRecentlyRevalidated()) return;
+    this.markRevalidated();
 
     const ids = this.products().map(p => p.id).filter((id): id is string => !!id);
     if (!ids.length) return;
@@ -63,6 +69,23 @@ export class RecentlyViewedService {
       ), this.CONCURRENCY),
       finalize(() => this.applyRevalidation(fresh, gone))
     ).subscribe();
+  }
+
+  private wasRecentlyRevalidated(): boolean {
+    try {
+      const at = Number(sessionStorage.getItem(this.REVALIDATED_KEY));
+      return !!at && Date.now() - at < this.REVALIDATE_TTL_MS;
+    } catch {
+      return false;
+    }
+  }
+
+  private markRevalidated(): void {
+    try {
+      sessionStorage.setItem(this.REVALIDATED_KEY, String(Date.now()));
+    } catch {
+      // sessionStorage недоступен — остаётся только флаг в памяти
+    }
   }
 
   private applyRevalidation(fresh: Map<string, Product>, gone: Set<string>): void {

@@ -23,6 +23,7 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
 
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     getProductById = jasmine.createSpy('getProductById');
   });
 
@@ -58,5 +59,25 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
 
     expect(getProductById).toHaveBeenCalledTimes(1);
     expect(getProductById).toHaveBeenCalledWith('a', true);
+  });
+
+  it('не перепроверяет при новой загрузке страницы, если отметка в sessionStorage свежая', () => {
+    getProductById.and.callFake(id => of({id} as Product));
+    create([{id: 'a'}]).revalidate();
+    expect(getProductById).toHaveBeenCalledTimes(1);
+
+    TestBed.resetTestingModule();
+    create([{id: 'a'}]).revalidate();
+
+    expect(getProductById).toHaveBeenCalledTimes(1);
+  });
+
+  it('перепроверяет, если отметки нет или она старше TTL', () => {
+    getProductById.and.callFake(id => of({id} as Product));
+    sessionStorage.setItem('recently_viewed_revalidated_at', String(Date.now() - 31 * 60 * 1000));
+
+    create([{id: 'a'}]).revalidate();
+
+    expect(getProductById).toHaveBeenCalledTimes(1);
   });
 });
