@@ -258,7 +258,9 @@
     "createAccount": "Creează cont",
     "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul.",
     "outOfStock": "Produsele {{products}} nu sunt disponibile în stoc. Vă rugăm să le eliminați din coș.",
-    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc."
+    "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc.",
+    "productUnavailable": "Produsul „{{name}}” nu mai este disponibil, ștergeți-l din coș",
+    "removeUnavailable": "Ștergeți produsele indisponibile din coș"
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",

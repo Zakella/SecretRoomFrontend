@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpContext, HttpParams} from '@angular/common/http';
+import {SKIP_LOADER} from '../interceptors/loader-interceptor';
 import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
@@ -44,8 +45,10 @@ export class ProductService {
   }
 
 
-  getProductById(id: string | null): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
+  getProductById(id: string | null, silent = false): Observable<Product> {
+    // silent — фоновая проверка без глобального лоадера (SKIP_LOADER читает LoaderInterceptor)
+    const context = silent ? new HttpContext().set(SKIP_LOADER, true) : undefined;
+    return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`, {context})
   }
 
   /**
