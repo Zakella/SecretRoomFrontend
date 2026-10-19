@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '../../../environments/environment';
@@ -15,8 +15,15 @@ export class MetaService {
   private document = inject(DOCUMENT);
   private readonly siteUrl = environment.frontend;
   private alternateOverride = false;
+  /** SR-181: canonical распроданной карточки модели — на карточку модели в наличии. Живёт до следующей навигации. */
+  private canonicalOverride: string | null = null;
 
   constructor() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart)
+    ).subscribe(() => {
+      this.canonicalOverride = null;
+    });
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
@@ -60,7 +67,7 @@ export class MetaService {
   }
 
   updateCanonicalUrl() {
-    const url = this.getFullUrl();
+    const url = this.canonicalOverride ?? this.getFullUrl();
     const head = this.document.getElementsByTagName('head')[0];
     let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (!link) {
@@ -162,6 +169,12 @@ export class MetaService {
       metaDesc = `Купить ${name} от ${brand} в Молдове. ${cleanDescription}. Быстрая доставка по Кишиневу.`;
     }
 
+    // SR-181: распроданная карточка модели при наличии соседа в наличии отдаёт canonical на него
+    this.canonicalOverride = this.soldOutCanonical(product, lang, slugifyService);
+    if (this.canonicalOverride) {
+      this.updateCanonicalUrl();
+    }
+
     this.updateTitle(title);
     this.updateDescription(metaDesc);
     this.updateImage(product.imageURL);
@@ -231,6 +244,29 @@ export class MetaService {
     }
 
     this.setJsonLd(productJsonLd, 'product');
+  }
+
+  /**
+   * SR-181: URL первой по порядку карточки модели в наличии для распроданной карточки.
+   * Нет в наличии никого (или карточка в наличии) — null, canonical остаётся собственным.
+   */
+  private soldOutCanonical(product: any, lang: string, slugifyService?: any): string | null {
+    if (!slugifyService || !this.isSoldOut(product)) return null;
+    const target = (product.siblings ?? []).find(
+      (s: any) => s && s.inStock && !s.current && String(s.appId) !== String(product.id));
+    if (!target) return null;
+    const path = slugifyService.productUrl(lang, String(target.appId), target.name ?? '') as string[];
+    // ['/', lang, 'product', id, slug] -> /lang/product/id/slug
+    return `${this.siteUrl}/${path.slice(1).join('/')}`;
+  }
+
+  /** Та же логика, что isOutOfStock на странице товара. */
+  private isSoldOut(product: any): boolean {
+    if (product.discontinued) return true;
+    if (product.variants?.length) {
+      return !product.variants.some((v: any) => v.available && v.unitsInStock && v.unitsInStock > 0);
+    }
+    return product.inStock === false || (product.unitsInStock ?? 0) <= 0;
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {

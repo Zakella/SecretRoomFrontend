@@ -31,7 +31,7 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
     getProductById.and.callFake(id =>
       id === 'gone'
         ? throwError(() => new HttpErrorResponse({status: 404}))
-        : of({id, price: 99} as Product));
+        : of({id, price: 99, unitsInStock: 5} as Product));
     const service = create([{id: 'a', price: 1}, {id: 'gone', price: 2}, {id: 'b', price: 3}]);
 
     service.revalidate();
@@ -51,7 +51,7 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
   });
 
   it('проверяет только один раз за сессию, запросы без лоадера', () => {
-    getProductById.and.callFake(id => of({id} as Product));
+    getProductById.and.callFake(id => of({id, unitsInStock: 5} as Product));
     const service = create([{id: 'a'}]);
 
     service.revalidate();
@@ -62,7 +62,7 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
   });
 
   it('не перепроверяет при новой загрузке страницы, если отметка в sessionStorage свежая', () => {
-    getProductById.and.callFake(id => of({id} as Product));
+    getProductById.and.callFake(id => of({id, unitsInStock: 5} as Product));
     create([{id: 'a'}]).revalidate();
     expect(getProductById).toHaveBeenCalledTimes(1);
 
@@ -73,11 +73,50 @@ describe('RecentlyViewedService.revalidate (SR-173)', () => {
   });
 
   it('перепроверяет, если отметки нет или она старше TTL', () => {
-    getProductById.and.callFake(id => of({id} as Product));
+    getProductById.and.callFake(id => of({id, unitsInStock: 5} as Product));
     sessionStorage.setItem('recently_viewed_revalidated_at', String(Date.now() - 31 * 60 * 1000));
 
     create([{id: 'a'}]).revalidate();
 
     expect(getProductById).toHaveBeenCalledTimes(1);
+  });
+
+  it('SR-181: товар жив (200), но распродан - убирается из списка и localStorage', () => {
+    getProductById.and.callFake(id =>
+      of(id === 'sold' ? {id, unitsInStock: 0, inStock: false} as Product : {id, unitsInStock: 3} as Product));
+    const service = create([{id: 'a'}, {id: 'sold'}, {id: 'b'}]);
+
+    service.revalidate();
+
+    expect(service.products().map(p => p.id)).toEqual(['a', 'b']);
+    expect(JSON.parse(localStorage.getItem(KEY)!).map((p: Product) => p.id)).toEqual(['a', 'b']);
+  });
+
+  describe('addProduct (SR-181)', () => {
+    it('добавляет товар в наличии', () => {
+      const service = create([]);
+      service.addProduct({id: 'a', unitsInStock: 2} as Product);
+      expect(service.products().map(p => p.id)).toEqual(['a']);
+    });
+
+    it('не добавляет распроданную карточку', () => {
+      const service = create([{id: 'a', unitsInStock: 2}]);
+      service.addProduct({id: 'sold', unitsInStock: 0, inStock: false} as Product);
+      expect(service.products().map(p => p.id)).toEqual(['a']);
+      expect(JSON.parse(localStorage.getItem(KEY)!).map((p: Product) => p.id)).toEqual(['a']);
+    });
+
+    it('если карточка стала распроданной - прежний снимок убирается', () => {
+      const service = create([{id: 'a', unitsInStock: 2}, {id: 'b', unitsInStock: 1}]);
+      service.addProduct({id: 'a', unitsInStock: 0, inStock: false} as Product);
+      expect(service.products().map(p => p.id)).toEqual(['b']);
+      expect(JSON.parse(localStorage.getItem(KEY)!).map((p: Product) => p.id)).toEqual(['b']);
+    });
+
+    it('не добавляет снятый с продажи', () => {
+      const service = create([]);
+      service.addProduct({id: 'd', unitsInStock: 5, discontinued: true} as Product);
+      expect(service.products()).toEqual([]);
+    });
   });
 });

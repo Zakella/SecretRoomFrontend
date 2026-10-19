@@ -65,6 +65,17 @@ describe('resolveQuickAdd', () => {
     expect(resolveQuickAdd(product({size: 'One'}))).toEqual({kind: 'add'});
   });
 
+  it('SR-181: card without variants and with zero stock adds nothing', () => {
+    expect(resolveQuickAdd(product({unitsInStock: 0})).kind).toBe('none');
+    expect(resolveQuickAdd(product({inStock: false, unitsInStock: 0, size: 'XS'})).kind).toBe('none');
+    expect(resolveQuickAdd(product({inStock: false})).kind).toBe('none');
+    expect(resolveQuickAdd(product({unitsInStock: 0, productSizes: [{sizeType: 'M', available: true}]})).kind).toBe('none');
+  });
+
+  it('SR-181: card without variants and with stock still adds', () => {
+    expect(resolveQuickAdd(product({inStock: true, unitsInStock: 2}))).toEqual({kind: 'add'});
+  });
+
   it('standalone card without variants keeps its own size', () => {
     expect(resolveQuickAdd(product({size: ' XS ', variants: [], productSizes: []}))).toEqual({kind: 'add', size: 'XS'});
   });
