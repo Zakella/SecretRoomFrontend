@@ -1,6 +1,5 @@
 ALL CLEAR ✓
-Date: 2026-10-19T14:42:02+03:00
-Task: SR-181 распроданные варианты модели — только как варианты
-Checks: API ✓, DB ✓, UI ✓, Security ✓, i18n ✓, Performance ✓, Duplication ✓
-Scenarios: 1 листинги/фасеты (веб-категории, бренд, vs, new, sales, bestsellers: 0 утечек, фасеты = totalElements); 2 поиск API+UI; 3 sitemap (1151 = в наличии) и brands; 4 плитки вариантов out-of-stock; 5 прямая ссылка 3166 (200, кнопка disabled, canonical -> 2416, SSR и клиент); 6 недавно просмотренные (3166 не пишется, подложенный снимок вычищается); 7 покупка (кнопка disabled; резерв/заказ — ReservationServiceTest, quick-add — quick-add-resolver.spec); 8 регрессия 2416 (в листинге, в корзину добавляется)
-### Tree: b376a84bb59a4679f5f03e6edc161e94214f3770
+Date: 2026-10-19T14:53:45+03:00
+Task: SR-181 перепроверка NEEDS_FIXES — meta.service использует isProductOutOfStock
+Checks: diff ✓, behavior ✓ (spec 70/70, build ✓), Security ✓, i18n n/a
+### Tree: 2027bcdf6d3cfba6ac2520a523ee9e09617f00b6

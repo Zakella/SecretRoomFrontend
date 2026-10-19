@@ -4,6 +4,7 @@ import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { isProductOutOfStock } from '../../shared/utils/product-stock';
 
 @Injectable({
   providedIn: 'root'
@@ -251,22 +252,13 @@ export class MetaService {
    * Нет в наличии никого (или карточка в наличии) — null, canonical остаётся собственным.
    */
   private soldOutCanonical(product: any, lang: string, slugifyService?: any): string | null {
-    if (!slugifyService || !this.isSoldOut(product)) return null;
+    if (!slugifyService || !isProductOutOfStock(product)) return null;
     const target = (product.siblings ?? []).find(
       (s: any) => s && s.inStock && !s.current && String(s.appId) !== String(product.id));
     if (!target) return null;
     const path = slugifyService.productUrl(lang, String(target.appId), target.name ?? '') as string[];
     // ['/', lang, 'product', id, slug] -> /lang/product/id/slug
     return `${this.siteUrl}/${path.slice(1).join('/')}`;
-  }
-
-  /** Та же логика, что isOutOfStock на странице товара. */
-  private isSoldOut(product: any): boolean {
-    if (product.discontinued) return true;
-    if (product.variants?.length) {
-      return !product.variants.some((v: any) => v.available && v.unitsInStock && v.unitsInStock > 0);
-    }
-    return product.inStock === false || (product.unitsInStock ?? 0) <= 0;
   }
 
   setBreadcrumbJsonLd(breadcrumbs: { label: string, url: string }[]) {
