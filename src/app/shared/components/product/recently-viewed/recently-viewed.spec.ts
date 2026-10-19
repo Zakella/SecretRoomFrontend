@@ -14,7 +14,7 @@ describe('RecentlyViewed', () => {
     TestBed.configureTestingModule({
       providers: [
         {provide: QuickAddToCart, useValue: {add}},
-        {provide: RecentlyViewedService, useValue: {products: signal([])}},
+        {provide: RecentlyViewedService, useValue: {products: signal([]), revalidate: () => undefined}},
         {provide: Router, useValue: {navigate: () => Promise.resolve(true)}},
         {provide: FavoritesService, useValue: {}},
         {provide: Language, useValue: {currentLanguage: () => 'ro'}},
