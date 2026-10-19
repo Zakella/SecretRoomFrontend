@@ -35,6 +35,11 @@ describe('sizedVariants / hasSizeChoice (SR-168)', () => {
   const mk = (...sizes: (string | null | undefined)[]): ProductVariant[] =>
     sizes.map((size, i) => ({appId: i + 1, size: size as string, available: true, inStock: true}));
 
+  it('SR-174: нет вариантов (мист с одним product.size «250 ml») — выбора размера нет, блок не рисуется', () => {
+    expect(hasSizeChoice(undefined)).toBeFalse();
+    expect(hasSizeChoice([])).toBeFalse();
+  });
+
   it('(a) ["", "6.5 oz/ 185 g"]: блок «Размер» не рисуется', () => {
     const v = mk('', '6.5 oz/ 185 g');
     expect(sizedVariants(v).map(x => x.size)).toEqual(['6.5 oz/ 185 g']);

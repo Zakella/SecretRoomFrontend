@@ -2,7 +2,7 @@ import {PLATFORM_ID, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {provideRouter} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {provideTransloco} from '@ngneat/transloco';
 import {TranslocateHttpLoader} from '../../../../@core/configs/transloco-config';
 import {Language} from '../../../../@core/services/language';
@@ -85,6 +85,17 @@ describe('ProductSwatches', () => {
     expect(out.getAttribute('title')).toContain('Чёрный');
     expect(out.getAttribute('aria-label')).toContain('Чёрный');
     expect(el().querySelectorAll('.swatch.out-of-stock').length).toBe(1);
+  });
+
+  it('SR-174: ссылки свотчей остаются <a href>, а клик несёт state keepScroll', () => {
+    render(THREE);
+    const links = Array.from(el().querySelectorAll('a.swatch'));
+    expect(links.length).toBe(2);
+    links.forEach(a => expect(a.getAttribute('href')).toMatch(/^\/ru\/product\//));
+    const router = TestBed.inject(Router);
+    const spy = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    (links[0] as HTMLAnchorElement).click();
+    expect(spy.calls.mostRecent().args[1]?.state).toEqual({keepScroll: true});
   });
 
   it('href соседа для ru и ro', () => {

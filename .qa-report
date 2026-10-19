@@ -1,9 +1,7 @@
-# QA SR-171 — ALL CLEAR
+# QA SR-174 — ALL CLEAR
 
-- Дифф (staged): checkout.ts, checkout.spec.ts. validateCart / subscribeToCartChanges, суммы, доставка, оплата, отправка заказа не тронуты. Секретов нет.
-- loadCart(): редирект на главную при пустой корзине только при isPlatformBrowser; на сервере return без редиректа.
-- <title>: MetaService.updateTitle, ru «Оформление заказа | Secret Room», ro «Finalizarea comenzii | Secret Room»; обновляется и при смене lang из route.
-- Спеки: ng test checkout — 9 of 9 SUCCESS (новые: редирект в браузере, нет редиректа на server, title).
-- SSR-проверка лидера (порт 4493) повторно не гонялась.
+- Стенд: ng serve :4497, API копии :9090. Мист Midnight Blooms (2537, 26 соседей): клик по свотчу 1 → /product/2535, scrollY 625→625; свотч 3 → /product/3203, scrollY 625; h1 обновляются. «Назад» — наверх, как раньше (scrollPositionRestoration 'top').
+- Блок «Размер» у товара без variants и с product.size «250 ml» не рисуется (.variant-selector = 0).
+- Ссылки свотчей остаются <a href>. Спеки: ng test (keep-scroll, product-swatches, product-detail) 62 of 62 SUCCESS; ng lint 0 errors.
 
-### Tree: ea08137d7b8406bb90dc4f8d2dfd9ec9cd7d2d98
+### Tree: 961b5994c434f38f9b208160b0f4e30d99d80048
