@@ -522,6 +522,7 @@ export class Checkout implements OnInit, OnDestroy {
 
   dismissError(): void {
     this.orderError.set(null);
+    this.unavailable.set([]);
   }
 
   retryLoadShipping(): void {

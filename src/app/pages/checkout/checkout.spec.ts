@@ -258,4 +258,13 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
     expect(comp.orderError()).toBeNull();
     expect(comp.canSubmit()).toBeTrue();
   });
+
+  it('dismissing the banner clears the flags and unblocks submit', async () => {
+    await setup([item('100', 200)], [{appId: 100, variantAppId: 200, productName: 'Produs 100'}]);
+    comp.onSubmit();
+    expect(comp.canSubmit()).toBeFalse();
+    comp.dismissError();
+    expect(comp.unavailable()).toEqual([]);
+    expect(comp.canSubmit()).toBeTrue();
+  });
 });
