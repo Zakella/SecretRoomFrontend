@@ -322,6 +322,11 @@
               <div class="error-banner order-error">
                 <i class="ri-error-warning-line"></i>
                 <span>{{ orderError() | transloco }}</span>
+                @if (hasUnavailableItems()) {
+                  <button type="button" class="btn-remove-unavailable" (click)="removeUnavailableItems()">
+                    {{ 'checkout.removeUnavailable' | transloco }}
+                  </button>
+                }
                 <button type="button" class="btn-dismiss" (click)="dismissError()">
                   <i class="ri-close-line"></i>
                 </button>
@@ -358,7 +363,7 @@
 
       <div class="cart-items" [class.cart-items--many]="cartItems.length > manyItemsThreshold">
         @for (item of cartItems; track $index; let i = $index) {
-          <div class="cart-item">
+          <div class="cart-item" [class.cart-item--unavailable]="isUnavailable(item)">
             <div class="item-image">
               <a class="item-link" [routerLink]="itemUrl(item)" target="_blank" rel="noopener">
                 <img [src]="item.product.imageURL || noImage" (error)="onItemImageError($event)" [alt]="item.product | localizedName" loading="lazy">

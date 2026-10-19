@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {PLATFORM_ID, signal} from '@angular/core';
-import {BehaviorSubject, of} from 'rxjs';
+import {BehaviorSubject, of, throwError} from 'rxjs';
 import {provideTransloco} from '@ngneat/transloco';
 import {MessageService} from 'primeng/api';
 import {Checkout} from './checkout';
@@ -168,5 +168,94 @@ describe('Checkout empty cart / SSR', () => {
   it('sets the checkout page title', async () => {
     await setup('server');
     expect(TestBed.inject(Title).getTitle()).toBe('Оформление заказа | Secret Room');
+  });
+});
+
+describe('Checkout PRODUCT_UNAVAILABLE', () => {
+  let fixture: ComponentFixture<Checkout>;
+  let comp: Checkout;
+  let items$: BehaviorSubject<CartItem[]>;
+  let placeOrder: jasmine.Spy;
+  const el = () => fixture.nativeElement as HTMLElement;
+
+  const item = (id: string, variantAppId?: number) =>
+    new CartItem({id, name: `P ${id}`, price: 10} as Product, 1, undefined, variantAppId);
+  const conflict = (details: object[]) => ({
+    status: 409,
+    error: {error: 'PRODUCT_UNAVAILABLE', message: 'Product no longer available: x', details}
+  });
+
+  async function setup(initial: CartItem[], details: object[]) {
+    items$ = new BehaviorSubject<CartItem[]>(initial);
+    placeOrder = jasmine.createSpy('placeOrder').and.returnValue(throwError(() => conflict(details)));
+    const cart = {
+      cartItems: items$,
+      totalAmount: new BehaviorSubject<number>(0),
+      totalQuantity: new BehaviorSubject<number>(0),
+      cartModified: new BehaviorSubject<boolean>(false),
+      loadCartItemsFromStorage: () => items$.value,
+      computeCartTotals: noop,
+      deleteItemFromCart: (i: number) => items$.next(items$.value.filter((_, idx) => idx !== i)),
+      getMaxStock: () => 10,
+      recalculateCartItem: noop,
+    };
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}}),
+        MessageService,
+        {provide: CartUi, useValue: cart},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {placeOrder}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop}},
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(Checkout);
+    comp = fixture.componentInstance;
+    fixture.detectChanges();
+    spyOn(comp, 'canSubmit').and.callThrough();
+    comp.form.patchValue({
+      email: 'a@b.md', name: 'Ion', lastname: 'Pop', address: 'Str 1', city: 'Chisinau', zip: '2001',
+      phone: '069123456', selectedShipping: 1, payment: 'CashOnDelivery', iAgree: true
+    });
+  }
+
+  it('parses the error, marks matching items and blocks submit', async () => {
+    await setup([item('100', 200), item('100', 201), item('5')],
+      [{productId: 100, appId: 100, variantAppId: 200, productName: 'Produs 100'}]);
+    expect(comp.canSubmit()).toBeTrue();
+    comp.onSubmit();
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+    expect(comp.unavailable().length).toBe(1);
+    expect(comp.orderError()).toContain('checkout.productUnavailable');
+    expect(comp.isUnavailable(items$.value[0])).toBeTrue();
+    expect(comp.isUnavailable(items$.value[1])).toBeFalse();
+    expect(comp.isUnavailable(items$.value[2])).toBeFalse();
+    expect(comp.canSubmit()).toBeFalse();
+    comp.onSubmit();
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+    fixture.detectChanges();
+    expect(el().querySelectorAll('.cart-item--unavailable').length).toBe(1);
+  });
+
+  it('null variantAppId matches every variant of the master product', async () => {
+    await setup([item('100', 200), item('100', 201), item('5')],
+      [{appId: 100, variantAppId: null, productName: 'Produs 100'}]);
+    comp.onSubmit();
+    expect(items$.value.filter(i => comp.isUnavailable(i)).length).toBe(2);
+  });
+
+  it('removeUnavailableItems drops only the flagged items and unblocks submit', async () => {
+    await setup([item('100', 200), item('100', 201), item('5')],
+      [{appId: 100, variantAppId: 200, productName: 'Produs 100'}]);
+    comp.onSubmit();
+    comp.removeUnavailableItems();
+    expect(items$.value.map(i => `${i.product.id}:${i.variantAppId ?? ''}`)).toEqual(['100:201', '5:']);
+    expect(comp.unavailable()).toEqual([]);
+    expect(comp.orderError()).toBeNull();
+    expect(comp.canSubmit()).toBeTrue();
   });
 });

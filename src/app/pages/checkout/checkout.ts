@@ -38,6 +38,14 @@ export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
 export const SUMMARY_STATIC_ITEMS_THRESHOLD = 3;
 const NO_IMAGE = 'assets/images/no-image.png';
 
+/** Detail of a 409 PRODUCT_UNAVAILABLE response (master appId, variantAppId may be null). */
+export interface UnavailableProduct {
+  appId?: number | string | null;
+  productId?: number | string | null;
+  variantAppId?: number | null;
+  productName?: string;
+}
+
 type Step = 'information' | 'shipping' | 'payment';
 
 type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
@@ -76,6 +84,7 @@ export class Checkout implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   orderError = signal<string | null>(null);
   shippingError = signal<string | null>(null);
+  unavailable = signal<UnavailableProduct[]>([]);
 
   private fb = inject(FormBuilder);
   private meta = inject(Meta);
@@ -369,7 +378,35 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   canSubmit(): boolean {
-    return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0;
+    return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0 && !this.hasUnavailableItems();
+  }
+
+  isUnavailable(item: CartItem): boolean {
+    return this.unavailable().some(d => {
+      const id = d.appId ?? d.productId;
+      if (id == null || String(item.product.id) !== String(id)) return false;
+      return d.variantAppId == null || item.variantAppId === d.variantAppId;
+    });
+  }
+
+  hasUnavailableItems(): boolean {
+    return this.cartItems.some(item => this.isUnavailable(item));
+  }
+
+  /** Removes from the cart every item the backend reported as no longer available. */
+  removeUnavailableItems(): void {
+    for (let i = this.cartItems.length - 1; i >= 0; i--) {
+      if (this.isUnavailable(this.cartItems[i])) {
+        this.cartService.deleteItemFromCart(i);
+      }
+    }
+    this.unavailable.set([]);
+    this.orderError.set(null);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
+    if (this.cartItems.length === 0) {
+      this.router.navigate(['/', this.activeLang()]);
+    }
   }
 
   onSubmit(): void {
@@ -456,6 +493,11 @@ export class Checkout implements OnInit, OnDestroy {
               this.orderError.set('checkout.outOfStockGeneric');
             }
             this.validateCart();
+          } else if (error.status === 409 && error.error?.error === 'PRODUCT_UNAVAILABLE') {
+            const details: UnavailableProduct[] = error.error?.details ?? [];
+            this.unavailable.set(details);
+            const names = details.map(d => d.productName).filter(Boolean).join(', ');
+            this.orderError.set(this.translocoService.translate('checkout.productUnavailable', { name: names }));
           } else if (errorMessage.includes('Product with id')) {
             this.orderError.set('checkout.productNotFoundInCart');
             this.validateCart();
