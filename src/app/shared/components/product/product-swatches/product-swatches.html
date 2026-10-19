@@ -18,6 +18,7 @@
                [class.out-of-stock]="!item.sibling.inStock"
                [routerLink]="item.link"
                [queryParams]="queryParams()"
+               [state]="keepScrollState"
                [attr.title]="item.sibling.inStock ? item.label : item.label + ' — ' + ('OutOfStock' | transloco)"
                [attr.aria-label]="item.sibling.inStock ? item.label : item.label + ' — ' + ('OutOfStock' | transloco)">
               <ng-container *ngTemplateOutlet="swatchBody; context: {$implicit: item}"/>

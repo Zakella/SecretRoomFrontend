@@ -94,15 +94,6 @@
               </div>
             </div>
             }
-          } @else if (hasSizeLabel(product()?.size)) {
-            <div class="variant-selector">
-              <span class="variant-label">{{ 'Size' | transloco }}:</span>
-              <div class="variant-options">
-                <button class="variant-btn active">
-                  {{ product()?.size }}
-                </button>
-              </div>
-            </div>
           }
 
           @if (stockNote(); as left) {

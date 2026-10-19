@@ -4,6 +4,7 @@ import {RouterLink} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../../../@core/services/language';
 import {Slugify} from '../../../../@core/services/slugify';
+import {KEEP_SCROLL_STATE} from '../../../../@core/services/keep-scroll';
 import {ProductSibling} from '../../../../entities/product-sibling';
 
 /** Минимальное число карточек модели (включая текущую), при котором блок показывается. */
@@ -62,6 +63,9 @@ export class ProductSwatches {
   readonly optionType = input<string | null | undefined>();
   /** Выбранный размер текущей карточки: уходит в ?size= ссылки соседа. */
   readonly selectedSize = input<string | null | undefined>();
+
+  /** Переход между вариантами не прокручивает страницу наверх (SR-174). */
+  protected readonly keepScrollState = {[KEEP_SCROLL_STATE]: true};
 
   protected visible = computed(() => (this.siblings()?.length ?? 0) >= MIN_SWATCHES);
   /** Тип у самого товара может быть null (старый ответ карточки): тогда берём первый заданный у соседей. */
