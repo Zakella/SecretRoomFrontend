@@ -1,0 +1,30 @@
+@let item = state.item();
+<div class="added-live" role="status" aria-live="polite">
+  @if (item) {
+    <div class="added-toast"
+         (mouseenter)="state.pause()"
+         (mouseleave)="state.resume()"
+         (focusin)="state.pause()"
+         (focusout)="state.resume()">
+      <button type="button" class="added-close" [attr.aria-label]="'ClosePhoto' | transloco" (click)="close()">✕</button>
+      <p class="added-title">
+        <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+        {{ 'cart.addedToCart' | transloco }}
+      </p>
+      <div class="added-body">
+        <img [src]="item.product.imageURL ?? 'assets/images/unavailable.jpg'"
+             [alt]="item.product | localizedName"/>
+        <div class="added-info">
+          <p class="name">{{ item.product | localizedName }}</p>
+          @if (item.size?.sizeType) {
+            <span class="size">{{ item.size!.sizeType }}</span>
+          }
+        </div>
+      </div>
+      <div class="added-actions">
+        <button type="button" class="btn-checkout" (click)="checkout()">{{ 'Check out' | transloco }}</button>
+        <button type="button" class="btn-continue" (click)="close()">{{ 'Continue Shopping' | transloco }}</button>
+      </div>
+    </div>
+  }
+</div>

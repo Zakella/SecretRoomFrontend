@@ -1,4 +1,6 @@
+import {TestBed} from '@angular/core/testing';
 import {CartUi} from './cart';
+import {AddedToCart} from './added-to-cart';
 import {CartItem} from '../../../../entities/cart-item';
 import {Product} from '../../../../entities/product';
 
@@ -15,7 +17,7 @@ describe('CartUi', () => {
 
   beforeEach(() => {
     localStorage.clear();
-    cart = new CartUi();
+    cart = TestBed.inject(CartUi);
   });
 
   it('should start with empty cart', () => {
@@ -53,6 +55,35 @@ describe('CartUi', () => {
     it('should not add item with 0 stock', () => {
       cart.addToCart(makeCartItem({id: '1', unitsInStock: 0}));
       expect(cart.cartItems.value.length).toBe(0);
+    });
+
+    describe('confirmation', () => {
+      let added: AddedToCart;
+      beforeEach(() => {
+        added = TestBed.inject(AddedToCart);
+      });
+      afterEach(() => added.hide());
+
+      it('does not open the drawer, shows the confirmation', () => {
+        const item = makeCartItem();
+        cart.addToCart(item);
+        expect(cart.visible()).toBeFalse();
+        expect(added.item()).toBe(item);
+      });
+
+      it('does not show the confirmation when the drawer is open', () => {
+        cart.open();
+        cart.addToCart(makeCartItem());
+        expect(cart.cartItems.value.length).toBe(1);
+        expect(added.item()).toBeNull();
+        expect(added.addedTick()).toBe(1);
+      });
+
+      it('does not show the confirmation for zero stock', () => {
+        cart.addToCart(makeCartItem({unitsInStock: 0}));
+        expect(added.item()).toBeNull();
+        expect(added.addedTick()).toBe(0);
+      });
     });
   });
 

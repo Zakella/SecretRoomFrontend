@@ -1,11 +1,13 @@
-import {Injectable, signal} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {CartItem} from '../../../../entities/cart-item';
 import {BehaviorSubject, Subject} from 'rxjs';
+import {AddedToCart} from './added-to-cart';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartUi {
+  private addedToCart = inject(AddedToCart);
   private _visible = signal<boolean>(false);
   public cartCount = signal<number>(0);
   visible = this._visible.asReadonly();
@@ -58,8 +60,14 @@ export class CartUi {
     this.cartItems.next(currentItems);
     this.saveCartItemsToStorage();
     this.computeCartTotals();
-    this.open();
     this.cartCount.set(currentItems?.length || 0);
+    // The full drawer opens only via the cart icon. Here a compact confirmation is shown,
+    // unless the drawer is already open (e.g. adding from its recommendations).
+    if (this._visible()) {
+      this.addedToCart.notifyAdded();
+    } else {
+      this.addedToCart.show(theCartItem);
+    }
   }
 
   private findExistingCartItemIndex(cartItems: CartItem[], newItem: CartItem): number {

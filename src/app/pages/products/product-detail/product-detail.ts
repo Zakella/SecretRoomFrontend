@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, effect, inject, signal, DestroyRef, RESPONSE_INIT} from '@angular/core';
-import {NgClass, Location} from '@angular/common';
+import {Location} from '@angular/common';
 import {Meta} from '@angular/platform-browser';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -10,6 +10,7 @@ import {ShareModal} from '../../../shared/components/modals/share-modal/share-mo
 import {RecommendedProducts} from '../../../shared/components/product/recommended-products/recommended-products';
 import {Language} from '../../../@core/services/language';
 import {CartUi} from '../../../shared/components/cart/services/cart';
+import {ProductImage} from '../../../entities/product-image';
 import {Product} from '../../../entities/product';
 import {CartItem} from '../../../entities/cart-item';
 import {Size} from '../../../entities/size';
@@ -20,14 +21,19 @@ import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {CapitalizePipe} from '../../../shared/pipes/capitalize.pipe';
 import {MetaService} from '../../../@core/services/meta.service';
 import {Slugify} from '../../../@core/services/slugify';
+import {isProductOutOfStock} from '../../../shared/utils/product-stock';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
 import {RecentlyViewedService} from '../../../@core/services/recently-viewed.service';
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
+import {ProductGallery} from '../../../shared/components/product/product-gallery/product-gallery';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
+import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
+import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
+import {compareSizes} from '../../../shared/utils/size-order';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, NgClass, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -57,21 +63,43 @@ export class ProductDetail {
     }
     return this.product()?.unitsInStock;
   });
+  /** Спокойная пометка «осталось N шт.» для размера/товара: только при остатке 1–3 и если товар не снят и не закончился. */
+  protected stockNote = computed(() => {
+    const left = this.effectiveStock();
+    if (this.isDiscontinued() || this.isOutOfStock() || left === undefined || left < 1 || left > 3) {
+      return null;
+    }
+    return left;
+  });
+  /** Варианты с непустой подписью размера (SR-168); блок «Размер» показываем при >= 2. */
+  protected sizedVariants = computed(() => sizedVariants(this.product()?.variants));
+  protected showSizeBlock = computed(() => hasSizeChoice(this.product()?.variants));
+  protected hasSwatches = computed(() => (this.product()?.siblings?.length ?? 0) >= MIN_SWATCHES);
   protected isDiscontinued = computed(() => {
     return this.product()?.discontinued === true;
   });
   protected isOutOfStock = computed(() => {
     const p = this.product();
     if (!p) return false;
-    if (p.discontinued) return true;
-    if (p.variants?.length) {
-      return !p.variants.some(v => v.available && v.unitsInStock && v.unitsInStock > 0);
-    }
-    return (p.unitsInStock ?? 0) <= 0;
+    return isProductOutOfStock(p);
+  });
+  /** Фото галереи: основное фото (imageURL) первым, как было главным до галереи, дальше остальные без повторов. */
+  galleryImages = computed<ProductImage[]>(() => {
+    const p = this.product();
+    if (!p) return [];
+    const all = [...(p.imageURL ? [{imageUrl: p.imageURL, description: ''}] : []), ...(p.productImagesWebStore ?? [])];
+    const seen = new Set<string>();
+    const unique = all.filter(image => {
+      const key = (image.imageUrl ?? '').split('?')[0];
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    // без единого фото галерея покажет заглушку no-image.png
+    return unique.length ? unique : [{imageUrl: '', description: ''}];
   });
   quantity: number = 1;
   currentSize: string | undefined;
-  mainImage: string | null = null;
 
   private destroyRef = inject(DestroyRef);
 
@@ -99,13 +127,6 @@ export class ProductDetail {
     });
   }
 
-  private static readonly SIZE_ORDER: string[] = [
-    'xxs', 'xs', 'xs/s', 's', 's/m', 'm', 'm/l', 'l', 'l/xl', 'xl', 'xl/xxl', 'xxl', '2xl', '3xl', '4xl', '5xl',
-    'one size', 'one-size',
-    '70a', '70b', '70c', '70d', '75a', '75b', '75c', '75d',
-    '80a', '80b', '80c', '80d', '85a', '85b', '85c', '85d',
-  ];
-
   private setProduct(product: Product | null) {
     this.product.set(product);
     this.quantity = 1;
@@ -114,7 +135,8 @@ export class ProductDetail {
     if (!product) {
       this.productNotFound.set(true);
       this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
-      if (this.responseInit) {
+      // 301 на мастера уже выставлен резолвером (погашенная карточка модели): не затираем его 404
+      if (this.responseInit && this.responseInit.status !== 301) {
         this.responseInit.status = 404;
         this.responseInit.statusText = 'Not Found';
       }
@@ -123,9 +145,8 @@ export class ProductDetail {
     this.productNotFound.set(false);
     if (product) {
       if (product.variants?.length) {
-        product.variants.sort((a, b) => this.compareSizes(a.size, b.size));
+        product.variants.sort((a, b) => compareSizes(a.size, b.size));
       }
-      this.mainImage = product.imageURL;
       this.trackViewItem(product);
       this.recentlyViewedService.addProduct(product);
       if (product.variants && product.variants.length > 0) {
@@ -133,7 +154,9 @@ export class ProductDetail {
         const preselected = variantParam
           ? product.variants.find(v => String(v.appId) === variantParam)
           : null;
-        const firstAvailable = preselected || product.variants.find(v => v.available && v.inStock) || product.variants[0];
+        // ?size= приходит со свотча соседней карточки модели: берём тот же размер, если он в наличии
+        const sameSize = preselected ? undefined : findVariantBySize(product.variants, this.route.snapshot.queryParamMap.get('size'));
+        const firstAvailable = preselected || sameSize || pickInitialVariant(product.variants, product.appId ?? product.id)!; // API отдаёт id карточки, appId у товара пуст
         this.selectVariant(firstAvailable);
       }
     }
@@ -157,25 +180,15 @@ export class ProductDetail {
     }
   }
 
-  private compareSizes(a?: string, b?: string): number {
-    if (!a && !b) return 0;
-    if (!a) return 1;
-    if (!b) return -1;
-    const idxA = ProductDetail.SIZE_ORDER.indexOf(a.toLowerCase());
-    const idxB = ProductDetail.SIZE_ORDER.indexOf(b.toLowerCase());
-    if (idxA === -1 && idxB === -1) return a.localeCompare(b, undefined, {numeric: true});
-    if (idxA === -1) return 1;
-    if (idxB === -1) return -1;
-    return idxA - idxB;
-  }
-
   addProductInCart() {
     let cartItem: CartItem;
     const product = this.product()!;
     const variant = this.selectedVariant();
 
     if (variant) {
-      const size: Size = { sizeType: variant.size, available: true };
+      // вариант без подписи размера (блок «Размер» скрыт) кладём в корзину как товар без размеров, но с appId
+      const label = sizeLabel(variant);
+      const size: Size | undefined = label ? { sizeType: variant.size, available: true } : undefined;
       cartItem = new CartItem(product, this.quantity, size, variant.appId);
     } else if (product.productSizes && product.productSizes.length > 0) {
       const sizeType = this.currentSize || product.productSizes.find(s => s.available)?.sizeType || product.productSizes[0].sizeType;

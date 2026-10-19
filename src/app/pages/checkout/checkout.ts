@@ -29,6 +29,22 @@ import {ProductService} from '../../@core/api/product';
 import {MessageService} from 'primeng/api';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {ProductPrice} from '../../shared/components/product/product-price/product-price';
+import {Slugify} from '../../@core/services/slugify';
+import {MetaService} from '../../@core/services/meta.service';
+
+/** Above this many items the order summary list gets its own scroll. */
+export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
+/** Above this many items the order summary card stops being sticky. */
+export const SUMMARY_STATIC_ITEMS_THRESHOLD = 3;
+const NO_IMAGE = 'assets/images/no-image.png';
+
+/** Detail of a 409 PRODUCT_UNAVAILABLE response (master appId, variantAppId may be null). */
+export interface UnavailableProduct {
+  appId?: number | string | null;
+  productId?: number | string | null;
+  variantAppId?: number | null;
+  productName?: string;
+}
 
 type Step = 'information' | 'shipping' | 'payment';
 
@@ -68,9 +84,11 @@ export class Checkout implements OnInit, OnDestroy {
   isSubmitting = signal(false);
   orderError = signal<string | null>(null);
   shippingError = signal<string | null>(null);
+  unavailable = signal<UnavailableProduct[]>([]);
 
   private fb = inject(FormBuilder);
   private meta = inject(Meta);
+  private metaService = inject(MetaService);
   private cartService = inject(CartUi);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -83,15 +101,33 @@ export class Checkout implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private ga = inject(GoogleAnalytics);
   private platformId = inject(PLATFORM_ID);
+  private slugify = inject(Slugify);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
 
+  readonly noImage = NO_IMAGE;
+  readonly manyItemsThreshold = SUMMARY_MANY_ITEMS_THRESHOLD;
+  readonly staticItemsThreshold = SUMMARY_STATIC_ITEMS_THRESHOLD;
+
+  itemUrl(item: CartItem): string[] {
+    return this.slugify.productUrl(this.activeLang(), item.product.id!, item.product.name ?? '');
+  }
+
+  onItemImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.getAttribute('src') !== NO_IMAGE) {
+      img.src = NO_IMAGE;
+    }
+  }
+
   ngOnInit(): void {
     this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    this.setPageTitle(this.activeLang());
     // Ensure language is synced with URL
     this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const lang = params['lang'];
+      if (lang === 'ro' || lang === 'ru') this.setPageTitle(lang);
       if (lang && (lang === 'ro' || lang === 'ru') && this.activeLang() !== lang) {
         this.langService.setLanguage(lang);
       }
@@ -126,10 +162,20 @@ export class Checkout implements OnInit, OnDestroy {
     });
   }
 
+  private setPageTitle(lang: string): void {
+    this.metaService.updateTitle(
+      lang === 'ru' ? 'Оформление заказа | Secret Room' : 'Finalizarea comenzii | Secret Room'
+    );
+  }
+
   private loadCart(): void {
     this.cartItems = this.cartService.loadCartItemsFromStorage();
     if (this.cartItems.length === 0) {
-      this.router.navigate(['/', this.activeLang()]);
+      // On the server the cart (localStorage) is always empty — redirecting there would
+      // bounce every direct visit / F5 on /checkout to the home page.
+      if (isPlatformBrowser(this.platformId)) {
+        this.router.navigate(['/', this.activeLang()]);
+      }
       return;
     }
     this.cartService.computeCartTotals();
@@ -332,7 +378,35 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   canSubmit(): boolean {
-    return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0;
+    return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0 && !this.hasUnavailableItems();
+  }
+
+  isUnavailable(item: CartItem): boolean {
+    return this.unavailable().some(d => {
+      const id = d.appId ?? d.productId;
+      if (id == null || String(item.product.id) !== String(id)) return false;
+      return d.variantAppId == null || item.variantAppId === d.variantAppId;
+    });
+  }
+
+  hasUnavailableItems(): boolean {
+    return this.cartItems.some(item => this.isUnavailable(item));
+  }
+
+  /** Removes from the cart every item the backend reported as no longer available. */
+  removeUnavailableItems(): void {
+    for (let i = this.cartItems.length - 1; i >= 0; i--) {
+      if (this.isUnavailable(this.cartItems[i])) {
+        this.cartService.deleteItemFromCart(i);
+      }
+    }
+    this.unavailable.set([]);
+    this.orderError.set(null);
+    this.updateShippingCost();
+    this.cdr.detectChanges();
+    if (this.cartItems.length === 0) {
+      this.router.navigate(['/', this.activeLang()]);
+    }
   }
 
   onSubmit(): void {
@@ -419,6 +493,11 @@ export class Checkout implements OnInit, OnDestroy {
               this.orderError.set('checkout.outOfStockGeneric');
             }
             this.validateCart();
+          } else if (error.status === 409 && error.error?.error === 'PRODUCT_UNAVAILABLE') {
+            const details: UnavailableProduct[] = error.error?.details ?? [];
+            this.unavailable.set(details);
+            const names = details.map(d => d.productName).filter(Boolean).join(', ');
+            this.orderError.set(this.translocoService.translate('checkout.productUnavailable', { name: names }));
           } else if (errorMessage.includes('Product with id')) {
             this.orderError.set('checkout.productNotFoundInCart');
             this.validateCart();
@@ -443,6 +522,7 @@ export class Checkout implements OnInit, OnDestroy {
 
   dismissError(): void {
     this.orderError.set(null);
+    this.unavailable.set([]);
   }
 
   retryLoadShipping(): void {

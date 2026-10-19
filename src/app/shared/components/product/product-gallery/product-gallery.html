@@ -1,0 +1,101 @@
+@if (count() > 0) {
+  <div class="gallery">
+    <div class="viewport" tabindex="0" role="button" [attr.aria-label]="'OpenPhoto' | transloco"
+         (keydown)="onViewportKeydown($event)" (click)="openZoom()">
+      <div
+        #mainTrack
+        class="track"
+        (scroll)="onMainScroll(mainTrack)"
+      >
+        @for (slide of slides(); track slide.key) {
+          <div class="slide" [attr.aria-hidden]="slide.clone ? 'true' : null">
+            <img
+              [src]="slide.url"
+              [alt]="slide.clone ? '' : slide.alt"
+              width="550"
+              height="550"
+              [attr.loading]="isEager(slide) ? 'eager' : 'lazy'"
+              [attr.fetchpriority]="isEager(slide) ? 'high' : null"
+              decoding="async"
+              draggable="false"
+              (error)="onImageError($event)"
+            />
+          </div>
+        }
+      </div>
+
+      @if (multiple()) {
+        <button type="button" class="arrow arrow-prev" [attr.aria-label]="'PreviousPhoto' | transloco"
+                (click)="$event.stopPropagation(); prev()">
+          <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="arrow arrow-next" [attr.aria-label]="'NextPhoto' | transloco"
+                (click)="$event.stopPropagation(); next()">
+          <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+
+    @if (multiple()) {
+      <div class="thumbnails">
+        @for (item of items(); track $index) {
+          <button
+            type="button"
+            class="thumb"
+            [class.active]="$index === selectedIndex()"
+            [attr.aria-current]="$index === selectedIndex() ? 'true' : null"
+            [attr.aria-label]="item.alt"
+            (click)="select($index)"
+          >
+            <img [src]="item.url" alt="" loading="lazy" width="80" height="80" (error)="onImageError($event)"/>
+          </button>
+        }
+      </div>
+    }
+
+    <dialog
+      #zoomDialog
+      class="lightbox"
+      (click)="onLightboxClick($event)"
+      (close)="closeZoom()"
+      (keydown)="onKeydown($event)"
+    >
+      @if (zoomOpen()) {
+        <button type="button" class="lightbox-close" [attr.aria-label]="'ClosePhoto' | transloco"
+                (click)="$event.stopPropagation(); closeZoom()">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+        <div
+          #zoomTrack
+          class="lightbox-track"
+          [class.zoomed]="isZoomed()"
+          (click)="$event.stopPropagation()"
+          (scroll)="onZoomScroll(zoomTrack)"
+        >
+          @for (slide of slides(); track slide.key) {
+            <div class="lightbox-slide" [attr.aria-hidden]="slide.clone ? 'true' : null">
+              <img
+                [src]="slide.url"
+                [alt]="slide.clone ? '' : slide.alt"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+                (error)="onImageError($event)"
+                [style.transform]="zoomTransform(slide)"
+                (dblclick)="onZoomDoubleClick($event)"
+                (pointerdown)="onZoomPointerDown($event)"
+                (pointermove)="onZoomPointerMove($event)"
+                (pointerup)="onZoomPointerUp($event)"
+                (pointercancel)="onZoomPointerUp($event)"
+                (pointerleave)="onZoomPointerUp($event)"
+              />
+            </div>
+          }
+        </div>
+        @if (multiple()) {
+          <div class="lightbox-counter">{{ selectedIndex() + 1 }} / {{ count() }}</div>
+        }
+      }
+    </dialog>
+  </div>
+}

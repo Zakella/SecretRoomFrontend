@@ -11,6 +11,7 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {Language} from '../../@core/services/language';
 import {CartUi} from '../../shared/components/cart/services/cart';
+import {AddedToCart} from '../../shared/components/cart/services/added-to-cart';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {FormsModule} from '@angular/forms';
 import {CategoryService} from '../../@core/api/category';
@@ -51,6 +52,7 @@ export class Header implements OnInit {
   public slugify = inject(Slugify);
   public activeLang = this.langService.currentLanguage;
   public cartCount = this.cartService.cartCount;
+  public addedTick = inject(AddedToCart).addedTick;
   public languages = ['ro', 'ru'];
   headerItems = signal<any[] | null>([]);
   activeBrand = signal<Brand | null>(null);

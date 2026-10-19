@@ -1,10 +1,15 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpContext, HttpParams} from '@angular/common/http';
+import {SKIP_LOADER} from '../interceptors/loader-interceptor';
 import {Observable} from 'rxjs';
 import {GetResponse} from '../../entities/get-response';
 import {Product} from '../../entities/product';
 import {FilterGroup} from '../../entities/filter-group';
+
+export interface ProductRedirect {
+  redirectToAppId: number;
+}
 
 @Injectable(
   {
@@ -40,8 +45,18 @@ export class ProductService {
   }
 
 
-  getProductById(id: string | null): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`)
+  getProductById(id: string | null, silent = false): Observable<Product> {
+    // silent — фоновая проверка без глобального лоадера (SKIP_LOADER читает LoaderInterceptor)
+    const context = silent ? new HttpContext().set(SKIP_LOADER, true) : undefined;
+    return this.http.get<Product>(`${this.baseUrL}/findProduct/${id}`, {context})
+  }
+
+  /**
+   * Куда переехала погашенная карточка модели. 200 → {redirectToAppId}, 404 → редиректа нет.
+   * Публичный метод, без токена. Спрашивать только после 404 от findProduct.
+   */
+  getRedirect(id: string | null): Observable<ProductRedirect> {
+    return this.http.get<ProductRedirect>(`${this.baseUrL}/redirect/${id}`)
   }
 
   getBestSellers(page: number, size: number, brand?: string, filters?: string): Observable<GetResponse> {
@@ -70,12 +85,18 @@ export class ProductService {
     return this.http.get<GetResponse>(`${this.baseUrL}/new-arrivals`, {params});
   }
 
-  getFiltersForBestsellers(): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.baseUrL}/bestsellers/filters`);
+  getFiltersForBestsellers(filters?: string, brand?: string): Observable<FilterGroup[]> {
+    let params = new HttpParams();
+    if (filters) params = params.set('filters', filters);
+    if (brand) params = params.set('brand', brand);
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/bestsellers/filters`, {params});
   }
 
-  getFiltersForNewArrivals(): Observable<FilterGroup[]> {
-    return this.http.get<FilterGroup[]>(`${this.baseUrL}/new-arrivals/filters`);
+  getFiltersForNewArrivals(filters?: string, brand?: string): Observable<FilterGroup[]> {
+    let params = new HttpParams();
+    if (filters) params = params.set('filters', filters);
+    if (brand) params = params.set('brand', brand);
+    return this.http.get<FilterGroup[]>(`${this.baseUrL}/new-arrivals/filters`, {params});
   }
 
   getBrandsForBestsellers(): Observable<{brand: string, brandAlias: string}[]> {
