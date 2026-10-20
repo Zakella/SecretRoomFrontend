@@ -9,11 +9,12 @@
   }
 }
 
-// Above the cart drawer (1000) and the added-to-cart toast (1050).
+// Above the cart drawer (1000), the added-to-cart toast (1050) and the mobile bottom nav (20000):
+// the sheet covers the nav instead of sliding under it (SR-202).
 .picker-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1060;
+  z-index: 20010;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,6 +31,10 @@
   border: 1px solid rgba(181, 133, 95, 0.2);
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: pickerIn 0.3s cubic-bezier(0.2, 1, 0.3, 1);
 }
 
@@ -142,6 +147,8 @@
   .picker {
     width: 100%;
     border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    max-height: 85dvh;
     padding-bottom: calc(1.4rem + env(safe-area-inset-bottom, 0px));
   }
 }
