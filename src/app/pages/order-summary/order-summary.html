@@ -62,7 +62,7 @@
             <p>{{ orderReview()!.customer.firstName }} {{ orderReview()!.customer.lastName }}</p>
             <p>{{ orderReview()!.shippingAddress.street }}</p>
             <p>{{ orderReview()!.shippingAddress.city }}, {{ orderReview()!.shippingAddress.zipCode }}</p>
-            <p>{{ orderReview()!.shippingAddress.country }}</p>
+            <p>{{ orderReview()!.shippingAddress.country | transloco }}</p>
             <p>{{ orderReview()!.customer.phone }}</p>
           </div>
         </div>
