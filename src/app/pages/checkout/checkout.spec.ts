@@ -55,7 +55,7 @@ describe('Checkout order summary', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -147,7 +147,7 @@ describe('Checkout empty cart / SSR', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -210,7 +210,7 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {placeOrder}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);

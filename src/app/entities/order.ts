@@ -20,12 +20,13 @@ export interface Order {
   trackingNumber?: string;
 }
 
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus = 'PAYMENT_WAITING' | 'PAYMENT_FAILED' | 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
 export interface OrderItem {
   product: Product;
   sizeType?: string;
   variantAppId?: number;
+  price?: number;
   amount: number;
   quantity: number;
 }
