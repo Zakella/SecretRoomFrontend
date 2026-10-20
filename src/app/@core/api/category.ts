@@ -92,16 +92,18 @@ export class CategoryService {
 
   getCategoryBySlug(slug: string): Observable<Category | null> {
     return this.getCategories().pipe(
-      map(categories => {
-        const flatCategories = this.flattenCategories(categories);
-        return flatCategories.find(c =>
-          c.slug === slug
-          || this.slugify.transform(c.name) === slug
-          || this.slugify.transform(c.nameRo) === slug
-          || this.slugify.transform(c.nameRu) === slug
-        ) || null;
-      })
+      map(categories => this.findCategoryBySlug(categories, slug))
     );
+  }
+
+  /** Pure lookup in an already loaded hierarchy (any depth) — no request, so callers holding the list don't refetch it. */
+  findCategoryBySlug(categories: Category[], slug: string): Category | null {
+    return this.flattenCategories(categories).find(c =>
+      c.slug === slug
+      || this.slugify.transform(c.name) === slug
+      || this.slugify.transform(c.nameRo) === slug
+      || this.slugify.transform(c.nameRu) === slug
+    ) || null;
   }
 
   private flattenCategories(categories: Category[]): Category[] {

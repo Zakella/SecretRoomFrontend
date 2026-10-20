@@ -1,11 +1,11 @@
 import {Injectable, PLATFORM_ID, RESPONSE_INIT, inject} from '@angular/core';
 import {isPlatformServer} from '@angular/common';
-import {HttpErrorResponse} from '@angular/common/http';
 import {Resolve, ActivatedRouteSnapshot, RedirectCommand, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable, of, catchError, map, switchMap, timeout} from 'rxjs';
 import {Product} from '../../../entities/product';
 import {ProductService} from '../../../@core/api/product';
 import {Slugify} from '../../../@core/services/slugify';
+import {isProductNotFoundError, productLoadErrorHandler} from './product-load-error';
 
 /** Таймаут на два доп. запроса (redirect + карточка мастера): не держим рендер 404-страницы. */
 const REDIRECT_LOOKUP_TIMEOUT_MS = 5000;
@@ -17,7 +17,7 @@ const REDIRECT_LOOKUP_TIMEOUT_MS = 5000;
  *  - SSR: настоящий HTTP 301 + Location одним шагом (RESPONSE_INIT), слаг мастера берём из его карточки,
  *    поэтому middleware слагов в server.ts не делает второй 301;
  *  - браузер (избранное, «недавно смотрели», корзина хранят старые id): RedirectCommand с replaceUrl.
- * Любой другой исход (redirect 404, мастер не найден, 5xx/таймаут) — как раньше: null → страница «не найден» с 404.
+ * redirect 404 / мастер не найден → null → страница «не найден» с 404; сбой API/таймаут на SSR → 503 + Retry-After (SR-96).
  * Запрос redirect уходит ТОЛЬКО после 404 от findProduct: у активной карточки число запросов прежнее.
  */
 @Injectable({providedIn: 'root'})
@@ -27,6 +27,7 @@ export class ProductResolver implements Resolve<Product | null> {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private responseInit = inject(RESPONSE_INIT, {optional: true});
+  private onLoadError = productLoadErrorHandler();
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Product | RedirectCommand | null> {
     const id = route.paramMap.get('id');
@@ -34,9 +35,9 @@ export class ProductResolver implements Resolve<Product | null> {
 
     return this.productService.getProductById(id).pipe(
       catchError((err: unknown) =>
-        err instanceof HttpErrorResponse && err.status === 404
+        isProductNotFoundError(err)
           ? this.followRedirect(id, route, state)
-          : of(null))
+          : this.onLoadError(err))
     );
   }
 
@@ -51,7 +52,8 @@ export class ProductResolver implements Resolve<Product | null> {
           map(master => this.redirectTo(masterId, master, route, state))
         );
       }),
-      catchError(() => of(null))
+      // redirect/мастер: 404 → «не найден» (404); сбой API/таймаут на SSR → 503 + Retry-After, как у карточки
+      catchError((err: unknown) => this.onLoadError(err))
     );
   }
 

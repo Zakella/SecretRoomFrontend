@@ -47,12 +47,108 @@ app.use((req, res, next) => {
 });
 
 /**
+ * SR-103: catalog pagination lives in ?page=N. Only an integer N >= 2 without leading zeros is a page
+ * (same rule as src/app/@core/services/catalog-page.ts); page 1 is the clean URL.
+ * page=1, 0, -2, abc, 02, an empty or repeated page → 301 to the same path without it.
+ * Every redirect that lands on a catalog URL builds its query with catalogQuery(), so a junk page is dropped
+ * in the same hop (no chain like /catalog/vs?page=1 → brand?page=1 → brand).
+ */
+const CATALOG_PATH = /^\/(ro|ru)\/catalog\//i;
+const CATALOG_PAGE = /^[1-9]\d{0,8}$/;
+
+function isPageParam(part: string): boolean {
+  const key = part.split('=')[0];
+  try {
+    return decodeURIComponent(key) === 'page';
+  } catch {
+    return false;
+  }
+}
+
+/** Query string ('?…' or '') of a catalog URL with a junk page parameter dropped; other parameters kept verbatim. */
+function catalogQuery(originalUrl: string): string {
+  const start = originalUrl.indexOf('?');
+  if (start < 0) return '';
+  const parts = originalUrl.slice(start + 1).split('&').filter(Boolean);
+  const pages = parts.filter(isPageParam);
+  const value = pages.length === 1 ? pages[0].slice(pages[0].indexOf('=') + 1) : '';
+  const keepPage = pages.length === 1 && pages[0].includes('=') && CATALOG_PAGE.test(value) && value !== '1';
+  const kept = keepPage ? parts : parts.filter(p => !isPageParam(p));
+  return kept.length ? `?${kept.join('&')}` : '';
+}
+
+/** Query to carry over when redirecting to `targetPath`: catalog URLs get the page clean-up, others stay as is. */
+function queryFor(targetPath: string, originalUrl: string, path: string): string {
+  return CATALOG_PATH.test(targetPath) ? catalogQuery(originalUrl) : originalUrl.slice(path.length);
+}
+
+/**
+ * SR-97: /{lang}/catalog/vs and /{lang}/catalog/bb duplicated the brand pages — glue them with 301.
+ * Registered BEFORE the lowercase (SR-96) and trailing-slash middlewares on purpose: Express routing is non-strict and
+ * case-insensitive, so /ro/catalog/vs/ and /RO/catalog/VS land here too and get ONE hop straight
+ * to the final brand URL (no slash → brand chain). Query string is kept as is.
+ */
+const BRAND_PAGE_BY_LEGACY_TAG = new Map<string, string>([
+  ['vs', '/catalog/brand/victorias-secret'],
+  ['bb', '/catalog/brand/bath-and-body'],
+]);
+
+app.get('/:lang/catalog/:tag', (req, res, next) => {
+  const lang = req.params['lang'].toLowerCase();
+  const target = BRAND_PAGE_BY_LEGACY_TAG.get(req.params['tag'].toLowerCase());
+  if (!LANGUAGES.includes(lang) || !target) return next();
+  res.redirect(301, `/${lang}${target}${catalogQuery(req.originalUrl)}`);
+});
+
+/**
+ * SR-96: адрес с заглавными буквами → 301 на lowercase, query сохраняется.
+ * /RO/catalog/Sutiene/?a=1 → /ro/catalog/sutiene?a=1 — один хоп вместе со снятием слэша,
+ * поэтому стоит ДО middleware слэша (иначе слэш и регистр дали бы цепочку из двух 301).
+ *
+ * Трогаем только страницы сайта — первый сегмент ro/ru в любом регистре. Поэтому мимо идут
+ * /api, ассеты из browser dist и public/ (favicon.ico, stores/… — регистр имён сохраняется),
+ * sitemap, легаси /vs, /bb (их маршруты Express и так регистронезависимы) и чужие языки
+ * (/EN/… → 404 без лишнего хопа). Плюс не трогаем не-GET/HEAD и файлы с расширением.
+ * Percent-escape (%D0%B1) не считаем заглавными — иначе Cloudflare-нормализация зациклит редирект.
+ * Карточку товара с языком в нижнем регистре оставляем слаг-middleware: он сам ведёт
+ * на канонический слаг одним хопом. Номер заказа и поисковый запрос — регистр сохраняем.
+ */
+const CASE_SENSITIVE_SECTIONS = new Set(['order', 'order-success', 'search']);
+
+function toLowercasePath(path: string): string {
+  const lower = (part: string) => part.replace(/(%[0-9A-Fa-f]{2})|[^%]+/g, (m, esc) => esc ?? m.toLowerCase());
+  const segments = path.split('/');
+  if (segments.length > 3 && CASE_SENSITIVE_SECTIONS.has(lower(segments[2]))) {
+    return [...segments.slice(0, 3).map(lower), ...segments.slice(3)].join('/');
+  }
+  return lower(path);
+}
+
+function redirectToLowercase(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  const path = req.path;
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  if (!/[A-Z]/.test(path.replace(/%[0-9A-Fa-f]{2}/g, ''))) return next();
+  if (!/^\/(ro|ru)(\/|$)/i.test(path)) return next();
+  const segments = path.split('/');
+  if (/\.[A-Za-z0-9]+$/.test(segments[segments.length - 1])) return next();
+  if (/^\/(ro|ru)\/product\/\d+\//.test(path)) return next();
+
+  let target = toLowercasePath(path);
+  if (target !== '/' && target.endsWith('/')) target = target.replace(/\/+$/, '') || '/';
+  if (target === path) return next();
+  res.redirect(301, target + queryFor(target, req.originalUrl, req.path));
+}
+
+app.use(redirectToLowercase);
+
+/**
  * Remove trailing slashes (301 redirect) to avoid duplicate URLs.
  */
 app.use((req, res, next) => {
   if (req.path !== '/' && req.path.endsWith('/')) {
-    const query = req.url.slice(req.path.length);
-    res.redirect(301, req.path.slice(0, -1) + query);
+    const target = req.path.slice(0, -1);
+    const query = CATALOG_PATH.test(target) ? catalogQuery(req.url) : req.url.slice(req.path.length);
+    res.redirect(301, target + query);
   } else {
     next();
   }
@@ -78,6 +174,7 @@ const LANGUAGES = ['ro', 'ru'];
  * Так в Search Console видно покрытие отдельно по товарам, категориям, брендам и статике:
  * если товары снова перестанут попадать в карту (как было с updatedAt-массивом), это будет
  * видно сразу по счётчику своей секции, а не размажется по общему числу URL.
+ * changefreq и priority не выводим (SR-101): Google их игнорирует.
  */
 type SitemapSection = 'static' | 'categories' | 'brands' | 'products';
 const SITEMAP_SECTIONS: SitemapSection[] = ['static', 'categories', 'brands', 'products'];
@@ -176,8 +273,8 @@ function getProductSlugs(): Map<string, string> | null {
 }
 
 /**
- * lastmod из updatedAt. Бэкенд отдаёт его массивом [yyyy, M, d, ...] (Jackson без JavaTimeModule),
- * но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
+ * lastmod из даты бэкенда (у товаров — contentUpdatedAt). Бэкенд отдаёт её массивом [yyyy, M, d, ...]
+ * (Jackson без JavaTimeModule), но может отдать и ISO-строку. Ни один формат не должен ронять генерацию sitemap.
  * Дату определить не удалось → null: тег не выводим вовсе, это честнее подстановки «сегодня».
  */
 function toLastmod(value: unknown): string | null {
@@ -204,36 +301,59 @@ function lastmodTag(lastmod: string | null): string {
   return lastmod ? `<lastmod>${lastmod}</lastmod>` : '';
 }
 
+/** xmlns:image объявлен во всех секциях (без вреда), image:image есть только у товаров. */
 function urlset(urls: string[]): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
 }
 
-/** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится. */
-function langUrls(path: string, changefreq: string, priority: string, lastmod: string | null = null): string[] {
+/** SR-101: фото товара для image-sitemap — не больше 3 на URL, пустые и не-строки пропускаем. */
+const MAX_SITEMAP_IMAGES = 3;
+
+/** image:loc: без изменчивого ?v=/хэша и с percent-encoding кириллицы в пути (URL не кодирует уже закодированное). */
+function normalizeImageUrl(raw: string): string {
+  try {
+    const u = new URL(raw.trim());
+    u.search = '';
+    u.hash = '';
+    return u.href;
+  } catch {
+    return raw.trim();
+  }
+}
+
+function sitemapImages(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((url): url is string => typeof url === 'string' && url.trim() !== '')
+    .slice(0, MAX_SITEMAP_IMAGES)
+    .map(normalizeImageUrl);
+}
+
+/** Пара ro/ru URL с перекрёстными hreflang. lastmod = null → тег не выводится; images → image:image в каждом языке. */
+function langUrls(path: string, lastmod: string | null = null, images: string[] = []): string[] {
   const alternates = LANGUAGES
     .map(l => `<xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(`${SITE_URL}/${l}${path}`)}" />`)
     .join('')
     + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/ro${path}`)}" />`;
+  const imageTags = images.map(url => `<image:image><image:loc>${escapeXml(url)}</image:loc></image:image>`).join('');
 
   return LANGUAGES.map(lang =>
-    `<url><loc>${escapeXml(`${SITE_URL}/${lang}${path}`)}</loc>${lastmodTag(lastmod)}`
-    + `<changefreq>${changefreq}</changefreq><priority>${priority}</priority>${alternates}</url>`
+    `<url><loc>${escapeXml(`${SITE_URL}/${lang}${path}`)}</loc>${lastmodTag(lastmod)}${alternates}${imageTags}</url>`
   );
 }
 
 interface SitemapPart { xml: string; lastmod: string | null }
 
-const STATIC_PAGES = [
-  { path: '', changefreq: 'daily', priority: '1.0' },
-  { path: '/about-the-secret-room', changefreq: 'monthly', priority: '0.6' },
-  { path: '/contacts', changefreq: 'monthly', priority: '0.5' },
-  { path: '/delivery-terms', changefreq: 'monthly', priority: '0.5' },
-  { path: '/brands', changefreq: 'weekly', priority: '0.7' },
-  { path: '/catalog/vs', changefreq: 'daily', priority: '0.9' },
-  { path: '/catalog/bb', changefreq: 'daily', priority: '0.9' },
-  { path: '/catalog/bestsellers', changefreq: 'daily', priority: '0.8' },
-  { path: '/catalog/new-arrivals', changefreq: 'daily', priority: '0.8' },
-  { path: '/catalog/sales', changefreq: 'daily', priority: '0.8' },
+const STATIC_PAGES: { path: string }[] = [
+  { path: '' },
+  { path: '/about-the-secret-room' },
+  { path: '/contacts' },
+  { path: '/delivery-terms' },
+  { path: '/shipping' },
+  { path: '/brands' },
+  { path: '/catalog/bestsellers' },
+  { path: '/catalog/new-arrivals' },
+  { path: '/catalog/sales' },
 ];
 
 /**
@@ -241,11 +361,16 @@ const STATIC_PAGES = [
  * lastmod не выводим (спецификация sitemap его не требует).
  */
 function generateStaticSitemap(): SitemapPart {
-  const urls = STATIC_PAGES.flatMap(page => langUrls(page.path, page.changefreq, page.priority));
+  const urls = STATIC_PAGES.flatMap(page => langUrls(page.path));
   return { xml: urlset(urls), lastmod: null };
 }
 
-/** Товары — единственная секция с настоящим lastmod: он приходит в products/sitemap. */
+/**
+ * Товары — единственная секция с настоящим lastmod: contentUpdatedAt из products/sitemap (дата реального
+ * изменения содержимого). updatedAt не берём — он врёт (меняется у всех товаров разом). Нет contentUpdatedAt
+ * (null или старый бэкенд без поля) → тега нет. lastmod секции в индексе — самый свежий contentUpdatedAt или null.
+ * imageUrls → image:image (у старого бэкенда поля нет — тегов нет).
+ */
 async function generateProductsSitemap(): Promise<SitemapPart> {
   const res = await fetch(`${API_BASE}products/sitemap`);
   if (!res.ok) throw new Error(`products/sitemap returned ${res.status}`);
@@ -257,9 +382,9 @@ async function generateProductsSitemap(): Promise<SitemapPart> {
   let newest: string | null = null;
   for (const product of products) {
     const slug = slugify(product.name || product.nameRo || '');
-    const lastmod = toLastmod(product.updatedAt);
+    const lastmod = toLastmod(product.contentUpdatedAt);
     if (lastmod && (!newest || lastmod > newest)) newest = lastmod;
-    urls.push(...langUrls(`/product/${product.appId}/${slug}`, 'weekly', '0.8', lastmod));
+    urls.push(...langUrls(`/product/${product.appId}/${slug}`, lastmod, sitemapImages(product.imageUrls)));
   }
   console.log(`Sitemap: ${products.length} products added`);
   return { xml: urlset(urls), lastmod: newest };
@@ -284,7 +409,7 @@ async function generateCategoriesSitemap(): Promise<SitemapPart> {
       + `<xhtml:link rel="alternate" hreflang="ru" href="${escapeXml(ruLoc)}" />`
       + `<xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(roLoc)}" />`;
     for (const loc of [roLoc, ruLoc]) {
-      urls.push(`<url><loc>${escapeXml(loc)}</loc><changefreq>weekly</changefreq><priority>0.7</priority>${alternates}</url>`);
+      urls.push(`<url><loc>${escapeXml(loc)}</loc>${alternates}</url>`);
     }
   }
   return { xml: urlset(urls), lastmod: null };
@@ -296,7 +421,7 @@ async function generateBrandsSitemap(): Promise<SitemapPart> {
   if (!res.ok) throw new Error(`products/brands returned ${res.status}`);
   const brands: any[] = await res.json();
   const urls = brands.flatMap((brand: any) =>
-    langUrls(`/catalog/brand/${brandSlug(brand.brand || '')}`, 'weekly', '0.7')
+    langUrls(`/catalog/brand/${brandSlug(brand.brand || '')}`)
   );
   return { xml: urlset(urls), lastmod: null };
 }
@@ -367,6 +492,15 @@ app.get('/robots.txt', (req, res) => {
 });
 
 /**
+ * SR-96: /index.html → 301 /ro. Без этого Angular SSR сам срезал /index.html до «/»,
+ * а роутерный редирект '' → 'ro' отдавал 302. /ro/index.html, /ru/index.html — 301 на язык.
+ */
+app.get(/^\/(?:(ro|ru)\/)?index\.html$/, (req, res) => {
+  // Цель — только /ro или /ru: адрес из пути не берём, иначе //evil.com/index.html дал бы open redirect.
+  res.redirect(301, `/${req.params[0] ?? 'ro'}` + req.originalUrl.slice(req.path.length));
+});
+
+/**
  * Permanent redirect: root → /ro (instead of Angular's 302)
  */
 app.get('/', (req, res) => {
@@ -392,26 +526,53 @@ app.get(['/vs/product-view/:id', '/bb/product-view/:id'], async (req, res) => {
     }
   } catch { /* fallback below */ }
 
-  res.redirect(301, `/ro/catalog/${brand}`);
+  res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get(brand)}`);
+});
+
+/**
+ * SR-96: легаси /:lang/product-detail/:id → 301 на /:lang/product/:id/:slug одним хопом
+ * (слаг канонический, из того же кэша, что у слаг-middleware, — второго 301 не будет).
+ * Раньше Angular отвечал 302 на битый адрес /ro/product-detail/product/:id/details.
+ * id неизвестен → дальше в Angular (404); кэш слагов пуст (сбой API) → 503.
+ */
+app.get('/:lang/product-detail/:id', async (req, res, next) => {
+  const { lang, id } = req.params;
+  if (!LANGUAGES.includes(lang) || !/^\d+$/.test(id)) return next();
+
+  try {
+    const slugs = getProductSlugs() ?? await refreshProductSlugs();
+    if (slugs.size === 0) {
+      // кэш слагов пуст (API лежит на холодном старте) — «не знаем», а не «нет такого товара»
+      res.set({ 'Retry-After': '120', 'Cache-Control': 'no-store' }).status(503).send('Service Unavailable');
+      return;
+    }
+    const slug = slugs.get(id);
+    if (!slug) return next();
+
+    const query = req.originalUrl.slice(req.path.length);
+    res.redirect(301, `/${lang}/product/${id}/${slug}${query}`);
+    return;
+  } catch { /* fallback to Angular */ }
+  next();
 });
 
 /**
  * 301 redirects for legacy category URLs.
  * Old: /vs/category/ID or /bb/category/ID
- * New: /ro/catalog/vs or /ro/catalog/bb (brand page)
+ * New: /ro/catalog/brand/victorias-secret or /ro/catalog/brand/bath-and-body (final URL, one hop)
  */
 app.get(['/vs/category/:id', '/bb/category/:id'], (req, res) => {
   const brand = req.path.startsWith('/vs') ? 'vs' : 'bb';
-  res.redirect(301, `/ro/catalog/${brand}`);
+  res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get(brand)}`);
 });
 
 /**
- * 301 redirects for legacy brand root and "all products" pages.
+ * 301 redirects for legacy brand root and "all products" pages — straight to the brand page.
  */
-app.get('/vs', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
-app.get('/bb', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
-app.get('/vs/all-vs-products', (_req, res) => res.redirect(301, '/ro/catalog/vs'));
-app.get('/bb/all-bb-products', (_req, res) => res.redirect(301, '/ro/catalog/bb'));
+app.get('/vs', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('vs')}`));
+app.get('/bb', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('bb')}`));
+app.get('/vs/all-vs-products', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('vs')}`));
+app.get('/bb/all-bb-products', (_req, res) => res.redirect(301, `/ro${BRAND_PAGE_BY_LEGACY_TAG.get('bb')}`));
 
 /**
  * 301 redirects for legacy pages without language prefix.
@@ -476,11 +637,27 @@ app.get('/:lang/catalog/:slug', async (req, res, next) => {
 
     const expectedSlug = categorySlug(cat, lang);
     if (expectedSlug && urlSlug !== expectedSlug) {
-      res.redirect(301, `/${lang}/catalog/${expectedSlug}`);
+      // SR-103: keep the query (?page=N) — the wrong-language slug of page 3 is page 3 of the right one
+      res.redirect(301, `/${lang}/catalog/${expectedSlug}${catalogQuery(req.originalUrl)}`);
       return;
     }
   } catch { /* fallback to Angular */ }
   next();
+});
+
+/**
+ * SR-103: junk ?page on a catalog URL (page=1, 0, -2, abc, 02…) → one 301 to the same path without it,
+ * other query parameters kept. A valid page=N (N >= 2) goes on to SSR; a page past the last one is a 404 there.
+ * Registered AFTER every other catalog redirect (vs/bb, lowercase, trailing slash, wrong-language slug): those build
+ * their query with catalogQuery() and drop a junk page in the same hop, so only a URL that is otherwise final lands here.
+ */
+app.use((req, res, next) => {
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || !CATALOG_PATH.test(req.path)) return next();
+  const start = req.originalUrl.indexOf('?');
+  if (start < 0 || !req.originalUrl.slice(start + 1).split('&').some(isPageParam)) return next();
+  const query = catalogQuery(req.originalUrl);
+  if (query.slice(1).split('&').some(isPageParam)) return next();
+  res.redirect(301, req.path + query);
 });
 
 /**

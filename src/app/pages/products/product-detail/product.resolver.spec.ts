@@ -120,32 +120,38 @@ describe('ProductResolver', () => {
       expect(responseInit.status).toBeUndefined();
     });
 
-    it('findProduct 5xx: redirect не спрашиваем, не 301', async () => {
+    it('findProduct 5xx: redirect не спрашиваем, 503', async () => {
       const resolver = setup('server');
       const result = resolve(resolver, '5', 'ro', '/ro/product/5/x');
       find('5').flush(null, serverError);
       expect(await result).toBeNull();
       http.expectNone(r => r.url.includes('/redirect/'));
-      expect(responseInit.status).toBeUndefined();
+      // сбой API на SSR: 503 (SR-96), а не 301 и не 404
+      expect(responseInit.status).toBe(503);
+      expect(responseInit.headers.has('Location')).toBeFalse();
     });
 
-    it('redirect 5xx: не 301', async () => {
+    it('redirect 5xx: 503, не 301', async () => {
       const resolver = setup('server');
       const result = resolve(resolver, '5', 'ro', '/ro/product/5/x');
       find('5').flush(null, notFound);
       redirect('5').flush(null, serverError);
       expect(await result).toBeNull();
-      expect(responseInit.status).toBeUndefined();
+      // сбой API на SSR: 503 (SR-96), а не 301 и не 404
+      expect(responseInit.status).toBe(503);
+      expect(responseInit.headers.has('Location')).toBeFalse();
     });
 
-    it('мастер 5xx: не 301', async () => {
+    it('мастер 5xx: 503, не 301', async () => {
       const resolver = setup('server');
       const result = resolve(resolver, '5', 'ro', '/ro/product/5/x');
       find('5').flush(null, notFound);
       redirect('5').flush({redirectToAppId: 9});
       find('9').flush(null, serverError);
       expect(await result).toBeNull();
-      expect(responseInit.status).toBeUndefined();
+      // сбой API на SSR: 503 (SR-96), а не 301 и не 404
+      expect(responseInit.status).toBe(503);
+      expect(responseInit.headers.has('Location')).toBeFalse();
     });
   });
 

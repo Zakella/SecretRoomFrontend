@@ -4,6 +4,7 @@ import {MainLayout} from './layout/main-layout/main-layout';
 import {BlankLayout} from './layout/blank-layout/blank-layout';
 import {AccessGuard} from './@core/guards/acces-guard';
 import { ProductResolver } from './pages/products/product-detail/product.resolver';
+import {langMatcher} from './lang-matcher';
 
 export const routes: Routes = [
   {
@@ -12,7 +13,8 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: ':lang',
+    // Язык — только ro/ru (lang-matcher.ts); /en, /xx/... уходят в '**' ниже → 404.
+    matcher: langMatcher,
     children: [
       {
         path: '',
@@ -46,11 +48,6 @@ export const routes: Routes = [
               product: ProductResolver
             },
             data: {breadcrumb: {ro: 'Produs', ru: 'Товар'}}
-          },
-          {
-            path: 'product-detail/:id',
-            redirectTo: 'product/:id/details',
-            pathMatch: 'full'
           },
           {
             path: 'contacts',
@@ -114,6 +111,14 @@ export const routes: Routes = [
           {path: '**', loadComponent: () => import('./pages/states/notfound/notfound').then(m => m.Notfound)}
         ]
       }
+    ]
+  },
+  {
+    // Всё вне /ro и /ru — 404 (язык страницы по умолчанию — ro).
+    path: '**',
+    component: BlankLayout,
+    children: [
+      {path: '**', loadComponent: () => import('./pages/states/notfound/notfound').then(m => m.Notfound)}
     ]
   }
 ];

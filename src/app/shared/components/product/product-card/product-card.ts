@@ -37,6 +37,11 @@ export class ProductCard {
   readonly oldPrice = input<number | null>(null);
   readonly discountPercent = input<number>(0);
   readonly showOptions = input<boolean>();
+  /**
+   * Loading of the main image: 'lazy' (default) for cards below the fold,
+   * 'eager' for cards visible on first paint, 'high' — eager plus fetchpriority=high (the LCP candidate).
+   */
+  readonly loadingPriority = input<'lazy' | 'eager' | 'high'>('lazy');
 
   hasDiscount = computed(() => {
     const old = this.oldPrice();
