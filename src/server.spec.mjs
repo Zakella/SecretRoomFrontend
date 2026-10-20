@@ -1107,3 +1107,65 @@ describe('server.ts — SR-103: пагинация каталога ?page=N', ()
     });
   }
 });
+
+/** Сырой GET: node:http отправляет путь как есть (fetch/URL схлопнули бы `//evil.com`). */
+function rawGet(path) {
+  return new Promise((resolve, reject) => {
+    const req = http.request({host: '127.0.0.1', port, path, method: 'GET'}, res => {
+      res.resume();
+      res.on('end', () => resolve({status: res.statusCode, location: res.headers.location}));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+describe('server.ts — SR-198: open redirect', () => {
+  sr96Server();
+
+  const ATTACKS = [
+    '//evil.com',
+    '//evil.com/',
+    '/\\evil.com',
+    '/%2F%2Fevil.com',
+    '/%5Cevil.com',
+    '///evil.com',
+    '/%2f%5cevil.com/',
+    '//evil.com/?a=1',
+  ];
+
+  for (const path of ATTACKS) {
+    it(`${path} не уводит на чужой хост`, async () => {
+      const {status, location} = await rawGet(path);
+      if (status >= 300 && status < 400) {
+        assert.ok(location, 'нет Location');
+        assert.match(location, /^\/(?![/\\])/, `Location ${location} начинается не с одного "/"`);
+        assert.doesNotMatch(location, /^\/(%2f|%5c)/i);
+        assert.equal(new URL(location, 'https://secretroom.md').host, 'secretroom.md');
+      }
+    });
+  }
+
+  it('//evil.com/ → 301 /evil.com, query сохраняется', async () => {
+    assert.deepEqual(await rawGet('//evil.com/'), {status: 301, location: '/evil.com'});
+    assert.deepEqual(await rawGet('//evil.com/?a=1'), {status: 301, location: '/evil.com?a=1'});
+    assert.deepEqual(await rawGet('/%2F%2Fevil.com'), {status: 301, location: '/evil.com'});
+    assert.deepEqual(await rawGet('/\\evil.com'), {status: 301, location: '/evil.com'});
+  });
+
+  it('регресс: обычные SEO-редиректы не изменились', async () => {
+    const cases = [
+      ['/ro/catalog/sutiene/', '/ro/catalog/sutiene'],
+      ['/ro/catalog/sutiene/?a=1', '/ro/catalog/sutiene?a=1'],
+      ['/ro/catalog/vs/', '/ro/catalog/brand/victorias-secret'],
+      ['/RO/Contacts/', '/ro/contacts'],
+      ['/vs', '/ro/catalog/brand/victorias-secret'],
+      ['/', '/ro'],
+      ['//ro/contacts/', '/ro/contacts'],
+      ['//ro/catalog/x?a=1', '/ro/catalog/x?a=1'],
+    ];
+    for (const [from, to] of cases) {
+      assert.deepEqual(await rawGet(from), {status: 301, location: to}, from);
+    }
+  });
+});
