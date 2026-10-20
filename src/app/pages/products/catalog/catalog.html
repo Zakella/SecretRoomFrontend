@@ -185,6 +185,14 @@
         </div>
       }
 
+      <!-- SR-103: entered on ?page=N — a quiet link back to the previous page (page 1 = clean URL) -->
+      @if (firstPage() > 1 && products().length > 0) {
+        <a class="prev-page-link" [routerLink]="basePath()" [queryParams]="prevPageQuery()">
+          <i class="ri-arrow-left-s-line"></i>
+          {{ 'catalog.prevPage' | transloco }}
+        </a>
+      }
+
       @if (products().length > 0) {
         <product-list [products]="products()"/>
       } @else if (isLoading()) {
@@ -193,87 +201,37 @@
         <app-empty-state/>
       }
 
-      @if (!allLoaded() && products().length > 0) {
+      <!-- SR-103: a real link to the next page for crawlers; a plain click appends it in place (loadMore).
+           A filtered list has no href (filters are not in the URL), so it acts as a button: role, tabindex, Enter/Space -->
+      @if (hasNextPage()) {
         <div class="load-more">
-          <button
+          <a
             class="load-more-btn"
-            [disabled]="isLoading()"
+            [attr.href]="nextPageHref()"
+            [attr.role]="nextPageHref() ? null : 'button'"
+            [attr.tabindex]="nextPageHref() ? null : 0"
+            [class.is-disabled]="isLoading()"
+            [attr.aria-disabled]="isLoading() || null"
             (mouseenter)="prefetchNext()"
             (focus)="prefetchNext()"
             (touchstart)="prefetchNext()"
-            (click)="loadMore()"
+            (click)="loadMore($event)"
+            (keydown.enter)="loadMoreByKey($event)"
+            (keydown.space)="loadMoreByKey($event)"
           >
             @if (isLoading()) {
               {{ 'Loading...' | transloco }}
             } @else {
               {{ 'Load more' | transloco }}
             }
-          </button>
+          </a>
         </div>
       }
     </div>
   </div>
 
   <!-- SEO Text Block -->
-  @if (category() === 'vs') {
-    <div class="seo-text-block">
-      @if (activeLang() === 'ro') {
-        <h2>Victoria's Secret în Moldova</h2>
-        <p>
-          Secret Room — magazin de <strong>produse originale Victoria's Secret în Moldova</strong>.
-          Sutiene push-up și bralette, chiloți, pijamale, halate, costume de baie — tot ce ai nevoie, cu mărimi de la XS până la XL.
-        </p>
-        <p>
-          <strong>Parfumuri, loțiuni și spray-uri</strong> din colecțiile Bombshell, Bare Vanilla, Love Spell și altele.
-          Toate produsele sunt originale, importate din SUA. Livrăm în Chișinău și în toată Moldova, achitare la primire.
-        </p>
-        <h3>De ce Secret Room?</h3>
-        <ul>
-          <li>Trei magazine fizice în Chișinău — poți proba înainte de cumpărare</li>
-          <li>Livrare rapidă, plata la primire</li>
-          <li>Ajutor cu alegerea mărimii — scrie-ne pe Instagram sau telefon</li>
-        </ul>
-      } @else {
-        <h2>Victoria's Secret в Молдове</h2>
-        <p>
-          Secret Room — магазин <strong>оригинальной продукции Victoria's Secret в Молдове</strong>.
-          Бюстгальтеры push-up и бралетты, трусики, пижамы, халаты, купальники — все размеры от XS до XL.
-        </p>
-        <p>
-          <strong>Парфюмы, лосьоны и спреи</strong> из коллекций Bombshell, Bare Vanilla, Love Spell и других.
-          Вся продукция оригинальная, импорт из США. Доставка по Кишинёву и всей Молдове, оплата при получении.
-        </p>
-        <h3>Почему Secret Room?</h3>
-        <ul>
-          <li>Три физических магазина в Кишинёве — можно примерить перед покупкой</li>
-          <li>Быстрая доставка, оплата при получении</li>
-          <li>Поможем с выбором размера — пишите в Instagram или звоните</li>
-        </ul>
-      }
-    </div>
-  } @else if (category() === 'bb') {
-    <div class="seo-text-block">
-      @if (activeLang() === 'ro') {
-        <h2>Bath & Body Works în Moldova</h2>
-        <p>
-          <strong>Lumânări cu 3 fitile</strong>, geluri de duș, <strong>loțiuni de corp</strong>, săpunuri spumante și spray-uri parfumate Bath & Body Works —
-          acum în Moldova prin Secret Room. Arome populare: Japanese Cherry Blossom, A Thousand Wishes, Champagne Toast și colecțiile sezoniere.
-        </p>
-        <p>
-          Produse originale din SUA. Comandă online sau vizitează magazinele noastre din Chișinău. Livrare în toată Moldova, achitare la primire.
-        </p>
-      } @else {
-        <h2>Bath & Body Works в Молдове</h2>
-        <p>
-          <strong>Свечи с 3 фитилями</strong>, гели для душа, <strong>лосьоны для тела</strong>, пенящееся мыло и парфюмированные спреи Bath & Body Works —
-          теперь в Молдове через Secret Room. Популярные ароматы: Japanese Cherry Blossom, A Thousand Wishes, Champagne Toast и сезонные коллекции.
-        </p>
-        <p>
-          Оригинальная продукция из США. Закажите онлайн или загляните в наши магазины в Кишинёве. Доставка по всей Молдове, оплата при получении.
-        </p>
-      }
-    </div>
-  } @else if (brandName()) {
+  @if (brandName()) {
     <div class="seo-text-block">
       @if (brandSeo(); as seo) {
         <h2>{{ seo.heading }}</h2>

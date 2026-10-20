@@ -462,6 +462,8 @@
     },
     "otherBrands": "Другие бренды",
     "allBrands": "Все бренды",
+    "pageSuffix": "— страница {{page}}",
+    "prevPage": "Предыдущая страница",
     "h1": {
       "bestsellers": "Хиты продаж",
       "newArrivals": "Новинки",

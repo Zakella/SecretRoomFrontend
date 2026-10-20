@@ -7,7 +7,7 @@ import {
 import {provideRouter, withInMemoryScrolling} from '@angular/router';
 import {routes} from './app.routes';
 import {provideKeepScroll} from './@core/services/keep-scroll';
-import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
+import {provideClientHydration, withEventReplay, withHttpTransferCacheOptions} from '@angular/platform-browser';
 
 import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from '@angular/common/http';
 import {provideTransloco} from '@ngneat/transloco';
@@ -50,7 +50,7 @@ export const appConfig: ApplicationConfig = {
       loader: TranslocateHttpLoader
     }),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
-    provideClientHydration(withHttpTransferCacheOptions({includePostRequests: false})),
+    provideClientHydration(withHttpTransferCacheOptions({includePostRequests: false}), withEventReplay()),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
   ]

@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {Product} from '../../../../entities/product';
 import {RouterLink} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
+import {Slugify} from '../../../../@core/services/slugify';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {LocalizedNamePipe} from '../../../../shared/pipes/localized-name.pipe';
 import {ProductPrice} from '../../../../shared/components/product/product-price/product-price';
@@ -21,7 +22,12 @@ import {ProductPrice} from '../../../../shared/components/product/product-price/
 export class Sales {
   public sales = input<Product[]>([]);
   private languageService = inject(Language);
+  private slugify = inject(Slugify);
   currentLanguage = this.languageService.currentLanguage;
+
+  productUrl(product: Product): string[] {
+    return this.slugify.productUrl(this.currentLanguage(), product.id ?? '', product.name || product.nameRo || '');
+  }
 
   getProductImage(product: Product): string {
     return product.imageURL || '';

@@ -460,6 +460,8 @@
     },
     "otherBrands": "Alte branduri",
     "allBrands": "Toate brandurile",
+    "pageSuffix": "— pagina {{page}}",
+    "prevPage": "Pagina anterioară",
     "h1": {
       "bestsellers": "Bestsellere",
       "newArrivals": "Noutăți",

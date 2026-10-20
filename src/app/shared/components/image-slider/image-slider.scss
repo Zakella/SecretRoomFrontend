@@ -2,11 +2,25 @@
 // HERO SLIDER — Luxury Boutique Style
 // ═══════════════════════════════════════════════════════════════
 
+// The host is a flex item of .image-wrapper: give it its final width up front
+// (it used to be the width of the loaded image, capped by .slide-img max-width),
+// so the slider does not collapse while the active image is still loading.
+:host {
+  display: block;
+  width: 100%;
+  max-width: 1536px;
+}
+
 .carousel-container {
   position: relative;
   width: 100%;
   overflow: hidden;
   background: var(--bg-cream, #faf8f5);
+  // All slides share one grid cell: the height never depends on which slide is active.
+  // A fixed column keeps the slide exactly as wide as the container (an auto track would
+  // grow from the slide's aspect-ratio when its image is a bit taller than 1536/672).
+  display: grid;
+  grid-template-columns: 100%;
 }
 
 .mobile-logo-overlay {
@@ -14,19 +28,29 @@
 }
 
 .slide {
-  display: none;
+  grid-area: 1 / 1;
   position: relative;
   aspect-ratio: 1536 / 672; // Desktop: reserve space before image loads (prevents CLS)
+  // Inactive slides keep their box but are neither painted nor loaded (like display: none)
+  visibility: hidden;
+  content-visibility: hidden;
 
   &.image-active {
-    display: block;
+    visibility: visible;
+    content-visibility: visible;
   }
+}
+
+// Keep the <img> laid out exactly as a direct child of .slide
+.slide-picture {
+  display: contents;
 }
 
 // Blurred background — fills empty space elegantly
 .slide-bg {
   position: absolute;
   inset: -20px; // Extend beyond container to avoid blur edges
+  background-image: var(--bg);
   background-size: cover;
   background-position: center;
   filter: blur(30px) saturate(1.2);
@@ -65,30 +89,38 @@
   z-index: 4;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
-  &.badge-top-right {
-    top: 20px;
-    right: 20px;
-  }
+  // Desktop position; the mobile one (m-badge-*) is applied in the media query below
+  @media not all and (max-width: 768px) {
+    &.badge-top-right {
+      top: 20px;
+      right: 20px;
+    }
 
-  &.badge-top-left {
-    top: 20px;
-    left: 20px;
-  }
+    &.badge-top-left {
+      top: 20px;
+      left: 20px;
+    }
 
-  &.badge-bottom-right {
-    bottom: 20px;
-    right: 20px;
-  }
+    &.badge-bottom-right {
+      bottom: 20px;
+      right: 20px;
+    }
 
-  &.badge-bottom-left {
-    bottom: 20px;
-    left: 20px;
+    &.badge-bottom-left {
+      bottom: 20px;
+      left: 20px;
+    }
   }
 }
 
-// Content overlay — position is controlled by inline styles from component
+// Content overlay — position comes from CSS variables set by the component
 .slide-overlay {
   position: absolute;
+  top: var(--ov-top);
+  bottom: var(--ov-bottom);
+  left: var(--ov-left);
+  right: var(--ov-right);
+  max-width: var(--ov-max-w);
   transform: translateX(-50%);
   text-align: center;
   color: #fff;
@@ -126,8 +158,8 @@
 
 // Subtitle
 .slide-subtitle {
-  font-family: var(--font-body);
-  font-size: 16px;
+  font-family: var(--sub-ff, var(--font-body));
+  font-size: var(--sub-fs, 16px);
   letter-spacing: 0.05em;
   opacity: 0.9;
   line-height: 1.4;
@@ -136,8 +168,8 @@
 }
 
 .slide-title {
-  font-family: var(--font-title, 'Playfair Display', serif);
-  font-size: 2.5rem;
+  font-family: var(--title-ff, var(--font-title, 'Playfair Display', serif));
+  font-size: var(--title-fs, 2.5rem);
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.2;
@@ -227,8 +259,8 @@
   }
 }
 
-// Fade animation
-.fade {
+// Fade animation — replays each time a slide becomes active
+.image-active .fade {
   animation: fade 1.5s ease-in-out;
 }
 
@@ -298,7 +330,7 @@
 
 @media (max-width: 1024px) {
   .slide-title {
-    font-size: 2rem;
+    font-size: var(--title-fs, 2rem);
   }
 
   .btn-carousel {
@@ -329,6 +361,10 @@
     aspect-ratio: 1080 / 1440; // Mobile: portrait aspect ratio
   }
 
+  .slide-bg {
+    background-image: var(--bg-m);
+  }
+
   .slide-img {
     max-width: none;
   }
@@ -337,27 +373,36 @@
     font-size: 10px;
     padding: 4px 12px;
 
-    &.badge-top-right { top: 12px; right: 12px; }
-    &.badge-top-left { top: 12px; left: 12px; }
-    &.badge-bottom-right { bottom: 12px; right: 12px; }
-    &.badge-bottom-left { bottom: 12px; left: 12px; }
+    &.m-badge-top-right { top: 12px; right: 12px; }
+    &.m-badge-top-left { top: 12px; left: 12px; }
+    &.m-badge-bottom-right { bottom: 12px; right: 12px; }
+    &.m-badge-bottom-left { bottom: 12px; left: 12px; }
   }
 
 
   .slide-title {
-    font-size: 1.75rem;
+    font-family: var(--title-ff-m, var(--font-title, 'Playfair Display', serif));
+    font-size: var(--title-fs-m, 1.75rem);
     line-height: 1.1;
   }
 
   .slide-subtitle {
-    font-size: 14px;
+    font-family: var(--sub-ff-m, var(--font-body));
+    font-size: var(--sub-fs-m, 14px);
   }
 
   .slide-overlay {
+    top: var(--ov-top-m);
+    bottom: var(--ov-bottom-m);
+    left: var(--ov-left-m);
+    right: var(--ov-right-m);
+    width: var(--ov-width-m);
+    padding-left: var(--ov-px-m);
+    padding-right: var(--ov-px-m);
     max-width: 100%;
     transform: none !important; // Override desktop centering transforms on mobile
 
-    &.overlay-center {
+    &.m-overlay-center {
       transform: translateY(-50%) !important;
     }
   }
