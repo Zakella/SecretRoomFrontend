@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {CartUi} from '../../shared/components/cart/services/cart';
+import {AddedToCart} from '../../shared/components/cart/services/added-to-cart';
 import {Language} from '../../@core/services/language';
 import {FavoritesService} from '../../@core/services/favorites';
 import {UpperCasePipe} from '@angular/common';
@@ -21,6 +22,7 @@ export class MobileHeader {
   public favoritesService = inject(FavoritesService);
 
   cartCount = this.cartService.cartCount;
+  addedTick = inject(AddedToCart).addedTick;
   activeLang = this.langService.currentLanguage;
   languages = ['ro', 'ru'];
 

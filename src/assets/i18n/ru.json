@@ -8,6 +8,22 @@
   "Quantity": "Кол-во",
   "Product Name": "Название продукта",
   "Size": "Размер",
+  "OptionTypeColor": "Цвет",
+  "OptionTypeScent": "Аромат",
+  "OptionTypeShade": "Оттенок",
+  "OptionTypeVariant": "Вариант",
+  "MoreColorOne": "+{{count}} цвет",
+  "MoreColorFew": "+{{count}} цвета",
+  "MoreColorMany": "+{{count}} цветов",
+  "MoreScentOne": "+{{count}} аромат",
+  "MoreScentFew": "+{{count}} аромата",
+  "MoreScentMany": "+{{count}} ароматов",
+  "MoreShadeOne": "+{{count}} оттенок",
+  "MoreShadeFew": "+{{count}} оттенка",
+  "MoreShadeMany": "+{{count}} оттенков",
+  "MoreVariantOne": "+{{count}} вариант",
+  "MoreVariantFew": "+{{count}} варианта",
+  "MoreVariantMany": "+{{count}} вариантов",
   "Article": "Артикул",
   "Characteristics": "Характеристики",
   "Composition": "Состав",
@@ -29,11 +45,12 @@
   "Check out": "Оформить заказ",
   "Your cart is empty": "Ваша корзина пуста",
   "Add to Cart": "Добавить в корзину",
-  "LastItem": "Последний",
-  "LowInStock": "Мало на складе",
-  "LastItemHurry": "Последний товар — спешите!",
-  "LowInStockDetail": "Товар заканчивается — спешите!",
+  "StockLeftOne": "Осталась {{count}} шт.",
+  "StockLeftMany": "Осталось {{count}} шт.",
+  "SwatchesMore": "Ещё",
+  "SwatchesCollapse": "Свернуть",
   "OutOfStock": "Нет на складе",
+  "PhotoNumber": "Фото {{n}}",
   "OutOfStockMessage": "Товар временно отсутствует на складе",
   "Discontinued": "Товар снят с продажи",
   "DiscontinuedMessage": "Этот товар больше не доступен для заказа",
@@ -243,7 +260,9 @@
     "createAccount": "Создать аккаунт",
     "productNotFoundInCart": "Один или несколько товаров в корзине больше недоступны. Пожалуйста, обновите корзину.",
     "outOfStock": "Товары {{products}} отсутствуют на складе. Пожалуйста, удалите их из корзины.",
-    "outOfStockGeneric": "Некоторые товары в корзине больше не доступны на складе."
+    "outOfStockGeneric": "Некоторые товары в корзине больше не доступны на складе.",
+    "productUnavailable": "Товар «{{name}}» больше недоступен, удалите его из корзины",
+    "removeUnavailable": "Удалить недоступные из корзины"
   },
   "cart": {
     "youMayAlsoLike": "Вам также понравится",
@@ -251,6 +270,8 @@
     "freeShippingRemaining": "Вам осталось",
     "freeShippingGoal": "до бесплатной доставки",
     "freeShippingAchieved": "Поздравляем! Доставка бесплатная!",
+    "addedToCart": "Добавлено в корзину",
+    "chooseSize": "Выберите размер",
     "emptyMessage": "Ваша корзина пуста",
     "startShopping": "Начать покупки"
   },
@@ -346,6 +367,7 @@
   "StorePhotos": "Фотографии магазина",
   "ViewPhoto": "Открыть фото",
   "ClosePhoto": "Закрыть",
+  "OpenPhoto": "Открыть фото на весь экран",
   "PreviousPhoto": "Предыдущее фото",
   "NextPhoto": "Следующее фото",
   "storeBrands": {
@@ -431,6 +453,13 @@
     }
   },
   "catalog": {
+    "filters": {
+      "more": "Ещё {{count}}",
+      "less": "Свернуть",
+      "reset": "Сбросить",
+      "showProducts": "Показать товары",
+      "showProductsN": "Показать товары ({{count}})"
+    },
     "otherBrands": "Другие бренды",
     "allBrands": "Все бренды",
     "h1": {

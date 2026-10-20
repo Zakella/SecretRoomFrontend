@@ -21,21 +21,7 @@
 
     <div class="product-grid">
       <div class="product-images">
-        <div class="main-image">
-          <img [src]="mainImage" [alt]="product() | localizedName" fetchpriority="high" width="550" height="550"/>
-        </div>
-        @defer {
-          <div class="thumbnails">
-            @for (image of product()!.productImagesWebStore; track image) {
-              <img src="{{image.imageUrl}}"
-                   [alt]="(product() | localizedName) + ' - ' + ($index + 1)"
-                   loading="lazy"
-                   [ngClass]="{'active': mainImage === image.imageUrl}"
-                   (click)="mainImage = image.imageUrl || 'assets/images/unavailable.jpg'"
-              />
-            }
-          </div>
-        }
+        <product-gallery [images]="galleryImages()" [alt]="(product() | localizedName) ?? ''"/>
       </div>
 
         <div class="product-info">
@@ -57,16 +43,6 @@
               <div class="stock-warning stock-out">
                 <i class="ri-close-circle-fill"></i>
                 <span>{{ 'OutOfStockMessage' | transloco }}</span>
-              </div>
-            } @else if (effectiveStock() === 1) {
-              <div class="stock-warning stock-critical">
-                <i class="ri-error-warning-fill"></i>
-                <span>{{ 'LastItemHurry' | transloco }}</span>
-              </div>
-            } @else if (effectiveStock() !== undefined && effectiveStock()! <= 3 && effectiveStock()! > 0) {
-              <div class="stock-warning stock-low">
-                <i class="ri-fire-fill"></i>
-                <span>{{ 'LowInStockDetail' | transloco }}</span>
               </div>
             }
 
@@ -101,10 +77,11 @@
           }
 
           @if (product()?.variants && product()!.variants!.length > 0) {
+            @if (showSizeBlock()) {
             <div class="variant-selector">
               <span class="variant-label">{{ 'Size' | transloco }}:</span>
               <div class="variant-options">
-                @for (variant of product()!.variants; track variant.appId) {
+                @for (variant of sizedVariants(); track variant.appId) {
                   <button
                     class="variant-btn"
                     [class.active]="selectedVariant()?.appId === variant.appId"
@@ -116,15 +93,18 @@
                 }
               </div>
             </div>
-          } @else if (product()?.size) {
-            <div class="variant-selector">
-              <span class="variant-label">{{ 'Size' | transloco }}:</span>
-              <div class="variant-options">
-                <button class="variant-btn active">
-                  {{ product()?.size }}
-                </button>
-              </div>
-            </div>
+            }
+          }
+
+          @if (stockNote(); as left) {
+            <span class="stock-note">{{ (left === 1 ? 'StockLeftOne' : 'StockLeftMany') | transloco: {count: left} }}</span>
+          }
+
+          @if (hasSwatches()) {
+            <product-swatches
+              [siblings]="product()?.siblings"
+              [optionType]="product()?.optionType"
+              [selectedSize]="selectedVariant()?.size"/>
           }
 
           <div class="actions">

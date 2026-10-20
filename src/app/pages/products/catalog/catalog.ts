@@ -6,7 +6,7 @@ import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, finalize, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
+import {catchError, EMPTY, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
 import {BrandService} from '../../../@core/api/brand';
 import {CategoryService} from '../../../@core/api/category';
@@ -22,6 +22,7 @@ import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
 import {DrawerModule} from 'primeng/drawer';
 import {ProductCardSkeleton} from '../../../shared/components/product/product-card-skeleton/product-card-skeleton';
+import {BRAND_SECTION_KEY, buildFilterSections, FilterSectionView} from './catalog-filters.util';
 
 @Component({
   selector: 'app-catalog',
@@ -76,7 +77,12 @@ export class Catalog implements OnInit, OnDestroy {
   // Mobile filter drawer
   filterDrawerVisible = false;
   protected totalProductCount = signal<number>(0);
-  brandSectionOpen = true;
+
+  // Аккордеон разделов фильтров (в памяти страницы). Ключ — слаг группы или BRAND_SECTION_KEY.
+  // Клик пользователя поверх дефолта; сбрасывается при смене категории.
+  protected readonly brandKey = BRAND_SECTION_KEY;
+  private openOverrides = signal<Map<string, boolean>>(new Map());
+  private expandedKeys = signal<Set<string>>(new Set());
 
   // Pending state for mobile drawer (applied only on "Show results" tap)
   protected pendingBrand = signal<string | null>(null);
@@ -127,8 +133,48 @@ export class Catalog implements OnInit, OnDestroy {
       }));
   });
 
-  protected hasFilters = computed(() => {
-    return this.availableBrands().length > 1 || this.availableFilters().length > 0;
+  /** Разделы сайдбара: структура и отметки — по применённому выбору. */
+  protected sections = computed<FilterSectionView[]>(() => buildFilterSections({
+    brands: this.availableBrands(),
+    groups: this.availableFilters(),
+    appliedBrand: this.selectedBrand(),
+    appliedFilters: this.selectedFilters(),
+    markBrand: this.selectedBrand(),
+    markFilters: this.selectedFilters(),
+    openOverrides: this.openOverrides(),
+    expandedKeys: this.expandedKeys(),
+  }));
+
+  /** Разделы нижней панели: структура фиксирована применённым выбором, отметки — pending. */
+  protected drawerSections = computed<FilterSectionView[]>(() => buildFilterSections({
+    brands: this.availableBrands(),
+    groups: this.availableFilters(),
+    appliedBrand: this.selectedBrand(),
+    appliedFilters: this.selectedFilters(),
+    markBrand: this.pendingBrand(),
+    markFilters: this.pendingFilters(),
+    openOverrides: this.openOverrides(),
+    expandedKeys: this.expandedKeys(),
+  }));
+
+  protected hasFilters = computed(() => this.sections().length > 0);
+
+  /** Чипы выбранных фильтров над списком товаров. */
+  protected activeChips = computed(() => {
+    const chips: {kind: 'brand' | 'group'; groupSlug: string; valueSlug: string; group?: FilterGroup; value?: unknown; label?: string}[] = [];
+    const brand = this.selectedBrand();
+    if (brand) {
+      const found = this.availableBrands().find(b => b.brand === brand);
+      chips.push({kind: 'brand', groupSlug: BRAND_SECTION_KEY, valueSlug: brand, label: found?.brandAlias || brand});
+    }
+    for (const group of this.availableFilters()) {
+      for (const v of group.values) {
+        if (this.selectedFilters().get(group.slug)?.has(v.slug)) {
+          chips.push({kind: 'group', groupSlug: group.slug, valueSlug: v.slug, group, value: v});
+        }
+      }
+    }
+    return chips;
   });
 
   private currentCategoryId: string | null = null;
@@ -136,6 +182,13 @@ export class Catalog implements OnInit, OnDestroy {
   private currentPage = 0;
   private readonly itemsPerPage = 24;
   private prefetched: { page: number; request$: Observable<any> } | null = null;
+
+  // Each stream cancels its in-flight request on a new emission (switchMap), so the last
+  // user action always wins and an outdated response can never overwrite a newer one.
+  private productsRequest$ = new Subject<{ page: number; append: boolean; source$: Observable<any> }>();
+  private facetsRequest$ = new Subject<Observable<FilterGroup[]>>();
+  /** Key (filters + brand) of the last facets request; null = nothing requested yet. */
+  private lastFacetsKey: string | null = null;
 
   constructor() {
     effect(() => {
@@ -150,6 +203,24 @@ export class Catalog implements OnInit, OnDestroy {
         this.updateMeta(cat, brand, alias, catName, catData, lang);
       }
     });
+
+    this.productsRequest$.pipe(
+      switchMap(req => req.source$.pipe(
+        map(res => ({req, res})),
+        catchError(() => of({req, res: null}))
+      )),
+      takeUntilDestroyed()
+    ).subscribe(({req, res}) => {
+      // Only the latest request ever reaches this point
+      this.isLoading.set(false);
+      if (res) this.applyProductsResponse(res, req.page, req.append);
+    });
+
+    // On error keep the previous facets rather than wiping the sidebar
+    this.facetsRequest$.pipe(
+      switchMap(source$ => source$.pipe(catchError(() => EMPTY))),
+      takeUntilDestroyed()
+    ).subscribe(groups => this.availableFilters.set(groups));
 
     this.pendingCountRequest$.pipe(
       switchMap(identifier => this.loadByCategory(identifier, 0, 1, true).pipe(catchError(() => of(null)))),
@@ -410,7 +481,9 @@ export class Catalog implements OnInit, OnDestroy {
   private setCategory(tag: string) {
     this.category.set(tag);
     this.reset();
-    this.loadFilters();
+    this.availableFilters.set([]);
+    this.loadBrands();
+    this.refreshFacets(true);
     this.fetchProducts();
   }
 
@@ -420,73 +493,92 @@ export class Catalog implements OnInit, OnDestroy {
     this.products.set([]);
     this.selectedBrand.set(null);
     this.selectedFilters.set(new Map());
+    this.openOverrides.set(new Map());
+    this.expandedKeys.set(new Set());
     this.prefetched = null;
   }
 
-  private loadFilters() {
+  /** Brand options do not depend on the selected filters, so they are loaded once per page. */
+  private loadBrands() {
     const categoryId = this.currentCategoryId;
-    const brand = this.brandName();
     const tag = this.category();
 
-    // Static "new arrivals" / "bestsellers" pages — load facets and brands from the product API
-    if (tag === 'new-arrivals' || tag === 'bestsellers') {
-      const brands$ = tag === 'new-arrivals'
-        ? this.productService.getBrandsForNewArrivals()
-        : this.productService.getBrandsForBestsellers();
-      const filters$ = tag === 'new-arrivals'
-        ? this.productService.getFiltersForNewArrivals()
-        : this.productService.getFiltersForBestsellers();
+    let brands$: Observable<{brand: string, brandAlias: string}[]> | null = null;
+    if (tag === 'new-arrivals') brands$ = this.productService.getBrandsForNewArrivals();
+    else if (tag === 'bestsellers') brands$ = this.productService.getBrandsForBestsellers();
+    else if (this.brandName() || !categoryId) this.availableBrands.set([]);
+    else brands$ = this.categoryService.getBrandsForCategory(categoryId);
 
-      brands$.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        catchError(() => of([]))
-      ).subscribe(brands => this.availableBrands.set(brands));
-      filters$.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        catchError(() => of([]))
-      ).subscribe(filters => this.availableFilters.set(filters));
-      return;
-    }
-
-    if (brand) {
-      // Brand page — load filters for this brand
-      this.availableBrands.set([]);
-      this.brandService.getFiltersForBrand(brand).pipe(
-        takeUntilDestroyed(this.destroyRef),
-        catchError(() => of([]))
-      ).subscribe(filters => {
-        this.availableFilters.set(filters);
-      });
-      return;
-    }
-
-    if (!categoryId) {
-      this.availableBrands.set([]);
-      this.availableFilters.set([]);
-      return;
-    }
-
-    // Category page — load brands and filters
-    this.categoryService.getBrandsForCategory(categoryId).pipe(
+    brands$?.pipe(
       takeUntilDestroyed(this.destroyRef),
       catchError(() => of([]))
-    ).subscribe(brands => {
-      this.availableBrands.set(brands);
-    });
-    this.categoryService.getFiltersForCategory(categoryId).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      catchError(() => of([]))
-    ).subscribe(filters => {
-      this.availableFilters.set(filters);
-    });
+    ).subscribe(brands => this.availableBrands.set(brands));
   }
 
-  selectBrand(brand: string | null) {
-    this.selectedBrand.set(brand);
+  /**
+   * Re-requests the facets with the current selection (counts are disjunctive on the backend).
+   * Skipped when the `filters` param is unchanged, unless forced (page / category change).
+   * `pending` uses the mobile drawer's uncommitted selection instead of the applied one.
+   */
+  private refreshFacets(force = false, pending = false) {
+    const filters = this.buildFiltersParam(pending ? this.pendingFilters() : this.selectedFilters());
+    const brand = (pending ? this.pendingBrand() : this.selectedBrand()) || undefined;
+    const key = JSON.stringify([filters ?? null, brand ?? null]);
+    if (!force && key === this.lastFacetsKey) return;
+    this.lastFacetsKey = key;
+    this.facetsRequest$.next(this.loadFacets(filters, brand));
+  }
+
+  private loadFacets(filters?: string, brand?: string): Observable<FilterGroup[]> {
+    const categoryId = this.currentCategoryId;
+    const pageBrand = this.brandName();
+    const tag = this.category();
+
+    if (tag === 'new-arrivals') return this.productService.getFiltersForNewArrivals(filters, brand);
+    if (tag === 'bestsellers') return this.productService.getFiltersForBestsellers(filters, brand);
+    if (pageBrand) return this.brandService.getFiltersForBrand(pageBrand, filters);
+    if (!categoryId) return of([]);
+    return this.categoryService.getFiltersForCategory(categoryId, filters, brand);
+  }
+
+  /** Selection changed: restart the list from page 0 and refresh facets; both cancel their previous request. */
+  private onSelectionChanged() {
     this.currentPage = 0;
     this.allLoaded.set(false);
     this.products.set([]);
     this.fetchProducts();
+    this.refreshFacets();
+  }
+
+  /** Клик по заголовку раздела: переопределяет дефолт. */
+  toggleSection(section: FilterSectionView) {
+    const next = new Map(this.openOverrides());
+    next.set(section.key, !section.open);
+    this.openOverrides.set(next);
+  }
+
+  /** Раздел, где пользователь что-то выбрал, не должен схлопнуться, когда выбор снят. */
+  pinOpen(key: string) {
+    if (this.openOverrides().get(key) === true) return;
+    this.openOverrides.set(new Map(this.openOverrides()).set(key, true));
+  }
+
+  /** «Ещё N» / «Свернуть» — переключает показ всех значений раздела. */
+  toggleExpanded(key: string) {
+    const next = new Set(this.expandedKeys());
+    if (!next.delete(key)) next.add(key);
+    this.expandedKeys.set(next);
+  }
+
+  /** Убрать чип выбранного фильтра. */
+  removeChip(chip: {kind: 'brand' | 'group'; groupSlug: string; valueSlug: string}) {
+    if (chip.kind === 'brand') this.selectBrand(null);
+    else this.toggleFilter(chip.groupSlug, chip.valueSlug);
+  }
+
+  selectBrand(brand: string | null) {
+    this.selectedBrand.set(brand);
+    this.onSelectionChanged();
   }
 
   toggleFilter(filterSlug: string, valueSlug: string) {
@@ -504,10 +596,7 @@ export class Catalog implements OnInit, OnDestroy {
     }
 
     this.selectedFilters.set(current);
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.onSelectionChanged();
   }
 
   isFilterSelected(filterSlug: string, valueSlug: string): boolean {
@@ -517,10 +606,7 @@ export class Catalog implements OnInit, OnDestroy {
   clearAllFilters() {
     this.selectedBrand.set(null);
     this.selectedFilters.set(new Map());
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.onSelectionChanged();
   }
 
   openFilterDrawer() {
@@ -536,6 +622,7 @@ export class Catalog implements OnInit, OnDestroy {
   selectPendingBrand(brand: string | null) {
     this.pendingBrand.set(brand);
     this.refreshPendingCount();
+    this.refreshFacets(false, true);
   }
 
   togglePendingFilter(filterSlug: string, valueSlug: string) {
@@ -552,6 +639,7 @@ export class Catalog implements OnInit, OnDestroy {
 
     this.pendingFilters.set(current);
     this.refreshPendingCount();
+    this.refreshFacets(false, true);
   }
 
   isPendingFilterSelected(filterSlug: string, valueSlug: string): boolean {
@@ -562,6 +650,12 @@ export class Catalog implements OnInit, OnDestroy {
     this.pendingBrand.set(null);
     this.pendingFilters.set(new Map());
     this.refreshPendingCount();
+    this.refreshFacets(false, true);
+  }
+
+  /** Drawer closed (apply, cancel, backdrop): counts go back to the applied selection; no-op if already there. */
+  onFilterDrawerHide() {
+    this.refreshFacets();
   }
 
   private refreshPendingCount() {
@@ -576,10 +670,7 @@ export class Catalog implements OnInit, OnDestroy {
     const copy = new Map<string, Set<string>>();
     this.pendingFilters().forEach((vals, key) => copy.set(key, new Set(vals)));
     this.selectedFilters.set(copy);
-    this.currentPage = 0;
-    this.allLoaded.set(false);
-    this.products.set([]);
-    this.fetchProducts();
+    this.onSelectionChanged();
     this.filterDrawerVisible = false;
   }
 
@@ -612,7 +703,8 @@ export class Catalog implements OnInit, OnDestroy {
   }
 
   fetchProducts(append = false) {
-    if (this.isLoading() || this.allLoaded()) return;
+    // An append must never cancel an in-flight fresh load; a fresh load (append = false) is never skipped
+    if (append && (this.isLoading() || this.allLoaded())) return;
 
     const page = append ? this.currentPage + 1 : 0;
     const category = this.category();
@@ -628,9 +720,7 @@ export class Catalog implements OnInit, OnDestroy {
     }
 
     this.isLoading.set(true);
-    source$
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe(res => this.applyProductsResponse(res, page, append));
+    this.productsRequest$.next({page, append, source$});
   }
 
   private applyProductsResponse(res: any, page: number, append: boolean) {

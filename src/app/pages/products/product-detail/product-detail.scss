@@ -123,43 +123,8 @@
 
 .product-images {
   flex: 1 1 45%;
-}
-
-.main-image {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    max-height: 550px;
-    object-fit: contain;
-  }
-}
-
-.thumbnails {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.thumbnails img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
-  opacity: 0.6;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  &.active {
-    opacity: 1;
-  }
+  // лента галереи шире колонки (все слайды в ряд): без min-width:0 колонка не ужимается и info уезжает вниз
+  min-width: 0;
 }
 
 
@@ -196,6 +161,7 @@
 
 product-price {
   margin-top: 4px;
+  align-self: flex-start;
 }
 
 
@@ -215,19 +181,6 @@ product-price {
   }
 }
 
-.stock-critical {
-  background: rgba(211, 47, 47, 0.08);
-  color: #d32f2f;
-  border: 1px solid rgba(211, 47, 47, 0.2);
-  animation: stockPulse 2s ease-in-out infinite;
-}
-
-.stock-low {
-  background: rgba(230, 126, 34, 0.08);
-  color: #e67e22;
-  border: 1px solid rgba(230, 126, 34, 0.2);
-}
-
 .stock-out {
   background: rgba(108, 117, 125, 0.08);
   color: #6c757d;
@@ -241,9 +194,16 @@ product-price {
   font-weight: 600;
 }
 
-@keyframes stockPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+// Спокойная пометка об остатке рядом с выбором размера (SR-149): без рамки и фона.
+.stock-note {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--gold-dark, #8a6d3b);
+}
+
+.variant-selector + .stock-note {
+  margin-top: -0.75rem;
 }
 
 
@@ -558,24 +518,6 @@ product-price {
     flex: 1 1 100%;
   }
 
-  .main-image {
-    aspect-ratio: auto;
-  }
-
-  .main-image img {
-    height: auto;
-    max-height: 400px;
-  }
-
-  .thumbnails {
-    justify-content: center;
-  }
-
-  .thumbnails img {
-    width: 60px;
-    height: 60px;
-  }
-
   .product-info {
     padding: 20px;
     flex: 1 1 100%;
@@ -606,19 +548,6 @@ product-price {
     .spec-value { font-size: 13px; text-align: left; }
   }
 
-  .main-image {
-    aspect-ratio: auto;
-  }
-
-  .main-image img {
-    width: 100%;
-    height: auto;
-    background: transparent;
-    max-height: 320px;
-    border: none;
-    outline: none;
-  }
-
   .brand {
     text-align: center;
   }
@@ -639,11 +568,6 @@ product-price {
   .article {
     text-align: center;
     align-self: center;
-  }
-
-  .thumbnails img {
-    width: 50px;
-    height: 50px;
   }
 
   .add-to-bag-btn {
