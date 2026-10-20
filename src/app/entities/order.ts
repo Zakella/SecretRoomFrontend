@@ -26,6 +26,7 @@ export interface OrderItem {
   product: Product;
   sizeType?: string;
   variantAppId?: number;
+  price?: number;
   amount: number;
   quantity: number;
 }

@@ -200,7 +200,7 @@ export class ProductDetail {
       cartItem = new CartItem(product, this.quantity);
     }
     this.cartService.addToCart(cartItem);
-    this.trackAddToCart(product);
+    this.ga.trackAddToCart(product, this.quantity, cartItem.size?.sizeType);
   }
 
   protected toggleWishlist(): void {
@@ -220,15 +220,6 @@ export class ProductDetail {
   private trackViewItem(product: Product) {
     this.ga.send({
       event: 'view_item',
-      category: 'ecommerce',
-      label: product.name,
-      value: product.price
-    });
-  }
-
-  private trackAddToCart(product: Product) {
-    this.ga.send({
-      event: 'add_to_cart',
       category: 'ecommerce',
       label: product.name,
       value: product.price

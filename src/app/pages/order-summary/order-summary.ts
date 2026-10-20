@@ -56,7 +56,7 @@ export class OrderSummary implements OnInit, OnDestroy {
       .subscribe({
         next: (order) => {
           this.orderReview.set(order);
-          this.trackPurchase(order);
+          this.ga.trackPurchase(order);
           this.isLoading.set(false);
           this.cdr.markForCheck();
         },
@@ -67,14 +67,5 @@ export class OrderSummary implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
-  }
-
-  private trackPurchase(order: OrderReview) {
-    this.ga.send({
-      event: 'purchase',
-      category: 'ecommerce',
-      label: order.orderNumber,
-      value: order.totalAmountOrder
-    });
   }
 }
