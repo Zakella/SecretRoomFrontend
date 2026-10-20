@@ -1,19 +1,58 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment';
 import { Product } from '../../entities/product';
 import { CartItem } from '../../entities/cart-item';
 import { OrderReview } from '../../entities/order-review';
 
 declare let gtag: any;
 
+export interface AnalyticsConfig {
+  measurementId: string;
+  hosts: readonly string[];
+}
+
+export function isAnalyticsHost(hostname: string | null | undefined, hosts: readonly string[]): boolean {
+  const h = (hostname ?? '').toLowerCase();
+  return !!h && hosts.some(x => x.toLowerCase() === h);
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleAnalytics {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly document = inject(DOCUMENT);
   private readonly sentPurchases = new Set<string>();
   private static readonly PURCHASE_KEY = 'ga4_purchase_sent';
   private static readonly PURCHASE_KEEP = 50;
+
+  // GA4 грузим только на боевых хостах; на остальных gtag не определяется, все track*/send - no-op
+  init(config: AnalyticsConfig = environment.analytics): void {
+    if (!this.isBrowser || !config?.measurementId) return;
+    if (!isAnalyticsHost(this.document.location?.hostname, config.hosts)) return;
+    const src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(config.measurementId)}`;
+    if (this.document.querySelector(`script[src="${src}"]`)) return;
+    const w = window as any;
+
+    w.dataLayer = w.dataLayer || [];
+    w.gtag = function () {
+      // gtag.js ждёт именно Arguments-объект, не массив
+      // eslint-disable-next-line prefer-rest-params
+      w.dataLayer.push(arguments);
+    };
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied'
+    });
+    gtag('js', new Date());
+    gtag('config', config.measurementId);
+
+    const script = this.document.createElement('script');
+    script.async = true;
+    script.src = src;
+    this.document.head.appendChild(script);
+  }
 
   public sendPageView(url: string): void {
     if (typeof gtag !== 'undefined') {

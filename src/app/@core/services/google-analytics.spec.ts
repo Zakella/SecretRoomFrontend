@@ -1,6 +1,7 @@
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {GoogleAnalytics} from './google-analytics';
+import {DOCUMENT} from '@angular/common';
+import {GoogleAnalytics, isAnalyticsHost} from './google-analytics';
 import {OrderReview} from '../../entities/order-review';
 import {CartItem} from '../../entities/cart-item';
 import {Product} from '../../entities/product';
@@ -141,5 +142,83 @@ describe('GoogleAnalytics ecommerce', () => {
         {item_id: '2', item_name: 'Two', item_variant: undefined, item_brand: undefined, price: 5.5, quantity: 1},
       ],
     });
+  });
+});
+
+describe('isAnalyticsHost', () => {
+  const hosts = ['secretroom.md', 'www.secretroom.md'];
+  it('боевые хосты, без учёта регистра', () => {
+    expect(isAnalyticsHost('secretroom.md', hosts)).toBeTrue();
+    expect(isAnalyticsHost('www.secretroom.md', hosts)).toBeTrue();
+    expect(isAnalyticsHost('WWW.SECRETROOM.MD', hosts)).toBeTrue();
+  });
+  it('остальные хосты', () => {
+    for (const h of ['localhost', 'sr.solterprise.com', 'secretroom.md.evil.com', '127.0.0.1', '', undefined]) {
+      expect(isAnalyticsHost(h, hosts)).toBeFalse();
+    }
+    expect(isAnalyticsHost('secretroom.md', [])).toBeFalse();
+  });
+});
+
+describe('GoogleAnalytics init', () => {
+  const w = window as any;
+  const cfg = {measurementId: 'G-TEST123', hosts: ['secretroom.md']};
+  const scripts = () => document.head.querySelectorAll('script[src*="googletagmanager.com/gtag/js"]');
+
+  // DOCUMENT-заглушка: подменяем только hostname, остальное делегируем настоящему document
+  const fakeDoc = (hostname: string) => ({
+    location: {hostname},
+    head: document.head,
+    createElement: (t: string) => document.createElement(t),
+    querySelector: (q: string) => document.querySelector(q),
+  });
+
+  function create(hostname: string, platform = 'browser'): GoogleAnalytics {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({providers: [
+      {provide: PLATFORM_ID, useValue: platform},
+      {provide: DOCUMENT, useValue: fakeDoc(hostname)},
+    ]});
+    return TestBed.inject(GoogleAnalytics);
+  }
+
+  beforeEach(() => { delete w.gtag; delete w.dataLayer; scripts().forEach(s => s.remove()); });
+  afterEach(() => { delete w.gtag; delete w.dataLayer; scripts().forEach(s => s.remove()); });
+
+  it('на боевом хосте добавляет один script и определяет gtag, consent default denied первым', () => {
+    create('secretroom.md').init(cfg);
+    expect(scripts().length).toBe(1);
+    expect((scripts()[0] as HTMLScriptElement).src).toContain('id=G-TEST123');
+    expect(typeof w.gtag).toBe('function');
+    const first = Array.from(w.dataLayer[0]);
+    expect(first).toEqual(['consent', 'default', {ad_storage: 'denied', analytics_storage: 'denied'}]);
+    expect(w.dataLayer[0].constructor).not.toBe(Array);
+    expect(Array.from(w.dataLayer[2])).toEqual(['config', 'G-TEST123']);
+  });
+
+  it('повторный init не грузит второй раз', () => {
+    const ga = create('secretroom.md');
+    ga.init(cfg);
+    ga.init(cfg);
+    expect(scripts().length).toBe(1);
+    expect(w.dataLayer.length).toBe(3);
+  });
+
+  it('на localhost ничего не грузит', () => {
+    create('localhost').init(cfg);
+    expect(scripts().length).toBe(0);
+    expect(typeof w.gtag).toBe('undefined');
+  });
+
+  it('пустой measurementId - ничего', () => {
+    create('secretroom.md').init({measurementId: '', hosts: ['secretroom.md']});
+    expect(scripts().length).toBe(0);
+    expect(typeof w.gtag).toBe('undefined');
+  });
+
+  it('на сервере ничего', () => {
+    create('secretroom.md', 'server').init(cfg);
+    expect(scripts().length).toBe(0);
+    expect(typeof w.gtag).toBe('undefined');
   });
 });
