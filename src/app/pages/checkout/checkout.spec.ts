@@ -241,6 +241,17 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
     expect(el().querySelectorAll('.cart-item--unavailable').length).toBe(1);
   });
 
+  it('sends country as the canonical "Moldova, Republic of" and shows it localized', async () => {
+    await setup([item('5')], []);
+    comp.onSubmit();
+    expect(placeOrder.calls.mostRecent().args[0].shippingAddress.country).toBe('Moldova, Republic of');
+    const input = el().querySelector<HTMLInputElement>('#country')!;
+    // no translations loaded in this spec, so transloco returns the key as is
+    expect(input.value).toBe('Moldova, Republic of');
+    expect(input.readOnly).toBeTrue();
+    expect(comp.form.get('country')!.disabled).toBeTrue();
+  });
+
   it('null variantAppId matches every variant of the master product', async () => {
     await setup([item('100', 200), item('100', 201), item('5')],
       [{appId: 100, variantAppId: null, productName: 'Produs 100'}]);
