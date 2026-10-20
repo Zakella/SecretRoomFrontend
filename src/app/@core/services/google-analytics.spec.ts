@@ -1,7 +1,7 @@
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
-import {GoogleAnalytics, isAnalyticsHost} from './google-analytics';
+import {GoogleAnalytics, isAnalyticsHost, isPurchaseTrackable, sanitizeAnalyticsPath} from './google-analytics';
 import {OrderReview} from '../../entities/order-review';
 import {CartItem} from '../../entities/cart-item';
 import {Product} from '../../entities/product';
@@ -118,6 +118,40 @@ describe('GoogleAnalytics ecommerce', () => {
     expect(gtag).toHaveBeenCalledTimes(1);
   });
 
+  it('does not send or flag purchase while PAYMENT_WAITING, then sends once as PENDING', () => {
+    const ga = create();
+    ga.trackPurchase({...order(), status: 'PAYMENT_WAITING'});
+    expect(gtag).not.toHaveBeenCalled();
+    expect(localStorage.getItem('ga4_purchase_sent')).toBeNull();
+    ga.trackPurchase({...order(), status: 'PENDING'});
+    ga.trackPurchase({...order(), status: 'PENDING'});
+    expect(gtag).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not send purchase for PAYMENT_FAILED and CANCELLED', () => {
+    const ga = create();
+    ga.trackPurchase({...order(), status: 'PAYMENT_FAILED'});
+    ga.trackPurchase({...order(), status: 'CANCELLED'});
+    expect(gtag).not.toHaveBeenCalled();
+  });
+
+  it('sends purchase for SHIPPED, DELIVERED and without status', () => {
+    const ga = create();
+    ga.trackPurchase({...order('A'), status: 'SHIPPED'});
+    ga.trackPurchase({...order('B'), status: 'DELIVERED'});
+    ga.trackPurchase(order('C'));
+    expect(gtag).toHaveBeenCalledTimes(3);
+    expect(isPurchaseTrackable(undefined)).toBeTrue();
+    expect(isPurchaseTrackable('PAYMENT_WAITING')).toBeFalse();
+  });
+
+  it('sendPageView strips the order token from page_path and page_location', () => {
+    create().sendPageView('/ro/order-success/696e855c-bee8-4b5b-a30d-c64f67912d6e');
+    const expected = {page_location: location.origin + '/ro/order-success', page_path: '/ro/order-success'};
+    expect(gtag.calls.allArgs()).toEqual([['set', expected], ['event', 'page_view', expected]]);
+    expect(JSON.stringify(gtag.calls.allArgs())).not.toContain('696e855c');
+  });
+
   it('sends add_to_cart with currency, value and items (catalog id is the fallback item_id)', () => {
     const p = {id: '55', name: 'Bra', price: 100, brand: 'VS'} as Product;
     create().trackAddToCart(p, 2, '70A');
@@ -142,6 +176,17 @@ describe('GoogleAnalytics ecommerce', () => {
         {item_id: '2', item_name: 'Two', item_variant: undefined, item_brand: undefined, price: 5.5, quantity: 1},
       ],
     });
+  });
+});
+
+describe('sanitizeAnalyticsPath', () => {
+  it('убирает токен, query и hash у страницы успеха', () => {
+    expect(sanitizeAnalyticsPath('/ro/order-success/696e855c-bee8-4b5b-a30d-c64f67912d6e')).toBe('/ro/order-success');
+    expect(sanitizeAnalyticsPath('/ru/order-success/abc?x=1#y')).toBe('/ru/order-success');
+  });
+  it('остальные URL без изменений', () => {
+    expect(sanitizeAnalyticsPath('/ro/checkout')).toBe('/ro/checkout');
+    expect(sanitizeAnalyticsPath('/ro/product/123')).toBe('/ro/product/123');
   });
 });
 
@@ -193,7 +238,7 @@ describe('GoogleAnalytics init', () => {
     const first = Array.from(w.dataLayer[0]);
     expect(first).toEqual(['consent', 'default', {ad_storage: 'denied', analytics_storage: 'denied'}]);
     expect(w.dataLayer[0].constructor).not.toBe(Array);
-    expect(Array.from(w.dataLayer[2])).toEqual(['config', 'G-TEST123']);
+    expect(Array.from(w.dataLayer[2])).toEqual(['config', 'G-TEST123', {send_page_view: false}]);
   });
 
   it('повторный init не грузит второй раз', () => {

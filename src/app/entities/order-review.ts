@@ -1,5 +1,6 @@
 import {Address} from "./address";
 import {OrderItem} from "./order";
+import {OrderStatus} from "./order";
 import {Customer} from "./customer";
 import {ShippingOption} from './shipping-options';
 
@@ -13,5 +14,6 @@ export interface OrderReview {
   shippingCost: number;
   customer: Customer;
   comment: string;
+  status?: OrderStatus;
 
 }

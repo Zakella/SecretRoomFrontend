@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { Product } from '../../entities/product';
 import { CartItem } from '../../entities/cart-item';
 import { OrderReview } from '../../entities/order-review';
+import { OrderStatus } from '../../entities/order';
 
 declare let gtag: any;
 
@@ -15,6 +16,16 @@ export interface AnalyticsConfig {
 export function isAnalyticsHost(hostname: string | null | undefined, hosts: readonly string[]): boolean {
   const h = (hostname ?? '').toLowerCase();
   return !!h && hosts.some(x => x.toLowerCase() === h);
+}
+
+// purchase шлём только по оплаченному заказу; статус не пришёл - шлём (совместимость)
+export function isPurchaseTrackable(status?: OrderStatus | null): boolean {
+  return status !== 'PAYMENT_WAITING' && status !== 'PAYMENT_FAILED' && status !== 'CANCELLED';
+}
+
+// токен доступа к заказу (UUID в URL страницы успеха) в аналитику не отдаём
+export function sanitizeAnalyticsPath(url: string): string {
+  return url.replace(/^(\/[^/?#]+\/order-success)\/[^?#]*(?:[?#].*)?$/, '$1');
 }
 
 @Injectable({
@@ -46,7 +57,8 @@ export class GoogleAnalytics {
       'analytics_storage': 'denied'
     });
     gtag('js', new Date());
-    gtag('config', config.measurementId);
+    // первый page_view отправит роутер (NavigationEnd) уже с очищенным путём
+    gtag('config', config.measurementId, { send_page_view: false });
 
     const script = this.document.createElement('script');
     script.async = true;
@@ -56,9 +68,11 @@ export class GoogleAnalytics {
 
   public sendPageView(url: string): void {
     if (typeof gtag !== 'undefined') {
-      gtag('event', 'page_view', {
-        page_path: url
-      });
+      const page_path = sanitizeAnalyticsPath(url);
+      const page_location = this.document.location.origin + page_path;
+      // set: последующие события (purchase) тоже уйдут с очищенным page_location
+      gtag('set', { page_location, page_path });
+      gtag('event', 'page_view', { page_location, page_path });
     }
   }
 
@@ -77,7 +91,7 @@ export class GoogleAnalytics {
 
   trackPurchase(order: OrderReview): void {
     const id = order?.orderNumber ? String(order.orderNumber) : '';
-    if (!id || !this.canTrack() || this.wasPurchaseSent(id)) return;
+    if (!id || !this.canTrack() || !isPurchaseTrackable(order.status) || this.wasPurchaseSent(id)) return;
     // у позиции заказа product.id - внутренний id БД, поэтому в item_id он не попадает
     const items = (order.items ?? []).map(i => this.toItem(i.product, i.quantity, i.sizeType, i.price, false));
     gtag('event', 'purchase', {
