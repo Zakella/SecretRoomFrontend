@@ -17,7 +17,7 @@ import {Language} from '../../../@core/services/language';
 import {Slugify} from '../../../@core/services/slugify';
 import {Category, Brand} from '../../../entities/category';
 import {getBrandSeo, BrandSeoLocale} from '../../../@core/configs/brand-seo';
-import {getCategorySeo} from '../../../@core/configs/category-seo';
+import {CategorySeoLocale, getCategorySeo} from '../../../@core/configs/category-seo';
 import {of} from 'rxjs';
 import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
 import {catalogPageQuery, parseCatalogPage} from '../../../@core/services/catalog-page';
@@ -129,6 +129,11 @@ export class Catalog implements OnInit, OnDestroy {
   /** Ручной SEO-текст бренда (h2 + абзацы). null → работает generic-шаблон. */
   protected brandSeo = computed<BrandSeoLocale | null>(() =>
     getBrandSeo(this.brandSlugValue(), this.activeLang())
+  );
+
+  /** Ручные h1/title/description категории. null → generic-шаблон / локализованное имя. */
+  protected categorySeo = computed<CategorySeoLocale | null>(() =>
+    getCategorySeo(this.categoryData()?.id, this.activeLang())
   );
 
   /** Перелинковка: остальные бренды каталога, ссылками с брендовой страницы. */

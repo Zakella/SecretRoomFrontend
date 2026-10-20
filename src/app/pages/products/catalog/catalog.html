@@ -4,7 +4,7 @@
     @if (brandAlias() || brandName()) {
       {{ brandAlias() || brandName() }}
     } @else if (localizedCategoryName()) {
-      {{ localizedCategoryName() }}
+      {{ categorySeo() ? categorySeo()!.h1 : localizedCategoryName() }}
     } @else {
       @switch (category()) {
         @case ('vs') { Victoria's Secret }
