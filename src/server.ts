@@ -25,6 +25,40 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
+ * SR-198: open redirect. Путь `//evil.com/` после снятия слэша давал Location `//evil.com` (protocol-relative),
+ * браузеры читают `/\evil.com` так же. Две линии защиты, обе — самые первые middleware.
+ */
+const SLASHES = /^(?:\/|\\|%2f|%5c)+/i;
+
+/** Location, безопасный для редиректа: ведущая серия `/`, `\`, %2F, %5C схлопывается в один `/`; чужой абсолютный URL → `/`. */
+function safeLocation(url: string): string {
+  const clean = String(url).replace(/[\t\r\n]/g, '');
+  if (/^https:\/\/secretroom\.md(?:[/?#]|$)/i.test(clean)) return clean; // www → apex
+  const lead = clean.match(SLASHES);
+  if (lead) return '/' + clean.slice(lead[0].length);
+  return /^[a-z][a-z0-9+.-]*:/i.test(clean) ? '/' : clean;
+}
+
+app.use((_req, res, next) => {
+  const location = res.location;
+  res.location = function (this: express.Response, url: string) {
+    return location.call(this, safeLocation(url));
+  } as typeof res.location;
+  next();
+});
+
+// Сырой путь начинается с `/` и дальше ещё разделитель → 301 на путь с одним ведущим `/` (и без конечного слэша — один хоп).
+app.use((req, res, next) => {
+  const raw = req.originalUrl;
+  const q = raw.indexOf('?');
+  const path = q < 0 ? raw : raw.slice(0, q);
+  const lead = path.startsWith('/') ? path.match(SLASHES) : null;
+  if (!lead || lead[0].length < 2) return next();
+  const target = ('/' + path.slice(lead[0].length)).replace(/(.)\/+$/, '$1');
+  res.redirect(301, target + (q < 0 ? '' : raw.slice(q)));
+});
+
+/**
  * 301 redirect: www.secretroom.md → secretroom.md (canonical domain consolidation)
  */
 app.use((req, res, next) => {
