@@ -57,7 +57,9 @@
 
     <div #imageTrack class="gallery-track" (scroll)="onImageScroll(imageTrack)">
       <a class="img-container" [routerLink]="productUrl()" [queryParams]="queryParams()">
-        <img [src]="images()[0] ?? imageUrl()" [alt]="product() | localizedName" class="main-img" loading="lazy"/>
+        <img [attr.loading]="loadingPriority() === 'lazy' ? 'lazy' : 'eager'"
+             [attr.fetchpriority]="loadingPriority() === 'high' ? 'high' : null"
+             [src]="images()[0] ?? imageUrl()" [alt]="product() | localizedName" class="main-img" width="800" height="1000"/>
       </a>
       @if (imagesVisible()) {
         @for (image of images().slice(1); track image) {

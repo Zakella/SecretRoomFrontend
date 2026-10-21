@@ -70,6 +70,12 @@
   "Email": "Электронная почта",
   "Shipping": "Доставка",
   "Country": "Страна",
+  "Moldova, Republic of": "Республика Молдова",
+  "Name should be at least 3 characters": "Имя должно быть не менее 3 символов",
+  "Address should be at least 3 characters": "Адрес должен быть не менее 3 символов",
+  "Phone need to be format 06******* sau 07*******": "Телефон должен быть в формате 06******* или 07*******",
+  "Total paid": "Итого к оплате",
+  "Shipping address": "Адрес доставки",
   "Name": "Имя",
   "Lastname": "Фамилия",
   "Address": "Адрес",
@@ -154,6 +160,7 @@
     "errorMessage": "Произошла ошибка. Пожалуйста, попробуйте позже."
   },
   "notFound": {
+    "errorLabel": "Ошибка",
     "title": "Страница не найдена",
     "description": "Похоже, эта страница решила взять отпуск. Но не волнуйтесь — наша коллекция ждёт вас.",
     "goHome": "На главную",
@@ -462,6 +469,8 @@
     },
     "otherBrands": "Другие бренды",
     "allBrands": "Все бренды",
+    "pageSuffix": "— страница {{page}}",
+    "prevPage": "Предыдущая страница",
     "h1": {
       "bestsellers": "Хиты продаж",
       "newArrivals": "Новинки",

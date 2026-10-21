@@ -25,6 +25,7 @@ export class App {
   private metaService = inject(MetaService)
 
   constructor() {
+    this.ga.init();
     this.lang.init();
     this.themeService.init()
     this.trackPageViews();

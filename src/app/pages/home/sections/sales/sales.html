@@ -8,9 +8,9 @@
 
     <div class="sales-album">
       @for (product of sales(); track product.id) {
-        <article
+        <a
           class="sale-card"
-          [routerLink]="['/', currentLanguage(), 'product-detail', product.id]"
+          [routerLink]="productUrl(product)"
         >
           <div class="discount-badge">-{{ getDiscountPercent(product) }}%</div>
           <div class="card-image">
@@ -19,6 +19,8 @@
               [alt]="product | localizedName"
               class="main-img"
               loading="lazy"
+              width="800"
+              height="1000"
             />
             @if (getHoverImage(product)) {
               <img
@@ -26,6 +28,8 @@
                 [alt]="product | localizedName"
                 class="hover-img"
                 loading="lazy"
+                width="800"
+                height="1000"
               />
             }
           </div>
@@ -34,7 +38,7 @@
             <span class="name">{{ product | localizedName }}</span>
             <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
           </div>
-        </article>
+        </a>
       }
     </div>
 

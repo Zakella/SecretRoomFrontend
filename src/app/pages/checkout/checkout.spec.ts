@@ -55,7 +55,7 @@ describe('Checkout order summary', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -147,7 +147,7 @@ describe('Checkout empty cart / SSR', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -210,7 +210,7 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
         {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
         {provide: PurchaseService, useValue: {placeOrder}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
-        {provide: GoogleAnalytics, useValue: {send: noop}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -239,6 +239,17 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
     expect(placeOrder).toHaveBeenCalledTimes(1);
     fixture.detectChanges();
     expect(el().querySelectorAll('.cart-item--unavailable').length).toBe(1);
+  });
+
+  it('sends country as the canonical "Moldova, Republic of" and shows it localized', async () => {
+    await setup([item('5')], []);
+    comp.onSubmit();
+    expect(placeOrder.calls.mostRecent().args[0].shippingAddress.country).toBe('Moldova, Republic of');
+    const input = el().querySelector<HTMLInputElement>('#country')!;
+    // no translations loaded in this spec, so transloco returns the key as is
+    expect(input.value).toBe('Moldova, Republic of');
+    expect(input.readOnly).toBeTrue();
+    expect(comp.form.get('country')!.disabled).toBeTrue();
   });
 
   it('null variantAppId matches every variant of the master product', async () => {

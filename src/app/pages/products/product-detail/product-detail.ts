@@ -134,6 +134,8 @@ export class ProductDetail {
     this.selectedVariant.set(null);
     if (!product) {
       this.productNotFound.set(true);
+      this.metaService.removeCanonicalAndAlternates();
+      if (this.responseInit?.status === 503) return; // сбой API (product-load-error.ts): без noindex, 503 не затираем
       this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
       // 301 на мастера уже выставлен резолвером (погашенная карточка модели): не затираем его 404
       if (this.responseInit && this.responseInit.status !== 301) {
@@ -198,7 +200,7 @@ export class ProductDetail {
       cartItem = new CartItem(product, this.quantity);
     }
     this.cartService.addToCart(cartItem);
-    this.trackAddToCart(product);
+    this.ga.trackAddToCart(product, this.quantity, cartItem.size?.sizeType);
   }
 
   protected toggleWishlist(): void {
@@ -218,15 +220,6 @@ export class ProductDetail {
   private trackViewItem(product: Product) {
     this.ga.send({
       event: 'view_item',
-      category: 'ecommerce',
-      label: product.name,
-      value: product.price
-    });
-  }
-
-  private trackAddToCart(product: Product) {
-    this.ga.send({
-      event: 'add_to_cart',
       category: 'ecommerce',
       label: product.name,
       value: product.price

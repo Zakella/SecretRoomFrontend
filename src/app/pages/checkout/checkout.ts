@@ -531,10 +531,6 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   private trackBeginCheckout() {
-    this.ga.send({
-      event: 'begin_checkout',
-      category: 'ecommerce',
-      value: this.totalAmount
-    });
+    this.ga.trackBeginCheckout(this.cartItems, this.totalAmount);
   }
 }

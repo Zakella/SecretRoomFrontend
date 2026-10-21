@@ -328,4 +328,42 @@ describe('ProductCard', () => {
       expect(btn.hasAttribute('aria-disabled')).toBeFalse();
     });
   });
+
+  describe('main image loading', () => {
+    function mainImg(): HTMLImageElement {
+      return fixture.nativeElement.querySelector('img.main-img') as HTMLImageElement;
+    }
+
+    beforeEach(() => {
+      setProduct(product({brandAlias: 'Nayomi'}));
+      fixture.componentRef.setInput('price', 100);
+      fixture.componentRef.setInput('imageUrl', 'https://cdn.test/p.png');
+    });
+
+    it('should be lazy without fetchpriority by default', () => {
+      fixture.detectChanges();
+      expect(mainImg().getAttribute('loading')).toBe('lazy');
+      expect(mainImg().hasAttribute('fetchpriority')).toBeFalse();
+    });
+
+    it('should be eager without fetchpriority for loadingPriority="eager"', () => {
+      fixture.componentRef.setInput('loadingPriority', 'eager');
+      fixture.detectChanges();
+      expect(mainImg().getAttribute('loading')).toBe('eager');
+      expect(mainImg().hasAttribute('fetchpriority')).toBeFalse();
+    });
+
+    it('should be eager with fetchpriority=high for loadingPriority="high"', () => {
+      fixture.componentRef.setInput('loadingPriority', 'high');
+      fixture.detectChanges();
+      expect(mainImg().getAttribute('loading')).toBe('eager');
+      expect(mainImg().getAttribute('fetchpriority')).toBe('high');
+    });
+
+    it('should carry 4:5 intrinsic dimensions', () => {
+      fixture.detectChanges();
+      expect(mainImg().getAttribute('width')).toBe('800');
+      expect(mainImg().getAttribute('height')).toBe('1000');
+    });
+  });
 });

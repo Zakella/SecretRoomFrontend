@@ -1,13 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID, signal} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {PurchaseService} from '../../@core/api/purchase';
 import {OrderReview} from '../../entities/order-review';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {EMPTY, Subject, timer} from 'rxjs';
+import {catchError, switchMap, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
-import {CurrencyPipe} from '@angular/common';
+import {CurrencyPipe, isPlatformBrowser} from '@angular/common';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 
 @Component({
@@ -28,6 +28,7 @@ export class OrderSummary implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private langService = inject(Language);
   private ga = inject(GoogleAnalytics);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -50,13 +51,29 @@ export class OrderSummary implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // MAIB мог вернуть покупателя раньше callback'а: до 5 раз раз в 3 с ждём выхода из PAYMENT_WAITING
+  private pollUntilPaid(trackingNumber: string): void {
+    timer(3000, 3000).pipe(
+      take(5),
+      switchMap(() => this.purchaseService.getOrderDetails(trackingNumber).pipe(catchError(() => EMPTY))),
+      tap(order => {
+        this.orderReview.set(order);
+        this.ga.trackPurchase(order);
+        this.cdr.markForCheck();
+      }),
+      takeWhile(order => order.status === 'PAYMENT_WAITING'),
+      takeUntil(this.destroy$)
+    ).subscribe();
+  }
+
   private loadOrderDetails(trackingNumber: string): void {
     this.purchaseService.getOrderDetails(trackingNumber)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (order) => {
           this.orderReview.set(order);
-          this.trackPurchase(order);
+          this.ga.trackPurchase(order);
+          if (order.status === 'PAYMENT_WAITING' && this.isBrowser) this.pollUntilPaid(trackingNumber);
           this.isLoading.set(false);
           this.cdr.markForCheck();
         },
@@ -67,14 +84,5 @@ export class OrderSummary implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
-  }
-
-  private trackPurchase(order: OrderReview) {
-    this.ga.send({
-      event: 'purchase',
-      category: 'ecommerce',
-      label: order.orderNumber,
-      value: order.totalAmountOrder
-    });
   }
 }

@@ -3,8 +3,11 @@
  *
  * Один шаблон на все бренды давал near-duplicate между шестью URL и был фактически неверен
  * (Ann Summers описывался как магазин лосьонов и косметики, Charlotte Tilbury — как бельё).
- * Здесь описания написаны по реальному ассортименту каждого бренда — как это уже сделано
- * вручную для /catalog/vs и /catalog/bb, единственных двух страниц каталога, которые ранжируются.
+ * Здесь описания написаны по реальному ассортименту каждого бренда.
+ *
+ * Victoria's Secret и Bath & Body Works живут только здесь: старые /catalog/vs и /catalog/bb
+ * склеены 301 на /catalog/brand/victorias-secret и /catalog/brand/bath-and-body (SR-97, server.ts),
+ * их тексты перенесены сюда — единственный источник SEO-текста этих двух брендов.
  *
  * Ключ — слаг бренда (BrandService.toSlug), тот же, что в URL /{lang}/catalog/brand/{slug}.
  * Бренда нет в словаре — работает generic-шаблон в Catalog.updateMeta().
@@ -32,23 +35,25 @@ export const BRAND_SEO: Record<string, BrandSeo> = {
     ro: {
       title: "Victoria's Secret — catalog complet în Moldova | Secret Room",
       description: "Catalog complet Victoria's Secret în Moldova: sutiene, chiloți, pijamale, costume de baie, parfumuri, spray-uri de corp și loțiuni. Import din SUA.",
-      keywords: "victoria secret moldova, victoria secret chisinau, sutiene victoria secret, parfum victoria secret, spray de corp victoria secret, victoria secret молдова, парфюм victoria secret кишинев",
+      keywords: "victoria secret moldova, victoria secret chisinau, lenjerie victoria secret, sutiene victoria secret, parfum victoria secret, spray de corp victoria secret, victoria secret молдова, парфюм victoria secret кишинев",
       heading: "Victoria's Secret în Moldova",
       paragraphs: [
-        "Aici este tot ce avem de la Victoria's Secret — lenjerie și îmbrăcăminte de casă alături de întreaga linie de parfumuri și îngrijire a corpului. Sutiene push-up, bralette, plunge și balconette, chiloți tanga, brazilian, cheeky și hiphugger, pijamale din satin și modal, costume de baie, seturi cadou.",
+        "Aici este tot ce avem de la Victoria's Secret — lenjerie și îmbrăcăminte de casă alături de întreaga linie de parfumuri și îngrijire a corpului. Sutiene push-up, bralette, plunge și balconette, chiloți tanga, brazilian, cheeky și hiphugger, pijamale din satin și modal, halate, costume de baie, seturi cadou — mărimi de la XS până la XL.",
         "Din parfumerie: eau de parfum și travel spray, fine fragrance mist, loțiuni și spray-uri cu shimmer din colecțiile Bombshell, Bare Vanilla, Tease, Love Spell. Toate produsele sunt originale, aduse din SUA.",
-        "Poți comanda online cu livrare în Chișinău și în toată Moldova sau poți trece prin magazinele noastre din Chișinău, ca să probezi mărimea înainte de cumpărare."
+        "Poți comanda online cu livrare în Chișinău și în toată Moldova, cu achitare la primire, sau poți trece prin magazinele noastre din Chișinău, ca să probezi mărimea înainte de cumpărare.",
+        "Nu știi ce mărime să alegi? Scrie-ne pe Instagram sau sună-ne — te ajutăm cu alegerea."
       ]
     },
     ru: {
       title: "Victoria's Secret — полный каталог в Молдове | Secret Room",
       description: "Полный каталог Victoria's Secret в Молдове: бюстгальтеры, трусики, пижамы, купальники, парфюмы, спреи для тела и лосьоны. Импорт из США.",
-      keywords: "victoria secret молдова, victoria secret кишинев, бюстгальтеры victoria secret, парфюм victoria secret, спрей для тела victoria secret, купить victoria secret молдова",
+      keywords: "victoria secret молдова, victoria secret кишинев, белье victoria secret, бюстгальтеры victoria secret, парфюм victoria secret, спрей для тела victoria secret, купить victoria secret молдова",
       heading: "Victoria's Secret в Молдове",
       paragraphs: [
-        "Здесь весь ассортимент Victoria's Secret — бельё и домашняя одежда вместе с полной линейкой парфюмерии и ухода за телом. Бюстгальтеры push-up, бралетты, plunge и balconette, трусики танга, бразилиана, cheeky и хипхаггеры, пижамы из сатина и модала, купальники, подарочные наборы.",
+        "Здесь весь ассортимент Victoria's Secret — бельё и домашняя одежда вместе с полной линейкой парфюмерии и ухода за телом. Бюстгальтеры push-up, бралетты, plunge и balconette, трусики танга, бразилиана, cheeky и хипхаггеры, пижамы из сатина и модала, халаты, купальники, подарочные наборы — размеры от XS до XL.",
         "Из парфюмерии: eau de parfum и travel spray, fine fragrance mist, лосьоны и спреи с шиммером из коллекций Bombshell, Bare Vanilla, Tease, Love Spell. Вся продукция оригинальная, привезена из США.",
-        "Можно заказать онлайн с доставкой по Кишинёву и всей Молдове или зайти в наши магазины в Кишинёве и примерить размер перед покупкой."
+        "Можно заказать онлайн с доставкой по Кишинёву и всей Молдове и оплатой при получении или зайти в наши магазины в Кишинёве и примерить размер перед покупкой.",
+        "Не уверены в размере? Напишите нам в Instagram или позвоните — поможем с выбором."
       ]
     }
   },
@@ -87,7 +92,7 @@ export const BRAND_SEO: Record<string, BrandSeo> = {
       paragraphs: [
         "Catalogul complet Bath & Body Works: fine fragrance mist și cologne mist, lumânări cu 3 fitile și single wick, loțiuni de corp, Ultimate Hydration Body Cream, body butter, geluri de duș și săpunuri spumante.",
         "Arome care se caută cel mai des: Champagne Toast, A Thousand Wishes, Japanese Cherry Blossom, Mahogany Teakwood, Gingham, Moonlight Path, plus colecțiile sezoniere care apar de câteva ori pe an.",
-        "Produse originale, aduse din SUA. Comandă online cu livrare în toată Moldova sau vino în magazinele Secret Room din Chișinău."
+        "Produse originale, aduse din SUA. Comandă online cu livrare în toată Moldova și achitare la primire sau vino în magazinele Secret Room din Chișinău."
       ]
     },
     ru: {
@@ -98,7 +103,7 @@ export const BRAND_SEO: Record<string, BrandSeo> = {
       paragraphs: [
         "Полный каталог Bath & Body Works: спреи fine fragrance mist и cologne mist, свечи с 3 фитилями и одинарные, лосьоны для тела, Ultimate Hydration Body Cream, баттеры, гели для душа и пенящееся мыло.",
         "Самые востребованные ароматы: Champagne Toast, A Thousand Wishes, Japanese Cherry Blossom, Mahogany Teakwood, Gingham, Moonlight Path, плюс сезонные коллекции, которые выходят несколько раз в год.",
-        "Оригинальная продукция из США. Заказывайте онлайн с доставкой по всей Молдове или заходите в магазины Secret Room в Кишинёве."
+        "Оригинальная продукция из США. Заказывайте онлайн с доставкой по всей Молдове и оплатой при получении или заходите в магазины Secret Room в Кишинёве."
       ]
     }
   },

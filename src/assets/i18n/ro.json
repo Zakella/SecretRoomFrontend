@@ -68,6 +68,14 @@
   "Email": "Email",
   "Shipping": "Livrare",
   "Country": "Țară",
+  "Shipping Address": "Adresa de livrare",
+  "Moldova, Republic of": "Republica Moldova",
+  "Your cart is empty": "Coșul tău este gol",
+  "Product": "Produs",
+  "Name should be at least 3 characters long": "Numele trebuie să aibă cel puțin 3 caractere",
+  "Address should be at least 3 characters long": "Adresa trebuie să aibă cel puțin 3 caractere",
+  "Phone need to be format 06******* или 07*******": "Telefonul trebuie să fie în format 06******* sau 07*******",
+  "Zip need to be 4 digits": "Codul poștal trebuie să aibă 4 cifre",
   "Name": "Nume",
   "Lastname": "Prenume",
   "Address": "Adresă",
@@ -152,6 +160,7 @@
     "errorMessage": "A apărut o eroare. Vă rugăm să încercați mai târziu."
   },
   "notFound": {
+    "errorLabel": "Eroare",
     "title": "Pagina nu a fost găsită",
     "description": "Se pare că această pagină a luat o vacanță. Dar nu vă faceți griji — colecția noastră vă așteaptă.",
     "goHome": "Pagina principală",
@@ -460,6 +469,8 @@
     },
     "otherBrands": "Alte branduri",
     "allBrands": "Toate brandurile",
+    "pageSuffix": "— pagina {{page}}",
+    "prevPage": "Pagina anterioară",
     "h1": {
       "bestsellers": "Bestsellere",
       "newArrivals": "Noutăți",

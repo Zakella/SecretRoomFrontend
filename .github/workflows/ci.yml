@@ -38,3 +38,6 @@ jobs:
 
       - name: Build
         run: npx ng build --configuration=production
+
+      - name: SSR server tests
+        run: node --test src/server.spec.mjs

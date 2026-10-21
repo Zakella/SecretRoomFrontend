@@ -24,6 +24,9 @@ export class Notfound {
   public activeLang = this.langService.currentLanguage;
 
   constructor() {
+    // 404 без canonical и hreflang (в т.ч. шаблонного из index.html)
+    this.metaService.removeCanonicalAndAlternates();
+
     const platformId = inject(PLATFORM_ID);
     if (isPlatformServer(platformId)) {
       const response = inject(RESPONSE_INIT, {optional: true});

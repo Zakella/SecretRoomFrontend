@@ -1,10 +1,12 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, OnDestroy, OnInit, RESPONSE_INIT, signal} from '@angular/core';
+import {Location} from '@angular/common';
 import {FadeUp} from '../../../@core/directives/fade-up';
 import {ProductList} from '../../../shared/components/product/product-list/product-list';
 import {ProductService} from '../../../@core/api/product';
 import {Product} from '../../../entities/product';
 import {FilterGroup} from '../../../entities/filter-group';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router, RouterLink} from '@angular/router';
+import {Meta} from '@angular/platform-browser';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, EMPTY, map, Observable, shareReplay, Subject, switchMap, take} from 'rxjs';
 import {HeroService} from '../../../@core/api/hero';
@@ -15,9 +17,10 @@ import {Language} from '../../../@core/services/language';
 import {Slugify} from '../../../@core/services/slugify';
 import {Category, Brand} from '../../../entities/category';
 import {getBrandSeo, BrandSeoLocale} from '../../../@core/configs/brand-seo';
-import {getCategorySeo} from '../../../@core/configs/category-seo';
+import {CategorySeoLocale, getCategorySeo} from '../../../@core/configs/category-seo';
 import {of} from 'rxjs';
-import {TranslocoPipe} from '@ngneat/transloco';
+import {TranslocoPipe, TranslocoService} from '@ngneat/transloco';
+import {catalogPageQuery, parseCatalogPage} from '../../../@core/services/catalog-page';
 import {LocalizedNamePipe} from '../../../shared/pipes/localized-name.pipe';
 import {EmptyState} from '../../states/empty-state/empty-state';
 import {DrawerModule} from 'primeng/drawer';
@@ -49,10 +52,17 @@ export class Catalog implements OnInit, OnDestroy {
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
   private metaService = inject(MetaService);
+  private meta = inject(Meta);
   private langService = inject(Language);
   private slugify = inject(Slugify);
+  private location = inject(Location);
+  private transloco = inject(TranslocoService);
   public activeLang = this.langService.currentLanguage;
   private destroyRef = inject(DestroyRef);
+  private responseInit = inject(RESPONSE_INIT, {optional: true});
+
+  /** Категория/бренд не найдены по успешному ответу API → 404 + noindex, без canonical/hreflang. */
+  protected notFound = signal(false);
 
   protected category = signal<string | null>(null);
   protected brandName = signal<string | null>(null);
@@ -121,6 +131,11 @@ export class Catalog implements OnInit, OnDestroy {
     getBrandSeo(this.brandSlugValue(), this.activeLang())
   );
 
+  /** Ручные h1/title/description категории. null → generic-шаблон / локализованное имя. */
+  protected categorySeo = computed<CategorySeoLocale | null>(() =>
+    getCategorySeo(this.categoryData()?.id, this.activeLang())
+  );
+
   /** Перелинковка: остальные бренды каталога, ссылками с брендовой страницы. */
   protected otherBrands = computed(() => {
     const current = this.brandSlugValue();
@@ -177,8 +192,46 @@ export class Catalog implements OnInit, OnDestroy {
     return chips;
   });
 
+  // SR-103: pagination via ?page=N (1-based; page 1 = clean URL)
+  /** Page the list starts from: ?page=N on entry. Drives title, canonical, hreflang and the prev link. */
+  protected firstPage = signal(1);
+  /** Last page loaded into the list ("Load more" appends pages after firstPage). */
+  protected lastPage = signal(1);
+  /** Listing path without language and query, e.g. "catalog/brand/victorias-secret". */
+  private listingTail = signal<string | null>(null);
+
+  protected basePath = computed(() => {
+    const tail = this.listingTail();
+    return tail ? `/${this.activeLang()}/${tail}` : null;
+  });
+
+  /** Known total → exact; unknown total → keep offering the next page until an empty one comes back (as before). */
+  protected hasNextPage = computed(() => {
+    if (this.allLoaded() || this.products().length === 0) return false;
+    const total = this.totalProductCount();
+    return total > 0 ? this.lastPage() * this.itemsPerPage < total : true;
+  });
+
+  protected prevPageQuery = computed(() => {
+    const prev = this.firstPage() - 1;
+    return prev >= 2 ? {page: prev} : {};
+  });
+
+  /**
+   * Filters live only in component state, not in the URL: ?page=N of a filtered list would open a different listing.
+   * So a filtered list gets no href (no new-tab/copy-link to the wrong page) and keeps the address bar as is.
+   * Crawlers never see filters — SSR always renders the plain listing with the real link.
+   */
+  protected nextPageHref = computed(() =>
+    this.activeFilterCount() > 0 ? null : `${this.basePath()}${catalogPageQuery(this.lastPage() + 1)}`);
+
   private currentCategoryId: string | null = null;
   private currentHeroId: number | null = null;
+  private robotsNoindex = false;
+  /** Route params the list was loaded for — tells a page-only change (same listing) from a new listing. */
+  private loadedParamsKey: string | null = null;
+  /** Page currently shown in the address bar. */
+  private urlPage = 1;
   private currentPage = 0;
   private readonly itemsPerPage = 24;
   private prefetched: { page: number; request$: Observable<any> } | null = null;
@@ -198,22 +251,26 @@ export class Catalog implements OnInit, OnDestroy {
       const catName = this.categoryName();
       const catData = this.categoryData();
       const lang = this.langService.currentLanguage();
+      const page = this.firstPage();
 
       if (cat || brand) {
-        this.updateMeta(cat, brand, alias, catName, catData, lang);
+        this.updateMeta(cat, brand, alias, catName, catData, lang, page);
+        // updateMeta ставит canonical/hreflang — на 404 снимаем их следом
+        if (this.notFound()) this.metaService.removeCanonicalAndAlternates();
       }
     });
 
     this.productsRequest$.pipe(
       switchMap(req => req.source$.pipe(
-        map(res => ({req, res})),
-        catchError(() => of({req, res: null}))
+        map(res => ({req, res, failed: false})),
+        catchError(() => of({req, res: null, failed: true}))
       )),
       takeUntilDestroyed()
-    ).subscribe(({req, res}) => {
+    ).subscribe(({req, res, failed}) => {
       // Only the latest request ever reaches this point
       this.isLoading.set(false);
-      if (res) this.applyProductsResponse(res, req.page, req.append);
+      // an API error keeps the list as is; a successful empty answer (204 → null) is an empty page (SR-103)
+      if (!failed) this.applyProductsResponse(res, req.page, req.append);
     });
 
     // On error keep the previous facets rather than wiping the sidebar
@@ -221,6 +278,21 @@ export class Catalog implements OnInit, OnDestroy {
       switchMap(source$ => source$.pipe(catchError(() => EMPTY))),
       takeUntilDestroyed()
     ).subscribe(groups => this.availableFilters.set(groups));
+
+    // <link rel="prev|next"> describe the page the visitor landed on; none on 404
+    effect(() => {
+      const base = this.basePath();
+      const first = this.firstPage();
+      const total = this.totalProductCount();
+      if (!base || this.notFound()) {
+        this.metaService.setPaginationLinks(null, null);
+        return;
+      }
+      this.metaService.setPaginationLinks(
+        first >= 2 ? base + catalogPageQuery(first - 1) : null,
+        total > first * this.itemsPerPage ? base + catalogPageQuery(first + 1) : null
+      );
+    });
 
     this.pendingCountRequest$.pipe(
       switchMap(identifier => this.loadByCategory(identifier, 0, 1, true).pipe(catchError(() => of(null)))),
@@ -247,6 +319,8 @@ export class Catalog implements OnInit, OnDestroy {
               const original = brands.find(b => this.brandService.toSlug(b.brand) === slug);
               return {
                 tag: 'brand',
+                // ответ API успешный, а такого бренда нет (пустой список за «нет» не считаем)
+                notFound: brands.length > 0 && !original,
                 brandName: original?.brand ?? slug,
                 brandAlias: original?.brandAlias ?? original?.brand ?? slug,
                 categoryId: null,
@@ -263,9 +337,16 @@ export class Catalog implements OnInit, OnDestroy {
         }
 
         if (tag) {
-          return this.categoryService.getCategoryBySlug(tag).pipe(
-            map(cat => ({
+          // список категорий (кэш сервиса) — чтобы пустой ответ API не считать «такой категории нет»
+          return this.categoryService.getCategories().pipe(
+            // lookup in the list already loaded: an empty API answer leaves the service cache empty,
+            // and getCategoryBySlug() would request hierarchy/active a second time
+            map(all => ({ cat: this.categoryService.findCategoryBySlug(all, tag), known: all.length > 0 })),
+            map(({ cat, known }) => ({
               tag: tag,
+              // getCategoryBySlug: ошибка API летит ошибкой, null — успешный ответ без совпадения;
+              // пустой список за «нет» не считаем (как у брендов)
+              notFound: known && !cat,
               brandName: null,
               brandAlias: null,
               categoryId: cat ? cat.id.toString() : tag,
@@ -277,13 +358,16 @@ export class Catalog implements OnInit, OnDestroy {
 
         return of({ tag: 'vs', brandName: null, brandAlias: null, categoryId: null, categoryName: null, categoryObj: null as Category | null });
       })
-    ).subscribe(({ tag, brandName, brandAlias, categoryId, categoryName, categoryObj }) => {
+    ).subscribe(result => {
+      const { tag, brandName, brandAlias, categoryId, categoryName, categoryObj } = result;
+      this.setNotFound('notFound' in result && result.notFound);
+
       // Redirect to correct language slug if needed
       if (categoryObj && tag) {
         const lang = this.langService.currentLanguage();
         const expectedSlug = this.slugify.categorySlug(categoryObj, lang);
         if (expectedSlug && tag !== expectedSlug) {
-          this.router.navigate(['/', lang, 'catalog', expectedSlug], { replaceUrl: true });
+          this.router.navigate(['/', lang, 'catalog', expectedSlug], { replaceUrl: true, queryParamsHandling: 'preserve' });
           return;
         }
       }
@@ -293,15 +377,87 @@ export class Catalog implements OnInit, OnDestroy {
       this.categoryName.set(categoryName);
       this.categoryData.set(categoryObj ?? null);
       this.currentCategoryId = categoryId;
+      this.updateRobots(tag);
+
+      const params = this.route.snapshot.paramMap;
+      const heroId = params.get('heroId');
+      const brandSlug = params.get('brandName');
+      this.listingTail.set(heroId ? `catalog/hero/${heroId}` : brandSlug ? `catalog/brand/${brandSlug}` : `catalog/${tag}`);
+      this.loadedParamsKey = this.paramsKey(params);
+      this.setPage(parseCatalogPage(this.route.snapshot.queryParamMap.get('page')) ?? 1);
       this.setCategory(tag!);
     });
+
+    // Same listing, only ?page changed (prev link, browser back/forward): paramMap stays silent — reload from that page.
+    // A new listing is handled above (it reads ?page itself); our own "Load more" URL update doesn't go through the router.
+    this.route.queryParamMap.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      map(q => parseCatalogPage(q.get('page')) ?? 1)
+    ).subscribe(page => {
+      if (this.loadedParamsKey !== this.paramsKey(this.route.snapshot.paramMap) || page === this.urlPage) return;
+      this.setPage(page);
+      this.reset();
+      this.fetchProducts();
+    });
+  }
+
+  private paramsKey(params: ParamMap): string {
+    return params.keys.map(k => `${k}=${params.get(k)}`).join('&');
+  }
+
+  private setPage(page: number): void {
+    this.firstPage.set(page);
+    this.lastPage.set(page);
+    this.urlPage = page;
+  }
+
+  /**
+   * Mirrors the loaded page in the address bar. Location, not the router: a router navigation would
+   * scroll to top (scrollPositionRestoration) and fire page views — the list must just grow in place.
+   */
+  private syncUrlPage(page: number): void {
+    if (page === this.urlPage) return;
+    this.urlPage = page;
+    const tree = this.router.parseUrl(this.location.path());
+    const rest = {...tree.queryParams};
+    delete rest['page'];
+    tree.queryParams = page >= 2 ? {...rest, page: String(page)} : rest;
+    this.location.replaceState(this.router.serializeUrl(tree), '', this.location.getState());
+  }
+
+  /** 404 + noindex по образцу product-detail; canonical/hreflang снимает эффект меты. */
+  private setNotFound(notFound: boolean): void {
+    this.notFound.set(notFound);
+    if (!notFound) return;
+    this.meta.updateTag({name: 'robots', content: 'noindex, nofollow'});
+    this.metaService.removeCanonicalAndAlternates();
+    if (this.responseInit) {
+      this.responseInit.status = 404;
+      this.responseInit.statusText = 'Not Found';
+    }
   }
 
   ngOnDestroy(): void {
     this.metaService.clearAlternateOverride();
+    this.metaService.setPaginationLinks(null, null);
+    if (this.robotsNoindex) this.meta.removeTag("name='robots'");
   }
 
-  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string) {
+  /**
+   * Hero collections (/catalog/hero/:id) are promo selections of products already listed
+   * in regular catalog pages — keep them out of the index, but let crawlers follow product links.
+   */
+  private updateRobots(tag: string | null) {
+    if (tag === 'hero') {
+      this.meta.updateTag({name: 'robots', content: 'noindex, follow'});
+      this.robotsNoindex = true;
+    } else if (this.robotsNoindex) {
+      this.meta.removeTag("name='robots'");
+      this.robotsNoindex = false;
+    }
+  }
+
+  private updateMeta(category: string | null, brand: string | null, alias: string | null, catName: string | null, catData: Category | null, lang: string, page = 1) {
     let title = 'Catalog | Secret Room';
     let description = 'Catalog de produse Secret Room';
     let keywords = 'cosmetice, lenjerie, moldova, chisinau';
@@ -352,26 +508,6 @@ export class Catalog implements OnInit, OnDestroy {
         keywords = `${nameRo}, ${nameRu}, victoria secret ${nameRo.toLowerCase()}, ${nameRo.toLowerCase()} moldova, ${nameRo.toLowerCase()} chisinau, купить ${nameRu.toLowerCase()} молдова, ${nameRu.toLowerCase()} кишинев`;
       } else {
         switch (category) {
-          case 'vs':
-            if (isRo) {
-              title = "Victoria's Secret Moldova — Lenjerie, Parfumuri, Cosmetice | Secret Room";
-              description = "Victoria's Secret în Moldova: sutiene, chiloți, pijamale, parfumuri, loțiuni, spray-uri — originale din SUA. Magazin Secret Room, Chișinău.";
-            } else {
-              title = "Victoria's Secret Молдова — Бельё, парфюмы, косметика | Secret Room";
-              description = "Victoria's Secret в Молдове: бюстгальтеры, трусики, пижамы, парфюмы, лосьоны, спреи — оригинал из США. Магазин Secret Room, Кишинёв.";
-            }
-            keywords = "victoria secret, victoria secret moldova, lenjerie victoria secret, sutiene victoria secret, parfum victoria secret, victoria secret chisinau, белье victoria secret, бюстгальтеры victoria secret, парфюм victoria secret молдова";
-            break;
-          case 'bb':
-            if (isRo) {
-              title = "Bath & Body Works Moldova — Lumânări, Loțiuni, Geluri de Duș | Secret Room";
-              description = "Bath & Body Works în Moldova: lumânări cu 3 fitile, loțiuni, geluri de duș, săpunuri spumante — originale din SUA. Magazin Secret Room, Chișinău.";
-            } else {
-              title = "Bath & Body Works Молдова — Свечи, лосьоны, гели для душа | Secret Room";
-              description = "Bath & Body Works в Молдове: свечи с 3 фитилями, лосьоны, гели для душа, пенящееся мыло — оригинал из США. Магазин Secret Room, Кишинёв.";
-            }
-            keywords = "bath body works, bath body works moldova, lumanari bath body works, lotiuni bath body works, bath body works chisinau, bath body works молдова, свечи bath body works";
-            break;
           case 'bestsellers':
             if (isRo) {
               title = "Bestsellere Victoria's Secret și Bath & Body Works | Secret Room Moldova";
@@ -406,17 +542,24 @@ export class Catalog implements OnInit, OnDestroy {
       }
     }
 
-    this.metaService.updateTitle(title);
-    this.metaService.updateDescription(description);
+    // Page N >= 2: own title/description ("— pagina N"), otherwise every page of a listing shares one title
+    const pageTitle = page >= 2 ? this.withPageSuffix(title, page, lang) : title;
+    const pageDescription = page >= 2
+      ? `${description.replace(/[.\s]+$/, '')} ${this.pageSuffix(page, lang)}`
+      : description;
+
+    this.metaService.updateTitle(pageTitle);
+    this.metaService.updateDescription(pageDescription);
     this.metaService.updateKeywords(keywords);
     this.metaService.updateCanonicalUrl();
 
     if (catData) {
       const roSlug = this.slugify.categorySlug(catData, 'ro');
       const ruSlug = this.slugify.categorySlug(catData, 'ru');
+      const pageQuery = catalogPageQuery(page);
       this.metaService.setAlternateOverride(
-        `https://secretroom.md/ro/catalog/${roSlug}`,
-        `https://secretroom.md/ru/catalog/${ruSlug}`
+        `https://secretroom.md/ro/catalog/${roSlug}${pageQuery}`,
+        `https://secretroom.md/ru/catalog/${ruSlug}${pageQuery}`
       );
     } else {
       this.metaService.clearAlternateOverride();
@@ -430,6 +573,24 @@ export class Catalog implements OnInit, OnDestroy {
     }, 'collection');
 
     this.updateBreadcrumbs(category, brand, alias, catData, lang);
+  }
+
+  /**
+   * selectTranslate, not translate(): it loads the language first. Translations are bundled (static loader),
+   * so it emits synchronously — also during SSR, before any transloco pipe has loaded the active language.
+   */
+  private pageSuffix(page: number, lang: string): string {
+    let suffix = '';
+    this.transloco.selectTranslate('catalog.pageSuffix', {page}, lang).pipe(take(1))
+      .subscribe(value => suffix = value);
+    return suffix;
+  }
+
+  /** "Name — pagina 2 | Secret Room": the suffix goes before the site part so it survives SERP truncation. */
+  private withPageSuffix(title: string, page: number, lang: string): string {
+    const suffix = this.pageSuffix(page, lang);
+    const site = title.indexOf(' | ');
+    return site >= 0 ? `${title.slice(0, site)} ${suffix}${title.slice(site)}` : `${title} ${suffix}`;
   }
 
   private updateBreadcrumbs(category: string | null, brand: string | null, alias: string | null, catData: Category | null, lang: string) {
@@ -488,7 +649,8 @@ export class Catalog implements OnInit, OnDestroy {
   }
 
   private reset() {
-    this.currentPage = 0;
+    this.currentPage = this.firstPage() - 1;
+    this.lastPage.set(this.firstPage());
     this.allLoaded.set(false);
     this.products.set([]);
     this.selectedBrand.set(null);
@@ -543,6 +705,10 @@ export class Catalog implements OnInit, OnDestroy {
 
   /** Selection changed: restart the list from page 0 and refresh facets; both cancel their previous request. */
   private onSelectionChanged() {
+    // Filter change: the filtered list starts over from page 1, and so does the URL (SR-103)
+    this.firstPage.set(1);
+    this.lastPage.set(1);
+    this.syncUrlPage(1);
     this.currentPage = 0;
     this.allLoaded.set(false);
     this.products.set([]);
@@ -684,8 +850,19 @@ export class Catalog implements OnInit, OnDestroy {
     return parts.join(',');
   }
 
-  loadMore(): void {
+  /** "Load more" is a real link to ?page=N+1 (crawlers follow it); a plain click appends the page in place. */
+  loadMore(event?: MouseEvent): void {
+    // modified/middle click on a real link — let the browser open it itself
+    if (event && this.nextPageHref() && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
+    event?.preventDefault();
     this.fetchProducts(true);
+  }
+
+  /** Enter/Space on the href-less (filtered) button; a real link handles Enter itself via click. */
+  loadMoreByKey(event: Event): void {
+    if (this.nextPageHref()) return;
+    event.preventDefault();
+    this.loadMore();
   }
 
   prefetchNext(): void {
@@ -706,7 +883,7 @@ export class Catalog implements OnInit, OnDestroy {
     // An append must never cancel an in-flight fresh load; a fresh load (append = false) is never skipped
     if (append && (this.isLoading() || this.allLoaded())) return;
 
-    const page = append ? this.currentPage + 1 : 0;
+    const page = append ? this.currentPage + 1 : this.firstPage() - 1;
     const category = this.category();
     const categoryIdentifier = this.currentCategoryId || category;
 
@@ -729,10 +906,15 @@ export class Catalog implements OnInit, OnDestroy {
 
     if (!items.length) {
       this.allLoaded.set(true);
+      // landed on ?page=N past the last page: a successful empty page (empty content or 204, as bestsellers/sales
+      // answer) is "not found". An API error never gets here — the first-page request has no catchError.
+      if (!append && page > 0) this.setNotFound(true);
       return;
     }
 
     this.currentPage = page;
+    this.lastPage.set(page + 1);
+    if (append && !this.activeFilterCount()) this.syncUrlPage(page + 1);
     this.products.set(append ? [...this.products(), ...items] : items);
     this.setItemListJsonLd(this.products());
   }

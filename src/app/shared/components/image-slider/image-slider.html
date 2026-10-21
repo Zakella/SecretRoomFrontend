@@ -3,14 +3,20 @@
     @for (image of images(); track image.id; let i = $index) {
       <div class="slide" [class.image-active]="selectedIndex() === i">
         <!-- Blurred background for different image sizes -->
-        <div class="slide-bg" [style.backgroundImage]="'url(' + getImageUrl(image) + ')'"></div>
-        <!-- Main image -->
-        <img [src]="getImageUrl(image)" [alt]="image.name" class="slide-img fade"
-             [style.filter]="getImageFilterStyle(image)"
-             [loading]="i === 0 ? 'eager' : 'lazy'"
-             [attr.fetchpriority]="i === 0 ? 'high' : null"
-             [width]="isMobile() ? 1080 : 1536"
-             [height]="isMobile() ? 1440 : 672"/>
+        <div class="slide-bg"
+             [style.--bg]="getBgImage(image.imageUrl)"
+             [style.--bg-m]="getBgImage(image.mobileImageUrl || image.imageUrl)"></div>
+        <!-- Main image: the browser picks the mobile file itself, before hydration -->
+        <picture class="slide-picture">
+          @if (image.mobileImageUrl) {
+            <source media="(max-width: 768px)" [attr.srcset]="srcsetUrl(image.mobileImageUrl)" width="1080" height="1440"/>
+          }
+          <img [loading]="i === 0 ? 'eager' : 'lazy'"
+               [attr.fetchpriority]="i === 0 ? 'high' : null"
+               [src]="image.imageUrl" [alt]="image.name" class="slide-img fade"
+               [style.filter]="getImageFilterStyle(image)"
+               width="1536" height="672"/>
+        </picture>
         <!-- Dynamic gradient overlay -->
         <div class="slide-gradient" [style.background]="getOverlayStyle(image)"></div>
         <!-- Badge -->
@@ -29,8 +35,10 @@
              [style.gap.px]="image.contentGap ?? 24">
           <h3 class="slide-title"
               [style.color]="image.titleColor || '#ffffff'"
-              [style.font-size.px]="getTitleFontSize(image)"
-              [style.font-family]="getTitleFontFamily(image)"
+              [style.--title-fs]="getTitleFontSize(image, false)"
+              [style.--title-fs-m]="getTitleFontSize(image, true)"
+              [style.--title-ff]="getTitleFontFamily(image, false)"
+              [style.--title-ff-m]="getTitleFontFamily(image, true)"
               [style.font-weight]="image.titleFontWeight || 400"
               [style.letter-spacing.px]="image.titleLetterSpacing || 0"
               [style.text-transform]="image.titleTextTransform || 'none'"
@@ -40,8 +48,10 @@
           @if (getSubtitleText(image)) {
             <p class="slide-subtitle"
                [style.color]="image.subtitleColor || '#ffffffcc'"
-               [style.font-size.px]="getSubtitleFontSize(image)"
-               [style.font-family]="getSubtitleFontFamily(image)">
+               [style.--sub-fs]="getSubtitleFontSize(image, false)"
+               [style.--sub-fs-m]="getSubtitleFontSize(image, true)"
+               [style.--sub-ff]="getSubtitleFontFamily(image, false)"
+               [style.--sub-ff-m]="getSubtitleFontFamily(image, true)">
               {{ getSubtitleText(image) }}
             </p>
           }

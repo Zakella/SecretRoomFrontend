@@ -119,11 +119,14 @@
 
               <div class="form-group">
                 <label for="country">{{ 'Country' | transloco }}</label>
+                <!-- Display only: the form control keeps the canonical value sent to the backend. -->
                 <input
                   type="text"
                   id="country"
-                  formControlName="country"
-                  class="disabled">
+                  class="disabled"
+                  readonly
+                  disabled
+                  [value]="form.getRawValue().country | transloco">
               </div>
 
               <div class="form-group">
