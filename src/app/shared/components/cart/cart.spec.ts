@@ -8,6 +8,7 @@ import {RecommendedProductService} from '../product/recommended-products/recomme
 import {Cart} from './cart';
 import {CartUi} from './services/cart';
 import {QuickAddToCart} from './services/quick-add-to-cart';
+import {PendingPayment} from './services/pending-payment';
 
 describe('Cart', () => {
   it('delegates recommendation add to QuickAddToCart', () => {
@@ -21,6 +22,7 @@ describe('Cart', () => {
         {provide: ChangeDetectorRef, useValue: {markForCheck: () => undefined}},
         {provide: Router, useValue: {}},
         {provide: Language, useValue: {currentLanguage: () => 'ro'}},
+        {provide: PendingPayment, useValue: {}},
       ],
     });
     const component = TestBed.runInInjectionContext(() => new Cart());
