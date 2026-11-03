@@ -22,20 +22,39 @@ function flatten(obj: Dict, prefix = ''): Record<string, string> {
 const flatRo = flatten(ro as Dict);
 const flatRu = flatten(ru as Dict);
 
+/** Validators of each checkout form control (checkout.ts initForm); requiredTrue reports as 'required'. */
+const VALIDATION_RULES: Record<string, string[]> = {
+  email: ['required', 'pattern'],
+  phone: ['required', 'pattern'],
+  name: ['required', 'minlength', 'pattern'],
+  lastname: ['required', 'minlength', 'pattern'],
+  address: ['required', 'minlength'],
+  city: ['required', 'minlength'],
+  zip: ['required', 'pattern'],
+  selectedShipping: ['required'],
+  payment: ['required'],
+  iAgree: ['required'],
+};
+
 /** Keys used by checkout.html (page, validation messages, steps). */
 const CHECKOUT_KEYS = [
   'Address', 'Back', 'Checkout', 'City', 'Comment', 'Contact Information', 'Continue to Payment',
   'Continue to Shipping', 'Country', 'First Name', 'Free shipping from', 'Free', 'I agree', 'Information',
-  'Last Name', 'Latin letters only', 'Leave a comment for your order', 'Loading...', 'Login',
-  'Payment Method', 'Payment', 'Phone', 'Place Order', 'Please enter a valid email address',
-  'Please enter a valid phone number', 'Please enter valid postal code', 'Please enter your address',
-  'Postal Code', 'Processing...', 'Required field', 'Select shipping method', 'Shipping Address',
+  'Last Name', 'Leave a comment for your order', 'Loading...', 'Login',
+  'Payment Method', 'Payment', 'Phone', 'Place Order',
+  'Postal Code', 'Processing...', 'Select shipping method', 'Shipping Address',
   'Shipping Method', 'Shipping', 'Size', 'Subtotal', 'Total', 'With terms and conditions', 'Your Order',
-  'checkout.addressPlaceholder', 'checkout.agreementRequired', 'checkout.alreadyHaveAccount',
+  'checkout.addressPlaceholder', 'checkout.alreadyHaveAccount',
   'checkout.createAccount', 'checkout.phonePlaceholder', 'checkout.removeUnavailable',
   'OnlinePayment', 'CashOnDelivery', 'CardOnDelivery',
   'errors.serverError', 'checkout.outOfStock', 'checkout.outOfStockGeneric', 'checkout.productUnavailable',
   'checkout.productNotFoundInCart',
+  // Validation messages per field and rule, short reasons and labels for the hint under "Place order".
+  ...Object.entries(VALIDATION_RULES).flatMap(([field, rules]) => [
+    `checkout.fields.${field}`,
+    ...rules.flatMap(rule => [`checkout.validation.${field}.${rule}`, `checkout.submitHint.${field}.${rule}`]),
+  ]),
+  'checkout.submitHint.title', 'checkout.submitHint.continueTitle', 'checkout.submitHint.emptyCart', 'checkout.submitHint.unavailable',
   // Country as stored by the backend; displayed through transloco.
   'Moldova, Republic of',
   // Order summary / order detail

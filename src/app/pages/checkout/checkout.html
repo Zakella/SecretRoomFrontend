@@ -52,11 +52,11 @@
                   id="email"
                   formControlName="email"
                   placeholder="your@email.com"
-                  [class.invalid]="isFieldInvalid('email')">
-                @if (isFieldInvalid('email')) {
-                  <span class="error-message">
-                    {{ 'Please enter a valid email address' | transloco }}
-                  </span>
+                  [class.invalid]="isFieldInvalid('email')"
+                  [attr.aria-invalid]="isFieldInvalid('email')"
+                  [attr.aria-describedby]="isFieldInvalid('email') ? 'email-error' : null">
+                @if (isFieldInvalid('email') && fieldError('email'); as err) {
+                  <span class="error-message" id="email-error">{{ err.key | transloco: err.params }}</span>
                 }
               </div>
 
@@ -67,11 +67,11 @@
                   id="phone"
                   formControlName="phone"
                   placeholder="{{ 'checkout.phonePlaceholder' | transloco }}"
-                  [class.invalid]="isFieldInvalid('phone')">
-                @if (isFieldInvalid('phone')) {
-                  <span class="error-message">
-                    {{ 'Please enter a valid phone number' | transloco }}
-                  </span>
+                  [class.invalid]="isFieldInvalid('phone')"
+                  [attr.aria-invalid]="isFieldInvalid('phone')"
+                  [attr.aria-describedby]="isFieldInvalid('phone') ? 'phone-error' : null">
+                @if (isFieldInvalid('phone') && fieldError('phone'); as err) {
+                  <span class="error-message" id="phone-error">{{ err.key | transloco: err.params }}</span>
                 }
               </div>
             </div>
@@ -86,15 +86,11 @@
                     type="text"
                     id="name"
                     formControlName="name"
-                    [class.invalid]="isFieldInvalid('name')">
-                  @if (isFieldInvalid('name')) {
-                    <span class="error-message">
-                      @if (form.get('name')?.hasError('pattern')) {
-                        {{ 'Latin letters only' | transloco }}
-                      } @else {
-                        {{ 'Required field' | transloco }}
-                      }
-                    </span>
+                    [class.invalid]="isFieldInvalid('name')"
+                    [attr.aria-invalid]="isFieldInvalid('name')"
+                    [attr.aria-describedby]="isFieldInvalid('name') ? 'name-error' : null">
+                  @if (isFieldInvalid('name') && fieldError('name'); as err) {
+                    <span class="error-message" id="name-error">{{ err.key | transloco: err.params }}</span>
                   }
                 </div>
 
@@ -104,15 +100,11 @@
                     type="text"
                     id="lastname"
                     formControlName="lastname"
-                    [class.invalid]="isFieldInvalid('lastname')">
-                  @if (isFieldInvalid('lastname')) {
-                    <span class="error-message">
-                      @if (form.get('lastname')?.hasError('pattern')) {
-                        {{ 'Latin letters only' | transloco }}
-                      } @else {
-                        {{ 'Required field' | transloco }}
-                      }
-                    </span>
+                    [class.invalid]="isFieldInvalid('lastname')"
+                    [attr.aria-invalid]="isFieldInvalid('lastname')"
+                    [attr.aria-describedby]="isFieldInvalid('lastname') ? 'lastname-error' : null">
+                  @if (isFieldInvalid('lastname') && fieldError('lastname'); as err) {
+                    <span class="error-message" id="lastname-error">{{ err.key | transloco: err.params }}</span>
                   }
                 </div>
               </div>
@@ -136,11 +128,11 @@
                   id="address"
                   formControlName="address"
                   placeholder="{{ 'checkout.addressPlaceholder' | transloco }}"
-                  [class.invalid]="isFieldInvalid('address')">
-                @if (isFieldInvalid('address')) {
-                  <span class="error-message">
-                    {{ 'Please enter your address' | transloco }}
-                  </span>
+                  [class.invalid]="isFieldInvalid('address')"
+                  [attr.aria-invalid]="isFieldInvalid('address')"
+                  [attr.aria-describedby]="isFieldInvalid('address') ? 'address-error' : null">
+                @if (isFieldInvalid('address') && fieldError('address'); as err) {
+                  <span class="error-message" id="address-error">{{ err.key | transloco: err.params }}</span>
                 }
               </div>
 
@@ -151,11 +143,11 @@
                     type="text"
                     id="city"
                     formControlName="city"
-                    [class.invalid]="isFieldInvalid('city')">
-                  @if (isFieldInvalid('city')) {
-                    <span class="error-message">
-                      {{ 'Required field' | transloco }}
-                    </span>
+                    [class.invalid]="isFieldInvalid('city')"
+                    [attr.aria-invalid]="isFieldInvalid('city')"
+                    [attr.aria-describedby]="isFieldInvalid('city') ? 'city-error' : null">
+                  @if (isFieldInvalid('city') && fieldError('city'); as err) {
+                    <span class="error-message" id="city-error">{{ err.key | transloco: err.params }}</span>
                   }
                 </div>
 
@@ -165,11 +157,11 @@
                     type="text"
                     id="zip"
                     formControlName="zip"
-                    [class.invalid]="isFieldInvalid('zip')">
-                  @if (isFieldInvalid('zip')) {
-                    <span class="error-message">
-                      {{ 'Please enter valid postal code' | transloco }}
-                    </span>
+                    [class.invalid]="isFieldInvalid('zip')"
+                    [attr.aria-invalid]="isFieldInvalid('zip')"
+                    [attr.aria-describedby]="isFieldInvalid('zip') ? 'zip-error' : null">
+                  @if (isFieldInvalid('zip') && fieldError('zip'); as err) {
+                    <span class="error-message" id="zip-error">{{ err.key | transloco: err.params }}</span>
                   }
                 </div>
               </div>
@@ -202,7 +194,7 @@
                   </button>
                 </div>
               } @else {
-                <div class="shipping-options">
+                <div class="shipping-options" id="shipping-options" tabindex="-1">
                   @for (option of shippingOptions; track option.id) {
                     <div
                       class="shipping-option"
@@ -230,6 +222,10 @@
                 </div>
               }
 
+              @if (isFieldInvalid('selectedShipping') && fieldError('selectedShipping'); as err) {
+                <span class="error-message">{{ err.key | transloco: err.params }}</span>
+              }
+
               @if (selectedShippingOption && totalAmount < selectedShippingOption.freeShippingFrom) {
                 <div class="free-shipping-hint">
                   <i class="pi pi-info-circle"></i>
@@ -252,6 +248,10 @@
                 <span class="btn-arrow">→</span>
               </button>
             </div>
+
+            @if (continueHint(); as hint) {
+              <ng-container [ngTemplateOutlet]="hintTpl" [ngTemplateOutletContext]="{$implicit: hint}"/>
+            }
           </div>
         }
 
@@ -260,7 +260,7 @@
             <div class="form-section">
               <h2 class="section-title">{{ 'Payment Method' | transloco }}</h2>
 
-              <div class="payment-options">
+              <div class="payment-options" id="payment-options" tabindex="-1">
                 @for (method of availablePaymentMethods; track method) {
                   <div
                     class="payment-option"
@@ -286,6 +286,9 @@
                   </div>
                 }
               </div>
+              @if (isFieldInvalid('payment') && fieldError('payment'); as err) {
+                <span class="error-message">{{ err.key | transloco: err.params }}</span>
+              }
             </div>
 
             <div class="form-section">
@@ -302,7 +305,7 @@
             <div class="form-section agreement-section" [class.agreement-error]="isFieldInvalid('iAgree')">
               <div class="agreement-box">
                 <label class="checkbox-label">
-                  <input type="checkbox" formControlName="iAgree">
+                  <input type="checkbox" id="iAgree" formControlName="iAgree">
                   <span class="custom-checkbox">
                     <i class="ri-check-line"></i>
                   </span>
@@ -312,10 +315,10 @@
                     <span class="required-marker">*</span>
                   </span>
                 </label>
-                @if (isFieldInvalid('iAgree')) {
+                @if (isFieldInvalid('iAgree') && fieldError('iAgree'); as err) {
                   <span class="agreement-error-message">
                     <i class="ri-error-warning-line"></i>
-                    {{ 'checkout.agreementRequired' | transloco }}
+                    {{ err.key | transloco: err.params }}
                   </span>
                 }
               </div>
@@ -355,6 +358,10 @@
                 }
               </button>
             </div>
+
+            @if (submitHint(); as hint) {
+              <ng-container [ngTemplateOutlet]="hintTpl" [ngTemplateOutletContext]="{$implicit: hint}"/>
+            }
           </div>
         }
       </form>
@@ -432,3 +439,29 @@
     </div>
   </div>
 </div>
+
+<ng-template #hintTpl let-hint>
+  <div class="submit-hint" role="status">
+    @if (hint.kind === 'fields') {
+      <button type="button" class="submit-hint-title" (click)="goToField(hint.errors[0].field)">
+        <i class="ri-error-warning-line"></i>
+        {{ hint.titleKey | transloco }}
+      </button>
+      <ul class="submit-hint-list">
+        @for (err of hint.errors; track err.field) {
+          <li>
+            <button type="button" class="submit-hint-item" (click)="goToField(err.field)">
+              <span class="submit-hint-field">{{ err.labelKey | transloco }}</span>
+              — {{ err.shortKey | transloco: err.params }}
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="submit-hint-message">
+        <i class="ri-error-warning-line"></i>
+        {{ hint.key | transloco }}
+      </p>
+    }
+  </div>
+</ng-template>

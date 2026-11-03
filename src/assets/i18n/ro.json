@@ -237,12 +237,6 @@
   "First Name": "Prenume",
   "Last Name": "Nume",
   "Postal Code": "Cod poștal",
-  "Please enter a valid email address": "Vă rugăm să introduceți o adresă de email validă",
-  "Please enter a valid phone number": "Vă rugăm să introduceți un număr de telefon valid",
-  "Required field": "Câmp obligatoriu",
-  "Latin letters only": "Doar litere latine",
-  "Please enter your address": "Vă rugăm să introduceți adresa",
-  "Please enter valid postal code": "Vă rugăm să introduceți un cod poștal valid",
   "Continue to Shipping": "Continuă la livrare",
   "Continue to Payment": "Continuă la plată",
   "Back": "Înapoi",
@@ -262,14 +256,111 @@
   "checkout": {
     "phonePlaceholder": "06XXXXXXX sau 07XXXXXXX",
     "addressPlaceholder": "Strada, numărul, apartamentul",
-    "agreementRequired": "Trebuie să acceptați condițiile pentru a plasa comanda",
     "alreadyHaveAccount": "Aveți deja un cont?",
     "createAccount": "Creează cont",
     "productNotFoundInCart": "Unul sau mai multe produse din coș nu mai sunt disponibile. Vă rugăm să actualizați coșul.",
     "outOfStock": "Produsele {{products}} nu sunt disponibile în stoc. Vă rugăm să le eliminați din coș.",
     "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc.",
     "productUnavailable": "Produsul „{{name}}” nu mai este disponibil, ștergeți-l din coș",
-    "removeUnavailable": "Ștergeți produsele indisponibile din coș"
+    "removeUnavailable": "Ștergeți produsele indisponibile din coș",
+    "fields": {
+      "email": "Email",
+      "phone": "Telefon",
+      "name": "Prenume",
+      "lastname": "Nume",
+      "address": "Adresă",
+      "city": "Oraș",
+      "zip": "Cod poștal",
+      "selectedShipping": "Metoda de livrare",
+      "payment": "Metoda de plată",
+      "iAgree": "Acordul cu termenii"
+    },
+    "validation": {
+      "email": {
+        "required": "Introduceți adresa de email — pe ea veți primi confirmarea comenzii",
+        "pattern": "Adresa de email nu este corectă: folosiți formatul nume@exemplu.com, cu litere latine și fără spații"
+      },
+      "phone": {
+        "required": "Introduceți numărul de telefon: 9 cifre, începe cu 06 sau 07, de exemplu 069123456",
+        "pattern": "Număr incorect: sunt necesare 9 cifre, începând cu 06 sau 07, fără +373, spații sau cratime. De exemplu: 069123456"
+      },
+      "name": {
+        "required": "Introduceți prenumele cu litere latine, de exemplu Maria",
+        "minlength": "Prenumele este prea scurt: minimum {{min}} litere",
+        "pattern": "Doar litere latine fără diacritice: scrieți ș → s, ț → t, ă/â → a, î → i, fără litere chirilice, de exemplu Stefania. Sunt permise spațiul, cratima și apostroful"
+      },
+      "lastname": {
+        "required": "Introduceți numele cu litere latine, de exemplu Rosca",
+        "minlength": "Numele este prea scurt: minimum {{min}} litere",
+        "pattern": "Doar litere latine fără diacritice: scrieți ș → s, ț → t, ă/â → a, î → i, fără litere chirilice, de exemplu Rosca. Sunt permise spațiul, cratima și apostroful"
+      },
+      "address": {
+        "required": "Introduceți adresa de livrare: strada, casa, apartamentul",
+        "minlength": "Adresa este prea scurtă: minimum {{min}} caractere — indicați strada și numărul casei"
+      },
+      "city": {
+        "required": "Introduceți orașul sau satul, de exemplu Chișinău",
+        "minlength": "Denumirea este prea scurtă: minimum {{min}} caractere"
+      },
+      "zip": {
+        "required": "Introduceți codul poștal, de exemplu 2001",
+        "pattern": "Codul poștal conține doar cifre, fără „MD-”, litere sau spații. De exemplu: 2001"
+      },
+      "selectedShipping": {
+        "required": "Alegeți metoda de livrare"
+      },
+      "payment": {
+        "required": "Alegeți metoda de plată"
+      },
+      "iAgree": {
+        "required": "Bifați acordul cu termenii — fără el comanda nu poate fi plasată"
+      }
+    },
+    "submitHint": {
+      "title": "Pentru a plasa comanda, corectați:",
+      "continueTitle": "Pentru a trece la plată, corectați:",
+      "email": {
+        "required": "necompletat",
+        "pattern": "formatul trebuie să fie nume@exemplu.com"
+      },
+      "phone": {
+        "required": "necompletat",
+        "pattern": "9 cifre, începând cu 06 sau 07"
+      },
+      "name": {
+        "required": "necompletat",
+        "minlength": "minimum {{min}} litere",
+        "pattern": "doar litere latine, fără diacritice"
+      },
+      "lastname": {
+        "required": "necompletat",
+        "minlength": "minimum {{min}} litere",
+        "pattern": "doar litere latine, fără diacritice"
+      },
+      "address": {
+        "required": "necompletat",
+        "minlength": "minimum {{min}} caractere"
+      },
+      "city": {
+        "required": "necompletat",
+        "minlength": "minimum {{min}} caractere"
+      },
+      "zip": {
+        "required": "necompletat",
+        "pattern": "doar cifre"
+      },
+      "selectedShipping": {
+        "required": "nu este aleasă"
+      },
+      "payment": {
+        "required": "nu este aleasă"
+      },
+      "iAgree": {
+        "required": "nu este bifat"
+      },
+      "emptyCart": "Coșul este gol — adăugați produse pentru a plasa comanda",
+      "unavailable": "În coș sunt produse indisponibile — eliminați-le pentru a plasa comanda"
+    }
   },
   "cart": {
     "youMayAlsoLike": "S-ar putea să vă placă și",
