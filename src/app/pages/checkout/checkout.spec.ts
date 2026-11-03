@@ -1,9 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
-import {PLATFORM_ID, signal} from '@angular/core';
+import {ChangeDetectorRef, PLATFORM_ID, signal} from '@angular/core';
 import {BehaviorSubject, of, throwError} from 'rxjs';
 import {provideTransloco} from '@ngneat/transloco';
+import {HttpErrorResponse, provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {MessageService} from 'primeng/api';
 import {Checkout} from './checkout';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -15,8 +17,12 @@ import {Shipping} from '../../@core/api/shipping';
 import {PurchaseService} from '../../@core/api/purchase';
 import {ProductService} from '../../@core/api/product';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
+import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
+import {SiteEvents} from '../../@core/api/site-events';
+import {ShippingOption} from '../../entities/shipping-options';
 
 const noop = (): void => undefined;
+const pendingPaymentStub = () => ({mark: noop, reconcile: () => of('none')});
 
 describe('Checkout order summary', () => {
   let fixture: ComponentFixture<Checkout>;
@@ -56,6 +62,8 @@ describe('Checkout order summary', () => {
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -148,6 +156,8 @@ describe('Checkout empty cart / SSR', () => {
         {provide: PurchaseService, useValue: {}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
     const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -211,6 +221,8 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
         {provide: PurchaseService, useValue: {placeOrder}},
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Checkout);
@@ -277,5 +289,296 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
     comp.dismissError();
     expect(comp.unavailable()).toEqual([]);
     expect(comp.canSubmit()).toBeTrue();
+  });
+});
+
+describe('Checkout submit — online payment and error reports (SR-206)', () => {
+  let comp: Checkout;
+  let placeOrder: jasmine.Spy;
+  let clearCart: jasmine.Spy;
+  let mark: jasmine.Spy;
+  let navigate: jasmine.Spy;
+  let redirect: jasmine.Spy;
+  let http: HttpTestingController;
+
+  const item = (id: string) => new CartItem({id, name: `P ${id}`, price: 10} as Product, 2, new Size('M'), 7);
+
+  async function setup(payment: 'OnlinePayment' | 'CashOnDelivery', result: () => unknown) {
+    const items$ = new BehaviorSubject<CartItem[]>([item('42')]);
+    placeOrder = jasmine.createSpy('placeOrder').and.callFake(result);
+    clearCart = jasmine.createSpy('clearCart');
+    mark = jasmine.createSpy('mark');
+    const cart = {
+      cartItems: items$,
+      totalAmount: new BehaviorSubject<number>(20),
+      totalQuantity: new BehaviorSubject<number>(2),
+      cartModified: new BehaviorSubject<boolean>(false),
+      loadCartItemsFromStorage: () => items$.value,
+      computeCartTotals: noop,
+      deleteItemFromCart: noop,
+      getMaxStock: () => 10,
+      recalculateCartItem: noop,
+      clearCart,
+    };
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}}),
+        MessageService,
+        {provide: PLATFORM_ID, useValue: 'browser'},
+        {provide: CartUi, useValue: cart},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {placeOrder}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: {mark, reconcile: () => of('none')}},
+      ],
+    }).compileComponents();
+    http = TestBed.inject(HttpTestingController);
+    navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const fixture = TestBed.createComponent(Checkout);
+    comp = fixture.componentInstance;
+    redirect = spyOn(comp, 'redirectTo');
+    fixture.detectChanges();
+    comp.form.patchValue({
+      email: 'a@b.md', name: 'Ion', lastname: 'Pop', address: 'Str 1', city: 'Chisinau', zip: '2001',
+      phone: '069123456', selectedShipping: 1, payment, iAgree: true
+    });
+    comp.selectedPayment = payment;
+  }
+
+  afterEach(() => http.verify());
+
+  it('online payment keeps the cart, marks the order and stays locked until redirect', async () => {
+    await setup('OnlinePayment', () => of({ok: true, waitingForPayment: true, paymentUrl: 'https://maib/pay', orderTrackingNumber: 'tn-1'}));
+    comp.onSubmit();
+    expect(clearCart).not.toHaveBeenCalled();
+    expect(mark).toHaveBeenCalledOnceWith('tn-1');
+    expect(redirect).toHaveBeenCalledOnceWith('https://maib/pay');
+    expect(comp.isSubmitting()).toBeTrue();
+    comp.onSubmit();
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+  });
+
+  it('cash on delivery clears the cart and opens order-success as before', async () => {
+    await setup('CashOnDelivery', () => of({ok: true, waitingForPayment: false, orderTrackingNumber: 'tn-2'}));
+    comp.onSubmit();
+    expect(clearCart).toHaveBeenCalledTimes(1);
+    expect(mark).not.toHaveBeenCalled();
+    expect(redirect).not.toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith(['/', 'ru', 'order-success', 'tn-2']);
+    expect(comp.isSubmitting()).toBeFalse();
+  });
+
+  it('network error (status 0) is reported to site-events', async () => {
+    await setup('CashOnDelivery', () => throwError(() =>
+      new HttpErrorResponse({status: 0, statusText: 'Unknown Error', error: new ProgressEvent('error')})));
+    comp.onSubmit();
+    const req = http.expectOne(r => r.url.endsWith('v1/site-events'));
+    expect(req.request.method).toBe('POST');
+    const body = req.request.body;
+    expect(body.kind).toBe('CHECKOUT_ERROR');
+    expect(body.source).toBe('FRONTEND');
+    expect(body.step).toBe('ORDER_CREATE');
+    expect(body.errorCode).toBe('NETWORK');
+    expect(body.customerName).toBe('Ion Pop');
+    expect(body.customerPhone).toBe('069123456');
+    expect(body.paymentMethod).toBe('CashOnDelivery');
+    expect(body.cart).toEqual([{appId: 42, variantAppId: 7, name: 'P 42', size: 'M', quantity: 2, price: 10}]);
+    req.flush({});
+    expect(comp.orderError()).toBe('errors.serverError');
+    expect(comp.isSubmitting()).toBeFalse();
+  });
+
+  it('409 with a body is not reported — the backend logged it', async () => {
+    await setup('CashOnDelivery', () => throwError(() => new HttpErrorResponse({
+      status: 409, statusText: 'Conflict', error: {error: 'OUT_OF_STOCK', message: 'x', details: []}
+    })));
+    comp.onSubmit();
+    http.expectNone(r => r.url.endsWith('v1/site-events'));
+  });
+});
+
+describe('Checkout validation messages and the hint under "Place order" (SR-206)', () => {
+  let fixture: ComponentFixture<Checkout>;
+  let comp: Checkout;
+  let items$: BehaviorSubject<CartItem[]>;
+  const el = () => fixture.nativeElement as HTMLElement;
+  const render = () => {
+    fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
+    fixture.detectChanges();
+  };
+
+  const VALID = {
+    email: 'a@b.md', name: 'Ion', lastname: 'Pop', address: 'Str 1', city: 'Chisinau', zip: '2001',
+    phone: '069123456', selectedShipping: 1, payment: 'CashOnDelivery', iAgree: true
+  };
+
+  async function setup() {
+    items$ = new BehaviorSubject<CartItem[]>([new CartItem({id: '5', name: 'P 5', price: 10} as Product, 1)]);
+    const cart = {
+      cartItems: items$,
+      totalAmount: new BehaviorSubject<number>(0),
+      totalQuantity: new BehaviorSubject<number>(0),
+      cartModified: new BehaviorSubject<boolean>(false),
+      loadCartItemsFromStorage: () => items$.value,
+      computeCartTotals: noop,
+      deleteItemFromCart: noop,
+      getMaxStock: () => 10,
+      recalculateCartItem: noop,
+    };
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}}),
+        MessageService,
+        {provide: CartUi, useValue: cart},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(Checkout);
+    comp = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  beforeEach(setup);
+
+  it('Cyrillic in the first name gives the "Latin letters only" message, shown under the field', () => {
+    comp.form.patchValue({name: 'Мария'});
+    expect(comp.fieldError('name')!.key).toBe('checkout.validation.name.pattern');
+    expect(comp.fieldError('name')!.shortKey).toBe('checkout.submitHint.name.pattern');
+
+    comp.form.get('name')!.markAsTouched();
+    render();
+    // no translations loaded in this spec, so transloco renders the key
+    expect(el().querySelector('#name-error')!.textContent!.trim()).toBe('checkout.validation.name.pattern');
+    expect(el().querySelector('#name')!.getAttribute('aria-describedby')).toBe('name-error');
+  });
+
+  it('Romanian diacritics and a single Cyrillic letter are reported as "Latin letters only" too', () => {
+    comp.form.patchValue({lastname: 'Roșca'});
+    expect(comp.fieldError('lastname')!.key).toBe('checkout.validation.lastname.pattern');
+    comp.form.patchValue({lastname: 'И'});
+    expect(comp.fieldError('lastname')!.key).toBe('checkout.validation.lastname.pattern');
+  });
+
+  it('too short Latin name reports minlength with the required length', () => {
+    comp.form.patchValue({name: 'A'});
+    expect(comp.fieldError('name')).toEqual(jasmine.objectContaining({
+      key: 'checkout.validation.name.minlength', params: {min: 2}
+    }));
+  });
+
+  it('wrong phone formats give the phone pattern message, an empty one the required message', () => {
+    for (const phone of ['+37369123456', '69123456', '069 123 456', '0791234567', '022123456']) {
+      comp.form.patchValue({phone});
+      expect(comp.fieldError('phone')?.key).withContext(phone).toBe('checkout.validation.phone.pattern');
+    }
+    comp.form.patchValue({phone: ''});
+    expect(comp.fieldError('phone')!.key).toBe('checkout.validation.phone.required');
+    comp.form.patchValue({phone: '079123456'});
+    expect(comp.fieldError('phone')).toBeNull();
+  });
+
+  it('every field and rule maps to its own key', () => {
+    comp.form.patchValue({email: 'ivan@mail', zip: 'MD-2001', address: 'ab', city: 'C', iAgree: false});
+    expect(comp.fieldError('email')!.key).toBe('checkout.validation.email.pattern');
+    expect(comp.fieldError('zip')!.key).toBe('checkout.validation.zip.pattern');
+    expect(comp.fieldError('address')!.key).toBe('checkout.validation.address.minlength');
+    expect(comp.fieldError('city')!.key).toBe('checkout.validation.city.minlength');
+    expect(comp.fieldError('iAgree')!.key).toBe('checkout.validation.iAgree.required');
+    expect(comp.fieldError('selectedShipping')!.key).toBe('checkout.validation.selectedShipping.required');
+    expect(comp.fieldError('payment')!.key).toBe('checkout.validation.payment.required');
+  });
+
+  it('the hint under the button lists exactly the invalid fields, in screen order', () => {
+    comp.form.patchValue({...VALID, name: 'Мария', phone: '+37369123456', iAgree: false});
+    expect(comp.canSubmit()).toBeFalse();
+    expect(comp.blockingFields().map(e => e.field)).toEqual(['phone', 'name', 'iAgree']);
+
+    // untouched form: no wall of errors yet
+    expect(comp.submitHint()).toBeNull();
+
+    comp.form.get('iAgree')!.markAsTouched();
+    const hint = comp.submitHint()!;
+    expect(hint.kind).toBe('fields');
+    expect(hint.kind === 'fields' && hint.errors.map(e => e.shortKey)).toEqual([
+      'checkout.submitHint.phone.pattern', 'checkout.submitHint.name.pattern', 'checkout.submitHint.iAgree.required'
+    ]);
+
+    comp.step = 'payment';
+    render();
+    const items = el().querySelectorAll<HTMLButtonElement>('.submit-hint-item');
+    expect(items.length).toBe(3);
+    expect(items[0].textContent).toContain('checkout.fields.phone');
+    expect(items[0].textContent).toContain('checkout.submitHint.phone.pattern');
+  });
+
+  it('clicking a field in the hint opens its step and marks the form touched', () => {
+    comp.form.patchValue({...VALID, name: 'Мария'});
+    comp.form.get('payment')!.markAsDirty();
+    comp.step = 'payment';
+    render();
+    expect(comp.form.get('name')!.touched).toBeFalse();
+
+    el().querySelector<HTMLButtonElement>('.submit-hint-item')!.click();
+    fixture.detectChanges();
+    expect(comp.step).toBe('information');
+    expect(comp.form.get('name')!.touched).toBeTrue();
+    expect(el().querySelector('#name-error')!.textContent!.trim()).toBe('checkout.validation.name.pattern');
+  });
+
+  it('"Continue to payment" lists only the shipping step fields and the click focuses them', () => {
+    // info fields are fine, an invalid name would block only the final submit
+    comp.form.patchValue({...VALID, name: 'Мария', selectedShipping: '', payment: '', iAgree: false});
+    comp.step = 'shipping';
+    expect(comp.continueHint()).toBeNull(); // untouched form
+
+    comp.form.get('email')!.markAsDirty();
+    const hint = comp.continueHint()!;
+    expect(hint).toEqual(jasmine.objectContaining({kind: 'fields', titleKey: 'checkout.submitHint.continueTitle'}));
+    expect(hint.kind === 'fields' && hint.errors.map(e => e.field)).toEqual(['selectedShipping']);
+    expect(comp.blockingFields('shipping').map(e => e.field)).toEqual(['selectedShipping']);
+
+    render();
+    const items = el().querySelectorAll<HTMLButtonElement>('.submit-hint-item');
+    expect(items.length).toBe(1);
+    expect(items[0].textContent).toContain('checkout.submitHint.selectedShipping.required');
+    items[0].click();
+    fixture.detectChanges();
+    expect(comp.step).toBe('shipping');
+    expect(comp.form.get('selectedShipping')!.touched).toBeTrue();
+
+    comp.selectShippingOption({id: '1', freeShippingFrom: 0, cost: 0} as unknown as ShippingOption);
+    expect(comp.continueHint()).toBeNull();
+  });
+
+  it('valid form: no hint; unavailable items or submitting: no field list', () => {
+    comp.form.patchValue(VALID);
+    comp.form.markAllAsTouched();
+    expect(comp.submitHint()).toBeNull();
+
+    comp.unavailable.set([{appId: '5', variantAppId: null, productName: 'P 5'}]);
+    expect(comp.submitHint()).toEqual({kind: 'message', key: 'checkout.submitHint.unavailable'});
+    // the order error banner already explains it
+    comp.orderError.set('checkout.productUnavailable');
+    expect(comp.submitHint()).toBeNull();
+
+    comp.unavailable.set([]);
+    comp.orderError.set(null);
+    comp.form.patchValue({phone: ''});
+    comp.isSubmitting.set(true);
+    expect(comp.submitHint()).toBeNull();
   });
 });

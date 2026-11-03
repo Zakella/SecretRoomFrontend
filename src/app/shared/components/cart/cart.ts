@@ -8,10 +8,11 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  PLATFORM_ID,
   signal
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NgTemplateOutlet} from '@angular/common';
+import {isPlatformBrowser, NgTemplateOutlet} from '@angular/common';
 import {CartUi} from './services/cart'
 import {CartItem} from '../../../entities/cart-item';
 import {QuickAddToCart} from './services/quick-add-to-cart';
@@ -28,6 +29,7 @@ import {Shipping} from '../../../@core/api/shipping';
 import {ShippingOption} from '../../../entities/shipping-options';
 import {ProductPrice} from '../product/product-price/product-price';
 import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
+import {PendingPayment} from './services/pending-payment';
 
 @Component({
   selector: 'app-cart',
@@ -51,6 +53,8 @@ export class Cart implements OnInit, OnDestroy {
   private shippingService = inject(Shipping);
   private recommendedService = inject(RecommendedProductService);
   private cdr = inject(ChangeDetectorRef);
+  private pendingPayment = inject(PendingPayment);
+  private platformId = inject(PLATFORM_ID);
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
   totalQuantity: number = 0;
@@ -75,6 +79,13 @@ export class Cart implements OnInit, OnDestroy {
     this.cartService.computeCartTotals();
     this.loadShippingOptions();
     this.loadRecommendations();
+    this.reconcilePendingPayment();
+  }
+
+  /** The drawer lives in the layout: on every page load check an online payment left open on MAIB. */
+  private reconcilePendingPayment(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.pendingPayment.reconcile().pipe(takeUntil(this.ngUnsubscribe)).subscribe();
   }
 
   private loadShippingOptions(): void {

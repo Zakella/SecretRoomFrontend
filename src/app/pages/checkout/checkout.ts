@@ -1,14 +1,17 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostListener,
   inject,
+  Injector,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
   signal
 } from '@angular/core';
-import {isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser, NgTemplateOutlet} from '@angular/common';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CartUi} from '../../shared/components/cart/services/cart';
@@ -31,6 +34,8 @@ import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {ProductPrice} from '../../shared/components/product/product-price/product-price';
 import {Slugify} from '../../@core/services/slugify';
 import {MetaService} from '../../@core/services/meta.service';
+import {OrderCreateFailure, SiteEvents} from '../../@core/api/site-events';
+import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 
 /** Above this many items the order summary list gets its own scroll. */
 export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
@@ -50,10 +55,47 @@ type Step = 'information' | 'shipping' | 'payment';
 
 type PaymentMethod = 'OnlinePayment' | 'CashOnDelivery' | 'CardOnDelivery';
 
+/** Validated form controls in on-screen order, with the step that renders each and the element to focus. */
+const VALIDATED_FIELDS = [
+  {field: 'email', step: 'information', elementId: 'email'},
+  {field: 'phone', step: 'information', elementId: 'phone'},
+  {field: 'name', step: 'information', elementId: 'name'},
+  {field: 'lastname', step: 'information', elementId: 'lastname'},
+  {field: 'address', step: 'information', elementId: 'address'},
+  {field: 'city', step: 'information', elementId: 'city'},
+  {field: 'zip', step: 'information', elementId: 'zip'},
+  {field: 'selectedShipping', step: 'shipping', elementId: 'shipping-options'},
+  {field: 'payment', step: 'payment', elementId: 'payment-options'},
+  {field: 'iAgree', step: 'payment', elementId: 'iAgree'},
+] as const satisfies readonly {field: string; step: Step; elementId: string}[];
+
+export type CheckoutField = typeof VALIDATED_FIELDS[number]['field'];
+
+/** Order in which a control's errors are reported: the first one present wins. */
+const RULE_ORDER = ['required', 'pattern', 'minlength'] as const;
+
+/** A violated validation rule of one field, resolved to translation keys. */
+export interface FieldError {
+  field: CheckoutField;
+  rule: typeof RULE_ORDER[number];
+  /** Full message under the field: what is wrong and how to fix it. */
+  key: string;
+  /** Short reason for the list under the submit button. */
+  shortKey: string;
+  labelKey: string;
+  params: Record<string, unknown>;
+}
+
+/** Why a step button ("Place order", "Continue to payment") is disabled, shown under it. */
+export type SubmitHint =
+  | {kind: 'fields'; titleKey: string; errors: FieldError[]}
+  | {kind: 'message'; key: string};
+
 @Component({
   selector: 'app-checkout',
   imports: [
     FadeUp,
+    NgTemplateOutlet,
     FormsModule,
     ReactiveFormsModule,
     TranslocoPipe,
@@ -102,6 +144,9 @@ export class Checkout implements OnInit, OnDestroy {
   private ga = inject(GoogleAnalytics);
   private platformId = inject(PLATFORM_ID);
   private slugify = inject(Slugify);
+  private siteEvents = inject(SiteEvents);
+  private pendingPayment = inject(PendingPayment);
+  private injector = inject(Injector);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -138,6 +183,19 @@ export class Checkout implements OnInit, OnDestroy {
     this.subscribeToCartChanges();
     this.validateCart();
     this.trackBeginCheckout();
+    this.reconcilePendingPayment();
+  }
+
+  /** Back from MAIB with an order awaiting payment: once it is paid the cart is cleared — leave checkout. */
+  private reconcilePendingPayment(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.pendingPayment.reconcile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(outcome => {
+        if (outcome === 'paid' && this.cartItems.length === 0) {
+          this.router.navigate(['/', this.activeLang()]);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -381,6 +439,77 @@ export class Checkout implements OnInit, OnDestroy {
     return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0 && !this.hasUnavailableItems();
   }
 
+  /** First violated rule of the field (required → pattern → minlength), or null when it is valid. */
+  fieldError(field: CheckoutField): FieldError | null {
+    const errors = this.form.get(field)?.errors;
+    if (!errors) return null;
+    const rule = RULE_ORDER.find(r => errors[r]);
+    if (!rule) return null;
+    const min = errors['minlength']?.requiredLength;
+    return {
+      field,
+      rule,
+      key: `checkout.validation.${field}.${rule}`,
+      shortKey: `checkout.submitHint.${field}.${rule}`,
+      labelKey: `checkout.fields.${field}`,
+      params: min != null ? {min} : {},
+    };
+  }
+
+  /** Every invalid field (only those of `step` when given), in on-screen order. */
+  blockingFields(step?: Step): FieldError[] {
+    return VALIDATED_FIELDS
+      .filter(f => !step || f.step === step)
+      .map(({field}) => this.fieldError(field))
+      .filter((e): e is FieldError => e !== null);
+  }
+
+  /**
+   * What keeps "Place order" disabled. Field problems are listed only once the buyer has
+   * interacted with the form (any field touched or dirty) — a fresh form gets no wall of errors.
+   */
+  submitHint(): SubmitHint | null {
+    if (this.canSubmit() || this.isSubmitting()) return null;
+    if (this.cartItems.length === 0) return {kind: 'message', key: 'checkout.submitHint.emptyCart'};
+    // The order error banner already explains unavailable items and offers to remove them.
+    if (this.hasUnavailableItems() && !this.orderError()) {
+      return {kind: 'message', key: 'checkout.submitHint.unavailable'};
+    }
+    return this.fieldsHint('checkout.submitHint.title');
+  }
+
+  /** What keeps "Continue to payment" disabled: the shipping step's own fields, same display rules. */
+  continueHint(): SubmitHint | null {
+    if (this.selectedShippingOption) return null;
+    return this.fieldsHint('checkout.submitHint.continueTitle', 'shipping');
+  }
+
+  /** Invalid fields (of `step`, or all) — only once the buyer has interacted with the form. */
+  private fieldsHint(titleKey: string, step?: Step): SubmitHint | null {
+    if (!this.form.touched && !this.form.dirty) return null;
+    const errors = this.blockingFields(step);
+    return errors.length ? {kind: 'fields', titleKey, errors} : null;
+  }
+
+  /** Opens the step with the field, marks the form touched (fields turn red) and focuses the field. */
+  goToField(field: CheckoutField): void {
+    const target = VALIDATED_FIELDS.find(f => f.field === field);
+    if (!target) return;
+    this.form.markAllAsTouched();
+    if (target.step === 'shipping' && this.shippingOptions.length === 0 && !this.isLoading()) {
+      this.loadShippingOptions();
+    }
+    this.step = target.step;
+    this.cdr.markForCheck();
+    if (!isPlatformBrowser(this.platformId)) return;
+    afterNextRender(() => {
+      const el = document.getElementById(target.elementId);
+      if (!el) return;
+      el.scrollIntoView({behavior: 'smooth', block: 'center'});
+      el.focus({preventScroll: true});
+    }, {injector: this.injector});
+  }
+
   isUnavailable(item: CartItem): boolean {
     return this.unavailable().some(d => {
       const id = d.appId ?? d.productId;
@@ -460,27 +589,31 @@ export class Checkout implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.isSubmitting.set(false);
-
           if (response.ok === false) {
+            this.isSubmitting.set(false);
             this.orderError.set('errors.serverError');
             this.cdr.markForCheck();
             return;
           }
 
-          this.cartService.clearCart();
-
           if (response.waitingForPayment && response.paymentUrl) {
+            // Online payment: the cart stays until the order is known to be paid (order-success /
+            // reconcile), so a failed or abandoned MAIB payment does not lose it.
+            // isSubmitting stays true until the page leaves — a second click must not create a second order.
+            if (response.orderTrackingNumber) this.pendingPayment.mark(response.orderTrackingNumber);
             if (isPlatformBrowser(this.platformId)) {
-              window.location.href = response.paymentUrl;
+              this.redirectTo(response.paymentUrl);
             }
           } else {
+            this.isSubmitting.set(false);
+            this.cartService.clearCart();
             this.router.navigate(['/', this.activeLang(), 'order-success', response.orderTrackingNumber]);
           }
         },
         error: (error) => {
           console.error('Order placement failed:', error);
           this.isSubmitting.set(false);
+          this.reportOrderError(error, purchase);
 
           const errorMessage = error.error?.message || '';
 
@@ -514,6 +647,35 @@ export class Checkout implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  /**
+   * Back button from MAIB may restore this page from the bfcache with isSubmitting still true —
+   * unlock the button and re-check the pending payment.
+   */
+  @HostListener('window:pageshow', ['$event'])
+  onPageShow(event: PageTransitionEvent): void {
+    if (!event.persisted || !this.isSubmitting()) return;
+    this.isSubmitting.set(false);
+    this.cdr.markForCheck();
+    this.reconcilePendingPayment();
+  }
+
+  /** Separate method so tests can stub the full-page redirect. */
+  redirectTo(url: string): void {
+    window.location.href = url;
+  }
+
+  private reportOrderError(error: OrderCreateFailure['error'], purchase: Purchase): void {
+    this.siteEvents.reportOrderCreateFailure({
+      error,
+      customerName: `${purchase.customer.firstName ?? ''} ${purchase.customer.lastName ?? ''}`,
+      customerPhone: purchase.customer.phone,
+      paymentMethod: purchase.payment,
+      amount: purchase.order.totalAmountOrder,
+      language: purchase.language,
+      cartItems: this.cartItems,
+    });
   }
 
   get grandTotal(): number {
