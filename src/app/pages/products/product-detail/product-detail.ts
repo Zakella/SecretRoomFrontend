@@ -30,10 +30,11 @@ import {ProductPrice} from '../../../shared/components/product/product-price/pro
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
 import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
 import {compareSizes} from '../../../shared/utils/size-order';
+import {SrTrack} from '../../../@core/directives/sr-track';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery, SrTrack],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],

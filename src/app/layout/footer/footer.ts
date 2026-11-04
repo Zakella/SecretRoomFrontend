@@ -5,13 +5,15 @@ import {TranslocoDirective} from '@ngneat/transloco';
 import {Language} from '../../@core/services/language';
 import {BrandService} from '../../@core/api/brand';
 import {Brand} from '../../entities/category';
+import {SrTrack} from '../../@core/directives/sr-track';
 
 @Component({
   selector: 'app-footer',
   imports: [
     RouterLink,
     ReturnPolicy,
-    TranslocoDirective
+    TranslocoDirective,
+    SrTrack
   ],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',

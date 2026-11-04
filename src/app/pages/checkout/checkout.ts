@@ -35,7 +35,9 @@ import {ProductPrice} from '../../shared/components/product/product-price/produc
 import {Slugify} from '../../@core/services/slugify';
 import {MetaService} from '../../@core/services/meta.service';
 import {OrderCreateFailure, SiteEvents} from '../../@core/api/site-events';
+import {SiteTracker} from '../../@core/api/site-tracker';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
+import {SrTrack} from '../../@core/directives/sr-track';
 
 /** Above this many items the order summary list gets its own scroll. */
 export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
@@ -102,7 +104,8 @@ export type SubmitHint =
     InputNumber,
     RouterLink,
     LocalizedNamePipe,
-    ProductPrice
+    ProductPrice,
+    SrTrack
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
@@ -145,6 +148,7 @@ export class Checkout implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private slugify = inject(Slugify);
   private siteEvents = inject(SiteEvents);
+  private tracker = inject(SiteTracker);
   private pendingPayment = inject(PendingPayment);
   private injector = inject(Injector);
   private destroy$ = new Subject<void>();
@@ -584,17 +588,20 @@ export class Checkout implements OnInit, OnDestroy {
     };
 
     this.orderError.set(null);
+    this.tracker.checkoutSubmit({phone: formValue.phone, firstName: formValue.name, lastName: formValue.lastname, amount: purchase.order.totalAmountOrder, paymentMethod: purchase.payment});
 
     this.purchaseService.placeOrder(purchase)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           if (response.ok === false) {
+            this.tracker.checkoutFail({statusText: 'ok=false'});
             this.isSubmitting.set(false);
             this.orderError.set('errors.serverError');
             this.cdr.markForCheck();
             return;
           }
+          this.tracker.checkoutSuccess(response.orderTrackingNumber);
 
           if (response.waitingForPayment && response.paymentUrl) {
             // Online payment: the cart stays until the order is known to be paid (order-success /
@@ -614,6 +621,7 @@ export class Checkout implements OnInit, OnDestroy {
           console.error('Order placement failed:', error);
           this.isSubmitting.set(false);
           this.reportOrderError(error, purchase);
+          this.tracker.checkoutFail(error);
 
           const errorMessage = error.error?.message || '';
 

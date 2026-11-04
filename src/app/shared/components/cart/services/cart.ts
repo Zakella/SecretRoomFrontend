@@ -2,12 +2,14 @@ import {inject, Injectable, signal} from '@angular/core';
 import {CartItem} from '../../../../entities/cart-item';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {AddedToCart} from './added-to-cart';
+import {SiteTracker} from '../../../../@core/api/site-tracker';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartUi {
   private addedToCart = inject(AddedToCart);
+  private tracker = inject(SiteTracker);
   private _visible = signal<boolean>(false);
   public cartCount = signal<number>(0);
   visible = this._visible.asReadonly();
@@ -61,6 +63,7 @@ export class CartUi {
     this.saveCartItemsToStorage();
     this.computeCartTotals();
     this.cartCount.set(currentItems?.length || 0);
+    this.tracker.cartChange('ADD_TO_CART', theCartItem);
     // The full drawer opens only via the cart icon. Here a compact confirmation is shown,
     // unless the drawer is already open (e.g. adding from its recommendations).
     if (this._visible()) {
@@ -143,7 +146,8 @@ export class CartUi {
 
   deleteItemFromCart(index: number) {
     const updated = [...this.cartItems.value];
-    updated.splice(index, 1);
+    const [removed] = updated.splice(index, 1);
+    this.tracker.cartChange('REMOVE_FROM_CART', removed);
     this.cartItems.next(updated);
     this.saveCartItemsToStorage();
     this.computeCartTotals();

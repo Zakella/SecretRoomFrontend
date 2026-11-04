@@ -449,6 +449,7 @@
   "Cabinet": "Cabinet",
   "cookie": {
     "message": "Acest site folosește cookie-uri pentru a vă oferi o experiență mai bună. Continuând navigarea, sunteți de acord cu utilizarea cookie-urilor.",
+    "journal": "De asemenea, înregistrăm acțiunile dumneavoastră pe site (pagini vizitate, coș, plasarea comenzii), ca să găsim și să reparăm mai repede problemele.",
     "accept": "Acceptă",
     "decline": "Refuză"
   },

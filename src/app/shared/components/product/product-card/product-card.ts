@@ -13,10 +13,11 @@ import {Slugify} from '../../../../@core/services/slugify';
 import {BrandService} from '../../../../@core/api/brand';
 import {ProductPrice} from '../product-price/product-price';
 import {extraOptionsCount, moreOptionsKey} from './option-count-label';
+import {SrTrack} from '../../../../@core/directives/sr-track';
 
 @Component({
   selector: 'product-card',
-  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe, ProductPrice, RouterLink],
+  imports: [SkeletonModule, TranslocoPipe, AnalyticEvent, LocalizedNamePipe, ProductPrice, RouterLink, SrTrack],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

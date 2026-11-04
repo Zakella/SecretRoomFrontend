@@ -26,7 +26,10 @@ describe('SiteEvents', () => {
     paymentMethod: 'OnlinePayment', amount: 150, language: 'ro', cartItems,
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http.verify();
+    localStorage.clear();
+  });
 
   it('decides what the backend could not record', () => {
     expect(isUnrecordedOrderError({status: 0, error: new ProgressEvent('error')})).toBeTrue();
@@ -92,5 +95,22 @@ describe('SiteEvents', () => {
     setup('server');
     service.reportOrderCreateFailure(failure(new HttpErrorResponse({status: 0})));
     http.expectNone(r => r.url.endsWith('v1/site-events'));
+  });
+
+  it('SR-207: carries visitorId only with cookie consent', () => {
+    localStorage.clear();
+    setup();
+    service.reportOrderCreateFailure(failure(new HttpErrorResponse({status: 0})));
+    const without = http.expectOne(r => r.url.endsWith('v1/site-events')).request.body;
+    expect(without.visitorId).toBeUndefined();
+    expect(localStorage.getItem('sr_visitor_id')).toBeNull();
+
+    localStorage.setItem('cookie_consent', 'accepted');
+    TestBed.resetTestingModule();
+    setup();
+    service.reportOrderCreateFailure(failure(new HttpErrorResponse({status: 0})));
+    const withConsent = http.expectOne(r => r.url.endsWith('v1/site-events')).request.body;
+    expect(withConsent.visitorId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(withConsent.visitorId).toBe(localStorage.getItem('sr_visitor_id'));
   });
 });
