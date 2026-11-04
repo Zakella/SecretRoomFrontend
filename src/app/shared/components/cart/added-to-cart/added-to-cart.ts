@@ -4,11 +4,12 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {AddedToCart} from '../services/added-to-cart';
 import {Language} from '../../../../@core/services/language';
 import {LocalizedNamePipe} from '../../../pipes/localized-name.pipe';
+import {SrTrack} from '../../../../@core/directives/sr-track';
 
 /** Compact "added to cart" confirmation. Mounted once in the main layout. */
 @Component({
   selector: 'app-added-to-cart',
-  imports: [TranslocoPipe, LocalizedNamePipe],
+  imports: [TranslocoPipe, LocalizedNamePipe, SrTrack],
   templateUrl: './added-to-cart.html',
   styleUrl: './added-to-cart.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

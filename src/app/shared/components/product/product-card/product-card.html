@@ -16,7 +16,7 @@
       <p class="product-description">Lorem ipsum dolor sit.</p>
       <p class="product-price">{{ price() }} MDL </p>
 
-      <button class="add-to-bag-btn" (click)="addProductInCart()" appAnalyticEvent="buy_click">
+      <button class="add-to-bag-btn" (click)="addProductInCart()" appAnalyticEvent="buy_click" srTrack="ADD_TO_CART">
         {{ 'Add to Cart' | transloco }}
       </button>
     </div>
@@ -47,7 +47,7 @@
       </div>
     }
 
-    <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)">
+    <button class="wishlist-btn" [class.active]="isFavorite()" (click)="toggleFavorite($event)" srTrack="FAVORITE">
       <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
     </button>
 
@@ -125,7 +125,7 @@
         [attr.aria-disabled]="isAdding() || null"
         [attr.aria-busy]="isAdding() || null"
         (click)="addProductInCart(); $event.stopPropagation()"
-        appAnalyticEvent="buy_click"
+        appAnalyticEvent="buy_click" srTrack="ADD_TO_CART"
       >
         <i class="ri-shopping-bag-line"></i>
         <span>{{ 'Add to Cart' | transloco }}</span>

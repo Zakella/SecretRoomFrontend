@@ -8,6 +8,7 @@ import {CookieBanner} from './shared/components/cookie-banner/cookie-banner';
 import {GoogleAnalytics} from './@core/services/google-analytics';
 import {MetaService} from './@core/services/meta.service';
 import {filter} from 'rxjs';
+import {SiteTracker} from './@core/api/site-tracker';
 
 
 @Component({
@@ -23,12 +24,14 @@ export class App {
   private router = inject(Router)
   private ga = inject(GoogleAnalytics)
   private metaService = inject(MetaService)
+  private tracker = inject(SiteTracker)
 
   constructor() {
     this.ga.init();
     this.lang.init();
     this.themeService.init()
     this.trackPageViews();
+    this.tracker.init();
 
     effect(() => {
       const currentLang = this.lang.currentLanguage();

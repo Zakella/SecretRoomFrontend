@@ -119,14 +119,14 @@
                 <span>{{ 'OutOfStock' | transloco }}</span>
               </button>
             } @else {
-              <button class="add-to-bag-btn" (click)="addProductInCart()">
+              <button class="add-to-bag-btn" (click)="addProductInCart()" srTrack="ADD_TO_CART">
                 <i class="ri-shopping-bag-line"></i>
                 <span>{{ 'Add to Cart' | transloco }}</span>
               </button>
             }
 
             <div class="secondary-actions">
-              <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()">
+              <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()" srTrack="FAVORITE">
                 <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>
                 {{ isFavorite() ? ('InFavorites' | transloco) : ('AddToFavorites' | transloco) }}
               </button>
