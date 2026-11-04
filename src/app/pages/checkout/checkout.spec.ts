@@ -400,6 +400,7 @@ describe('Checkout submit — online payment and error reports (SR-206)', () => 
     })));
     comp.onSubmit();
     http.expectNone(r => r.url.endsWith('v1/site-events'));
+    expect().nothing();
   });
 });
 
