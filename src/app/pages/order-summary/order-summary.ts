@@ -10,6 +10,7 @@ import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {CurrencyPipe, isPlatformBrowser} from '@angular/common';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
+import {SiteTracker} from '../../@core/api/site-tracker';
 
 @Component({
   selector: 'app-order-summary',
@@ -30,6 +31,7 @@ export class OrderSummary implements OnInit, OnDestroy {
   private langService = inject(Language);
   private ga = inject(GoogleAnalytics);
   private pendingPayment = inject(PendingPayment);
+  private tracker = inject(SiteTracker);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private destroy$ = new Subject<void>();
 
@@ -75,6 +77,7 @@ export class OrderSummary implements OnInit, OnDestroy {
         next: (order) => {
           this.orderReview.set(order);
           this.ga.trackPurchase(order);
+          this.tracker.orderLink(order, trackingNumber);
           // Online payment kept the cart while the customer was on MAIB — the order is accepted now
           if (this.isBrowser) this.pendingPayment.settle(trackingNumber, order.status);
           if (order.status === 'PAYMENT_WAITING' && this.isBrowser) this.pollUntilPaid(trackingNumber);

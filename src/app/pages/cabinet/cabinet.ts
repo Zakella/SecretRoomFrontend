@@ -10,6 +10,7 @@ import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {TranslocoPipe} from '@ngneat/transloco';
 import {Subject, takeUntil} from 'rxjs';
+import {SiteTracker} from '../../@core/api/site-tracker';
 
 @Component({
   selector: 'app-cabinet',
@@ -40,6 +41,7 @@ export class Cabinet implements OnInit, OnDestroy {
   private langService = inject(Language);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private tracker = inject(SiteTracker);
   private destroy$ = new Subject<void>();
 
   activeLang = this.langService.currentLanguage;
@@ -57,6 +59,7 @@ export class Cabinet implements OnInit, OnDestroy {
 
   private loadUserDetails(): void {
     this.userDetails = this.authService.getUserDetails();
+    this.tracker.customerLink(this.userDetails);
     if (this.userDetails) {
       this.userFirstName = this.userDetails.givenName || '';
       this.userLastName = this.userDetails.familyName || '';

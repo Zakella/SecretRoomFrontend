@@ -5,6 +5,7 @@ import {EMPTY} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {environment} from '../../../environments/environment';
 import {CartItem} from '../../entities/cart-item';
+import {SiteTracker} from './site-tracker';
 
 export const SITE_EVENT_MAX_CART_LINES = 100;
 const MAX_MESSAGE = 2000;
@@ -39,6 +40,8 @@ export interface SiteEvent {
   pageUrl?: string;
   userAgent?: string;
   cart?: SiteEventCartLine[];
+  /** SR-207: anonymous visitor id, only with cookie consent. */
+  visitorId?: string;
 }
 
 export interface OrderCreateFailure {
@@ -96,6 +99,7 @@ function cut(value: string | undefined | null, max: number): string | undefined 
 export class SiteEvents {
   private http = inject(HttpClient);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private tracker = inject(SiteTracker);
   private url = environment.apiUrl + 'v1/site-events';
 
   /** Reports a failed POST v1/order when the backend could not have recorded it. */
@@ -126,6 +130,7 @@ export class SiteEvents {
           quantity: item.quantity,
           price: toNumber(item.product?.price),
         })),
+        visitorId: this.tracker.consentedVisitorId(),
       };
       this.http.post(this.url, event).pipe(catchError(() => EMPTY)).subscribe();
     } catch {

@@ -30,6 +30,7 @@ import {ShippingOption} from '../../../entities/shipping-options';
 import {ProductPrice} from '../product/product-price/product-price';
 import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
 import {PendingPayment} from './services/pending-payment';
+import {SrTrack} from '../../../@core/directives/sr-track';
 
 @Component({
   selector: 'app-cart',
@@ -40,6 +41,7 @@ import {PendingPayment} from './services/pending-payment';
     InputNumber,
     LocalizedNamePipe,
     ProductPrice,
+    SrTrack,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
