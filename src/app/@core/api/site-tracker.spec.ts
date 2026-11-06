@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 import {PLATFORM_ID} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {
   checkoutFailCode, COOKIE_CONSENT_KEY, cutEvent, pageTypeOf, searchQueryOf, SiteTracker,
   TRACKER_BATCH_MAX, TRACKER_ENABLED, TRACKER_FLUSH_MS, TRACKER_NAVIGATOR, TrackerNavigator,
@@ -55,6 +55,7 @@ describe('SiteTracker', () => {
     tracker.click('ADD_TO_CART');
     tracker.checkoutSubmit({phone: '069123456', firstName: 'Ion', lastName: 'Pop', amount: 900, paymentMethod: 'CashOnDelivery'});
     tracker.checkoutSuccess('abc');
+    tracker.searchResult('rochie', 3);
     tracker.flush();
   }
 
@@ -270,6 +271,73 @@ describe('SiteTracker', () => {
     expect(checkoutFailCode({status: 400, error: {}})).toBe('VALIDATION');
     expect(checkoutFailCode({status: 409, error: {error: 'PRODUCT_UNAVAILABLE'}})).toBe('PRODUCT_UNAVAILABLE');
     expect(checkoutFailCode(null)).toBe('UNEXPECTED');
+  });
+
+  it('SEARCH_RESULT (SR-215): resultsCount and the search query land in the batch', async () => {
+    setup();
+    spyOnProperty(TestBed.inject(Router), 'url', 'get').and.returnValue('/ro/search/rochie%20verde?utm_source=ig');
+    tracker.searchResult('rochie verde', 0);
+    tracker.searchResult('bra', 25);
+    expect(nav.sendBeacon).not.toHaveBeenCalled(); // buffered like PAGE_VIEW
+    tracker.flush();
+    const [body] = await beaconBodies();
+    expect(body.visitorId).toBe(localStorage.getItem(VISITOR_ID_KEY)!);
+    expect(body.events.length).toBe(2);
+    expect(body.events[0]).toEqual(jasmine.objectContaining({
+      action: 'SEARCH_RESULT', pageType: 'SEARCH', pageUrl: '/ro/search/rochie%20verde', searchQuery: 'rochie verde', resultsCount: 0,
+    }));
+    expect(body.events[1]).toEqual(jasmine.objectContaining({action: 'SEARCH_RESULT', searchQuery: 'bra', resultsCount: 25}));
+    expect(body.events[0].eventId).toMatch(UUID);
+  });
+
+  it('SEARCH_RESULT pageUrl equals the PAGE_VIEW pageUrl of the same page', async () => {
+    setup();
+    const url = '/ru/search/%D0%B1%D1%80%D0%B0?x=1';
+    spyOnProperty(TestBed.inject(Router), 'url', 'get').and.returnValue(url);
+    tracker.handleNavigation(url);
+    tracker.searchResult(searchQueryOf(url)!, 7);
+    tracker.flush();
+    const events = (await beaconBodies()).flatMap(b => b.events);
+    const view = events.find(e => e.action === 'PAGE_VIEW')!;
+    const result = events.find(e => e.action === 'SEARCH_RESULT')!;
+    expect(result.pageUrl).toBe(view.pageUrl!);
+    expect(result.searchQuery).toBe(view.searchQuery!);
+    expect(result.resultsCount).toBe(7);
+  });
+
+  it('SEARCH_RESULT without consent: nothing, no visitorId', () => {
+    for (const consent of [null, 'declined']) {
+      TestBed.resetTestingModule();
+      setup({consent});
+      tracker.searchResult('bra', 5);
+      tracker.flush();
+      expect(nav.sendBeacon).withContext(String(consent)).not.toHaveBeenCalled();
+      expect(fetchSpy).withContext(String(consent)).not.toHaveBeenCalled();
+      expect(localStorage.getItem(VISITOR_ID_KEY)).withContext(String(consent)).toBeNull();
+    }
+  });
+
+  it('SEARCH_RESULT: empty query, missing / negative / non-numeric count → not sent', () => {
+    setup();
+    tracker.searchResult('', 3);
+    tracker.searchResult('   ', 3);
+    tracker.searchResult(null, 3);
+    tracker.searchResult('bra', -1);
+    tracker.searchResult('bra', NaN);
+    tracker.searchResult('bra', Infinity);
+    tracker.searchResult('bra', null);
+    tracker.searchResult('bra', '5' as unknown as number);
+    tracker.flush();
+    expect(nav.sendBeacon).not.toHaveBeenCalled();
+    expect(localStorage.getItem(VISITOR_ID_KEY)).toBeNull();
+  });
+
+  it('SEARCH_RESULT: a long query is cut to 200', async () => {
+    setup();
+    tracker.searchResult('q'.repeat(900), 1);
+    tracker.flush();
+    const [body] = await beaconBodies();
+    expect(body.events[0].searchQuery!.length).toBe(200);
   });
 
   it('classifies pages by the router URL', () => {

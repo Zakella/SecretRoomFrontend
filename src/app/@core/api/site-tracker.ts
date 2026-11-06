@@ -22,7 +22,7 @@ const BOT_UA = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|
 export type VisitorAction =
   | 'VISIT_START' | 'PAGE_VIEW' | 'ADD_TO_CART' | 'REMOVE_FROM_CART'
   | 'CHECKOUT_OPEN' | 'CHECKOUT_SUBMIT' | 'CHECKOUT_SUCCESS' | 'CHECKOUT_FAIL'
-  | 'CLICK' | 'ORDER_LINK' | 'CUSTOMER_LINK';
+  | 'CLICK' | 'ORDER_LINK' | 'CUSTOMER_LINK' | 'SEARCH_RESULT';
 
 export type PageType =
   | 'HOME' | 'CATALOG' | 'PRODUCT' | 'SEARCH' | 'CART' | 'CHECKOUT'
@@ -46,6 +46,8 @@ export interface VisitorEvent {
   pageType?: PageType;
   pageUrl?: string;
   searchQuery?: string;
+  /** SEARCH_RESULT (SR-215): totalElements of the first search response. */
+  resultsCount?: number;
   button?: TrackButton;
   referrer?: string;
   utmSource?: string;
@@ -354,6 +356,24 @@ export class SiteTracker {
     }
   }
 
+  /** SR-215: first search response for a query (page 0) — how many products were found. */
+  searchResult(query: string | null | undefined, resultsCount: number | null | undefined): void {
+    try {
+      if (typeof query !== 'string' || !query.trim()) return;
+      if (typeof resultsCount !== 'number' || !Number.isFinite(resultsCount) || resultsCount < 0) return;
+      if (!this.active()) return;
+      this.record({
+        action: 'SEARCH_RESULT',
+        pageType: 'SEARCH',
+        pageUrl: this.searchPageUrl(),
+        searchQuery: query,
+        resultsCount: Math.floor(resultsCount),
+      });
+    } catch {
+      // ignore
+    }
+  }
+
   /** "Place order" pressed: phone, name, amount, payment method. No email, no card data. */
   checkoutSubmit(data: {phone?: string | null; firstName?: string | null; lastName?: string | null; amount?: number | null; paymentMethod?: string | null}): void {
     try {
@@ -558,6 +578,17 @@ export class SiteTracker {
   private currentPath(): string {
     if (this.lastUrl) return stripQuery(this.lastUrl);
     return typeof location !== 'undefined' ? location.pathname : '';
+  }
+
+  /** URL of the current page as PAGE_VIEW has it: router URL without query (navigation may still be deferred). */
+  private searchPageUrl(): string {
+    try {
+      const url = this.router.url;
+      if (url && pageTypeOf(url) === 'SEARCH') return stripQuery(url);
+    } catch {
+      // fall through
+    }
+    return this.currentPath();
   }
 
   private queryParams(url: string): URLSearchParams {
