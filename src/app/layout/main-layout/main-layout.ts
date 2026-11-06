@@ -11,6 +11,8 @@ import {MobileMenu} from '../mobile-menu/mobile-menu';
 import {Breadcrumb} from '../breadcrumb/breadcrumb';
 import {MobileHeader} from '../mobile-header/mobile-header';
 import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
+import {StoreHoldDialog} from '../../widgets/store-hold/store-hold-dialog';
+import {StoreHoldState} from '../../widgets/store-hold/store-hold-state';
 
 @Component({
   selector: 'app-main-layout',
@@ -26,14 +28,18 @@ import {ScrollToTop} from '../../shared/components/scroll-to-top/scroll-to-top';
     Breadcrumb,
     MobileHeader,
     ScrollToTop,
+    StoreHoldDialog,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
 export class MainLayout {
   private cartService = inject(CartUi);
+  private holdState = inject(StoreHoldState);
 
   public readonly visible = computed(() => this.cartService.visible());
+  /** The hold dialog (PrimeNG Dialog) is loaded on first use, outside the initial bundle (SR-223). */
+  protected readonly holdRequested = computed(() => !!this.holdState.request());
 
   public onClose() {
     this.cartService.close();

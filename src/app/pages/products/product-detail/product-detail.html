@@ -125,6 +125,13 @@
               </button>
             }
 
+            @if (canHoldInStore()) {
+              <button type="button" class="btn-secondary btn-store-hold" (click)="holdInStore()">
+                <i class="ri-store-2-line"></i>
+                {{ 'storeHold.button' | transloco }}
+              </button>
+            }
+
             <div class="secondary-actions">
               <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()" srTrack="FAVORITE">
                 <i [class]="isFavorite() ? 'ri-heart-fill' : 'ri-heart-line'"></i>

@@ -1,0 +1,329 @@
+// Light dialog in the colours of the quick size picker.
+::ng-deep .sr-hold-dialog {
+  &.p-dialog {
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(181, 133, 95, 0.2);
+    background: #fefcf8;
+  }
+
+  .p-dialog-header {
+    background: #fefcf8;
+    padding: 1rem 1.25rem 0.5rem;
+
+    .p-dialog-title {
+      font-family: var(--font-title), serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #2d2a26;
+    }
+
+    .p-dialog-close-button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  .p-dialog-content {
+    background: #fefcf8;
+    padding: 0.5rem 1.25rem 1.25rem;
+    overflow-x: hidden;
+  }
+}
+
+.hold-product {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+
+  img {
+    width: 56px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0 0 0.25rem;
+    color: #2d2a26;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  &__size {
+    margin: 0 0 0.25rem;
+    font-size: 0.85rem;
+    color: #6b5d4f;
+  }
+}
+
+.hold-stores {
+  border: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  min-width: 0;
+
+  legend {
+    padding: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b5d4f;
+  }
+}
+
+.hold-store {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  min-height: 44px;
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(184, 149, 108, 0.3);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+
+  // Own radio: the native one is drawn dark by the site's colour scheme.
+  input {
+    appearance: none;
+    margin: 0.15rem 0 0;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border: 2px solid rgba(184, 149, 108, 0.7);
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+
+    &:checked {
+      border-color: #b8956c;
+      box-shadow: inset 0 0 0 3px #fff;
+      background: #b8956c;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &--active {
+    border-color: #b8956c;
+    background: rgba(184, 149, 108, 0.06);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid #b5855f;
+    outline-offset: 1px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2d2a26;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: #6b5d4f;
+    overflow-wrap: anywhere;
+
+    i {
+      color: #b8956c;
+    }
+  }
+}
+
+.hold-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.hold-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+  min-width: 0;
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b5d4f;
+  }
+
+  input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    font-size: 16px; // no zoom on iOS
+    border: 1px solid rgba(184, 149, 108, 0.35);
+    border-radius: 6px;
+    background: #fff;
+    color: #2d2a26;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #b8956c;
+      box-shadow: 0 0 0 2px rgba(184, 149, 108, 0.2);
+    }
+
+    &[aria-invalid='true'] {
+      border-color: #c0392b;
+    }
+  }
+}
+
+.hold-note {
+  margin: -0.4rem 0 0.75rem;
+  font-size: 0.75rem;
+  color: #8c8279;
+
+  .hold-field & {
+    margin: 0;
+  }
+}
+
+.hold-error {
+  font-size: 0.75rem;
+  color: #c0392b;
+  line-height: 1.4;
+
+  &--block {
+    display: block;
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+.hold-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.hold-info {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.25rem 0 1rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(184, 149, 108, 0.08);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #4b3e2b;
+
+  i {
+    color: #b8956c;
+    font-size: 1rem;
+  }
+}
+
+.hold-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  &--primary {
+    border: none;
+    background: #2c2421;
+    color: #fff;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+  }
+
+  &--ghost {
+    margin-top: 0.5rem;
+    border: 1px solid rgba(184, 149, 108, 0.4);
+    background: none;
+    color: #4b3e2b;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #b5855f;
+    outline-offset: 2px;
+  }
+}
+
+.hold-success {
+  text-align: center;
+
+  &__icon {
+    font-size: 2.5rem;
+    color: #5a8f5a;
+  }
+
+  &__number {
+    margin: 0.25rem 0;
+    font-size: 1.05rem;
+    color: #2d2a26;
+  }
+
+  &__status {
+    margin: 0 0 0.35rem;
+    font-weight: 600;
+    color: #b8956c;
+  }
+
+  &__text,
+  &__store,
+  &__hint {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #4b3e2b;
+    overflow-wrap: anywhere;
+  }
+
+  &__hint {
+    color: #8c8279;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hold-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

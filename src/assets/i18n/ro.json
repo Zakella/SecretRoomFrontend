@@ -603,5 +603,87 @@
       "spam": "Prea multe linkuri în mesaj",
       "notSent": "Nu s-a trimis"
     }
+  },
+  "storeHold": {
+    "button": "Rezervă în magazin",
+    "title": "Rezervă în magazin",
+    "successTitle": "Cererea a fost trimisă",
+    "chooseStore": "Magazinul",
+    "chooseSizeToHold": "Alegeți mărimea pe care o rezervați",
+    "pickerHint": "Alegeți mărimea și se deschide cererea de rezervare în magazin. Plata se face în magazin.",
+    "latinHint": "Prenumele și numele cu litere latine: după ele vă găsim în magazin.",
+    "emailLabel": "Email (opțional)",
+    "emailHint": "Vă trimitem un email când magazinul confirmă sau respinge cererea.",
+    "hint": "Magazinul verifică stocul și confirmă în decurs de o oră în timpul programului (10:00–21:00). După confirmare, produsul vă așteaptă 24 de ore. Plata se face în magazin.",
+    "submit": "Rezervă",
+    "sending": "Se trimite…",
+    "number": "Numărul cererii",
+    "successHint": "Păstrați numărul cererii: cu el și cu telefonul puteți verifica starea.",
+    "openStatus": "Starea cererii",
+    "close": "Închide",
+    "pageTitle": "Produs rezervat",
+    "pageIntro": "Introduceți numărul cererii și telefonul indicat la rezervare.",
+    "check": "Verifică",
+    "loading": "Se verifică…",
+    "refresh": "Actualizează",
+    "createdAt": "Creată pe {{time}}",
+    "validation": {
+      "store": "Alegeți magazinul din care veți ridica produsul",
+      "nameMax": "Prea lung: maximum {{max}} caractere",
+      "emailMax": "Adresa de email este prea lungă: maximum {{max}} caractere",
+      "numberRequired": "Introduceți numărul cererii, de exemplu H17",
+      "numberPattern": "Numărul cererii este litera H și cifre, de exemplu H17"
+    },
+    "errors": {
+      "badName": "Prenumele și numele cu litere latine, de la 2 la 50 de litere.",
+      "badPhone": "Număr incorect: 9 cifre, începând cu 06 sau 07, de exemplu 069123456.",
+      "badEmail": "Adresa de email nu este corectă. Corectați-o sau lăsați câmpul gol.",
+      "badStore": "Alegeți un magazin din listă.",
+      "outOfStock": "Această mărime s-a terminat și nu mai poate fi rezervată. Alegeți altă mărime.",
+      "sizeRequired": "Alegeți mărimea pe care doriți să o rezervați.",
+      "productNotFound": "Produsul nu mai este pus în vânzare pe site și nu poate fi rezervat.",
+      "holdNotFound": "Cererea nu a fost găsită. Verificați numărul și telefonul indicat la rezervare.",
+      "limitReached": "Pe acest telefon sunt deja rezervate produse: {{max}} — acesta este maximul. Puteți trimite o cerere nouă după ce se închide una dintre cele active.",
+      "rateLimit": "Prea multe încercări. Așteptați un minut și încercați din nou.",
+      "bot": "Cererea nu a putut fi trimisă. Reîncărcați pagina și încercați din nou.",
+      "disabled": "Rezervarea în magazin nu este disponibilă acum. Plasați comanda pe site sau sunați-ne: 060099775.",
+      "network": "Nu există conexiune cu serverul. Verificați internetul și încercați din nou.",
+      "generic": "Nu a reușit. Încercați din nou peste un minut."
+    },
+    "status": {
+      "PENDING": {
+        "title": "Așteaptă confirmarea magazinului",
+        "text": "Magazinul verifică stocul și confirmă cererea în decurs de o oră în timpul programului (10:00–21:00).",
+        "textUntil": "Magazinul verifică stocul și confirmă cererea până la {{time}}."
+      },
+      "CONFIRMED": {
+        "title": "Rezervat până la {{time}}",
+        "text": "Produsul vă așteaptă în magazin. Spuneți vânzătorului numărul cererii, plata se face în magazin."
+      },
+      "REJECTED": {
+        "title": "Magazinul nu a putut rezerva produsul",
+        "text": "Această mărime nu este în magazinul ales. Încercați alt magazin sau plasați comanda pe site."
+      },
+      "NOT_CONFIRMED": {
+        "title": "Cererea nu a fost confirmată",
+        "text": "Magazinul nu a reușit să confirme cererea la timp, iar ea a fost închisă. Puteți rezerva produsul din nou sau plasa comanda pe site."
+      },
+      "PURCHASED": {
+        "title": "Cumpărătura a fost efectuată",
+        "text": "Vă mulțumim pentru cumpărătură! Cererea este închisă."
+      },
+      "NO_SHOW": {
+        "title": "Produsul nu a fost ridicat",
+        "text": "Produsul rezervat nu a fost ridicat, cererea este închisă și produsul a revenit în vânzare."
+      },
+      "EXPIRED": {
+        "title": "Termenul rezervării a expirat",
+        "text": "Au trecut 24 de ore, produsul a revenit în vânzare. Îl puteți rezerva din nou."
+      },
+      "unknown": {
+        "title": "Starea se actualizează",
+        "text": "Apăsați „Actualizează” peste un minut."
+      }
+    }
   }
 }

@@ -27,6 +27,7 @@ import {InputNumber} from 'primeng/inputnumber';
 import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
 import {PurchaseService} from '../../@core/api/purchase';
+import {EMAIL_PATTERN, LATIN_NAME_PATTERN, MD_PHONE_PATTERN, NAME_MIN_LENGTH} from '../../@core/validators/validators';
 import {Purchase} from '../../entities/purchase';
 import {ProductService} from '../../@core/api/product';
 import {MessageService} from 'primeng/api';
@@ -209,14 +210,14 @@ export class Checkout implements OnInit, OnDestroy {
 
   private initForm(): void {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.pattern(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)]],
+      email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
       country: [{value: 'Moldova, Republic of', disabled: true}],
-      name: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[A-Za-z\s'-]+$/)]],
-      lastname: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[A-Za-z\s'-]+$/)]],
+      name: ['', [Validators.required, Validators.minLength(NAME_MIN_LENGTH), Validators.pattern(LATIN_NAME_PATTERN)]],
+      lastname: ['', [Validators.required, Validators.minLength(NAME_MIN_LENGTH), Validators.pattern(LATIN_NAME_PATTERN)]],
       address: ['', [Validators.required, Validators.minLength(3)]],
       city: ['', [Validators.required, Validators.minLength(2)]],
       zip: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
-      phone: ['', [Validators.required, Validators.pattern(/^0[67]\d{7}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(MD_PHONE_PATTERN)]],
       selectedShipping: ['', Validators.required],
       payment: ['', Validators.required],
       iAgree: [false, Validators.requiredTrue],
