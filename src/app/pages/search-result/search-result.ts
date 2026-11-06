@@ -12,6 +12,7 @@ import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
 import {LocalizedNamePipe} from '../../shared/pipes/localized-name.pipe';
+import {SiteTracker} from '../../@core/api/site-tracker';
 
 @Component({
   selector: 'app-search-result',
@@ -34,6 +35,8 @@ export class SearchResult implements OnInit {
   private langService = inject(Language);
   private meta = inject(Meta);
   private destroyRef = inject(DestroyRef);
+  private tracker = inject(SiteTracker);
+  private destroyed = false;
 
   viewMode: 'grid' | 'list' = 'grid';
   products = signal<Product[]>([]);
@@ -45,6 +48,7 @@ export class SearchResult implements OnInit {
   private pageSize = 12;
 
   ngOnInit() {
+    this.destroyRef.onDestroy(() => this.destroyed = true);
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const q = params.get('query') || '';
       this.query.set(q);
@@ -65,6 +69,8 @@ export class SearchResult implements OnInit {
 
   loadProducts() {
     this.loading.set(true);
+    const query = this.query();
+    const page = this.page;
     this.productService.smartSearch(this.query(), this.page, this.pageSize).subscribe({
       next: res => {
         const content = res?.content ?? [];
@@ -77,6 +83,8 @@ export class SearchResult implements OnInit {
         this.totalElements.set(totalElements);
         this.hasMore.set((this.page + 1) * this.pageSize < totalElements);
         this.loading.set(false);
+        // 204 with an empty body is how the API says "nothing found"; a body without a number → not sent
+        if (page === 0) this.trackResults(query, res == null ? 0 : res.totalElements);
       },
       error: () => {
         this.loading.set(false);
@@ -87,6 +95,16 @@ export class SearchResult implements OnInit {
   loadMore() {
     this.page++;
     this.loadProducts();
+  }
+
+  /** SR-215: how many products the first page of the search found; a tracker failure never breaks the page. */
+  private trackResults(query: string, totalElements: number | null | undefined) {
+    if (this.destroyed || query !== this.query()) return;
+    try {
+      this.tracker.searchResult(query, totalElements);
+    } catch {
+      // ignore
+    }
   }
 
   private trackSearch(query: string) {
