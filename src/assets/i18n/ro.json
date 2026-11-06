@@ -575,5 +575,33 @@
     "title": "Brandurile din magazin",
     "description": "Produse originale de la brandurile pe care le aducem în Moldova.",
     "viewAll": "Vezi toate brandurile"
+  },
+  "chat": {
+    "open": "Scrieți-ne",
+    "openUnread": "Scrieți-ne — răspunsuri noi: {{count}}",
+    "close": "Închideți chatul",
+    "title": "Secret Room",
+    "subtitle": "Puneți o întrebare — vă răspundem aici",
+    "empty": "Bună ziua! Cu ce vă putem ajuta?",
+    "shopName": "Secret Room",
+    "placeholder": "Scrieți un mesaj…",
+    "send": "Trimiteți",
+    "introduce": "Prezentați-vă",
+    "name": "Nume",
+    "phone": "Telefon",
+    "optional": "(opțional)",
+    "retry": "Reîncercați",
+    "phoneForm": {
+      "title": "Lăsați numărul de telefon — vă vom suna",
+      "submit": "Trimiteți",
+      "done": "Mulțumim! Vă vom suna."
+    },
+    "errors": {
+      "rateLimit": "Prea des, așteptați un minut",
+      "tooLong": "Mesajul este prea lung",
+      "badPhone": "Verificați numărul de telefon",
+      "spam": "Prea multe linkuri în mesaj",
+      "notSent": "Nu s-a trimis"
+    }
   }
 }

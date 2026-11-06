@@ -22,7 +22,7 @@ const BOT_UA = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|
 export type VisitorAction =
   | 'VISIT_START' | 'PAGE_VIEW' | 'ADD_TO_CART' | 'REMOVE_FROM_CART'
   | 'CHECKOUT_OPEN' | 'CHECKOUT_SUBMIT' | 'CHECKOUT_SUCCESS' | 'CHECKOUT_FAIL'
-  | 'CLICK' | 'ORDER_LINK' | 'CUSTOMER_LINK';
+  | 'CLICK' | 'ORDER_LINK' | 'CUSTOMER_LINK' | 'SEARCH_RESULT';
 
 export type PageType =
   | 'HOME' | 'CATALOG' | 'PRODUCT' | 'SEARCH' | 'CART' | 'CHECKOUT'
@@ -46,6 +46,8 @@ export interface VisitorEvent {
   pageType?: PageType;
   pageUrl?: string;
   searchQuery?: string;
+  /** SEARCH_RESULT (SR-215): totalElements of the first search response. */
+  resultsCount?: number;
   button?: TrackButton;
   referrer?: string;
   utmSource?: string;
@@ -201,6 +203,57 @@ export function checkoutFailCode(error: {status?: number; error?: unknown} | nul
   return 'UNEXPECTED';
 }
 
+/** Bots, headless browsers and automation (navigator.webdriver); no navigator at all counts as a bot. */
+export function isBotNavigator(nav: TrackerNavigator | undefined | null): boolean {
+  if (!nav) return true;
+  if (nav.webdriver) return true;
+  return BOT_UA.test(nav.userAgent ?? '');
+}
+
+/** Device class by the user agent, then by the viewport width. */
+export function deviceOf(nav: TrackerNavigator | undefined | null): 'MOBILE' | 'TABLET' | 'DESKTOP' {
+  const ua = nav?.userAgent ?? '';
+  if (/ipad|tablet/i.test(ua)) return 'TABLET';
+  if (/mobi|iphone|android/i.test(ua)) return 'MOBILE';
+  const width = typeof window !== 'undefined' ? window.innerWidth : 0;
+  if (width > 0 && width < 768) return 'MOBILE';
+  if (width > 0 && width < 1024) return 'TABLET';
+  return 'DESKTOP';
+}
+
+/** Site language ro/ru: the /:lang/ path segment, then <html lang>. */
+export function siteLanguageOf(path: string): string | undefined {
+  const seg = path.split('/')[1];
+  if (seg === 'ro' || seg === 'ru') return seg;
+  const lang = typeof document !== 'undefined' ? document.documentElement?.lang : '';
+  return lang === 'ro' || lang === 'ru' ? lang : undefined;
+}
+
+/** sendBeacon (text/plain, no CORS preflight), fallback fetch keepalive; never throws, failures are lost. */
+export function postBeacon(nav: TrackerNavigator | undefined | null, url: string, json: string): void {
+  let sent = false;
+  try {
+    if (nav && typeof nav.sendBeacon === 'function') {
+      sent = nav.sendBeacon(url, new Blob([json], {type: 'text/plain;charset=UTF-8'})) === true;
+    }
+  } catch {
+    sent = false;
+  }
+  if (sent) return;
+  try {
+    if (typeof fetch !== 'function') return;
+    fetch(url, {
+      method: 'POST',
+      body: json,
+      keepalive: true,
+      credentials: 'omit',
+      headers: {'Content-Type': 'text/plain;charset=UTF-8'},
+    }).catch(() => undefined);
+  } catch {
+    // lost — acceptable
+  }
+}
+
 /**
  * Fire-and-forget journal of visitor actions → POST v1/site-events/visitor (sendBeacon).
  * Works only in the browser, with cookie consent, not for bots, with environment.visitorTracking.
@@ -298,6 +351,24 @@ export class SiteTracker {
     try {
       if (!button || !this.active()) return;
       this.record({action: 'CLICK', button, pageType: pageTypeOf(this.currentPath()), pageUrl: this.currentPath()});
+    } catch {
+      // ignore
+    }
+  }
+
+  /** SR-215: first search response for a query (page 0) — how many products were found. */
+  searchResult(query: string | null | undefined, resultsCount: number | null | undefined): void {
+    try {
+      if (typeof query !== 'string' || !query.trim()) return;
+      if (typeof resultsCount !== 'number' || !Number.isFinite(resultsCount) || resultsCount < 0) return;
+      if (!this.active()) return;
+      this.record({
+        action: 'SEARCH_RESULT',
+        pageType: 'SEARCH',
+        pageUrl: this.searchPageUrl(),
+        searchQuery: query,
+        resultsCount: Math.floor(resultsCount),
+      });
     } catch {
       // ignore
     }
@@ -422,10 +493,7 @@ export class SiteTracker {
   }
 
   private isBot(): boolean {
-    const nav = this.nav;
-    if (!nav) return true;
-    if (nav.webdriver) return true;
-    return BOT_UA.test(nav.userAgent ?? '');
+    return isBotNavigator(this.nav);
   }
 
   /** Existing or new UUID; called only with consent. */
@@ -466,28 +534,7 @@ export class SiteTracker {
   }
 
   private send(body: VisitorBatch): void {
-    const json = JSON.stringify(body);
-    let sent = false;
-    try {
-      if (this.nav && typeof this.nav.sendBeacon === 'function') {
-        sent = this.nav.sendBeacon(this.url, new Blob([json], {type: 'text/plain;charset=UTF-8'})) === true;
-      }
-    } catch {
-      sent = false;
-    }
-    if (sent) return;
-    try {
-      if (typeof fetch !== 'function') return;
-      fetch(this.url, {
-        method: 'POST',
-        body: json,
-        keepalive: true,
-        credentials: 'omit',
-        headers: {'Content-Type': 'text/plain;charset=UTF-8'},
-      }).catch(() => undefined);
-    } catch {
-      // lost — acceptable
-    }
+    postBeacon(this.nav, this.url, JSON.stringify(body));
   }
 
   private ensureRunning(): void {
@@ -521,25 +568,27 @@ export class SiteTracker {
   }
 
   private device(): 'MOBILE' | 'TABLET' | 'DESKTOP' {
-    const ua = this.nav?.userAgent ?? '';
-    if (/ipad|tablet/i.test(ua)) return 'TABLET';
-    if (/mobi|iphone|android/i.test(ua)) return 'MOBILE';
-    const width = typeof window !== 'undefined' ? window.innerWidth : 0;
-    if (width > 0 && width < 768) return 'MOBILE';
-    if (width > 0 && width < 1024) return 'TABLET';
-    return 'DESKTOP';
+    return deviceOf(this.nav);
   }
 
   private language(): string | undefined {
-    const seg = this.currentPath().split('/')[1];
-    if (seg === 'ro' || seg === 'ru') return seg;
-    const lang = typeof document !== 'undefined' ? document.documentElement?.lang : '';
-    return lang === 'ro' || lang === 'ru' ? lang : undefined;
+    return siteLanguageOf(this.currentPath());
   }
 
   private currentPath(): string {
     if (this.lastUrl) return stripQuery(this.lastUrl);
     return typeof location !== 'undefined' ? location.pathname : '';
+  }
+
+  /** URL of the current page as PAGE_VIEW has it: router URL without query (navigation may still be deferred). */
+  private searchPageUrl(): string {
+    try {
+      const url = this.router.url;
+      if (url && pageTypeOf(url) === 'SEARCH') return stripQuery(url);
+    } catch {
+      // fall through
+    }
+    return this.currentPath();
   }
 
   private queryParams(url: string): URLSearchParams {
