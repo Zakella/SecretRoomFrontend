@@ -2,3 +2,8 @@
 <app-loader/>
 <p-toast/>
 <app-cookie-banner/>
+@if (chatReady()) {
+  @defer (on idle) {
+    <app-chat/>
+  }
+}
