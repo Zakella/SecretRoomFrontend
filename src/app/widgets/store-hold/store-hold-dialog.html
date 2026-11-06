@@ -1,0 +1,130 @@
+@let request = state.request();
+<p-dialog
+  [header]="(result() ? 'storeHold.successTitle' : 'storeHold.title') | transloco"
+  [visible]="!!request"
+  (visibleChange)="$event || close()"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  [baseZIndex]="20010"
+  [style]="{width: '520px'}"
+  [breakpoints]="{'767px': '100vw'}"
+  styleClass="sr-hold-dialog"
+>
+  @if (request) {
+    <div class="hold-product">
+      <img [src]="request.imageUrl || 'assets/images/no-image.png'" [alt]="request.productName"/>
+      <div class="hold-product__info">
+        <p class="hold-product__name">{{ request.productName }}</p>
+        @if (request.size) {
+          <p class="hold-product__size">{{ 'Size' | transloco }}: <strong>{{ request.size }}</strong></p>
+        }
+        @if (request.price !== null) {
+          <product-price [price]="request.price" size="sm"/>
+        }
+      </div>
+    </div>
+
+    @if (result(); as hold) {
+      <div class="hold-success" role="status">
+        <i class="ri-checkbox-circle-line hold-success__icon" aria-hidden="true"></i>
+        <p class="hold-success__number">{{ 'storeHold.number' | transloco }}: <strong>{{ hold.number }}</strong></p>
+        <p class="hold-success__status">{{ 'storeHold.status.PENDING.title' | transloco }}</p>
+        @if (hold.confirmDeadline) {
+          <p class="hold-success__text">{{ 'storeHold.status.PENDING.textUntil' | transloco: {time: formatTime(hold.confirmDeadline)} }}</p>
+        } @else {
+          <p class="hold-success__text">{{ 'storeHold.status.PENDING.text' | transloco }}</p>
+        }
+        @if (store(hold.storeCode); as s) {
+          <p class="hold-success__store"><i class="ri-map-pin-line" aria-hidden="true"></i> {{ s.name }}, {{ s.location }}</p>
+        }
+        <p class="hold-success__hint">{{ 'storeHold.successHint' | transloco }}</p>
+        <a class="hold-btn hold-btn--primary"
+           [routerLink]="['/', lang(), 'store-hold']"
+           [queryParams]="{number: hold.number}"
+           [state]="{phone: resultPhone()}">
+          {{ 'storeHold.openStatus' | transloco }}
+        </a>
+        <button type="button" class="hold-btn hold-btn--ghost" (click)="close()">{{ 'storeHold.close' | transloco }}</button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit(request)" novalidate>
+        <fieldset class="hold-stores">
+          <legend>{{ 'storeHold.chooseStore' | transloco }}</legend>
+          @for (s of stores; track s.code) {
+            <label class="hold-store" [class.hold-store--active]="form.controls.storeCode.value === s.code">
+              <input type="radio" formControlName="storeCode" [value]="s.code" name="storeCode" [id]="'hold-store-' + s.code"/>
+              <span class="hold-store__body">
+                <span class="hold-store__name">{{ s.name }}</span>
+                <span class="hold-store__row"><i class="ri-map-pin-line" aria-hidden="true"></i>{{ s.location }}</span>
+                <span class="hold-store__row"><i class="ri-time-line" aria-hidden="true"></i>{{ s.workTime }}</span>
+              </span>
+            </label>
+          }
+          @if (fieldError('storeCode'); as e) {
+            <small class="hold-error">{{ e.key | transloco: e.params }}</small>
+          }
+        </fieldset>
+
+        <div class="hold-row">
+          <div class="hold-field">
+            <label for="hold-first-name">{{ 'First Name' | transloco }}</label>
+            <input id="hold-first-name" type="text" formControlName="firstName" autocomplete="given-name"
+                   [attr.aria-invalid]="!!fieldError('firstName')" placeholder="Maria"/>
+            @if (fieldError('firstName'); as e) {
+              <small class="hold-error">{{ e.key | transloco: e.params }}</small>
+            }
+          </div>
+          <div class="hold-field">
+            <label for="hold-last-name">{{ 'Last Name' | transloco }}</label>
+            <input id="hold-last-name" type="text" formControlName="lastName" autocomplete="family-name"
+                   [attr.aria-invalid]="!!fieldError('lastName')" placeholder="Popescu"/>
+            @if (fieldError('lastName'); as e) {
+              <small class="hold-error">{{ e.key | transloco: e.params }}</small>
+            }
+          </div>
+        </div>
+        <p class="hold-note">{{ 'storeHold.latinHint' | transloco }}</p>
+
+        <div class="hold-field">
+          <label for="hold-phone">{{ 'Phone' | transloco }}</label>
+          <input id="hold-phone" type="tel" inputmode="tel" formControlName="phone" autocomplete="tel"
+                 [attr.aria-invalid]="!!fieldError('phone')" placeholder="069123456"/>
+          @if (fieldError('phone'); as e) {
+            <small class="hold-error">{{ e.key | transloco: e.params }}</small>
+          }
+        </div>
+
+        <div class="hold-field">
+          <label for="hold-email">{{ 'storeHold.emailLabel' | transloco }}</label>
+          <input id="hold-email" type="email" inputmode="email" formControlName="email" autocomplete="email"
+                 [attr.aria-invalid]="!!fieldError('email')" placeholder="email@example.com"/>
+          @if (fieldError('email'); as e) {
+            <small class="hold-error">{{ e.key | transloco: e.params }}</small>
+          } @else {
+            <small class="hold-note">{{ 'storeHold.emailHint' | transloco }}</small>
+          }
+        </div>
+
+        <input class="hold-hp" type="text" formControlName="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+
+        <p class="hold-info"><i class="ri-information-line" aria-hidden="true"></i>{{ 'storeHold.hint' | transloco }}</p>
+
+        @if (error(); as e) {
+          <p class="hold-error hold-error--block" role="alert">{{ e.key | transloco: e.params }}</p>
+        }
+
+        @if (state.disabled()) {
+          <button type="button" class="hold-btn hold-btn--ghost" (click)="close()">{{ 'storeHold.close' | transloco }}</button>
+        } @else {
+          <button type="submit" class="hold-btn hold-btn--primary" [disabled]="submitting()">
+            {{ (submitting() ? 'storeHold.sending' : 'storeHold.submit') | transloco }}
+          </button>
+        }
+      </form>
+    }
+  }
+</p-dialog>

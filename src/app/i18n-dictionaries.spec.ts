@@ -1,5 +1,7 @@
 import ro from '../assets/i18n/ro.json';
 import ru from '../assets/i18n/ru.json';
+import {STORE_HOLD_STATUSES} from './widgets/store-hold/store-hold-api';
+import {HOLD_ERROR_KEYS} from './widgets/store-hold/store-hold-dialog';
 
 interface Dict {
   [key: string]: string | Dict;
@@ -61,6 +63,22 @@ const CHECKOUT_KEYS = [
   'Shipping address', 'Total paid',
 ];
 
+/** SR-223: store hold button, dialog, picker and status page (storeHold.*), plus reused checkout texts. */
+const STORE_HOLD_KEYS = [
+  'storeHold.button', 'storeHold.title', 'storeHold.successTitle', 'storeHold.chooseStore',
+  'storeHold.chooseSizeToHold', 'storeHold.pickerHint', 'storeHold.latinHint', 'storeHold.emailLabel',
+  'storeHold.emailHint', 'storeHold.hint', 'storeHold.submit', 'storeHold.sending', 'storeHold.number',
+  'storeHold.successHint', 'storeHold.openStatus', 'storeHold.close', 'storeHold.pageTitle', 'storeHold.pageIntro',
+  'storeHold.check', 'storeHold.loading', 'storeHold.refresh', 'storeHold.createdAt',
+  'storeHold.validation.numberRequired', 'storeHold.validation.numberPattern',
+  ...['badName', 'badPhone', 'badEmail', 'badStore', 'outOfStock', 'productNotFound', 'holdNotFound', 'limitReached',
+    'rateLimit', 'bot', 'sizeRequired', 'disabled', 'network', 'generic'].map(k => `storeHold.errors.${k}`),
+  ...STORE_HOLD_STATUSES.flatMap(s => [`storeHold.status.${s}.title`, `storeHold.status.${s}.text`]),
+  'storeHold.status.PENDING.textUntil', 'storeHold.status.unknown.title', 'storeHold.status.unknown.text',
+  ...Object.values(HOLD_ERROR_KEYS).flatMap(rules => Object.values(rules)),
+  'Size', 'Phone', 'First Name', 'Last Name', 'OutOfStock', 'cart.chooseSize',
+];
+
 describe('i18n dictionaries', () => {
   it('ru and ro have the same set of keys', () => {
     const onlyRu = Object.keys(flatRu).filter(k => !(k in flatRo));
@@ -75,6 +93,26 @@ describe('i18n dictionaries', () => {
       if (!flatRu[key]?.trim()) problems.push(`ru: ${key}`);
     }
     expect(problems).toEqual([]);
+  });
+
+  it('store hold keys (SR-223) exist in both dictionaries and are not empty', () => {
+    const problems: string[] = [];
+    for (const key of STORE_HOLD_KEYS) {
+      if (!flatRo[key]?.trim()) problems.push(`ro: ${key}`);
+      if (!flatRu[key]?.trim()) problems.push(`ru: ${key}`);
+    }
+    expect(problems).toEqual([]);
+  });
+
+  it('store hold texts with a time or a limit keep their placeholder', () => {
+    for (const flat of [flatRo, flatRu]) {
+      expect(flat['storeHold.status.CONFIRMED.title']).toContain('{{time}}');
+      expect(flat['storeHold.status.PENDING.textUntil']).toContain('{{time}}');
+      expect(flat['storeHold.createdAt']).toContain('{{time}}');
+      expect(flat['storeHold.errors.limitReached']).toContain('{{max}}');
+      expect(flat['storeHold.validation.nameMax']).toContain('{{max}}');
+      expect(flat['storeHold.hint']).toContain('10:00–21:00');
+    }
   });
 
   it('shows the country, address heading in the right language', () => {

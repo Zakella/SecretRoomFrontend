@@ -11,22 +11,36 @@
              [alt]="pending.product | localizedName"/>
         <div class="picker-info">
           <p class="name">{{ pending.product | localizedName }}</p>
-          <p class="hint">{{ 'cart.chooseSize' | transloco }}</p>
+          <p class="hint">{{ (holdMode() ? 'storeHold.chooseSizeToHold' : 'cart.chooseSize') | transloco }}</p>
         </div>
       </div>
       <div class="picker-options">
         @for (option of pending.options; track option.size) {
+          @let enabled = holdMode() ? holdable(option) : option.available;
           <button type="button"
                   class="size-btn"
-                  [class.unavailable]="!option.available"
-                  [disabled]="!option.available"
-                  [attr.title]="option.available ? null : ('OutOfStock' | transloco)"
-                  [attr.aria-label]="option.available ? option.size : option.size + ', ' + ('OutOfStock' | transloco)"
+                  [class.unavailable]="!enabled"
+                  [disabled]="!enabled"
+                  [attr.title]="enabled ? null : ('OutOfStock' | transloco)"
+                  [attr.aria-label]="enabled ? option.size : option.size + ', ' + ('OutOfStock' | transloco)"
                   (click)="choose(option)">
             {{ option.size }}
           </button>
         }
       </div>
+      @if (canHold()) {
+        <button type="button"
+                class="hold-toggle"
+                [class.active]="holdMode()"
+                [attr.aria-pressed]="holdMode()"
+                (click)="toggleHold()">
+          <i class="ri-store-2-line" aria-hidden="true"></i>
+          {{ 'storeHold.button' | transloco }}
+        </button>
+        @if (holdMode()) {
+          <p class="hold-mode-hint">{{ 'storeHold.pickerHint' | transloco }}</p>
+        }
+      }
     </div>
   </div>
 }

@@ -131,8 +131,50 @@
   }
 }
 
+.hold-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: 10px 16px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  border: 1px solid rgba(184, 149, 108, 0.45);
+  border-radius: 2px;
+  color: var(--text-dark, #2c2421);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  i {
+    font-size: 18px;
+  }
+
+  &:hover,
+  &.active {
+    border-color: var(--gold, #b8956c);
+    color: var(--gold, #b8956c);
+  }
+
+  &.active {
+    background: rgba(184, 149, 108, 0.08);
+  }
+}
+
+.hold-mode-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #8c8279;
+}
+
 .picker-close:focus-visible,
-.size-btn:focus-visible {
+.size-btn:focus-visible,
+.hold-toggle:focus-visible {
   outline: 2px solid #b5855f;
   outline-offset: 2px;
 }
@@ -142,6 +184,10 @@
   .picker-backdrop {
     align-items: flex-end;
     padding: 0;
+  }
+
+  .size-btn {
+    min-height: 44px;
   }
 
   .picker {
