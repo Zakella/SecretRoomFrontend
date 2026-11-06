@@ -4,5 +4,7 @@ export const environment = {
   frontend: 'https://secretroom.md',
   analytics: { measurementId: 'G-H4H04KH2Z2', hosts: ['secretroom.md', 'www.secretroom.md'] },
   // SR-207: journal of visitor actions (only with cookie consent); false switches the tracker off entirely
-  visitorTracking: true
+  visitorTracking: true,
+  // SR-213: share of cookie consents (one anonymous event per banner decision); false — nothing is sent
+  consentTracking: true
 };
