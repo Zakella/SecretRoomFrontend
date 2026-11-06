@@ -15,17 +15,49 @@ export const CHAT_PAGE_URL_MAX = 500;
 export const CHAT_PHONE_RE = /^[0-9+()\- ]{5,30}$/;
 
 export type ChatAuthor = 'CUSTOMER' | 'STAFF' | 'SYSTEM';
+/** SR-220. No field or null = TEXT (messages before SR-220). */
+export type ChatMessageType = 'TEXT' | 'IMAGE' | 'PRODUCT';
+
+/** Staff picture; the bytes come from GET attachments/{attachmentId}. */
+export interface ChatImage {
+  attachmentId: string;
+  width?: number | null;
+  height?: number | null;
+}
+
+/** Catalog snapshot made by webstore at the time of the question. */
+export interface ChatProduct {
+  productId: number;
+  name: string;
+  price: number | null;
+  oldPrice: number | null;
+  imageUrl: string | null;
+  siteUrl: string | null;
+}
 
 export interface ChatMessage {
   messageId: string;
   seq: number;
   author: ChatAuthor;
+  type?: ChatMessageType | null;
   text: string;
   createdAt: string;
+  image?: ChatImage | null;
+  product?: ChatProduct | null;
+}
+
+/** What the widget renders: unknown type or a type without its attachment falls back to TEXT. */
+export function chatMessageType(m: ChatMessage): ChatMessageType {
+  if (m.type === 'IMAGE' && m.image?.attachmentId) return 'IMAGE';
+  if (m.type === 'PRODUCT' && m.product) return 'PRODUCT';
+  return 'TEXT';
 }
 
 export interface ChatSendBody {
   clientMessageId: string;
+  /** SR-220: only for PRODUCT; a TEXT message is sent without it, exactly as before. */
+  type?: 'PRODUCT';
+  productId?: number;
   text: string;
   name: string | null;
   phone: string | null;
@@ -55,7 +87,7 @@ export interface ChatContactBody {
 }
 
 /** What the widget shows for a failed request. */
-export type ChatErrorKind = 'rateLimit' | 'tooLong' | 'badPhone' | 'spam' | 'notSent';
+export type ChatErrorKind = 'rateLimit' | 'tooLong' | 'badPhone' | 'spam' | 'productNotFound' | 'badType' | 'notSent';
 
 /** Error code of a webstore error body `{ "error": "<CODE>" }`. */
 export function chatErrorCode(error: unknown): string {
@@ -70,12 +102,20 @@ export function chatErrorKind(error: unknown): ChatErrorKind {
   if (status === 413 || code === 'TOO_LONG') return 'tooLong';
   if (code === 'BAD_PHONE') return 'badPhone';
   if (code === 'SPAM') return 'spam';
+  if (code === 'PRODUCT_NOT_FOUND') return 'productNotFound';
+  if (code === 'BAD_TYPE') return 'badType';
   return 'notSent';
 }
 
-/** 404 from /v1/chat/** means the chat is switched off (chat.enabled=false); NO_CONVERSATION is a normal answer of contact. */
+/** 404 answers that are not "chat switched off". */
+const NOT_DISABLED_404 = new Set(['NO_CONVERSATION', 'PRODUCT_NOT_FOUND']);
+
+/**
+ * 404 from /v1/chat/** means the chat is switched off (chat.enabled=false); NO_CONVERSATION (contact) and
+ * PRODUCT_NOT_FOUND (product card) are normal answers. A failed attachment never switches the chat off (widget).
+ */
 export function isChatDisabled(error: unknown): boolean {
-  return (error as HttpErrorResponse | null)?.status === 404 && chatErrorCode(error) !== 'NO_CONVERSATION';
+  return (error as HttpErrorResponse | null)?.status === 404 && !NOT_DISABLED_404.has(chatErrorCode(error));
 }
 
 @Injectable({providedIn: 'root'})
@@ -101,6 +141,15 @@ export class ChatApi {
 
   contact(chatKey: string, body: ChatContactBody): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/contact`, body, this.options(chatKey));
+  }
+
+  /** SR-220: staff picture as a blob, with the key in the header (never in an <img src>). */
+  attachment(chatKey: string, attachmentId: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/attachments/${encodeURIComponent(attachmentId)}`, {
+      ...this.options(chatKey),
+      responseType: 'blob',
+      transferCache: false,
+    });
   }
 
   /** The key goes in a header, never in the URL (nginx/Cloudflare log query strings); no global loader. */

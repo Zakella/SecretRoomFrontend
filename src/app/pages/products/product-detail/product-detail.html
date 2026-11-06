@@ -131,6 +131,7 @@
                 {{ 'storeHold.button' | transloco }}
               </button>
             }
+            <app-ask-in-chat [product]="product()"/>
 
             <div class="secondary-actions">
               <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()" srTrack="FAVORITE">

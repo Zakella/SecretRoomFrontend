@@ -1,5 +1,8 @@
 # SR-218 — чат с покупателями: контракт (сайт → webstore ⇄ RabbitMQ ⇄ админка)
 
+> SR-220 (06.11.2026): типы сообщений TEXT / IMAGE / PRODUCT, картинки от сотрудника, карточки товаров от покупателя,
+> кликабельные ссылки. Изменения — в разделе «SR-220» в конце; места выше, которые он меняет, помечены «→ SR-220».
+
 Эпик SR-217. Переписка живёт в WebStoreBackend (источник правды для покупателя): сайт пишет и читает только
 webstore, админка получает копию через RabbitMQ и отвечает через RabbitMQ. Админка или брокер лежат — покупатель
 пишет как обычно, сообщения досылаются после подъёма, без потерь и дублей.
@@ -35,7 +38,7 @@ chatKey не зависит от согласия на cookies: это необ�
 ## REST webstore (публичный, CORS как у остальных публичных эндпоинтов)
 Ключ — заголовок `X-Chat-Key: <chatKey>` (UUID, иначе 400 `BAD_KEY`). В URL ключ не кладём: query-строки пишут
 nginx и Cloudflare. CORS webstore: `X-Chat-Key` добавляется в allowed headers, `maxAge` 600 с (без него Chrome
-кэширует preflight 5 с и при опросе раз в 4 с удваивает запросы). Ответы ошибок: `{ "error": "<КОД>", ... }`.
+кэширует preflight 5 с и при опросе раз в 4 с удваивает запросы; в коде стоит 3600 с — так и оставлено). Ответы ошибок: `{ "error": "<КОД>", ... }`.
 Выключатель `chat.enabled=false` → 404 на все `/api/v1/chat/**` (виджет тогда прячется).
 
 ### `POST /api/v1/chat/messages` — сообщение покупателя
@@ -61,7 +64,7 @@ nginx и Cloudflare. CORS webstore: `X-Chat-Key` добавляется в allow
 - Нет диалога — 200 `{ "conversationId": null, "messages": [], "unread": 0, "hasPhone": false }`.
 - Иначе сообщения с `seq > after` (по возрастанию, не больше 200), `unread` — число сообщений STAFF/SYSTEM с seq больше
   прочитанного покупателем, `hasPhone` — оставлен ли телефон.
-- Сообщение: `{ messageId, seq, author: CUSTOMER|STAFF|SYSTEM, text, createdAt }`. Имя сотрудника покупателю не отдаём
+- Сообщение: `{ messageId, seq, author: CUSTOMER|STAFF|SYSTEM, text, createdAt }` (→ SR-220: + `type`, `image`, `product`). Имя сотрудника покупателю не отдаём
   (на сайте подпись «Secret Room»).
 
 ### `POST /api/v1/chat/read` — покупатель прочитал
@@ -70,7 +73,7 @@ nginx и Cloudflare. CORS webstore: `X-Chat-Key` добавляется в allow
 ### `POST /api/v1/chat/contact` — имя/телефон отдельно от сообщения (форма после автоответа)
 `{ "name": "…", "phone": "…" }` — те же правила. 204. Диалога нет — 404 `NO_CONVERSATION`. Шлёт событие CONTACT.
 
-### Лимиты (свой экземпляр `SiteEventRateLimiter` на каждый)
+### Лимиты (свой экземпляр `SiteEventRateLimiter` на каждый; суточный на диалог — подсчётом в БД)
 Ключ — `sha256(chatKey) + IP клиента` (`ClientIp`). До SR-208 IP = узел Cloudflare, поэтому одного IP мало:
 иначе все покупатели окажутся под одним лимитом. Сверх — 429 `{ "error": "RATE_LIMIT", "retryAfterSeconds": 60 }`,
 диалог не ломается, текст в поле ввода остаётся.
@@ -80,10 +83,11 @@ chat:
   max-length: ${CHAT_MAX_LENGTH:1000}
   limits:
     messages-per-minute: ${CHAT_MESSAGES_PER_MINUTE:10}   # на chatKey+IP (POST messages, contact)
-    messages-per-day: ${CHAT_MESSAGES_PER_DAY:300}        # на диалог
+    messages-per-day: ${CHAT_MESSAGES_PER_DAY:300}        # на диалог, считается по БД (CUSTOMER за 24 ч)
     total-messages-per-minute: ${CHAT_TOTAL_MESSAGES_PER_MINUTE:600}
     new-conversations-per-minute: ${CHAT_NEW_CONVERSATIONS_PER_MINUTE:60}  # глобально
     polls-per-minute: ${CHAT_POLLS_PER_MINUTE:60}         # на chatKey+IP (GET, read)
+    total-polls-per-minute: ${CHAT_TOTAL_POLLS_PER_MINUTE:6000}  # глобально (GET, read)
   retention-days: ${CHAT_RETENTION_DAYS:180}
   working-hours:
     zone: ${CHAT_WORKING_ZONE:Europe/Chisinau}
@@ -159,7 +163,8 @@ durable-очереди.
   повторных покупок; дольше держать имя, телефон и переписку без нужды — лишние ПДн.
 
 ## Защита
-- Только текст: нигде нет `innerHTML`/`[innerHTML]`, ссылки не подсвечиваются, переносы строк — `white-space: pre-wrap`.
+- Нигде нет `innerHTML`/`[innerHTML]`/`bypassSecurityTrust*`, переносы строк — `white-space: pre-wrap`. Ссылки (→ SR-220)
+  становятся кликабельными только для `http`/`https`, разметка строится из текста шаблоном, не HTML-строкой.
   `<img src=x onerror=alert(1)>` и `<script>` показываются как текст на сайте и в админке.
 - В логах обеих сторон нет имени, телефона, текста и chatKey: только conversationId/внутренний id, messageId, seq, длина.
 
@@ -180,7 +185,9 @@ durable-очереди.
 |---|---|---|
 | GET | `api/chats?page&size` | список: непрочитанные сверху, затем `last_message_at desc`; имя, телефон, превью ≤ 120, время, `unreadCount` |
 | GET | `api/chats/unread` | `{ "conversations": N }` — для значка |
-| GET | `api/chats/{id}/messages?afterId=` | переписка по времени (author, text, createdAt, staffName, status) |
+| GET | `api/chats/{id}/messages?afterId=` | переписка по времени (author, text, createdAt, staffName, status; → SR-220: + type, image, product) |
+| POST | `api/chats/{id}/reply-image` | → SR-220: multipart `file` + `text`, картинка сотрудника |
+| GET | `api/chats/{id}/attachments/{attachmentId}` | → SR-220: байты картинки |
 | POST | `api/chats/{id}/read` | `unread_count = 0` |
 | POST | `api/chats/{id}/reply` | `{ "text": "…" }` 1…2000 → сообщение STAFF, отправка в webstore |
 | GET | `api/chats/{id}/visitor` | панель: `{ pages: [...], searches: [...], cart: [...] }` или 204 без visitorId |
@@ -199,3 +206,123 @@ durable-очереди.
 - Опрос чата не включает глобальный индикатор загрузки сайта (`LoaderInterceptor`).
 - 404 от `/api/v1/chat/**` (чат выключен) — кнопка не показывается.
 - Тексты ro/ru (`assets/i18n/{ro,ru}.json`, оба словаря). Подпись ответов — «Secret Room», автоответа — тоже.
+
+## SR-220 — типы сообщений, картинки, карточки товаров, ссылки
+
+### Тип сообщения
+`type`: `TEXT` | `IMAGE` | `PRODUCT`. **Нет поля или `null` = `TEXT`** — везде: в REST, в обеих очередях, в обеих БД
+(колонка `type varchar(10) not null default 'TEXT'` новым changeset'ом; строки до SR-220 получают `TEXT`).
+Неизвестный тип у приёмника очереди → в лог (messageId, тип) и в DLQ, как битое сообщение.
+
+| тип | кто отправляет | `text` | вложение |
+|---|---|---|---|
+| TEXT | все | 1…1000 (покупатель), 1…2000 (сотрудник) | — |
+| IMAGE | только STAFF | подпись 0…2000, может быть `""` | `image` |
+| PRODUCT | только CUSTOMER | вопрос 0…1000, может быть `""` | `product` |
+
+Покупатель не может прислать IMAGE (400 `BAD_TYPE`), сотрудник — PRODUCT. Превью диалога в списке админки: текст
+сообщения, если он есть; иначе для PRODUCT — название товара, для IMAGE — пусто, а список отдаёт `lastMessageType`,
+и фронт показывает «Фото» по i18n.
+
+### Картинки сотрудника: где хранятся и почему
+Админка проверяет и перекодирует картинку, хранит результат у себя в БД и отправляет его **внутри ответа** в
+`chatFromAppQueue`; webstore хранит копию в своей БД и отдаёт покупателю сам.
+- Почему не SFTP (`FileSyncService`) и не `/api/public/serveFile`: полный синк запускается вручную и перед заливкой
+  стирает на сервере сайта всё, чего нет в списке товаров/героев, — картинки чата пропали бы; файл и сообщение шли
+  бы разными путями (сообщение раньше файла → 404, который Cloudflare кэширует на год, KB #3785); serveFile
+  публичен по имени файла и кладёт имя в `Location` без кодирования. Отдельный путь — ещё и чистка по сроку на
+  чужой ФС.
+- Почему в БД, а не файлом на диске: картинка — часть сообщения. Одна транзакция, досылка PENDING-ответа уже есть и
+  повторяет картинку вместе с текстом, удаление по сроку 180 дней — каскадом вместе с сообщением, путей и имён файлов
+  нет вовсе. Объём — единицы картинок в день по ≤ 2 МБ.
+- Картинка открывается у покупателя при лежащей админке: она уже в БД webstore.
+
+**Приём в админке** (`POST api/chats/{id}/reply-image`, multipart: `file` + необязательный `text`; любой залогиненный
+сотрудник, без логина 401):
+- ≤ 5 МБ (проверка до чтения тела), одна картинка на сообщение (несколько — несколькими сообщениями).
+- Тип — по сигнатуре содержимого: JPEG, PNG, WebP. Имя файла и `Content-Type` части игнорируются. SVG, HTML, GIF,
+  AVIF и всё прочее → 400 `UNSUPPORTED_IMAGE`; больше 5 МБ → 413 `IMAGE_TOO_LARGE`; не декодируется → 400 `BAD_IMAGE`.
+- До декодирования — размеры из заголовка: больше 12 000 px по стороне или 40 Мп → 400 `IMAGE_TOO_BIG_DIMENSIONS`
+  (декомпрессионная бомба).
+- Перекодирование: декодировать (ImageIO; WebP — TwelveMonkeys `imageio-webp`), повернуть по EXIF Orientation,
+  уменьшить до 2048 px по длинной стороне, записать заново: без альфа-канала — JPEG q≈0.85, с альфой — PNG.
+  Метаданные (EXIF, GPS, комментарии) и всё лишнее в файле (полиглот: HTML/скрипт после конца картинки) при этом
+  пропадают. Результат > 2 МБ → ещё раз с меньшим качеством/размером; не влезло — 400 `IMAGE_TOO_LARGE`.
+- Хранение: `chat_attachment` (`attachment_id uuid unique`, `message_id` FK ON DELETE CASCADE, `content_type`
+  `image/jpeg|image/png`, `width`, `height`, `size_bytes`, `data bytea`). Имя файла нигде не хранится.
+- Ответ 201 — сообщение, как у `reply`.
+
+**Отдача в админке**: `GET api/chats/{id}/attachments/{attachmentId}` (логин) — байты, `Content-Type` из записи,
+`X-Content-Type-Options: nosniff`, `Content-Disposition: inline; filename="<attachmentId>.jpg|png"`,
+`Cache-Control: private, max-age=86400`. Фронт админки берёт картинку `HttpClient` как blob (токен в заголовке).
+
+### `chatFromAppQueue` — `ChatReplyDto` (+ SR-220)
+| поле | тип | обяз. | смысл |
+|---|---|---|---|
+| type | string | нет | `TEXT` (нет поля = TEXT) / `IMAGE` |
+| image | object | для IMAGE | `{ attachmentId: uuid, contentType: "image/jpeg"\|"image/png", width, height, data: base64 }` |
+Для IMAGE `text` может быть `""`. Webstore не доверяет и проверяет: `contentType` из двух допустимых, сигнатура
+`data` совпадает с `contentType`, размер ≤ 2 МБ, `width`/`height` 1…2048; иначе — `InvalidChatReplyException` → DLQ.
+Повтор `messageId` — игнор (картинка второй раз не пишется).
+**Порядок выката**: webstore раньше админки (старый webstore отправил бы IMAGE с пустым текстом в DLQ).
+
+### `chatToAppQueue` — `ChatEventDto` (+ SR-220)
+| поле | тип | обяз. | смысл |
+|---|---|---|---|
+| type | string | нет | `TEXT` (нет поля = TEXT) / `PRODUCT` |
+| product | object | для PRODUCT | снимок из каталога webstore: `{ productId, name, price, oldPrice\|null, imageUrl\|null, siteUrl }` |
+`productId` — `appId` товара webstore = id товара в админке (ссылка в админке — `/catalogs/product-list/product/{productId}`).
+`siteUrl` — `${host.frontend-url}/{язык диалога}/product/{productId}/{slug}`; `imageUrl` — полный URL главного фото
+(`URLBuilder.getFullImageUrl`). Админка хранит снимок как пришёл (цена на момент вопроса).
+
+### REST webstore (+ SR-220)
+**Файлы и multipart не принимаются нигде.** Все `POST /api/v1/chat/**` принимают только `Content-Type:
+application/json` (с `charset` — можно), иное (multipart/form-data, text/plain, octet-stream) → 415
+`UNSUPPORTED_MEDIA_TYPE` до чтения тела, ничего не сохраняется. Лимит тела 8 КБ — как был.
+
+`POST /api/v1/chat/messages` — карточка товара:
+```json
+{ "clientMessageId": "uuid", "type": "PRODUCT", "productId": 123, "text": "Есть 75B?", "language": "ro", ... }
+```
+- Сервер берёт товар из своего каталога по `productId` (`appId` товара; `appId` варианта — к его товару) и только
+  если он виден на сайте (`uploadToTheSite = true`); нет или скрыт → 404 `PRODUCT_NOT_FOUND`, ничего не сохраняется.
+- Название (по языку диалога: `nameRo`/`nameRu`, иначе `name`), цена, старая цена, фото, ссылка — только из каталога;
+  присланные клиентом `name`/`price`/`imageUrl`/`url`/`product` игнорируются. Снимок сохраняется в сообщении.
+- `text` для PRODUCT необязателен (0…1000); антиспам, лимиты, `clientMessageId` — как у TEXT.
+- `type: "IMAGE"` от покупателя → 400 `BAD_TYPE`; неизвестный тип → 400 `BAD_TYPE`.
+
+`GET /api/v1/chat/messages` — сообщение:
+```json
+{ "messageId", "seq", "author", "type": "TEXT|IMAGE|PRODUCT", "text", "createdAt",
+  "image": { "attachmentId": "uuid", "width": 1600, "height": 1200 } | null,
+  "product": { "productId", "name", "price", "oldPrice", "imageUrl", "siteUrl" } | null }
+```
+Ответ `POST messages` (201) — сообщение в том же виде.
+
+`GET /api/v1/chat/attachments/{attachmentId}` — картинка покупателю:
+- Только с `X-Chat-Key`, и только если вложение принадлежит диалогу этого ключа; чужое/нет → 404 `NOT_FOUND`
+  (не 403 — не подтверждаем, что такое вложение существует). Лимит — `pollLimiter`.
+- `Content-Type` из записи (`image/jpeg`|`image/png`), `X-Content-Type-Options: nosniff`,
+  `Content-Disposition: inline; filename="<attachmentId>.jpg|png"` (только ASCII), `Cache-Control: no-store`
+  (на `api.*/api/*` может стоять Cache Rule Cloudflare; картинка личная).
+- Сайт берёт её `HttpClient` как blob с `X-Chat-Key` и показывает через `URL.createObjectURL` (ключ в URL не кладём);
+  blob-URL живут, пока жив виджет (кэш по attachmentId), и отзываются при его уничтожении.
+
+### Ссылки в тексте
+- Ссылка — только `http://` или `https://` до пробела; хвостовые `.,;:!?)]}»"'` не входят в ссылку. `javascript:`,
+  `data:`, `vbscript:`, `file:`, `mailto:` и прочее — текст. Адрес проверяется `new URL()`; не разобрался — текст.
+- Разметка: текст режется на куски `{ text } | { link: href, label, host }` функцией (без регулярок поверх HTML), шаблон
+  выводит `{{ }}` и `<a [href] target="_blank" rel="noopener noreferrer nofollow">`. Нет `innerHTML`/`bypassSecurityTrust*`.
+  `<a href=javascript:…>`, `"><img src=x onerror=…>`, `<script>` в тексте остаются текстом.
+- Админка: у ссылки в сообщении покупателя рядом серым — домен (`host`), чтобы сотрудник видел, куда ведёт.
+- Антиспам «больше 3 ссылок → 400 SPAM» для покупателя остаётся.
+
+### Сайт: «Спросить в чате»
+- Кнопка на странице товара — отдельный компонент рядом с «В корзину» (в одном ряду с кнопками SR-223, но в своём
+  компоненте). Нажатие открывает окно чата и кладёт карточку товара над полем ввода («Вы спрашиваете о…», крестик
+  убирает); «Отправить» отправляет PRODUCT с необязательным текстом. Окно ещё не загрузилось (`@defer`) — запрос
+  ждёт в сервисе и выполняется при появлении виджета.
+- Чат выключен (виджет получил 404) — кнопки нет.
+- Карточка в окне (у обеих сторон): фото, название, цена (старая зачёркнута), ссылка на товар. В админке — ещё ссылка
+  «Открыть в админке».
+- Картинка сотрудника: превью в сообщении (не шире окна), по нажатию — крупно поверх окна, закрытие по Esc/крестику/фону.
