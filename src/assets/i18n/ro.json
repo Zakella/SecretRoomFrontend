@@ -601,7 +601,22 @@
       "tooLong": "Mesajul este prea lung",
       "badPhone": "Verificați numărul de telefon",
       "spam": "Prea multe linkuri în mesaj",
-      "notSent": "Nu s-a trimis"
+      "notSent": "Nu s-a trimis",
+      "productNotFound": "Acest produs nu mai este disponibil",
+      "badType": "Nu s-a putut trimite produsul"
+    },
+    "askInChat": "Întrebați în chat",
+    "image": {
+      "alt": "Fotografie de la Secret Room",
+      "open": "Deschideți fotografia",
+      "close": "Închideți fotografia",
+      "failed": "Fotografia nu s-a încărcat",
+      "loading": "Se încarcă fotografia"
+    },
+    "product": {
+      "askingAbout": "Întrebați despre:",
+      "remove": "Eliminați produsul din mesaj",
+      "placeholder": "Întrebarea dvs. (opțional)…"
     }
   },
   "storeHold": {

@@ -32,10 +32,11 @@ import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, siz
 import {compareSizes} from '../../../shared/utils/size-order';
 import {SrTrack} from '../../../@core/directives/sr-track';
 import {holdProductId, holdRequestFor, StoreHoldState} from '../../../widgets/store-hold/store-hold-state';
+import {AskInChat} from '../../../widgets/chat/ask-in-chat/ask-in-chat';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery, SrTrack],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery, SrTrack, AskInChat],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],

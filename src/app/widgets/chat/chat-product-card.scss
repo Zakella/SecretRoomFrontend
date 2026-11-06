@@ -1,0 +1,60 @@
+@use '../../../styles/variables' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// always light, also inside the visitor's own (black) bubble: the price colours of product-price stay readable
+.chat-pc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid rgba($gold, 0.25);
+  border-radius: 8px;
+  background: $bg-white;
+  color: $text-dark;
+  text-decoration: none;
+
+  &--link:hover,
+  &--link:focus-visible {
+    border-color: $gold;
+  }
+
+  &--link:focus-visible {
+    outline: 2px solid $gold;
+    outline-offset: 2px;
+  }
+
+  // fixed box: a broken photo never spreads the row (KB #4757)
+  &__img {
+    flex-shrink: 0;
+    display: block;
+    width: 48px;
+    height: 60px;
+    overflow: hidden;
+    object-fit: cover;
+    border-radius: 4px;
+    background: $bg-cream;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+}
