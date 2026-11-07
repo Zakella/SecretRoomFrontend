@@ -577,6 +577,10 @@
     "viewAll": "Vezi toate brandurile"
   },
   "chat": {
+    "hint": {
+      "text": "Aveți întrebări? Scrieți-ne",
+      "close": "Ascundeți indiciul"
+    },
     "open": "Scrieți-ne",
     "openUnread": "Scrieți-ne — răspunsuri noi: {{count}}",
     "close": "Închideți chatul",
