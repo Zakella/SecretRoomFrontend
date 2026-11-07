@@ -610,6 +610,10 @@
       "badType": "Nu s-a putut trimite produsul"
     },
     "askInChat": "Întrebați în chat",
+    "contacts": {
+      "button": "Scrieți-ne în chat",
+      "note": "Vă răspundem aici, pe site"
+    },
     "image": {
       "alt": "Fotografie de la Secret Room",
       "open": "Deschideți fotografia",

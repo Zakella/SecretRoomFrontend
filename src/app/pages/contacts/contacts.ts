@@ -6,10 +6,11 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
 import {Store, STORES, StorePhoto} from '../../shared/data/stores';
+import {OpenChat} from '../../widgets/chat/open-chat/open-chat';
 
 @Component({
   selector: 'contacts',
-  imports: [FadeUp, TranslocoPipe],
+  imports: [FadeUp, TranslocoPipe, OpenChat],
   templateUrl: './contacts.html',
   styleUrl: './contacts.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -858,6 +858,51 @@ describe('Chat widget (SR-218)', () => {
       expect(chat.open()).toBeFalse();
     });
 
+    describe('SR-238: «Написать в чат» from Contacts', () => {
+      it('request made before the widget exists: the window opens when it appears, the hint is snoozed', () => {
+        setup({beforeCreate: () => TestBed.inject(ChatAsk).open()});
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).not.toBeNull();
+      });
+
+      it('request while the widget lives: opens the window (through toggle) and snoozes the hint for 24 h', () => {
+        setup();
+        expect(chat.open()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).toBeNull();
+        const before = Date.now();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        expect(chat.open()).toBeTrue();
+        expect(el().querySelector('.chat-window')).not.toBeNull();
+        expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThanOrEqual(before + CHAT_HINT_SNOOZE_MS);
+      });
+
+      it('window already open: stays open, the input gets focus', async () => {
+        setup();
+        openWindow();
+        expect(chat.open()).toBeTrue();
+        (document.activeElement as HTMLElement | null)?.blur();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(document.activeElement).toBe(textarea());
+      });
+
+      it('chat switched off: the request does nothing', () => {
+        localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+        setup();
+        expectPoll(0).flush({error: 'CHAT_DISABLED'}, {status: 404, statusText: 'Not Found'});
+        const ask = TestBed.inject(ChatAsk);
+        ask.open();
+        fixture.detectChanges();
+        expect(ask.openRequested()).toBeFalse();
+        expect(chat.open()).toBeFalse();
+      });
+    });
+
     it('bots: "Ask in chat" is not available', () => {
       setup({ua: 'Mozilla/5.0 (compatible; Googlebot/2.1)'});
       expect(TestBed.inject(ChatAsk).available()).toBeFalse();

@@ -226,6 +226,7 @@ export class Chat {
     // "Ask in chat" pressed before or after the widget appeared: the request waits in the service until taken here
     effect(() => {
       if (this.ask.request()) untracked(() => this.takeAsk());
+      if (this.ask.openRequested()) untracked(() => this.takeOpen());
     });
     // history on page load (GET after=0), then the regular polling
     if (this.chatKey) this.poll();
@@ -490,6 +491,13 @@ export class Chat {
     this.productDraft.set(product);
     const e = this.error();
     if (e === 'productNotFound' || e === 'badType') this.error.set(null);
+    if (this.open()) this.afterRender(() => this.input()?.nativeElement.focus());
+    else this.toggle();
+  }
+
+  /** "Write in chat" from a page: open the window; already open — keep it and focus the input. */
+  private takeOpen(): void {
+    if (!this.ask.takeOpen() || !this.enabled()) return;
     if (this.open()) this.afterRender(() => this.input()?.nativeElement.focus());
     else this.toggle();
   }
