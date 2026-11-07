@@ -11,6 +11,8 @@ import {CurrencyPipe, isPlatformBrowser} from '@angular/common';
 import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 import {SiteTracker} from '../../@core/api/site-tracker';
+import {OrderItem} from '../../entities/order';
+import {PromoLabelPipe} from '../../shared/pipes/promo-label.pipe';
 
 @Component({
   selector: 'app-order-summary',
@@ -18,7 +20,8 @@ import {SiteTracker} from '../../@core/api/site-tracker';
     RouterLink,
     TranslocoPipe,
     CurrencyPipe,
-    LocalizedNamePipe
+    LocalizedNamePipe,
+    PromoLabelPipe
   ],
   templateUrl: './order-summary.html',
   styleUrl: './order-summary.scss',
@@ -39,6 +42,21 @@ export class OrderSummary implements OnInit, OnDestroy {
   orderReview = signal<OrderReview | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
+
+  /** SR-229: the line was discounted by a promotion (OrderReview carries lineTotal and promotionSavings). */
+  hasPromo(item: OrderItem): boolean {
+    return (item.promotionSavings ?? 0) > 0 && item.lineTotal != null;
+  }
+
+  /** Promotion discount of the order; 0 — no row, page as before. */
+  promotionSavings(order: OrderReview): number {
+    return order.promotionSavings ?? 0;
+  }
+
+  /** subtotal of OrderReview is already after the promotion: show the sum before it above the discount row. */
+  subtotalBeforePromo(order: OrderReview): number {
+    return order.subtotal + this.promotionSavings(order);
+  }
 
   ngOnInit(): void {
     const trackingNumber = this.route.snapshot.paramMap.get('trackingNumber');

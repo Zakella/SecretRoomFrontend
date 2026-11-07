@@ -420,6 +420,29 @@
           padding-top: 0.25rem;
         }
 
+        // SR-229: line price after the promotion, its label and "online only"
+        .item-promo-price {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 2px;
+          text-align: right;
+        }
+
+        .item-promo-label {
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.03em;
+          color: var(--sale-red, #c0392b);
+          white-space: nowrap;
+        }
+
+        .item-promo-online {
+          font-size: 0.65rem;
+          color: #8a7a6b;
+          white-space: nowrap;
+        }
+
         .btn-remove {
           color: #8a7a6b;
           background: none;
@@ -472,6 +495,10 @@
         font-weight: 500;
         margin-bottom: 0.75rem;
         color: #4b3e2b;
+
+        &.promo-discount-row span:last-child {
+          color: var(--sale-red, #c0392b);
+        }
 
         &.total-row {
           font-size: 1.1rem;
@@ -734,6 +761,18 @@
                   color: #4b3e2b !important;
                 }
               }
+            }
+          }
+
+          .item-promo-price {
+            grid-column: 3;
+            grid-row: 3;
+            align-self: end;
+            justify-self: end;
+
+            product-price {
+              grid-column: auto;
+              grid-row: auto;
             }
           }
 
