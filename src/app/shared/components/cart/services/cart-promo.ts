@@ -26,16 +26,29 @@ export interface CartPromoView {
  * price saved in the cart (it may carry a PERCENT price the server did not apply — SR-229 QA).
  */
 export interface CartPromoLineView {
-  /** To pay for the line (lineTotal). */
+  /** Line sum (lineTotal) when the cart has a promotion; the unit price (price) otherwise, as before SR-229. */
   total: number;
-  /** unitPrice × qty when the line pays less (product discount and/or promotion); null — nothing to cross out. */
+  /** The crossed-out price (unitPrice × qty or unitPrice) when the line pays less; null — nothing to cross out. */
   oldTotal: number | null;
   /** The promotion that won on this line; null — no label, no «online only». */
   promotion: PromotionBadge | null;
 }
 
-export function toLineView(line: CartCalculationLine | null): CartPromoLineView | null {
+/** At least one line of the cart is under a promotion: lines are shown as sums (Σ lines = total). */
+export function hasPromotion(view: CartPromoView | null): boolean {
+  return !!view && (view.promotionSavings > 0 || view.lines.some(line => !!line?.promotion));
+}
+
+/**
+ * Server line i as shown. Without promotions in the cart the line shows the unit price, as before SR-229 (only now the
+ * server one: a stale PERCENT price saved in the cart is not shown). With a promotion — line sums, so that the lines
+ * add up to the total.
+ */
+export function toLineView(line: CartCalculationLine | null, lineSums: boolean): CartPromoLineView | null {
   if (!line) return null;
+  if (!lineSums) {
+    return {total: line.price, oldTotal: line.price < line.unitPrice ? line.unitPrice : null, promotion: null};
+  }
   const base = Math.round(line.unitPrice * line.quantity * 100) / 100;
   return {total: line.lineTotal, oldTotal: line.lineTotal < base ? base : null, promotion: line.promotion ?? null};
 }

@@ -683,6 +683,29 @@ describe('Checkout promotions (SR-229)', () => {
     expect(el().querySelector('.item-promo-price')).toBeNull();
   });
 
+  it('«не навреди»: server result without promotions, qty 2 at 100 — the line shows 100 MDL, not 200', async () => {
+    await setup({...promoView(), lines: promoView().lines.map(l => ({...l, promotionSavings: 0, lineTotal: l.price * l.quantity,
+      promotion: null})), promotionSavings: 0, total: 280});
+    comp.selectShippingOption(shipping(1000));
+    fixture.detectChanges();
+    const [robe] = Array.from(el().querySelectorAll('.cart-item'));
+    expect(robe.querySelector('product-price .price')!.textContent!.trim()).toBe('100 MDL');
+    expect(robe.querySelector('.old-price')).toBeNull();
+    expect(totals()).toEqual(['В корзине 280 MDL', 'Доставка 50 MDL', 'Всего к оплате 330 MDL']);
+  });
+
+  it('server result without promotions: the server unit price, not the stale catalog PERCENT price', async () => {
+    await setup({
+      lines: [{productId: 21, variantAppId: null, quantity: 2, unitPrice: 320, price: 320, lineTotal: 640, promotionSavings: 0,
+        promotion: null, available: true}],
+      itemsTotal: 640, promotionSavings: 0, total: 640,
+    }, [new CartItem({id: '21', name: 'A', price: 256, oldPrice: 320} as Product, 2)]);
+    fixture.detectChanges();
+    const a = el().querySelector('.cart-item')!;
+    expect(a.querySelector('product-price .price')!.textContent!.trim()).toBe('320 MDL');
+    expect(a.querySelector('.old-price')).toBeNull();
+  });
+
   it('the server total wins over the client one and moves the free shipping threshold', async () => {
     await setup(null);
     comp.selectShippingOption(shipping(250));

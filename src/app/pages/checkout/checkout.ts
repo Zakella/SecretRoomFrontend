@@ -40,7 +40,7 @@ import {OrderCreateFailure, SiteEvents} from '../../@core/api/site-events';
 import {SiteTracker} from '../../@core/api/site-tracker';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 import {SrTrack} from '../../@core/directives/sr-track';
-import {CartPromo, CartPromoLineView, toLineView} from '../../shared/components/cart/services/cart-promo';
+import {CartPromo, CartPromoLineView, hasPromotion, toLineView} from '../../shared/components/cart/services/cart-promo';
 import {PromoLabelPipe} from '../../shared/pipes/promo-label.pipe';
 
 /** Above this many items the order summary list gets its own scroll. */
@@ -700,9 +700,12 @@ export class Checkout implements OnInit, OnDestroy {
     });
   }
 
-  /** Line i from the server result (sum, crossed-out base, promotion); null — no result, the catalog price as before. */
+  /**
+   * Line i from the server result; null — no result, the catalog price as before. Unit price while the cart has no
+   * promotion (as before SR-229), line sums with a promotion.
+   */
   protected lineView(index: number): CartPromoLineView | null {
-    return toLineView(this.promo.line(index));
+    return toLineView(this.promo.line(index), hasPromotion(this.promo.view()));
   }
 
   /** Subtotal before promotions: the server one when the cart is calculated, else the client one (as before). */

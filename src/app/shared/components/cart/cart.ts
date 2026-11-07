@@ -31,7 +31,7 @@ import {ProductPrice} from '../product/product-price/product-price';
 import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
 import {PendingPayment} from './services/pending-payment';
 import {SrTrack} from '../../../@core/directives/sr-track';
-import {CartPromo, CartPromoLineView, toLineView} from './services/cart-promo';
+import {CartPromo, CartPromoLineView, hasPromotion, toLineView} from './services/cart-promo';
 import {PromoLabelPipe} from '../../pipes/promo-label.pipe';
 
 @Component({
@@ -207,9 +207,12 @@ export class Cart implements OnInit, OnDestroy {
   }
 
 
-  /** Line i from the server result (sum, crossed-out base, promotion); null — no result, the catalog price as before. */
+  /**
+   * Line i from the server result; null — no result, the catalog price as before. Unit price while the cart has no
+   * promotion (as before SR-229), line sums with a promotion.
+   */
   protected lineView(index: number): CartPromoLineView | null {
-    return toLineView(this.promo.line(index));
+    return toLineView(this.promo.line(index), hasPromotion(this.promo.view()));
   }
 
   /** Subtotal before promotions: the server one when the cart is calculated, else the client one (as before). */

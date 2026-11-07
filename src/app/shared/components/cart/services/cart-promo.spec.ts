@@ -5,10 +5,10 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {BehaviorSubject} from 'rxjs';
 import {CartItem} from '../../../../entities/cart-item';
 import {Product} from '../../../../entities/product';
-import {CartCalculation} from '../../../../entities/promotion';
+import {CartCalculation, CartCalculationLine} from '../../../../entities/promotion';
 import {environment} from '../../../../../environments/environment';
 import {CartUi} from './cart';
-import {CART_PROMO_DEBOUNCE_MS, CartPromo, toLineView} from './cart-promo';
+import {CART_PROMO_DEBOUNCE_MS, CartPromo, CartPromoView, hasPromotion, toLineView} from './cart-promo';
 
 const URL = environment.apiUrl + 'v1/cart/calculate';
 
@@ -136,18 +136,54 @@ describe('toLineView (SR-229)', () => {
   });
 
   it('no server line — null', () => {
-    expect(toLineView(null)).toBeNull();
+    expect(toLineView(null, false)).toBeNull();
+    expect(toLineView(null, true)).toBeNull();
   });
 
-  it('line at the base price: nothing crossed out', () => {
-    expect(toLineView(line(320, 320, 1, 320))).toEqual({total: 320, oldTotal: null, promotion: null});
+  describe('cart without promotions: the unit price, as before SR-229', () => {
+    it('qty 2 at 100 — 100, not the line sum', () => {
+      expect(toLineView(line(100, 100, 2, 200), false)).toEqual({total: 100, oldTotal: null, promotion: null});
+    });
+
+    it('product discount: the base unit price crossed out', () => {
+      expect(toLineView(line(400, 320, 2, 640), false)).toEqual({total: 320, oldTotal: 400, promotion: null});
+    });
   });
 
-  it('product discount without a promotion: base × qty crossed out, line total shown', () => {
-    expect(toLineView(line(400, 320, 2, 640))).toEqual({total: 640, oldTotal: 800, promotion: null});
+  describe('cart with a promotion: line sums', () => {
+    it('line at the base price: nothing crossed out', () => {
+      expect(toLineView(line(320, 320, 1, 320), true)).toEqual({total: 320, oldTotal: null, promotion: null});
+    });
+
+    it('product discount without a promotion: base × qty crossed out, line total shown', () => {
+      expect(toLineView(line(400, 320, 2, 640), true)).toEqual({total: 640, oldTotal: 800, promotion: null});
+    });
+
+    it('base × qty is rounded to the bani', () => {
+      expect(toLineView(line(99.99, 99.99, 3, 249.97), true)!.oldTotal).toBe(299.97);
+    });
+  });
+});
+
+describe('hasPromotion (SR-229)', () => {
+  const plain = {productId: 1, variantAppId: null, quantity: 2, unitPrice: 100, price: 100, lineTotal: 200,
+    promotionSavings: 0, promotion: null, available: true};
+  const view = (lines: CartCalculationLine[], promotionSavings: number): CartPromoView =>
+    ({lines, itemsTotal: 200, promotionSavings, total: 200 - promotionSavings});
+
+  it('no result — false', () => {
+    expect(hasPromotion(null)).toBeFalse();
   });
 
-  it('base × qty is rounded to the bani', () => {
-    expect(toLineView(line(99.99, 99.99, 3, 249.97))!.oldTotal).toBe(299.97);
+  it('no savings and no line promotion — false', () => {
+    expect(hasPromotion(view([plain], 0))).toBeFalse();
+  });
+
+  it('a line with a promotion — true', () => {
+    expect(hasPromotion(view([{...plain, promotion: {id: 1, type: 'BUY_X_GET_Y', buy: 1, free: 1}}], 0))).toBeTrue();
+  });
+
+  it('savings in the cart — true', () => {
+    expect(hasPromotion(view([plain], 50))).toBeTrue();
   });
 });

@@ -114,6 +114,37 @@ describe('Cart drawer promotions (SR-229)', () => {
     expect(el.querySelector('.item-promo-price')).toBeNull();
   });
 
+  it('«не навреди»: server result without promotions, qty 2 at 100 — the line shows 100 MDL, not 200', () => {
+    const el = render({...view(), lines: view().lines.map(l => ({...l, promotionSavings: 0, lineTotal: l.price * l.quantity, promotion: null})),
+      promotionSavings: 0, total: 280});
+    const [robe] = Array.from(el.querySelectorAll('.cart-item'));
+    expect(robe.querySelector('product-price .price')!.textContent!.trim()).toBe('100 MDL');
+    expect(robe.querySelector('.old-price')).toBeNull();
+  });
+
+  it('server result without promotions: the server unit price, not the stale catalog PERCENT price', () => {
+    const items = [new CartItem({id: '21', name: 'A', price: 256, oldPrice: 320} as Product, 2)];
+    const el = render({
+      lines: [{productId: 21, variantAppId: null, quantity: 2, unitPrice: 320, price: 320, lineTotal: 640, promotionSavings: 0,
+        promotion: null, available: true}],
+      itemsTotal: 640, promotionSavings: 0, total: 640,
+    }, 0, items);
+    const a = el.querySelector('.cart-item')!;
+    expect(a.querySelector('product-price .price')!.textContent!.trim()).toBe('320 MDL');
+    expect(a.querySelector('.old-price')).toBeNull();
+  });
+
+  it('server result without promotions, product discount: unit price and the base unit price crossed out', () => {
+    const el = render({
+      lines: [{productId: 12, variantAppId: null, quantity: 2, unitPrice: 400, price: 320, lineTotal: 640, promotionSavings: 0,
+        promotion: null, available: true}],
+      itemsTotal: 640, promotionSavings: 0, total: 640,
+    }, 0, [new CartItem({id: '12', name: 'Robe', price: 320, oldPrice: 400} as Product, 2)]);
+    const robe = el.querySelector('.cart-item')!;
+    expect(robe.querySelector('.price')!.textContent!.trim()).toBe('320 MDL');
+    expect(robe.querySelector('.old-price')!.textContent!.trim()).toBe('400 MDL');
+  });
+
   it('free shipping bar counts the total after the promotion', () => {
     const el = render(view(), 300);
     expect(el.querySelector('.free-shipping-bar')!.textContent).toContain('70 MDL');
