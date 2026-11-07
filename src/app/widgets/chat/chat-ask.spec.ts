@@ -55,4 +55,32 @@ describe('ChatAsk (SR-220: «Спросить в чате»)', () => {
     ask.ask(BRA);
     expect(ask.request()).toBeNull();
   });
+
+  describe('SR-238: «Написать в чат» (open without a product)', () => {
+    it('open() puts a request, takeOpen() takes it once', () => {
+      expect(ask.openRequested()).toBeFalse();
+      expect(ask.takeOpen()).toBeFalse();
+      ask.open();
+      expect(ask.openRequested()).toBeTrue();
+      expect(ask.takeOpen()).toBeTrue();
+      expect(ask.openRequested()).toBeFalse();
+      expect(ask.takeOpen()).toBeFalse();
+    });
+
+    it('does not touch a product request', () => {
+      ask.ask(BRA);
+      ask.open();
+      expect(ask.takeOpen()).toBeTrue();
+      expect(ask.request()).toEqual(BRA);
+    });
+
+    it('chat switched off: pending request dropped, new ones ignored', () => {
+      ask.open();
+      ask.disable();
+      expect(ask.openRequested()).toBeFalse();
+      ask.open();
+      expect(ask.openRequested()).toBeFalse();
+      expect(ask.takeOpen()).toBeFalse();
+    });
+  });
 });

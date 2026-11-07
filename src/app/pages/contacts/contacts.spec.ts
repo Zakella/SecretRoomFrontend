@@ -1,8 +1,10 @@
 import {PLATFORM_ID, signal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MetaService} from '../../@core/services/meta.service';
 import {Language} from '../../@core/services/language';
+import {provideTransloco} from '@ngneat/transloco';
 import {Contacts} from './contacts';
+import {ChatAsk} from '../../widgets/chat/chat-ask';
 
 // The template embeds a Google Maps iframe, so the class is tested without rendering.
 describe('Contacts', () => {
@@ -16,6 +18,7 @@ describe('Contacts', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideTransloco({config: {availableLangs: ['ro'], defaultLang: 'ro', prodMode: true}}),
         {provide: MetaService, useValue: metaService},
         {provide: Language, useValue: {currentLanguage: signal('ro')}},
         // Server platform: the lightbox must not touch document.body in tests.
@@ -151,6 +154,37 @@ describe('Contacts', () => {
       expect(contacts.activeIndex()).toBe(0);
       contacts.onKeydown(new KeyboardEvent('keydown', {key: 'Escape'}));
       expect(contacts.isLightboxOpen()).toBeFalse();
+    });
+  });
+
+  // SR-238: the page itself is rendered without stores (no map iframes) to check the chat block under the hero.
+  describe('«Написать в чат» (SR-238)', () => {
+    let fixture: ComponentFixture<Contacts>;
+    const el = () => fixture.nativeElement as HTMLElement;
+    const button = () => el().querySelector<HTMLButtonElement>('app-open-chat button');
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(Contacts);
+      fixture.componentInstance.stores = [];
+      fixture.detectChanges();
+    });
+
+    it('button sits right under the hero, before the store list; click asks the chat to open', () => {
+      const hero = el().querySelector('.store-hero')!;
+      const block = el().querySelector('app-open-chat')!;
+      expect(button()).not.toBeNull();
+      expect(button()!.type).toBe('button');
+      expect(hero.nextElementSibling).toBe(block);
+      expect(block.nextElementSibling!.classList).toContain('store-list');
+      const open = spyOn(TestBed.inject(ChatAsk), 'open').and.callThrough();
+      button()!.click();
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('chat switched off: no button', () => {
+      TestBed.inject(ChatAsk).disable();
+      fixture.detectChanges();
+      expect(button()).toBeNull();
     });
   });
 });

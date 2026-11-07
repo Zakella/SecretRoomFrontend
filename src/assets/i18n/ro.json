@@ -577,6 +577,10 @@
     "viewAll": "Vezi toate brandurile"
   },
   "chat": {
+    "hint": {
+      "text": "Aveți întrebări? Scrieți-ne",
+      "close": "Ascundeți indiciul"
+    },
     "open": "Scrieți-ne",
     "openUnread": "Scrieți-ne — răspunsuri noi: {{count}}",
     "close": "Închideți chatul",
@@ -606,6 +610,10 @@
       "badType": "Nu s-a putut trimite produsul"
     },
     "askInChat": "Întrebați în chat",
+    "contacts": {
+      "button": "Scrieți-ne în chat",
+      "note": "Vă răspundem aici, pe site"
+    },
     "image": {
       "alt": "Fotografie de la Secret Room",
       "open": "Deschideți fotografia",

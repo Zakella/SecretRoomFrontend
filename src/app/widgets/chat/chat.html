@@ -169,6 +169,20 @@
       </div>
     }
   } @else {
+    @if (showHint()) {
+      <div class="chat-hint">
+        <div class="chat-hint__bubble">
+          <button type="button" class="chat-hint__text" (click)="toggle()">{{ 'chat.hint.text' | transloco }}</button>
+          <button type="button" class="chat-hint__close" (click)="dismissHint()"
+                  [attr.aria-label]="'chat.hint.close' | transloco">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
     <button type="button" class="chat-launcher" (click)="toggle()"
             [attr.aria-label]="(unread() > 0 ? 'chat.openUnread' : 'chat.open') | transloco: {count: unread()}">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"

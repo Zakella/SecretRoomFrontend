@@ -16,8 +16,9 @@ import {
   viewChild,
 } from '@angular/core';
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
+import {NavigationEnd, Router} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {Subscription} from 'rxjs';
+import {filter, Subscription} from 'rxjs';
 import {
   CHAT_MAX_LENGTH,
   CHAT_NAME_MAX,
@@ -39,6 +40,7 @@ import {isBotNavigator, newUuid, SiteTracker, TRACKER_NAVIGATOR} from '../../@co
 import {Language} from '../../@core/services/language';
 import {Slugify} from '../../@core/services/slugify';
 import {ChatAsk, ChatProductDraft} from './chat-ask';
+import {CHAT_HINT_DELAY_MS, isChatHintSnoozed, isCheckoutUrl, snoozeChatHint} from './chat-hint';
 import {ChatTextPart, splitLinks} from './chat-links';
 import {ChatProductCard, ChatProductCardView, safeImageUrl} from './chat-product-card';
 
@@ -101,6 +103,7 @@ export class Chat {
   private lang = inject(Language);
   private slugify = inject(Slugify);
   private ask = inject(ChatAsk);
+  private router = inject(Router);
   private zone = inject(NgZone);
   private injector = inject(Injector);
   private document = inject(DOCUMENT);
@@ -117,6 +120,15 @@ export class Chat {
   readonly enabled = signal(true);
   readonly visible = computed(() => this.isBrowser && !this.isBot && this.enabled());
   readonly open = signal(false);
+  /** The hint delay has passed. */
+  private readonly hintDue = signal(false);
+  /** The hint was dismissed or the chat was opened less than 24 h ago. */
+  private readonly hintSnoozed = signal(false);
+  /** Current page is the checkout: nothing may distract from paying. */
+  private readonly onCheckout = signal(false);
+  /** "Have a question?" bubble next to the closed button. */
+  readonly showHint = computed(() =>
+    this.hintDue() && !this.hintSnoozed() && !this.open() && !this.onCheckout() && this.visible());
   readonly messages = signal<ChatMessage[]>([]);
   readonly unread = signal(0);
   readonly hasPhone = signal(false);
@@ -172,6 +184,7 @@ export class Chat {
   private polling = false;
   private destroyed = false;
   private headerObserver: ResizeObserver | null = null;
+  private hintTimer: ReturnType<typeof setTimeout> | null = null;
   /** Picture requests in flight (finished ones drop out by themselves). */
   private readonly imageSubs = new Subscription();
 
@@ -185,11 +198,25 @@ export class Chat {
     this.chatKey = this.readKey();
     const onVisibility = () => this.onVisibilityChange();
     const onStorage = (event: StorageEvent) => this.onStorage(event);
+    this.onCheckout.set(isCheckoutUrl(this.router.url));
+    const routerSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.onCheckout.set(isCheckoutUrl(e.urlAfterRedirects)));
+    this.zone.runOutsideAngular(() => {
+      this.hintTimer = setTimeout(() => {
+        this.hintTimer = null;
+        // read late: another tab may have snoozed it meanwhile
+        this.hintSnoozed.set(isChatHintSnoozed(this.storage(), Date.now()));
+        this.hintDue.set(true);
+      }, CHAT_HINT_DELAY_MS);
+    });
     this.document.addEventListener('visibilitychange', onVisibility);
     this.document.defaultView?.addEventListener('storage', onStorage);
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
       this.clearTimer();
+      if (this.hintTimer !== null) clearTimeout(this.hintTimer);
+      routerSub.unsubscribe();
       this.pollSub?.unsubscribe();
       this.unwatchHeader();
       this.releaseImages();
@@ -199,6 +226,7 @@ export class Chat {
     // "Ask in chat" pressed before or after the widget appeared: the request waits in the service until taken here
     effect(() => {
       if (this.ask.request()) untracked(() => this.takeAsk());
+      if (this.ask.openRequested()) untracked(() => this.takeOpen());
     });
     // history on page load (GET after=0), then the regular polling
     if (this.chatKey) this.poll();
@@ -210,6 +238,7 @@ export class Chat {
       return;
     }
     this.open.set(true);
+    this.snoozeHint();
     this.watchHeader();
     this.markRead();
     this.loadImages();
@@ -218,6 +247,11 @@ export class Chat {
       this.scrollToBottom();
       this.input()?.nativeElement.focus();
     });
+  }
+
+  /** Cross on the hint bubble: quiet for 24 h. */
+  dismissHint(): void {
+    this.snoozeHint();
   }
 
   close(): void {
@@ -461,6 +495,13 @@ export class Chat {
     else this.toggle();
   }
 
+  /** "Write in chat" from a page: open the window; already open — keep it and focus the input. */
+  private takeOpen(): void {
+    if (!this.ask.takeOpen() || !this.enabled()) return;
+    if (this.open()) this.afterRender(() => this.input()?.nativeElement.focus());
+    else this.toggle();
+  }
+
   /** Pictures of the loaded messages, only while the window is open; each one once per widget lifetime. */
   private loadImages(): void {
     const key = this.chatKey;
@@ -627,6 +668,19 @@ export class Chat {
 
   private isHidden(): boolean {
     return this.document.visibilityState === 'hidden';
+  }
+
+  private storage(): Storage | null {
+    try {
+      return this.document.defaultView?.localStorage ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private snoozeHint(): void {
+    this.hintSnoozed.set(true);
+    snoozeChatHint(this.storage(), Date.now());
   }
 
   private readKey(): string | null {

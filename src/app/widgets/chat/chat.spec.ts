@@ -1,12 +1,13 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {PLATFORM_ID, signal} from '@angular/core';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting, TestRequest} from '@angular/common/http/testing';
-import {provideRouter} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {provideTransloco} from '@ngneat/transloco';
 import {Chat, CHAT_KEY_STORAGE, CHAT_POLL_CLOSED_MS, CHAT_POLL_OPEN_MS, CHAT_TOP_GAP} from './chat';
 import {ChatMessage, ChatPollResponse, ChatProduct, ChatSendBody, ChatSendResponse} from './chat-api';
 import {ChatAsk, ChatProductDraft} from './chat-ask';
+import {CHAT_HINT_DELAY_MS, CHAT_HINT_SNOOZE_MS, CHAT_HINT_STORAGE} from './chat-hint';
 import {Language} from '../../@core/services/language';
 import {TRACKER_ENABLED, TRACKER_NAVIGATOR, VISITOR_ID_KEY} from '../../@core/api/site-tracker';
 import {environment} from '../../../environments/environment';
@@ -94,6 +95,164 @@ describe('Chat widget (SR-218)', () => {
     http?.verify();
     fixture?.destroy();
     localStorage.clear();
+  });
+
+  describe('hint bubble next to the button', () => {
+    const hint = () => el().querySelector<HTMLElement>('.chat-hint');
+    const hintText = () => el().querySelector<HTMLButtonElement>('.chat-hint__text');
+    const hintClose = () => el().querySelector<HTMLButtonElement>('.chat-hint__close');
+
+    function setupAt(url: string | null = null) {
+      setup({
+        beforeCreate: () => {
+          const router = TestBed.inject(Router);
+          router.resetConfig([{path: '**', children: []}]);
+          if (url) {
+            router.navigateByUrl(url);
+            tick();
+          }
+        },
+      });
+    }
+
+    function waitForHint() {
+      tick(CHAT_HINT_DELAY_MS);
+      fixture.detectChanges();
+    }
+
+    it('appears 5 s after the widget, not earlier', fakeAsync(() => {
+      setupAt();
+      tick(CHAT_HINT_DELAY_MS - 1);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      tick(1);
+      fixture.detectChanges();
+      expect(hint()).not.toBeNull();
+      expect(hintText()!.textContent!.trim()).toBe('chat.hint.text');
+      expect(hintClose()!.getAttribute('aria-label')).toBe('chat.hint.close');
+      expect(localStorage.getItem(CHAT_HINT_STORAGE)).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('the cross hides it, writes a 24 h snooze and does not open the chat', fakeAsync(() => {
+      setupAt();
+      waitForHint();
+      const before = Date.now();
+      hintClose()!.click();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(chat.open()).toBeFalse();
+      expect(launcher()).not.toBeNull();
+      const until = Number(localStorage.getItem(CHAT_HINT_STORAGE));
+      expect(until).toBeGreaterThanOrEqual(before + CHAT_HINT_SNOOZE_MS);
+      expect(until).toBeLessThanOrEqual(Date.now() + CHAT_HINT_SNOOZE_MS);
+      fixture.destroy();
+    }));
+
+    it('a click on the bubble opens the chat and snoozes the hint', fakeAsync(() => {
+      setupAt();
+      waitForHint();
+      hintText()!.click();
+      fixture.detectChanges();
+      expect(chat.open()).toBeTrue();
+      expect(hint()).toBeNull();
+      expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThan(Date.now());
+      chat.close();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(launcher()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('opening the chat with the button snoozes the hint, even before it showed up', fakeAsync(() => {
+      setupAt();
+      launcher()!.click();
+      fixture.detectChanges();
+      expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThan(Date.now());
+      chat.close();
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('hidden while the snooze lasts, back after it expired', fakeAsync(() => {
+      localStorage.setItem(CHAT_HINT_STORAGE, String(Date.now() + 60_000));
+      setupAt();
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+
+      localStorage.setItem(CHAT_HINT_STORAGE, String(Date.now() - 1));
+      TestBed.resetTestingModule();
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('garbage in storage is no snooze', fakeAsync(() => {
+      localStorage.setItem(CHAT_HINT_STORAGE, 'abc');
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('blocked storage: the hint shows and the cross still works', fakeAsync(() => {
+      spyOn(Storage.prototype, 'getItem').and.throwError('blocked');
+      spyOn(Storage.prototype, 'setItem').and.throwError('blocked');
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      hintClose()!.click();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('no hint on the checkout page (query and fragment ignored), it comes back on another page', fakeAsync(() => {
+      setupAt('/ru/checkout?utm=1#pay');
+      waitForHint();
+      expect(hint()).toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ro/checkout');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ru');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).not.toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ru/checkout');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('no hint when the widget is not visible: bot, chat switched off, server', fakeAsync(() => {
+      setup({ua: 'Mozilla/5.0 (compatible; Googlebot/2.1)'});
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+
+      TestBed.resetTestingModule();
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      chat.enabled.set(false);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(launcher()).toBeNull();
+      fixture.destroy();
+
+      TestBed.resetTestingModule();
+      const setItem = spyOn(Storage.prototype, 'setItem').and.callThrough();
+      setup({platform: 'server'});
+      tick(CHAT_HINT_DELAY_MS * 2);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(setItem).not.toHaveBeenCalled();
+    }));
   });
 
   it('platform server: renders nothing and never touches localStorage or the network', () => {
@@ -697,6 +856,51 @@ describe('Chat widget (SR-218)', () => {
       ask.ask(DRAFT);
       fixture.detectChanges();
       expect(chat.open()).toBeFalse();
+    });
+
+    describe('SR-238: «Написать в чат» from Contacts', () => {
+      it('request made before the widget exists: the window opens when it appears, the hint is snoozed', () => {
+        setup({beforeCreate: () => TestBed.inject(ChatAsk).open()});
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).not.toBeNull();
+      });
+
+      it('request while the widget lives: opens the window (through toggle) and snoozes the hint for 24 h', () => {
+        setup();
+        expect(chat.open()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).toBeNull();
+        const before = Date.now();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        expect(chat.open()).toBeTrue();
+        expect(el().querySelector('.chat-window')).not.toBeNull();
+        expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThanOrEqual(before + CHAT_HINT_SNOOZE_MS);
+      });
+
+      it('window already open: stays open, the input gets focus', async () => {
+        setup();
+        openWindow();
+        expect(chat.open()).toBeTrue();
+        (document.activeElement as HTMLElement | null)?.blur();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(document.activeElement).toBe(textarea());
+      });
+
+      it('chat switched off: the request does nothing', () => {
+        localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+        setup();
+        expectPoll(0).flush({error: 'CHAT_DISABLED'}, {status: 404, statusText: 'Not Found'});
+        const ask = TestBed.inject(ChatAsk);
+        ask.open();
+        fixture.detectChanges();
+        expect(ask.openRequested()).toBeFalse();
+        expect(chat.open()).toBeFalse();
+      });
     });
 
     it('bots: "Ask in chat" is not available', () => {
