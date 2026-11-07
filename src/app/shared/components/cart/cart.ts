@@ -31,6 +31,8 @@ import {ProductPrice} from '../product/product-price/product-price';
 import {RecommendedProductService} from '../product/recommended-products/recommended-product-service';
 import {PendingPayment} from './services/pending-payment';
 import {SrTrack} from '../../../@core/directives/sr-track';
+import {CartPromo, CartPromoLineView, toLineView} from './services/cart-promo';
+import {PromoLabelPipe} from '../../pipes/promo-label.pipe';
 
 @Component({
   selector: 'app-cart',
@@ -42,6 +44,7 @@ import {SrTrack} from '../../../@core/directives/sr-track';
     LocalizedNamePipe,
     ProductPrice,
     SrTrack,
+    PromoLabelPipe,
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
@@ -57,6 +60,7 @@ export class Cart implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private pendingPayment = inject(PendingPayment);
   private platformId = inject(PLATFORM_ID);
+  protected promo = inject(CartPromo);
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
   totalQuantity: number = 0;
@@ -203,16 +207,37 @@ export class Cart implements OnInit, OnDestroy {
   }
 
 
+  /** Line i from the server result (sum, crossed-out base, promotion); null — no result, the catalog price as before. */
+  protected lineView(index: number): CartPromoLineView | null {
+    return toLineView(this.promo.line(index));
+  }
+
+  /** Subtotal before promotions: the server one when the cart is calculated, else the client one (as before). */
+  get subtotal(): number {
+    return this.promo.view()?.itemsTotal ?? this.totalAmount;
+  }
+
+  /** To pay for the goods: the server total (after promotions) or the client one. */
+  get payableTotal(): number {
+    return this.promo.view()?.total ?? this.totalAmount;
+  }
+
+  /** Promotion discount for the "Discount" row; 0 — no row. */
+  get promotionSavings(): number {
+    return this.promo.view()?.promotionSavings ?? 0;
+  }
+
   get freeShippingRemaining(): number {
     const threshold = this.freeShippingThreshold();
     if (threshold <= 0) return 0;
-    return Math.max(threshold - this.totalAmount, 0);
+    // The free shipping threshold counts the sum after the promotion discount (contract SR-229 §2).
+    return Math.max(threshold - this.payableTotal, 0);
   }
 
   get shippingProgress(): number {
     const threshold = this.freeShippingThreshold();
     if (threshold <= 0) return 0;
-    return Math.min((this.totalAmount / threshold) * 100, 100);
+    return Math.min((this.payableTotal / threshold) * 100, 100);
   }
 
   get hasFreeShipping(): boolean {

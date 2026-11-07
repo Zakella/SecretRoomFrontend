@@ -708,5 +708,12 @@
         "text": "Нажмите «Обновить» через минуту."
       }
     }
+  },
+  "promo": {
+    "percent": "−{{percent}}%",
+    "nthPercent": "{{nth}}-й товар −{{percent}}%",
+    "buyXGetY": "{{buy}}+{{free}} в подарок",
+    "onlineOnly": "только онлайн",
+    "discount": "Скидка по акции"
   }
 }
