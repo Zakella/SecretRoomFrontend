@@ -241,12 +241,17 @@
     .btn-remove { background: none; border: none; color: #c9544d; cursor: pointer; padding: .4rem; opacity: .7; &:hover { opacity: 1; } }
   }
   .item-price { flex-shrink: 0; }
+  // SR-229: line price after the promotion, its label and "online only"
+  .item-promo-price { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; }
+  .item-promo-label { font-size: .7rem; font-weight: 600; letter-spacing: .03em; color: var(--sale-red, #c0392b); white-space: nowrap; }
+  .item-promo-online { font-size: .65rem; color: #8a7a6b; white-space: nowrap; }
 }
 
 .summary-totals { padding-top: 1rem; border-top: 1px solid rgba(181,133,95,.15);
   .total-row { display: flex; justify-content: space-between; padding: .6rem 0; font-size: .9rem; color: #4b3e2b;
     &.grand-total { padding-top: 1rem; margin-top: .5rem; border-top: 1px solid rgba(181,133,95,.15); font-size: 1.1rem; font-weight: 600; span:last-child { color: #b5855f; } }
     .free-shipping-text { color: #5a9e5a; }
+    &.promo-discount-row span:last-child { color: var(--sale-red, #c0392b); }
   }
 }
 

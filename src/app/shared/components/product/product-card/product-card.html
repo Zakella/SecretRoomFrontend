@@ -29,8 +29,12 @@
     <!-- Brand Badge -->
 
 
-    <!-- Status Badges (right side) -->
-    @if (isBestSeller()) {
+    <!-- Status Badges (right side): promotion > Bestseller > New > out of stock; out of stock keeps its own badge -->
+    @if (showPromo()) {
+      <div class="badge badge-status badge-sale">
+        <span>{{ promoLabel()!.key | transloco: promoLabel()!.params }}</span>
+      </div>
+    } @else if (isBestSeller()) {
       <div class="badge badge-status badge-bestseller">
         <i class="ri-fire-fill"></i>
         <span>Bestseller</span>
@@ -109,6 +113,9 @@
       <h3 class="name">{{ product() | localizedName }}</h3>
 
       <product-price [price]="price()!" [oldPrice]="oldPrice()"/>
+      @if (showPromo() && promotion()?.onlineOnly) {
+        <span class="promo-online-only">{{ 'promo.onlineOnly' | transloco }}</span>
+      }
     </a>
   </div>
 

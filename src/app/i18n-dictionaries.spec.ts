@@ -115,6 +115,18 @@ describe('i18n dictionaries', () => {
     }
   });
 
+  it('promotion labels (SR-229) exist in both dictionaries and keep their placeholders', () => {
+    for (const flat of [flatRo, flatRu]) {
+      expect(flat['promo.percent']).toContain('{{percent}}');
+      expect(flat['promo.nthPercent']).toContain('{{nth}}');
+      expect(flat['promo.nthPercent']).toContain('{{percent}}');
+      expect(flat['promo.buyXGetY']).toContain('{{buy}}');
+      expect(flat['promo.buyXGetY']).toContain('{{free}}');
+      expect(flat['promo.onlineOnly']?.trim()).toBeTruthy();
+      expect(flat['promo.discount']?.trim()).toBeTruthy();
+    }
+  });
+
   it('shows the country, address heading in the right language', () => {
     expect(flatRo['Moldova, Republic of']).toBe('Republica Moldova');
     expect(flatRu['Moldova, Republic of']).toBe('Республика Молдова');

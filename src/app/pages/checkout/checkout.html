@@ -408,7 +408,24 @@
                 </button>
               </div>
             </div>
-            <product-price class="item-price" [price]="item.product.price" [oldPrice]="item.product.oldPrice" size="sm"/>
+            @let serverLine = lineView(i);
+            @if (serverLine) {
+              @if (serverLine.promotion) {
+                <div class="item-price item-promo-price">
+                  <product-price [price]="serverLine.total" [oldPrice]="serverLine.oldTotal" size="sm"/>
+                  @if (serverLine.promotion | promoLabel; as label) {
+                    <span class="item-promo-label">{{ label.key | transloco: label.params }}</span>
+                  }
+                  @if (serverLine.promotion.onlineOnly) {
+                    <span class="item-promo-online">{{ 'promo.onlineOnly' | transloco }}</span>
+                  }
+                </div>
+              } @else {
+                <product-price class="item-price" [price]="serverLine.total" [oldPrice]="serverLine.oldTotal" size="sm"/>
+              }
+            } @else {
+              <product-price class="item-price" [price]="item.product.price" [oldPrice]="item.product.oldPrice" size="sm"/>
+            }
           </div>
         }
       </div>
@@ -416,8 +433,14 @@
       <div class="summary-totals">
         <div class="total-row">
           <span>{{ 'Subtotal' | transloco }}</span>
-          <span>{{ totalAmount }} MDL</span>
+          <span>{{ subtotal }} MDL</span>
         </div>
+        @if (promotionSavings > 0) {
+          <div class="total-row promo-discount-row">
+            <span>{{ 'promo.discount' | transloco }}</span>
+            <span>−{{ promotionSavings }} MDL</span>
+          </div>
+        }
         <div class="total-row">
           <span>{{ 'Shipping' | transloco }}</span>
           <span>

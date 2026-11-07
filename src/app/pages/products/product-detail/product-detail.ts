@@ -27,6 +27,7 @@ import {RecentlyViewedService} from '../../../@core/services/recently-viewed.ser
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
 import {ProductGallery} from '../../../shared/components/product/product-gallery/product-gallery';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
+import {promoLabel} from '../../../shared/pipes/promo-label.pipe';
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
 import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
 import {compareSizes} from '../../../shared/utils/size-order';
@@ -86,6 +87,12 @@ export class ProductDetail {
     const p = this.product();
     if (!p) return false;
     return isProductOutOfStock(p);
+  });
+  /** SR-229: the first active promotion of the card; shown like on the catalog card — not for an unorderable product. */
+  protected promotion = computed(() => this.product()?.promotions?.[0] ?? null);
+  protected promoLabel = computed(() => {
+    if (this.isDiscontinued() || this.isOutOfStock()) return null;
+    return promoLabel(this.promotion());
   });
   /**
    * SR-223: «Отложить в магазине» — только для выбранного размера (или товара без размеров) в наличии

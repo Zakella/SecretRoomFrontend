@@ -164,6 +164,35 @@ product-price {
   align-self: flex-start;
 }
 
+// SR-229: promotion badge (as .badge-sale on the catalog card) and "online only"
+.promo-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.promo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--text-black, #1a1a1a);
+  color: var(--gold, #b8956c);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.promo-online-only {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #8c8279);
+}
+
 
 .stock-warning {
   display: inline-flex;

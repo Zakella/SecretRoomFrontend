@@ -14,6 +14,7 @@ import {BrandService} from '../../../../@core/api/brand';
 import {ProductPrice} from '../product-price/product-price';
 import {extraOptionsCount, moreOptionsKey} from './option-count-label';
 import {SrTrack} from '../../../../@core/directives/sr-track';
+import {promoLabel} from '../../../pipes/promo-label.pipe';
 
 @Component({
   selector: 'product-card',
@@ -58,6 +59,10 @@ export class ProductCard {
     ].filter((url): url is string => !!url);
     return Array.from(new Set(urls));
   });
+
+  /** SR-229: the first active promotion (backend order: priority desc) — its badge wins over Bestseller/New. */
+  promotion = computed(() => this.product()?.promotions?.[0] ?? null);
+  promoLabel = computed(() => promoLabel(this.promotion()));
 
   selectedImageIndex = signal(0);
 
@@ -160,6 +165,9 @@ export class ProductCard {
     const id = this.product()?.id;
     return id ? this.favoritesService.isFavorite(id) : false;
   });
+
+  /** Promotion badge and "online only" are shown for an orderable card; out of stock keeps its own badge as before. */
+  showPromo = computed(() => !!this.promoLabel() && !this.isOutOfStock());
 
   isOutOfStock = computed(() => {
     const p = this.product();

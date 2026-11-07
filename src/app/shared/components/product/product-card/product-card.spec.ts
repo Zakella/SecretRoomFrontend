@@ -366,4 +366,64 @@ describe('ProductCard', () => {
       expect(mainImg().getAttribute('height')).toBe('1000');
     });
   });
+
+  describe('бейдж акции (SR-229)', () => {
+    const nth = {id: 7, type: 'NTH_PERCENT', percent: 50, nth: 2, buy: null, free: null, onlineOnly: false};
+    const el = () => fixture.nativeElement as HTMLElement;
+
+    function render(overrides: Partial<Product>, inputs: Record<string, unknown> = {}): void {
+      setProduct(product({unitsInStock: 5, ...overrides}));
+      fixture.componentRef.setInput('price', 100);
+      for (const [k, v] of Object.entries(inputs)) fixture.componentRef.setInput(k, v);
+      fixture.detectChanges();
+    }
+
+    it('первая акция — бейдж .badge-sale с подписью по типу (ro и ru)', () => {
+      render({promotions: [nth, {...nth, id: 8, type: 'PERCENT', percent: 10}]});
+      const badges = el().querySelectorAll('.badge-status');
+      expect(badges.length).toBe(1);
+      expect(badges[0].classList).toContain('badge-sale');
+      expect(badges[0].textContent!.trim()).toBe('Al 2-lea produs −50%');
+    });
+
+    it('ru: подпись акции и «только онлайн»', () => {
+      currentLanguage.set('ru');
+      TestBed.inject(TranslocoService).setActiveLang('ru');
+      render({promotions: [{...nth, onlineOnly: true}]});
+      expect(el().querySelector('.badge-sale')!.textContent!.trim()).toBe('2-й товар −50%');
+      expect(el().querySelector('.promo-online-only')!.textContent!.trim()).toBe('только онлайн');
+    });
+
+    it('акция выше Bestseller и New', () => {
+      render({promotions: [{...nth, type: 'BUY_X_GET_Y', percent: null, nth: null, buy: 2, free: 1}]},
+        {isBestSeller: true, isNew: true});
+      expect(el().querySelector('.badge-sale')!.textContent!.trim()).toBe('2+1 cadou');
+      expect(el().querySelector('.badge-bestseller')).toBeNull();
+      expect(el().querySelector('.badge-new')).toBeNull();
+    });
+
+    it('onlineOnly — пометка «doar online» у цены; без него пометки нет', () => {
+      render({promotions: [{...nth, onlineOnly: true}]});
+      expect(el().querySelector('.info-main .promo-online-only')!.textContent!.trim()).toBe('doar online');
+
+      render({promotions: [nth]});
+      expect(el().querySelector('.promo-online-only')).toBeNull();
+    });
+
+    it('без акций (нет, пусто, неизвестный тип) — бейджи как раньше', () => {
+      for (const promotions of [undefined, [], [{...nth, type: 'UNKNOWN'}]]) {
+        render({promotions}, {isBestSeller: true});
+        expect(el().querySelector('.badge-sale')).toBeNull();
+        expect(el().querySelector('.promo-online-only')).toBeNull();
+        expect(el().querySelector('.badge-bestseller')).not.toBeNull();
+      }
+    });
+
+    it('нет в наличии — плашка «нет в наличии» остаётся, бейджа акции нет', () => {
+      render({unitsInStock: 0, promotions: [{...nth, onlineOnly: true}]});
+      expect(el().querySelector('.badge-sale')).toBeNull();
+      expect(el().querySelector('.promo-online-only')).toBeNull();
+      expect(el().querySelector('.badge-out-of-stock')).not.toBeNull();
+    });
+  });
 });

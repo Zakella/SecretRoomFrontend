@@ -49,7 +49,17 @@
                   }
                   <span class="item-qty">{{ 'Qty' | transloco }}: {{ item.quantity }}</span>
                 </div>
-                <div class="item-price">{{ item.amount | currency:'MDL ':'symbol':'1.0-0' }}</div>
+                @if (hasPromo(item)) {
+                  <div class="item-price item-promo-price">
+                    <span class="item-old-price">{{ item.lineTotal! + item.promotionSavings! | currency:'MDL ':'symbol':'1.0-0' }}</span>
+                    <span>{{ item.lineTotal | currency:'MDL ':'symbol':'1.0-0' }}</span>
+                    @if (item.promotion | promoLabel; as label) {
+                      <span class="item-promo-label">{{ label.key | transloco: label.params }}</span>
+                    }
+                  </div>
+                } @else {
+                  <div class="item-price">{{ item.amount | currency:'MDL ':'symbol':'1.0-0' }}</div>
+                }
               </div>
             }
           </div>
@@ -71,8 +81,14 @@
         <div class="order-section order-totals">
           <div class="total-row">
             <span>{{ 'Subtotal' | transloco }}</span>
-            <span>{{ orderReview()!.subtotal | currency:'MDL ':'symbol':'1.0-0' }}</span>
+            <span>{{ subtotalBeforePromo(orderReview()!) | currency:'MDL ':'symbol':'1.0-0' }}</span>
           </div>
+          @if (promotionSavings(orderReview()!) > 0) {
+            <div class="total-row promo-discount-row">
+              <span>{{ 'promo.discount' | transloco }}</span>
+              <span>−{{ promotionSavings(orderReview()!) | currency:'MDL ':'symbol':'1.0-0' }}</span>
+            </div>
+          }
           <div class="total-row">
             <span>{{ 'Delivery' | transloco }}</span>
             <span>{{ orderReview()!.shippingCost === 0 ? ('Free' | transloco) : (orderReview()!.shippingCost | currency:'MDL ':'symbol':'1.0-0') }}</span>

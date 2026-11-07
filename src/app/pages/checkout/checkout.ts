@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  effect,
   HostListener,
   inject,
   Injector,
@@ -39,6 +40,8 @@ import {OrderCreateFailure, SiteEvents} from '../../@core/api/site-events';
 import {SiteTracker} from '../../@core/api/site-tracker';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 import {SrTrack} from '../../@core/directives/sr-track';
+import {CartPromo, CartPromoLineView, toLineView} from '../../shared/components/cart/services/cart-promo';
+import {PromoLabelPipe} from '../../shared/pipes/promo-label.pipe';
 
 /** Above this many items the order summary list gets its own scroll. */
 export const SUMMARY_MANY_ITEMS_THRESHOLD = 8;
@@ -106,7 +109,8 @@ export type SubmitHint =
     RouterLink,
     LocalizedNamePipe,
     ProductPrice,
-    SrTrack
+    SrTrack,
+    PromoLabelPipe
   ],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
@@ -152,7 +156,15 @@ export class Checkout implements OnInit, OnDestroy {
   private tracker = inject(SiteTracker);
   private pendingPayment = inject(PendingPayment);
   private injector = inject(Injector);
+  protected promo = inject(CartPromo);
   private destroy$ = new Subject<void>();
+
+  /** SR-229: the server total (after promotions) moves the free shipping threshold — recompute delivery. */
+  private readonly promoShippingSync = effect(() => {
+    this.promo.view();
+    this.updateShippingCost();
+    this.cdr.markForCheck();
+  });
 
   activeLang = this.langService.currentLanguage;
 
@@ -382,7 +394,8 @@ export class Checkout implements OnInit, OnDestroy {
 
   private updateShippingCost(): void {
     if (this.selectedShippingOption) {
-      if (this.totalAmount >= this.selectedShippingOption.freeShippingFrom) {
+      // Free shipping counts the sum after the promotion discount (contract SR-229 §2).
+      if (this.payableTotal >= this.selectedShippingOption.freeShippingFrom) {
         this.shippingCost = 0;
       } else {
         this.shippingCost = this.selectedShippingOption.cost;
@@ -573,8 +586,8 @@ export class Checkout implements OnInit, OnDestroy {
         shippingOption: this.selectedShippingOption!,
         shippingCost: this.shippingCost,
         totalQuantity: this.totalQuantity,
-        totalAmount: this.totalAmount,
-        totalAmountOrder: this.totalAmount + this.shippingCost
+        totalAmount: this.payableTotal,
+        totalAmountOrder: this.grandTotal
       },
       orderItems: this.cartItems.map(item => ({
         product: item.product,
@@ -687,8 +700,31 @@ export class Checkout implements OnInit, OnDestroy {
     });
   }
 
+  /** Line i from the server result (sum, crossed-out base, promotion); null — no result, the catalog price as before. */
+  protected lineView(index: number): CartPromoLineView | null {
+    return toLineView(this.promo.line(index));
+  }
+
+  /** Subtotal before promotions: the server one when the cart is calculated, else the client one (as before). */
+  get subtotal(): number {
+    return this.promo.view()?.itemsTotal ?? this.totalAmount;
+  }
+
+  /** Promotion discount for the "Discount" row; 0 — no row. */
+  get promotionSavings(): number {
+    return this.promo.view()?.promotionSavings ?? 0;
+  }
+
+  /**
+   * To pay for the goods: the server total when the cart is calculated (it wins over the client sum — the server
+   * charges it), else the client one. The order sends it too; the server recomputes and only logs a mismatch.
+   */
+  get payableTotal(): number {
+    return this.promo.view()?.total ?? this.totalAmount;
+  }
+
   get grandTotal(): number {
-    return this.totalAmount + this.shippingCost;
+    return this.payableTotal + this.shippingCost;
   }
 
   dismissError(): void {

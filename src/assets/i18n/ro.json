@@ -708,5 +708,12 @@
         "text": "Apăsați „Actualizează” peste un minut."
       }
     }
+  },
+  "promo": {
+    "percent": "−{{percent}}%",
+    "nthPercent": "Al {{nth}}-lea produs −{{percent}}%",
+    "buyXGetY": "{{buy}}+{{free}} cadou",
+    "onlineOnly": "doar online",
+    "discount": "Reducere promoțională"
   }
 }
