@@ -1,11 +1,13 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {PLATFORM_ID, signal} from '@angular/core';
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting, TestRequest} from '@angular/common/http/testing';
-import {provideRouter} from '@angular/router';
+import {provideRouter, Router} from '@angular/router';
 import {provideTransloco} from '@ngneat/transloco';
 import {Chat, CHAT_KEY_STORAGE, CHAT_POLL_CLOSED_MS, CHAT_POLL_OPEN_MS, CHAT_TOP_GAP} from './chat';
-import {ChatMessage, ChatPollResponse, ChatSendBody, ChatSendResponse} from './chat-api';
+import {ChatMessage, ChatPollResponse, ChatProduct, ChatSendBody, ChatSendResponse} from './chat-api';
+import {ChatAsk, ChatProductDraft} from './chat-ask';
+import {CHAT_HINT_DELAY_MS, CHAT_HINT_SNOOZE_MS, CHAT_HINT_STORAGE} from './chat-hint';
 import {Language} from '../../@core/services/language';
 import {TRACKER_ENABLED, TRACKER_NAVIGATOR, VISITOR_ID_KEY} from '../../@core/api/site-tracker';
 import {environment} from '../../../environments/environment';
@@ -27,7 +29,7 @@ describe('Chat widget (SR-218)', () => {
   let visibility: DocumentVisibilityState;
   const el = () => fixture.nativeElement as HTMLElement;
 
-  function setup(opts: {platform?: 'browser' | 'server'; ua?: string} = {}) {
+  function setup(opts: {platform?: 'browser' | 'server'; ua?: string; beforeCreate?: () => void} = {}) {
     TestBed.configureTestingModule({
       imports: [Chat],
       providers: [
@@ -42,6 +44,7 @@ describe('Chat widget (SR-218)', () => {
       ],
     });
     http = TestBed.inject(HttpTestingController);
+    opts.beforeCreate?.();
     fixture = TestBed.createComponent(Chat);
     chat = fixture.componentInstance;
     fixture.detectChanges();
@@ -92,6 +95,164 @@ describe('Chat widget (SR-218)', () => {
     http?.verify();
     fixture?.destroy();
     localStorage.clear();
+  });
+
+  describe('hint bubble next to the button', () => {
+    const hint = () => el().querySelector<HTMLElement>('.chat-hint');
+    const hintText = () => el().querySelector<HTMLButtonElement>('.chat-hint__text');
+    const hintClose = () => el().querySelector<HTMLButtonElement>('.chat-hint__close');
+
+    function setupAt(url: string | null = null) {
+      setup({
+        beforeCreate: () => {
+          const router = TestBed.inject(Router);
+          router.resetConfig([{path: '**', children: []}]);
+          if (url) {
+            router.navigateByUrl(url);
+            tick();
+          }
+        },
+      });
+    }
+
+    function waitForHint() {
+      tick(CHAT_HINT_DELAY_MS);
+      fixture.detectChanges();
+    }
+
+    it('appears 5 s after the widget, not earlier', fakeAsync(() => {
+      setupAt();
+      tick(CHAT_HINT_DELAY_MS - 1);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      tick(1);
+      fixture.detectChanges();
+      expect(hint()).not.toBeNull();
+      expect(hintText()!.textContent!.trim()).toBe('chat.hint.text');
+      expect(hintClose()!.getAttribute('aria-label')).toBe('chat.hint.close');
+      expect(localStorage.getItem(CHAT_HINT_STORAGE)).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('the cross hides it, writes a 24 h snooze and does not open the chat', fakeAsync(() => {
+      setupAt();
+      waitForHint();
+      const before = Date.now();
+      hintClose()!.click();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(chat.open()).toBeFalse();
+      expect(launcher()).not.toBeNull();
+      const until = Number(localStorage.getItem(CHAT_HINT_STORAGE));
+      expect(until).toBeGreaterThanOrEqual(before + CHAT_HINT_SNOOZE_MS);
+      expect(until).toBeLessThanOrEqual(Date.now() + CHAT_HINT_SNOOZE_MS);
+      fixture.destroy();
+    }));
+
+    it('a click on the bubble opens the chat and snoozes the hint', fakeAsync(() => {
+      setupAt();
+      waitForHint();
+      hintText()!.click();
+      fixture.detectChanges();
+      expect(chat.open()).toBeTrue();
+      expect(hint()).toBeNull();
+      expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThan(Date.now());
+      chat.close();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(launcher()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('opening the chat with the button snoozes the hint, even before it showed up', fakeAsync(() => {
+      setupAt();
+      launcher()!.click();
+      fixture.detectChanges();
+      expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThan(Date.now());
+      chat.close();
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('hidden while the snooze lasts, back after it expired', fakeAsync(() => {
+      localStorage.setItem(CHAT_HINT_STORAGE, String(Date.now() + 60_000));
+      setupAt();
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+
+      localStorage.setItem(CHAT_HINT_STORAGE, String(Date.now() - 1));
+      TestBed.resetTestingModule();
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('garbage in storage is no snooze', fakeAsync(() => {
+      localStorage.setItem(CHAT_HINT_STORAGE, 'abc');
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      fixture.destroy();
+    }));
+
+    it('blocked storage: the hint shows and the cross still works', fakeAsync(() => {
+      spyOn(Storage.prototype, 'getItem').and.throwError('blocked');
+      spyOn(Storage.prototype, 'setItem').and.throwError('blocked');
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      hintClose()!.click();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('no hint on the checkout page (query and fragment ignored), it comes back on another page', fakeAsync(() => {
+      setupAt('/ru/checkout?utm=1#pay');
+      waitForHint();
+      expect(hint()).toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ro/checkout');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ru');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).not.toBeNull();
+      TestBed.inject(Router).navigateByUrl('/ru/checkout');
+      tick();
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+    }));
+
+    it('no hint when the widget is not visible: bot, chat switched off, server', fakeAsync(() => {
+      setup({ua: 'Mozilla/5.0 (compatible; Googlebot/2.1)'});
+      waitForHint();
+      expect(hint()).toBeNull();
+      fixture.destroy();
+
+      TestBed.resetTestingModule();
+      setupAt();
+      waitForHint();
+      expect(hint()).not.toBeNull();
+      chat.enabled.set(false);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(launcher()).toBeNull();
+      fixture.destroy();
+
+      TestBed.resetTestingModule();
+      const setItem = spyOn(Storage.prototype, 'setItem').and.callThrough();
+      setup({platform: 'server'});
+      tick(CHAT_HINT_DELAY_MS * 2);
+      fixture.detectChanges();
+      expect(hint()).toBeNull();
+      expect(setItem).not.toHaveBeenCalled();
+    }));
   });
 
   it('platform server: renders nothing and never touches localStorage or the network', () => {
@@ -410,6 +571,342 @@ describe('Chat widget (SR-218)', () => {
     req.flush({conversationId: 'c', message: msg(1, 'CUSTOMER', 'Привет'), autoReply: null});
     fixture.detectChanges();
     expect(el().querySelectorAll('.chat-msg').length).toBe(1);
+  });
+
+  describe('SR-220: types, pictures, product cards, links', () => {
+    const PRODUCT: ChatProduct = {
+      productId: 12, name: 'Бюстгальтер', price: 900, oldPrice: 1200,
+      imageUrl: 'https://api.secretroom.md/img/1.jpg', siteUrl: 'https://secretroom.md/ru/product/12/biust',
+    };
+    const DRAFT: ChatProductDraft = {productId: 12, name: 'Бюстгальтер', price: 900, oldPrice: 1200, imageUrl: null};
+
+    function imageMsg(seq: number, attachmentId = 'att-1', text = ''): ChatMessage {
+      return {...msg(seq, 'STAFF', text), type: 'IMAGE', image: {attachmentId, width: 1600, height: 1200}};
+    }
+
+    function productMsg(seq: number, text = '', author: ChatMessage['author'] = 'CUSTOMER'): ChatMessage {
+      return {...msg(seq, author, text), type: 'PRODUCT', product: PRODUCT};
+    }
+
+    function flushReads() {
+      http.match(`${BASE}/read`).forEach(r => r.flush(null, {status: 204, statusText: 'No Content'}));
+    }
+
+    function withHistory(messages: ChatMessage[]) {
+      localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+      setup();
+      expectPoll(0).flush(pollResponse(messages));
+      openWindow();
+      flushReads();
+    }
+
+    it('old messages without type (and null / unknown type) are shown as text', () => {
+      withHistory([
+        msg(1, 'STAFF', 'старое'),
+        {...msg(2, 'STAFF', 'null-тип'), type: null},
+        {...msg(3, 'STAFF', 'видео'), type: 'VIDEO' as never},
+        {...msg(4, 'STAFF', 'без вложения'), type: 'IMAGE'},
+      ]);
+      const texts = Array.from(el().querySelectorAll('.chat-msg__text')).map(p => p.textContent);
+      expect(texts).toEqual(['старое', 'null-тип', 'видео', 'без вложения']);
+      expect(el().querySelector('.chat-img')).toBeNull();
+      http.expectNone(r => r.url.includes('/attachments/'));
+    });
+
+    it('links: http(s) clickable with target/rel; javascript:, data: and HTML stay text', () => {
+      withHistory([
+        msg(1, 'STAFF', 'Смотрите https://secretroom.md/ru/sale.'),
+        msg(2, 'CUSTOMER', 'javascript:alert(1) data:text/html,<b>x</b> <a href=javascript:alert(1)>x</a> "><img src=x onerror=alert(1)>'),
+      ]);
+      const links = Array.from(el().querySelectorAll<HTMLAnchorElement>('.chat-list a.chat-msg__link'));
+      expect(links.length).toBe(1);
+      expect(links[0].getAttribute('href')).toBe('https://secretroom.md/ru/sale');
+      expect(links[0].textContent).toBe('https://secretroom.md/ru/sale');
+      expect(links[0].target).toBe('_blank');
+      expect(links[0].rel).toBe('noopener noreferrer nofollow');
+      expect(el().querySelectorAll('.chat-msg__text')[0].textContent).toBe('Смотрите https://secretroom.md/ru/sale.');
+      const mine = el().querySelector('.chat-msg--mine')!;
+      expect(mine.querySelector('a, img, b')).toBeNull();
+      expect(mine.textContent).toContain('"><img src=x onerror=alert(1)>');
+    });
+
+    it('staff picture: loaded as a blob with X-Chat-Key, shown via blob URL, zoomed, Esc closes; URL revoked on destroy', () => {
+      const revoke = spyOn(URL, 'revokeObjectURL').and.callThrough();
+      withHistory([imageMsg(1, 'att-1', 'Вот так')]);
+      const box = el().querySelector<HTMLElement>('.chat-img')!;
+      expect(box.style.aspectRatio).toContain('1600');
+      expect(box.querySelector('.chat-img__loading')).not.toBeNull();
+
+      const req = http.expectOne(`${BASE}/attachments/att-1`);
+      expect(req.request.headers.get('X-Chat-Key')).toBe(KEY);
+      expect(req.request.responseType).toBe('blob');
+      req.flush(new Blob(['jpeg'], {type: 'image/jpeg'}));
+      fixture.detectChanges();
+
+      const pic = el().querySelector<HTMLImageElement>('.chat-img__pic')!;
+      expect(pic.src).toMatch(/^blob:/);
+      expect(pic.alt).toBe('chat.image.alt');
+      expect(el().querySelector('.chat-msg--shop .chat-msg__text')!.textContent).toBe('Вот так');
+
+      el().querySelector<HTMLButtonElement>('.chat-img__open')!.click();
+      fixture.detectChanges();
+      const zoom = el().querySelector<HTMLElement>('.chat-zoom')!;
+      expect(zoom.querySelector<HTMLImageElement>('.chat-zoom__pic')!.src).toBe(pic.src);
+      zoom.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-zoom')).toBeNull();
+      expect(el().querySelector('.chat-window')).not.toBeNull(); // Esc closed the picture, not the window
+
+      // closed and reopened: the cached picture, no second request
+      chat.close();
+      fixture.detectChanges();
+      openWindow();
+      http.expectNone(`${BASE}/attachments/att-1`);
+      expect(el().querySelector<HTMLImageElement>('.chat-img__pic')!.src).toBe(pic.src);
+
+      const url = pic.src;
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledWith(url);
+    });
+
+    it('zoom: the cross and a click on the backdrop close it, a click on the picture does not', () => {
+      withHistory([imageMsg(1)]);
+      http.expectOne(`${BASE}/attachments/att-1`).flush(new Blob(['png'], {type: 'image/png'}));
+      fixture.detectChanges();
+      const open = () => {
+        el().querySelector<HTMLButtonElement>('.chat-img__open')!.click();
+        fixture.detectChanges();
+      };
+      open();
+      el().querySelector<HTMLImageElement>('.chat-zoom__pic')!.click();
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-zoom')).not.toBeNull();
+      el().querySelector<HTMLElement>('.chat-zoom')!.click();
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-zoom')).toBeNull();
+      open();
+      el().querySelector<HTMLButtonElement>('.chat-zoom__close')!.click();
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-zoom')).toBeNull();
+    });
+
+    it('zoom: Esc closes it even after a click on the picture moved the focus to body; focus back on the preview', () => {
+      withHistory([imageMsg(1)]);
+      http.expectOne(`${BASE}/attachments/att-1`).flush(new Blob(['png'], {type: 'image/png'}));
+      fixture.detectChanges();
+      const preview = el().querySelector<HTMLButtonElement>('.chat-img__open')!;
+      preview.focus();
+      preview.click();
+      fixture.detectChanges();
+      expect(document.activeElement).toBe(el().querySelector('.chat-zoom__close')); // focus on the cross when opened
+
+      el().querySelector<HTMLImageElement>('.chat-zoom__pic')!.click();
+      (document.activeElement as HTMLElement).blur();
+      fixture.detectChanges();
+      expect(document.activeElement).toBe(document.body);
+      document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-zoom')).toBeNull();
+      expect(el().querySelector('.chat-window')).not.toBeNull(); // only the picture, the window stays
+      expect(document.activeElement).toBe(el().querySelector('.chat-img__open'));
+
+      document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-window')).not.toBeNull(); // no picture: Esc on body does not close the window
+    });
+
+    it('picture failed (404 / not an image): a neat placeholder, the chat stays on', () => {
+      withHistory([imageMsg(1, 'att-1'), imageMsg(2, 'att-2')]);
+      // responseType blob: the error body is a Blob too
+      http.expectOne(`${BASE}/attachments/att-1`).flush(new Blob(['{"error":"NOT_FOUND"}'], {type: 'application/json'}),
+        {status: 404, statusText: 'Not Found'});
+      http.expectOne(`${BASE}/attachments/att-2`).flush(new Blob(['<html>'], {type: 'text/html'}));
+      fixture.detectChanges();
+      const failed = el().querySelectorAll('.chat-img__failed');
+      expect(failed.length).toBe(2);
+      expect(failed[0].textContent).toContain('chat.image.failed');
+      expect(el().querySelector('.chat-img img')).toBeNull();
+      expect(chat.enabled()).toBeTrue();
+    });
+
+    it('pictures are not loaded while the window is closed', () => {
+      localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+      setup();
+      expectPoll(0).flush(pollResponse([imageMsg(1)], 1));
+      http.expectNone(r => r.url.includes('/attachments/'));
+      openWindow();
+      flushReads();
+      http.expectOne(`${BASE}/attachments/att-1`).flush(new Blob(['x'], {type: 'image/jpeg'}));
+    });
+
+    it('product card in a message: photo (lazy), name, price with the old one struck through, internal link', () => {
+      withHistory([productMsg(1, 'Есть 75B?'), productMsg(2, '', 'STAFF')]);
+      const cards = el().querySelectorAll<HTMLElement>('app-chat-product-card');
+      expect(cards.length).toBe(2);
+      const card = cards[0];
+      const link = card.querySelector<HTMLAnchorElement>('a.chat-pc')!;
+      expect(link.getAttribute('href')).toBe('/ru/product/12/byustgalter');
+      expect(link.target).toBe('');
+      const img = card.querySelector<HTMLImageElement>('img')!;
+      expect(img.getAttribute('loading')).toBe('lazy');
+      expect(img.getAttribute('src')).toBe(PRODUCT.imageUrl);
+      expect(card.querySelector('.chat-pc__name')!.textContent).toContain('Бюстгальтер');
+      expect(card.querySelector('.old-price')!.textContent).toContain('1200 MDL');
+      expect(card.querySelector('.price')!.textContent).toContain('900 MDL');
+      expect(el().querySelector('.chat-msg--mine .chat-msg__text')!.textContent).toBe('Есть 75B?');
+      // empty question: no empty text line
+      expect(el().querySelector('.chat-msg--shop .chat-msg__text')).toBeNull();
+    });
+
+    it('product card: a non-http photo is replaced by the placeholder; a broken photo too', () => {
+      withHistory([{...productMsg(1), product: {...PRODUCT, imageUrl: 'javascript:alert(1)'}}, productMsg(2)]);
+      const imgs = el().querySelectorAll<HTMLImageElement>('app-chat-product-card img');
+      expect(imgs[0].getAttribute('src')).toBe('assets/images/no-image.png');
+      imgs[1].dispatchEvent(new Event('error'));
+      fixture.detectChanges();
+      expect(imgs[1].getAttribute('src')).toBe('assets/images/no-image.png');
+    });
+
+    it('"Ask in chat" before the widget appeared: opens the window with the draft card; empty text is allowed', () => {
+      setup({beforeCreate: () => TestBed.inject(ChatAsk).ask(DRAFT)});
+      fixture.detectChanges();
+      expect(chat.open()).toBeTrue();
+      expect(TestBed.inject(ChatAsk).request()).toBeNull();
+      const draft = el().querySelector('.chat-draft')!;
+      expect(draft.textContent).toContain('chat.product.askingAbout');
+      expect(draft.querySelector('.chat-pc__name')!.textContent).toContain('Бюстгальтер');
+      const sendBtn = el().querySelector<HTMLButtonElement>('.chat-input__send')!;
+      expect(sendBtn.disabled).toBeFalse();
+
+      sendClick();
+      const key = localStorage.getItem(CHAT_KEY_STORAGE);
+      expect(key).toMatch(UUID_RE); // the first card creates the conversation, like the first text
+      const req = expectSend();
+      expect(req.request.headers.get('X-Chat-Key')).toBe(key);
+      const body = req.request.body as ChatSendBody;
+      expect(body.type).toBe('PRODUCT');
+      expect(body.productId).toBe(12);
+      expect(body.text).toBe('');
+      expect(body.clientMessageId).toMatch(UUID_RE);
+      req.flush({conversationId: 'c', message: productMsg(1), autoReply: null}, {status: 201, statusText: 'Created'});
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-draft')).toBeNull();
+      expect(el().querySelector('.chat-msg--mine app-chat-product-card')).not.toBeNull();
+    });
+
+    it('"Ask in chat" while the widget lives: the card with a question; the cross removes the card', () => {
+      setup();
+      const ask = TestBed.inject(ChatAsk);
+      ask.ask(DRAFT);
+      fixture.detectChanges();
+      expect(chat.open()).toBeTrue();
+      type('Есть 75B?');
+      sendClick();
+      const body = expectSend().request.body as ChatSendBody;
+      expect(body).toEqual(jasmine.objectContaining({type: 'PRODUCT', productId: 12, text: 'Есть 75B?'}));
+    });
+
+    it('cross on the draft: a plain TEXT message goes without type/productId (as before SR-220)', () => {
+      setup();
+      TestBed.inject(ChatAsk).ask(DRAFT);
+      fixture.detectChanges();
+      el().querySelector<HTMLButtonElement>('.chat-draft__remove')!.click();
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-draft')).toBeNull();
+      expect(el().querySelector<HTMLButtonElement>('.chat-input__send')!.disabled).toBeTrue();
+      type('Просто вопрос');
+      sendClick();
+      const body = expectSend().request.body as ChatSendBody;
+      expect('type' in body).toBeFalse();
+      expect('productId' in body).toBeFalse();
+    });
+
+    it('PRODUCT_NOT_FOUND: translated error, card dropped, text kept, chat stays on', () => {
+      setup();
+      TestBed.inject(ChatAsk).ask(DRAFT);
+      fixture.detectChanges();
+      type('Есть 75B?');
+      sendClick();
+      expectSend().flush({error: 'PRODUCT_NOT_FOUND'}, {status: 404, statusText: 'Not Found'});
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-error')!.textContent).toContain('chat.errors.productNotFound');
+      expect(el().querySelector('.chat-draft')).toBeNull();
+      expect(textarea().value).toBe('Есть 75B?');
+      expect(chat.enabled()).toBeTrue();
+      expect(TestBed.inject(ChatAsk).available()).toBeTrue();
+    });
+
+    it('BAD_TYPE: translated error, the card stays', () => {
+      setup();
+      TestBed.inject(ChatAsk).ask(DRAFT);
+      fixture.detectChanges();
+      sendClick();
+      expectSend().flush({error: 'BAD_TYPE'}, {status: 400, statusText: 'Bad Request'});
+      fixture.detectChanges();
+      expect(el().querySelector('.chat-error')!.textContent).toContain('chat.errors.badType');
+      expect(el().querySelector('.chat-draft')).not.toBeNull();
+    });
+
+    it('chat switched off (404): "Ask in chat" is no longer available', () => {
+      localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+      setup();
+      expectPoll(0).flush({error: 'CHAT_DISABLED'}, {status: 404, statusText: 'Not Found'});
+      const ask = TestBed.inject(ChatAsk);
+      expect(ask.available()).toBeFalse();
+      ask.ask(DRAFT);
+      fixture.detectChanges();
+      expect(chat.open()).toBeFalse();
+    });
+
+    describe('SR-238: «Написать в чат» from Contacts', () => {
+      it('request made before the widget exists: the window opens when it appears, the hint is snoozed', () => {
+        setup({beforeCreate: () => TestBed.inject(ChatAsk).open()});
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).not.toBeNull();
+      });
+
+      it('request while the widget lives: opens the window (through toggle) and snoozes the hint for 24 h', () => {
+        setup();
+        expect(chat.open()).toBeFalse();
+        expect(localStorage.getItem(CHAT_HINT_STORAGE)).toBeNull();
+        const before = Date.now();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        expect(chat.open()).toBeTrue();
+        expect(el().querySelector('.chat-window')).not.toBeNull();
+        expect(Number(localStorage.getItem(CHAT_HINT_STORAGE))).toBeGreaterThanOrEqual(before + CHAT_HINT_SNOOZE_MS);
+      });
+
+      it('window already open: stays open, the input gets focus', async () => {
+        setup();
+        openWindow();
+        expect(chat.open()).toBeTrue();
+        (document.activeElement as HTMLElement | null)?.blur();
+        TestBed.inject(ChatAsk).open();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(chat.open()).toBeTrue();
+        expect(TestBed.inject(ChatAsk).openRequested()).toBeFalse();
+        expect(document.activeElement).toBe(textarea());
+      });
+
+      it('chat switched off: the request does nothing', () => {
+        localStorage.setItem(CHAT_KEY_STORAGE, KEY);
+        setup();
+        expectPoll(0).flush({error: 'CHAT_DISABLED'}, {status: 404, statusText: 'Not Found'});
+        const ask = TestBed.inject(ChatAsk);
+        ask.open();
+        fixture.detectChanges();
+        expect(ask.openRequested()).toBeFalse();
+        expect(chat.open()).toBeFalse();
+      });
+    });
+
+    it('bots: "Ask in chat" is not available', () => {
+      setup({ua: 'Mozilla/5.0 (compatible; Googlebot/2.1)'});
+      expect(TestBed.inject(ChatAsk).available()).toBeFalse();
+    });
   });
 
   describe('window below the site header', () => {

@@ -78,7 +78,24 @@
                                  decrementButtonIcon="pi pi-minus"/>
                 </div>
               </div>
-              <product-price [price]="cartItem.product.price" [oldPrice]="cartItem.product.oldPrice" size="sm"/>
+              @let serverLine = lineView(i);
+              @if (serverLine) {
+                @if (serverLine.promotion) {
+                  <div class="item-promo-price">
+                    <product-price [price]="serverLine.total" [oldPrice]="serverLine.oldTotal" size="sm"/>
+                    @if (serverLine.promotion | promoLabel; as label) {
+                      <span class="item-promo-label">{{ label.key | transloco: label.params }}</span>
+                    }
+                    @if (serverLine.promotion.onlineOnly) {
+                      <span class="item-promo-online">{{ 'promo.onlineOnly' | transloco }}</span>
+                    }
+                  </div>
+                } @else {
+                  <product-price [price]="serverLine.total" [oldPrice]="serverLine.oldTotal" size="sm"/>
+                }
+              } @else {
+                <product-price [price]="cartItem.product.price" [oldPrice]="cartItem.product.oldPrice" size="sm"/>
+              }
               <button class="btn-remove" (click)="deleteItemFromCart(i);
                                          $event.stopPropagation()">×
               </button>
@@ -88,11 +105,17 @@
         <div class="cart-footer">
           <div class="subtotal">
             <span>{{ 'Subtotal' | transloco }}</span>
-            <span>{{ totalAmount }} MDL</span>
+            <span>{{ subtotal }} MDL</span>
           </div>
+          @if (promotionSavings > 0) {
+            <div class="subtotal promo-discount-row">
+              <span>{{ 'promo.discount' | transloco }}</span>
+              <span>−{{ promotionSavings }} MDL</span>
+            </div>
+          }
           <div class="subtotal total-row">
             <span>{{ 'Total' | transloco }}</span>
-            <span>{{ totalAmount }} MDL</span>
+            <span>{{ payableTotal }} MDL</span>
           </div>
           <button class="btn-checkout" (click)="navigateToCheckout()" srTrack="CHECKOUT">
             {{ 'Check out' | transloco }}

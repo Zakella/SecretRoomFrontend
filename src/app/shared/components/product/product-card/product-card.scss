@@ -445,6 +445,15 @@
       }
     }
 
+    // SR-229: the promotion works only on the site
+    .promo-online-only {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted, #8c8279);
+    }
+
     // .info стал <div>: ссылка на товар живёт в .info-main, ссылка на бренд — отдельным <a>
     .info-main {
       display: flex;

@@ -3,6 +3,8 @@
     <h1>{{'Our stores' | transloco}}</h1>
   </div>
 
+  <app-open-chat />
+
   <div class="store-list">
     @for (store of stores; track store.id; let i = $index) {
       <div class="store-item"

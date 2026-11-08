@@ -92,6 +92,11 @@ export const routes: Routes = [
             data: {breadcrumb: {ro: 'Favorite', ru: 'Избранное'}}
           },
           {
+            path: 'store-hold',
+            loadComponent: () => import('./pages/store-hold/store-hold-page').then(m => m.StoreHoldPage),
+            data: {breadcrumb: {ro: 'Rezervare în magazin', ru: 'Отложено в магазине'}}
+          },
+          {
             path: 'search/:query',
             loadComponent: () => import('./pages/search-result/search-result').then(m => m.SearchResult),
             data: {breadcrumb: {ro: 'Rezultate căutare', ru: 'Результаты поиска'}}

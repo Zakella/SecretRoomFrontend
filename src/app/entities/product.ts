@@ -5,6 +5,7 @@ import {ProductVariant} from './product-variant';
 import {ProductFilterItem} from './product-filter';
 import {ProductCompositionItem} from './product-composition';
 import {ProductSibling} from './product-sibling';
+import {PromotionBadge} from './promotion';
 
 export interface Product {
   id?: string,
@@ -47,4 +48,6 @@ export interface Product {
   optionLabelRo?: string,
   siblings?: ProductSibling[],
   optionCount?: number,
+  /** SR-229: active promotions of the card or any of its variants, priority desc; empty — none. */
+  promotions?: PromotionBadge[],
 }

@@ -1,0 +1,75 @@
+<section class="hold-page">
+  <h1 class="hold-page__title">{{ 'storeHold.pageTitle' | transloco }}</h1>
+  <p class="hold-page__intro">{{ 'storeHold.pageIntro' | transloco }}</p>
+
+  <form class="hold-lookup" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="hold-field">
+      <label for="hold-number">{{ 'storeHold.number' | transloco }}</label>
+      <input id="hold-number" type="text" formControlName="number" autocomplete="off" placeholder="H17"
+             [attr.aria-invalid]="!!numberError()"/>
+      @if (numberError(); as key) {
+        <small class="hold-error">{{ key | transloco }}</small>
+      }
+    </div>
+    <div class="hold-field">
+      <label for="hold-lookup-phone">{{ 'Phone' | transloco }}</label>
+      <input id="hold-lookup-phone" type="tel" inputmode="tel" formControlName="phone" autocomplete="tel"
+             placeholder="069123456" [attr.aria-invalid]="!!phoneError()"/>
+      @if (phoneError(); as key) {
+        <small class="hold-error">{{ key | transloco }}</small>
+      }
+    </div>
+    <button type="submit" class="hold-btn hold-btn--primary" [disabled]="loading()">
+      {{ (loading() ? 'storeHold.loading' : 'storeHold.check') | transloco }}
+    </button>
+  </form>
+
+  @if (error(); as e) {
+    <p class="hold-error hold-error--block" role="alert">{{ e.key | transloco: e.params }}</p>
+  }
+
+  @if (hold(); as h) {
+    @let v = view()!;
+    <article class="hold-card" aria-live="polite">
+      <header class="hold-card__head">
+        <span class="hold-card__number">{{ 'storeHold.number' | transloco }} {{ h.number }}</span>
+        <span class="hold-card__created">{{ 'storeHold.createdAt' | transloco: {time: formatTime(h.createdAt)} }}</span>
+      </header>
+
+      <div class="hold-card__status" [attr.data-tone]="v.tone">
+        <p class="hold-card__status-title">{{ v.titleKey | transloco: v.params }}</p>
+        <p class="hold-card__status-text">{{ v.textKey | transloco: v.params }}</p>
+      </div>
+
+      <div class="hold-card__product">
+        <img [src]="h.imageUrl || 'assets/images/no-image.png'" [alt]="h.productName ?? ''"/>
+        <div class="hold-card__product-info">
+          @if (productLink(); as link) {
+            <a class="hold-card__product-name" [routerLink]="link">{{ h.productName }}</a>
+          } @else {
+            <span class="hold-card__product-name">{{ h.productName }}</span>
+          }
+          @if (h.size) {
+            <span class="hold-card__size">{{ 'Size' | transloco }}: <strong>{{ h.size }}</strong></span>
+          }
+          @if (h.price !== null && h.price !== undefined) {
+            <product-price [price]="h.price" size="sm"/>
+          }
+        </div>
+      </div>
+
+      @if (store(); as s) {
+        <div class="hold-card__store">
+          <p class="hold-card__store-name">{{ s.name }}</p>
+          <p class="hold-card__row"><i class="ri-map-pin-line" aria-hidden="true"></i>{{ s.location }}</p>
+          <p class="hold-card__row"><i class="ri-time-line" aria-hidden="true"></i>{{ s.workTime }}</p>
+        </div>
+      }
+
+      <button type="button" class="hold-btn hold-btn--ghost" [disabled]="loading()" (click)="refresh()">
+        <i class="ri-refresh-line" aria-hidden="true"></i>
+        {{ 'storeHold.refresh' | transloco }}
+      </button>
+    </article>
+  }
+</section>

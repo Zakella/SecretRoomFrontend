@@ -4,17 +4,21 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
+  HostListener,
   inject,
   Injector,
   NgZone,
   PLATFORM_ID,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
+import {NavigationEnd, Router} from '@angular/router';
 import {TranslocoPipe} from '@ngneat/transloco';
-import {Subscription} from 'rxjs';
+import {filter, Subscription} from 'rxjs';
 import {
   CHAT_MAX_LENGTH,
   CHAT_NAME_MAX,
@@ -25,11 +29,20 @@ import {
   ChatErrorKind,
   chatErrorKind,
   ChatMessage,
+  ChatMessageType,
+  chatMessageType,
   ChatPollResponse,
+  ChatProduct,
+  ChatSendBody,
   isChatDisabled,
 } from './chat-api';
 import {isBotNavigator, newUuid, SiteTracker, TRACKER_NAVIGATOR} from '../../@core/api/site-tracker';
 import {Language} from '../../@core/services/language';
+import {Slugify} from '../../@core/services/slugify';
+import {ChatAsk, ChatProductDraft} from './chat-ask';
+import {CHAT_HINT_DELAY_MS, isChatHintSnoozed, isCheckoutUrl, snoozeChatHint} from './chat-hint';
+import {ChatTextPart, splitLinks} from './chat-links';
+import {ChatProductCard, ChatProductCardView, safeImageUrl} from './chat-product-card';
 
 /** SR-218: chatKey of this browser. Needed for the chat to work, so it does not depend on cookie_consent. */
 export const CHAT_KEY_STORAGE = 'sr_chat_id';
@@ -46,6 +59,26 @@ export const SITE_HEADER_SELECTOR = 'app-header .header';
 /** Gap between the header and the open window. */
 export const CHAT_TOP_GAP = 12;
 
+/** Staff picture as webstore stores it (contract: 1…2048 px per side). */
+const CHAT_IMAGE_MAX_SIDE = 2048;
+
+/** Staff picture of a message: loading → blob URL, or failed (placeholder). */
+export interface ChatImageState {
+  url: string | null;
+  failed: boolean;
+}
+
+/** A message ready for the template: type resolved, text cut into text/link parts. */
+export interface ChatMessageView {
+  m: ChatMessage;
+  type: ChatMessageType;
+  parts: ChatTextPart[];
+  attachmentId: string | null;
+  /** CSS aspect-ratio of the picture (space reserved before it loads), null — unknown. */
+  ratio: string | null;
+  card: ChatProductCardView | null;
+}
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function trimmedOrNull(value: string, max: number): string | null {
@@ -59,7 +92,7 @@ function trimmedOrNull(value: string, max: number): string | null {
  */
 @Component({
   selector: 'app-chat',
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, ChatProductCard],
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +101,9 @@ export class Chat {
   private api = inject(ChatApi);
   private tracker = inject(SiteTracker);
   private lang = inject(Language);
+  private slugify = inject(Slugify);
+  private ask = inject(ChatAsk);
+  private router = inject(Router);
   private zone = inject(NgZone);
   private injector = inject(Injector);
   private document = inject(DOCUMENT);
@@ -84,6 +120,15 @@ export class Chat {
   readonly enabled = signal(true);
   readonly visible = computed(() => this.isBrowser && !this.isBot && this.enabled());
   readonly open = signal(false);
+  /** The hint delay has passed. */
+  private readonly hintDue = signal(false);
+  /** The hint was dismissed or the chat was opened less than 24 h ago. */
+  private readonly hintSnoozed = signal(false);
+  /** Current page is the checkout: nothing may distract from paying. */
+  private readonly onCheckout = signal(false);
+  /** "Have a question?" bubble next to the closed button. */
+  readonly showHint = computed(() =>
+    this.hintDue() && !this.hintSnoozed() && !this.open() && !this.onCheckout() && this.visible());
   readonly messages = signal<ChatMessage[]>([]);
   readonly unread = signal(0);
   readonly hasPhone = signal(false);
@@ -103,6 +148,20 @@ export class Chat {
   readonly contactError = signal<ChatErrorKind | null>(null);
   readonly contactDone = signal(false);
 
+  /** SR-220: "you are asking about…" card above the input; sent as a PRODUCT message. */
+  readonly productDraft = signal<ChatProductDraft | null>(null);
+  /** Staff pictures by attachmentId, for the lifetime of the widget. */
+  readonly images = signal<Readonly<Record<string, ChatImageState>>>({});
+  /** Blob URL of the picture shown large over the window. */
+  readonly zoomed = signal<string | null>(null);
+
+  readonly view = computed(() => this.messages().map(m => this.toView(m)));
+  readonly draftCard = computed(() => {
+    const p = this.productDraft();
+    return p ? this.cardOf(p) : null;
+  });
+  readonly canSend = computed(() => !this.sending() && (!!this.draft().trim() || this.productDraft() !== null));
+
   readonly unreadBadge = computed(() => (this.unread() > 9 ? '9+' : String(this.unread())));
   /** After the auto-reply (a SYSTEM message) and without a phone — the compact phone form. */
   readonly showPhoneForm = computed(() =>
@@ -110,33 +169,64 @@ export class Chat {
 
   private readonly list = viewChild<ElementRef<HTMLElement>>('list');
   private readonly input = viewChild<ElementRef<HTMLTextAreaElement>>('input');
+  private readonly zoomClose = viewChild<ElementRef<HTMLButtonElement>>('zoomClose');
+  /** The preview the large picture was opened from: focus goes back to it on close. */
+  private zoomOrigin: HTMLElement | null = null;
 
   private chatKey: string | null = null;
   private cursor = 0;
   private readSent = 0;
   private readInFlight = false;
   /** Last failed message: "Retry" (or sending the same text) reuses its clientMessageId. */
-  private pending: {clientMessageId: string; text: string} | null = null;
+  private pending: {clientMessageId: string; text: string; productId: number | null} | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private pollSub: Subscription | null = null;
   private polling = false;
   private destroyed = false;
   private headerObserver: ResizeObserver | null = null;
+  private hintTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Picture requests in flight (finished ones drop out by themselves). */
+  private readonly imageSubs = new Subscription();
 
   constructor() {
-    if (!this.isBrowser || this.isBot) return;
+    if (!this.isBrowser) return;
+    if (this.isBot) {
+      // no widget for bots — no "Ask in chat" either
+      this.ask.disable();
+      return;
+    }
     this.chatKey = this.readKey();
     const onVisibility = () => this.onVisibilityChange();
     const onStorage = (event: StorageEvent) => this.onStorage(event);
+    this.onCheckout.set(isCheckoutUrl(this.router.url));
+    const routerSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.onCheckout.set(isCheckoutUrl(e.urlAfterRedirects)));
+    this.zone.runOutsideAngular(() => {
+      this.hintTimer = setTimeout(() => {
+        this.hintTimer = null;
+        // read late: another tab may have snoozed it meanwhile
+        this.hintSnoozed.set(isChatHintSnoozed(this.storage(), Date.now()));
+        this.hintDue.set(true);
+      }, CHAT_HINT_DELAY_MS);
+    });
     this.document.addEventListener('visibilitychange', onVisibility);
     this.document.defaultView?.addEventListener('storage', onStorage);
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
       this.clearTimer();
+      if (this.hintTimer !== null) clearTimeout(this.hintTimer);
+      routerSub.unsubscribe();
       this.pollSub?.unsubscribe();
       this.unwatchHeader();
+      this.releaseImages();
       this.document.removeEventListener('visibilitychange', onVisibility);
       this.document.defaultView?.removeEventListener('storage', onStorage);
+    });
+    // "Ask in chat" pressed before or after the widget appeared: the request waits in the service until taken here
+    effect(() => {
+      if (this.ask.request()) untracked(() => this.takeAsk());
+      if (this.ask.openRequested()) untracked(() => this.takeOpen());
     });
     // history on page load (GET after=0), then the regular polling
     if (this.chatKey) this.poll();
@@ -148,8 +238,10 @@ export class Chat {
       return;
     }
     this.open.set(true);
+    this.snoozeHint();
     this.watchHeader();
     this.markRead();
+    this.loadImages();
     this.schedule();
     this.afterRender(() => {
       this.scrollToBottom();
@@ -157,7 +249,13 @@ export class Chat {
     });
   }
 
+  /** Cross on the hint bubble: quiet for 24 h. */
+  dismissHint(): void {
+    this.snoozeHint();
+  }
+
   close(): void {
+    this.zoomed.set(null);
     this.open.set(false);
     this.unwatchHeader();
     this.schedule();
@@ -181,7 +279,8 @@ export class Chat {
 
   send(): void {
     const text = this.draft().trim();
-    if (!text || this.sending()) return;
+    const product = this.productDraft();
+    if ((!text && !product) || this.sending()) return;
     if (text.length > CHAT_MAX_LENGTH) {
       this.error.set('tooLong');
       return;
@@ -192,13 +291,19 @@ export class Chat {
       this.error.set('badPhone');
       return;
     }
-    if (!this.pending || this.pending.text !== text) this.pending = {clientMessageId: newUuid(), text};
+    const productId = product?.productId ?? null;
+    if (!this.pending || this.pending.text !== text || this.pending.productId !== productId) {
+      this.pending = {clientMessageId: newUuid(), text, productId};
+    }
     const clientMessageId = this.pending.clientMessageId;
+    // the first message of either type creates the conversation key
     const key = this.ensureKey();
     this.sending.set(true);
     this.error.set(null);
-    this.api.send(key, {
+    const body: ChatSendBody = {
       clientMessageId,
+      // TEXT goes without `type`, exactly as before SR-220
+      ...(productId !== null ? {type: 'PRODUCT' as const, productId} : {}),
       text,
       name: trimmedOrNull(this.name(), CHAT_NAME_MAX),
       phone,
@@ -206,12 +311,14 @@ export class Chat {
       visitorId: this.tracker.consentedVisitorId() ?? null,
       pageUrl: this.pageUrl(),
       website: this.website(),
-    }).subscribe({
+    };
+    this.api.send(key, body).subscribe({
       next: res => {
         this.sending.set(false);
         if (this.pending?.clientMessageId === clientMessageId) this.pending = null;
         // the visitor may have typed more while sending — clear only what was sent
         if (this.draft().trim() === text) this.draft.set('');
+        if (productId !== null && this.productDraft()?.productId === productId) this.productDraft.set(null);
         if (phone) this.hasPhone.set(true);
         this.merge([res.message, ...(res.autoReply ? [res.autoReply] : [])]);
         this.markRead();
@@ -226,8 +333,51 @@ export class Chat {
         const kind = chatErrorKind(err);
         this.error.set(kind);
         if (kind === 'badPhone') this.introOpen.set(true);
+        // hidden or gone from the catalog: drop the card, the typed text stays
+        if (kind === 'productNotFound' && this.productDraft()?.productId === productId) this.productDraft.set(null);
       },
     });
+  }
+
+  /** Cross on the draft card. */
+  removeProduct(): void {
+    this.productDraft.set(null);
+    const e = this.error();
+    if (e === 'productNotFound' || e === 'badType') this.error.set(null);
+    this.input()?.nativeElement.focus();
+  }
+
+  zoom(url: string): void {
+    const active = this.document.activeElement;
+    // Safari does not focus a clicked button: then the input gets the focus back
+    this.zoomOrigin = active instanceof HTMLElement && this.list()?.nativeElement.contains(active) ? active : null;
+    this.zoomed.set(url);
+    this.afterRender(() => this.zoomClose()?.nativeElement.focus());
+  }
+
+  closeZoom(): void {
+    if (this.zoomed() === null) return;
+    const origin = this.zoomOrigin;
+    this.zoomOrigin = null;
+    this.zoomed.set(null);
+    this.afterRender(() => (origin?.isConnected ? origin : this.input()?.nativeElement)?.focus());
+  }
+
+  /** Esc closes the large picture wherever the focus is (a click on the picture leaves it on body); the window stays. */
+  @HostListener('document:keydown.escape')
+  onDocumentEscape(): void {
+    if (this.zoomed() !== null) this.closeZoom();
+  }
+
+  /** A click on the backdrop closes, a click on the picture itself does not. */
+  onZoomBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.closeZoom();
+  }
+
+  /** Esc in the window: the large picture first, then the window. */
+  onEscape(): void {
+    if (this.zoomed() !== null) this.closeZoom();
+    else this.close();
   }
 
   /** Same clientMessageId as the failed attempt: a request that reached webstore is not saved twice. */
@@ -305,6 +455,99 @@ export class Chat {
 
   // ---- internals ----
 
+  private toView(m: ChatMessage): ChatMessageView {
+    const type = chatMessageType(m);
+    const image = type === 'IMAGE' ? m.image! : null;
+    const w = Number(image?.width);
+    const h = Number(image?.height);
+    const ratio = image && w >= 1 && h >= 1 && w <= CHAT_IMAGE_MAX_SIDE && h <= CHAT_IMAGE_MAX_SIDE ? `${w} / ${h}` : null;
+    return {
+      m,
+      type,
+      parts: splitLinks(m.text),
+      attachmentId: image?.attachmentId ?? null,
+      ratio,
+      card: type === 'PRODUCT' ? this.cardOf(m.product!) : null,
+    };
+  }
+
+  /** Link is always an internal route built from productId (never the address from the message). */
+  private cardOf(p: ChatProduct | ChatProductDraft): ChatProductCardView {
+    const id = Number(p.productId);
+    const name = typeof p.name === 'string' ? p.name : '';
+    const lang = this.lang.currentLanguage() === 'ru' ? 'ru' : 'ro';
+    return {
+      name,
+      price: typeof p.price === 'number' && Number.isFinite(p.price) ? p.price : null,
+      oldPrice: typeof p.oldPrice === 'number' && Number.isFinite(p.oldPrice) ? p.oldPrice : null,
+      imageUrl: safeImageUrl(p.imageUrl, this.document.baseURI),
+      link: Number.isSafeInteger(id) && id > 0 ? this.slugify.productUrl(lang, String(id), name) : null,
+    };
+  }
+
+  private takeAsk(): void {
+    const product = this.ask.take();
+    if (!product || !this.enabled()) return;
+    this.productDraft.set(product);
+    const e = this.error();
+    if (e === 'productNotFound' || e === 'badType') this.error.set(null);
+    if (this.open()) this.afterRender(() => this.input()?.nativeElement.focus());
+    else this.toggle();
+  }
+
+  /** "Write in chat" from a page: open the window; already open — keep it and focus the input. */
+  private takeOpen(): void {
+    if (!this.ask.takeOpen() || !this.enabled()) return;
+    if (this.open()) this.afterRender(() => this.input()?.nativeElement.focus());
+    else this.toggle();
+  }
+
+  /** Pictures of the loaded messages, only while the window is open; each one once per widget lifetime. */
+  private loadImages(): void {
+    const key = this.chatKey;
+    if (!key || !this.open() || this.destroyed) return;
+    const known = this.images();
+    for (const v of this.view()) {
+      const id = v.attachmentId;
+      if (id && !known[id]) this.loadImage(key, id);
+    }
+  }
+
+  private loadImage(key: string, id: string): void {
+    this.setImage(id, {url: null, failed: false});
+    this.imageSubs.add(this.api.attachment(key, id).subscribe({
+      next: blob => {
+        if (this.destroyed) return;
+        // webstore sends image/jpeg or image/png; anything else (an HTML error page…) is not shown
+        const URLs = this.document.defaultView?.URL;
+        if (!blob?.type.startsWith('image/') || !URLs?.createObjectURL) {
+          this.setImage(id, {url: null, failed: true});
+          return;
+        }
+        this.setImage(id, {url: URLs.createObjectURL(blob), failed: false});
+      },
+      error: () => {
+        // own 404 NOT_FOUND / network: a placeholder; chat-off is noticed by the regular poll
+        this.setImage(id, {url: null, failed: true});
+      },
+    }));
+  }
+
+  private setImage(id: string, state: ChatImageState): void {
+    this.images.update(all => ({...all, [id]: state}));
+  }
+
+  /** Blob URLs live as long as the widget. */
+  private releaseImages(): void {
+    this.imageSubs.unsubscribe();
+    const URLs = this.document.defaultView?.URL;
+    for (const state of Object.values(this.images())) {
+      if (state.url) URLs?.revokeObjectURL(state.url);
+    }
+    this.images.set({});
+    this.zoomed.set(null);
+  }
+
   private apply(res: ChatPollResponse): void {
     if (res.messages?.length) this.merge(res.messages);
     const unread = Math.max(0, res.unread ?? 0);
@@ -327,6 +570,7 @@ export class Chat {
     }
     if (!added) return;
     this.messages.set([...byId.values()].sort((a, b) => a.seq - b.seq));
+    this.loadImages();
     if (this.open()) this.afterRender(() => this.scrollToBottom());
   }
 
@@ -393,6 +637,9 @@ export class Chat {
   private disable(): void {
     this.enabled.set(false);
     this.open.set(false);
+    this.zoomed.set(null);
+    this.productDraft.set(null);
+    this.ask.disable();
     this.unwatchHeader();
     this.clearTimer();
   }
@@ -421,6 +668,19 @@ export class Chat {
 
   private isHidden(): boolean {
     return this.document.visibilityState === 'hidden';
+  }
+
+  private storage(): Storage | null {
+    try {
+      return this.document.defaultView?.localStorage ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private snoozeHint(): void {
+    this.hintSnoozed.set(true);
+    snoozeChatHint(this.storage(), Date.now());
   }
 
   private readKey(): string | null {

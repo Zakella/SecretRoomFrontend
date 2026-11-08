@@ -20,9 +20,16 @@ import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 import {SiteEvents} from '../../@core/api/site-events';
 import {ShippingOption} from '../../entities/shipping-options';
+import {TranslocateHttpLoader} from '../../@core/configs/transloco-config';
+import {CartPromo, CartPromoView} from '../../shared/components/cart/services/cart-promo';
 
 const noop = (): void => undefined;
 const pendingPaymentStub = () => ({mark: noop, reconcile: () => of('none')});
+/** SR-229: no server calculation — checkout works on the client totals as before. */
+const cartPromoStub = (view: CartPromoView | null = null) => {
+  const state = signal<CartPromoView | null>(view);
+  return {view: state.asReadonly(), line: (i: number) => state()?.lines[i] ?? null, state};
+};
 
 describe('Checkout order summary', () => {
   let fixture: ComponentFixture<Checkout>;
@@ -63,6 +70,7 @@ describe('Checkout order summary', () => {
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
         {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: cartPromoStub()},
         {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
@@ -157,6 +165,7 @@ describe('Checkout empty cart / SSR', () => {
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
         {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: cartPromoStub()},
         {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
@@ -222,6 +231,7 @@ describe('Checkout PRODUCT_UNAVAILABLE', () => {
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
         {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: cartPromoStub()},
         {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
@@ -336,6 +346,7 @@ describe('Checkout submit — online payment and error reports (SR-206)', () => 
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
         {provide: PendingPayment, useValue: {mark, reconcile: () => of('none')}},
+        {provide: CartPromo, useValue: cartPromoStub()},
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -445,6 +456,7 @@ describe('Checkout validation messages and the hint under "Place order" (SR-206)
         {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
         {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
         {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: cartPromoStub()},
         {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
       ],
     }).compileComponents();
@@ -581,5 +593,172 @@ describe('Checkout validation messages and the hint under "Place order" (SR-206)
     comp.form.patchValue({phone: ''});
     comp.isSubmitting.set(true);
     expect(comp.submitHint()).toBeNull();
+  });
+});
+
+describe('Checkout promotions (SR-229)', () => {
+  let fixture: ComponentFixture<Checkout>;
+  let comp: Checkout;
+  let promo: ReturnType<typeof cartPromoStub>;
+  let placeOrder: jasmine.Spy;
+  const el = () => fixture.nativeElement as HTMLElement;
+
+  const promoView = (): CartPromoView => ({
+    lines: [
+      {productId: 12, variantAppId: null, quantity: 2, unitPrice: 100, price: 100, lineTotal: 150, promotionSavings: 50,
+        promotion: {id: 7, type: 'NTH_PERCENT', percent: 50, nth: 2, buy: null, free: null, onlineOnly: true}, available: true},
+      {productId: 13, variantAppId: null, quantity: 1, unitPrice: 80, price: 80, lineTotal: 80, promotionSavings: 0,
+        promotion: null, available: true},
+    ],
+    itemsTotal: 280, promotionSavings: 50, total: 230,
+  });
+
+  const defaultItems = () => [
+    new CartItem({id: '12', name: 'Robe', price: 100} as Product, 2),
+    new CartItem({id: '13', name: 'Slip', price: 80} as Product, 1),
+  ];
+
+  async function setup(view: CartPromoView | null, items = defaultItems()) {
+    const items$ = new BehaviorSubject<CartItem[]>(items);
+    promo = cartPromoStub(view);
+    placeOrder = jasmine.createSpy('placeOrder').and.returnValue(of({ok: true, orderTrackingNumber: 'tn'}));
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}, loader: TranslocateHttpLoader}),
+        MessageService,
+        {provide: CartUi, useValue: {
+          cartItems: items$,
+          totalAmount: new BehaviorSubject<number>(280),
+          totalQuantity: new BehaviorSubject<number>(3),
+          cartModified: new BehaviorSubject<boolean>(false),
+          loadCartItemsFromStorage: () => items$.value,
+          computeCartTotals: noop,
+          deleteItemFromCart: noop,
+          getMaxStock: () => 10,
+          recalculateCartItem: noop,
+          clearCart: noop,
+        }},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {placeOrder}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: promo},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
+      ],
+    }).compileComponents();
+    spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture = TestBed.createComponent(Checkout);
+    comp = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  const totals = () => Array.from(el().querySelectorAll('.summary-totals .total-row'))
+    .map(r => Array.from(r.children).map(c => c.textContent!.trim()).join(' '));
+
+  const shipping = (freeShippingFrom: number) =>
+    ({id: '1', cost: 50, freeShippingFrom, cashOnDeliveryAvailable: true} as unknown as ShippingOption);
+
+  it('server result: subtotal, discount row, total = total + delivery; line label and «online only»', async () => {
+    await setup(promoView());
+    comp.selectShippingOption(shipping(1000));
+    fixture.detectChanges();
+    expect(totals()).toEqual(['В корзине 280 MDL', 'Скидка по акции −50 MDL', 'Доставка 50 MDL', 'Всего к оплате 280 MDL']);
+    const [promoItem, plainItem] = Array.from(el().querySelectorAll('.cart-item'));
+    expect(promoItem.querySelector('.item-promo-price .price')!.textContent).toContain('150 MDL');
+    expect(promoItem.querySelector('.item-promo-price .old-price')!.textContent).toContain('200 MDL');
+    expect(promoItem.querySelector('.item-promo-label')!.textContent!.trim()).toBe('2-й товар −50%');
+    expect(promoItem.querySelector('.item-promo-online')!.textContent!.trim()).toBe('только онлайн');
+    expect(plainItem.querySelector('.item-promo-price')).toBeNull();
+  });
+
+  it('no server result: no discount row, client totals as before', async () => {
+    await setup(null);
+    comp.selectShippingOption(shipping(1000));
+    fixture.detectChanges();
+    expect(totals()).toEqual(['В корзине 280 MDL', 'Доставка 50 MDL', 'Всего к оплате 330 MDL']);
+    expect(el().querySelector('.item-promo-price')).toBeNull();
+  });
+
+  it('«не навреди»: server result without promotions, qty 2 at 100 — the line shows 100 MDL, not 200', async () => {
+    await setup({...promoView(), lines: promoView().lines.map(l => ({...l, promotionSavings: 0, lineTotal: l.price * l.quantity,
+      promotion: null})), promotionSavings: 0, total: 280});
+    comp.selectShippingOption(shipping(1000));
+    fixture.detectChanges();
+    const [robe] = Array.from(el().querySelectorAll('.cart-item'));
+    expect(robe.querySelector('product-price .price')!.textContent!.trim()).toBe('100 MDL');
+    expect(robe.querySelector('.old-price')).toBeNull();
+    expect(totals()).toEqual(['В корзине 280 MDL', 'Доставка 50 MDL', 'Всего к оплате 330 MDL']);
+  });
+
+  it('server result without promotions: the server unit price, not the stale catalog PERCENT price', async () => {
+    await setup({
+      lines: [{productId: 21, variantAppId: null, quantity: 2, unitPrice: 320, price: 320, lineTotal: 640, promotionSavings: 0,
+        promotion: null, available: true}],
+      itemsTotal: 640, promotionSavings: 0, total: 640,
+    }, [new CartItem({id: '21', name: 'A', price: 256, oldPrice: 320} as Product, 2)]);
+    fixture.detectChanges();
+    const a = el().querySelector('.cart-item')!;
+    expect(a.querySelector('product-price .price')!.textContent!.trim()).toBe('320 MDL');
+    expect(a.querySelector('.old-price')).toBeNull();
+  });
+
+  it('the server total wins over the client one and moves the free shipping threshold', async () => {
+    await setup(null);
+    comp.selectShippingOption(shipping(250));
+    fixture.detectChanges();
+    expect(comp.shippingCost).toBe(0);
+
+    promo.state.set(promoView());
+    fixture.detectChanges();
+    expect(comp.shippingCost).toBe(50);
+    expect(comp.grandTotal).toBe(280);
+  });
+
+  it('the order carries the shown totals; items and form stay as before', async () => {
+    await setup(promoView());
+    comp.form.patchValue({
+      email: 'a@b.md', name: 'Ion', lastname: 'Pop', address: 'Str 1', city: 'Chisinau', zip: '2001',
+      phone: '069123456', payment: 'CashOnDelivery', iAgree: true
+    });
+    comp.selectShippingOption(shipping(1000));
+    comp.form.patchValue({payment: 'CashOnDelivery'});
+    comp.selectedPayment = 'CashOnDelivery' as never;
+    comp.onSubmit();
+    const purchase = placeOrder.calls.mostRecent().args[0];
+    expect(purchase.order.totalAmount).toBe(230);
+    expect(purchase.order.totalAmountOrder).toBe(280);
+    expect(purchase.orderItems.map((i: {amount: number}) => i.amount)).toEqual([200, 80]);
+  });
+
+  it('QA: every line comes from the server, not from the catalog PERCENT price saved in the cart', async () => {
+    // A: −20% PERCENT in the catalog (320 → 256), but "2nd −50%" won and took both lines: A pays 320, B 160.
+    await setup({
+      lines: [
+        {productId: 21, variantAppId: null, quantity: 1, unitPrice: 320, price: 320, lineTotal: 320, promotionSavings: 0,
+          promotion: null, available: true},
+        {productId: 22, variantAppId: null, quantity: 1, unitPrice: 320, price: 320, lineTotal: 160, promotionSavings: 160,
+          promotion: {id: 9, type: 'NTH_PERCENT', percent: 50, nth: 2, onlineOnly: false}, available: true},
+      ],
+      itemsTotal: 640, promotionSavings: 160, total: 480,
+    }, [
+      new CartItem({id: '21', name: 'A', price: 256, oldPrice: 320} as Product, 1),
+      new CartItem({id: '22', name: 'B', price: 320} as Product, 1),
+    ]);
+    comp.selectShippingOption(shipping(1000));
+    fixture.detectChanges();
+    const [a, b] = Array.from(el().querySelectorAll('.cart-item'));
+    expect(a.querySelector('product-price .price')!.textContent).toContain('320 MDL');
+    expect(a.querySelector('.old-price')).toBeNull();
+    expect(a.querySelector('.item-promo-label')).toBeNull();
+    expect(b.querySelector('.item-promo-price .price')!.textContent).toContain('160 MDL');
+    expect(b.querySelector('.item-promo-price .old-price')!.textContent).toContain('320 MDL');
+    const sum = Array.from(el().querySelectorAll('.cart-item product-price .price'))
+      .reduce((acc, p) => acc + parseFloat(p.textContent!), 0);
+    expect(sum).toBe(480);
+    expect(totals()).toEqual(['В корзине 640 MDL', 'Скидка по акции −160 MDL', 'Доставка 50 MDL', 'Всего к оплате 530 MDL']);
   });
 });

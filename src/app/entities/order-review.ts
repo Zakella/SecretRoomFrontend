@@ -15,5 +15,7 @@ export interface OrderReview {
   customer: Customer;
   comment: string;
   status?: OrderStatus;
+  /** SR-229: Σ promotionSavings of the lines; subtotal is already after it. */
+  promotionSavings?: number | null;
 
 }

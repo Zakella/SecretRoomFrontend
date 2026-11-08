@@ -27,14 +27,17 @@ import {RecentlyViewedService} from '../../../@core/services/recently-viewed.ser
 import {RecentlyViewed} from '../../../shared/components/product/recently-viewed/recently-viewed';
 import {ProductGallery} from '../../../shared/components/product/product-gallery/product-gallery';
 import {ProductPrice} from '../../../shared/components/product/product-price/product-price';
+import {promoLabel} from '../../../shared/pipes/promo-label.pipe';
 import {MIN_SWATCHES, ProductSwatches} from '../../../shared/components/product/product-swatches/product-swatches';
 import {findVariantBySize, hasSizeChoice, pickInitialVariant, sizedVariants, sizeLabel} from './variant-selection';
 import {compareSizes} from '../../../shared/utils/size-order';
 import {SrTrack} from '../../../@core/directives/sr-track';
+import {holdProductId, holdRequestFor, StoreHoldState} from '../../../widgets/store-hold/store-hold-state';
+import {AskInChat} from '../../../widgets/chat/ask-in-chat/ask-in-chat';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery, SrTrack],
+  imports: [FadeUp, ShareModal, RecommendedProducts, RecentlyViewed, TranslocoPipe, LocalizedNamePipe, CapitalizePipe, ProductPrice, RouterLink, ProductSwatches, ProductGallery, SrTrack, AskInChat],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   providers: [ProductService],
@@ -53,6 +56,7 @@ export class ProductDetail {
   public favoritesService = inject(FavoritesService);
   private meta = inject(Meta);
   private responseInit = inject(RESPONSE_INIT, {optional: true});
+  private holdState = inject(StoreHoldState);
   protected activeLang = this.langService.currentLanguage
   protected product = signal<Product | null>(null);
   protected productNotFound = signal(false);
@@ -83,6 +87,24 @@ export class ProductDetail {
     const p = this.product();
     if (!p) return false;
     return isProductOutOfStock(p);
+  });
+  /** SR-229: the first active promotion of the card; shown like on the catalog card — not for an unorderable product. */
+  protected promotion = computed(() => this.product()?.promotions?.[0] ?? null);
+  protected promoLabel = computed(() => {
+    if (this.isDiscontinued() || this.isOutOfStock()) return null;
+    return promoLabel(this.promotion());
+  });
+  /**
+   * SR-223: «Отложить в магазине» — только для выбранного размера (или товара без размеров) в наличии
+   * и не снятого с продажи; пропадает, если API ответил HOLD_DISABLED.
+   */
+  protected canHoldInStore = computed(() => {
+    const p = this.product();
+    if (!p || this.holdState.disabled() || this.isDiscontinued() || this.isOutOfStock() || !holdProductId(p)) return false;
+    const variant = this.selectedVariant();
+    if (variant) return !!variant.available && !!variant.inStock && variant.appId != null && (this.effectiveStock() ?? 1) > 0;
+    // legacy card with several sizes but no variants: the size cannot be identified for the store
+    return !p.variants?.length && (p.productSizes?.length ?? 0) <= 1;
   });
   /** Фото галереи: основное фото (imageURL) первым, как было главным до галереи, дальше остальные без повторов. */
   galleryImages = computed<ProductImage[]>(() => {
@@ -204,6 +226,15 @@ export class ProductDetail {
     this.ga.trackAddToCart(product, this.quantity, cartItem.size?.sizeType);
   }
 
+  protected holdInStore(): void {
+    const product = this.product();
+    if (!product || !this.canHoldInStore()) return;
+    const variant = this.selectedVariant();
+    const request = holdRequestFor(product, this.activeLang(), variant?.appId ?? null,
+      variant ? sizeLabel(variant) : null, variant?.price);
+    if (request) this.holdState.open(request);
+  }
+
   protected toggleWishlist(): void {
     const id = this.product()?.id;
     if (id) this.favoritesService.toggle(id);
@@ -227,3 +258,4 @@ export class ProductDetail {
     });
   }
 }
+

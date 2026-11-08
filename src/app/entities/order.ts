@@ -1,3 +1,4 @@
+import {PromotionBadge} from './promotion';
 import {Product} from "./product";
 import {Customer} from "./customer";
 import {ShippingOption} from './shipping-options';
@@ -29,6 +30,10 @@ export interface OrderItem {
   price?: number;
   amount: number;
   quantity: number;
+  /** SR-229 (OrderReview): to pay for the line, saved by the promotion over price × quantity, the winning promotion. */
+  lineTotal?: number | null;
+  promotionSavings?: number | null;
+  promotion?: PromotionBadge | null;
 }
 
 

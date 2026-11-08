@@ -46,6 +46,93 @@ $offset-mobile: 131px;   // 75 + 44 + 12, above the bottom nav (60 px)
   }
 }
 
+.chat-hint {
+  position: fixed;
+  right: 29px + $launcher + 12px;
+  bottom: $offset-desktop;
+  z-index: 990;
+  height: $launcher;
+  display: flex;
+  align-items: center;
+  // the row is as tall as the button only to centre the bubble on it; clicks pass through
+  pointer-events: none;
+
+  &__bubble {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 260px;
+    border-radius: 16px;
+    background: #000;
+    color: $gold;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    pointer-events: auto;
+    animation: chatSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    // tail towards the button
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -5px;
+      width: 12px;
+      height: 12px;
+      background: #000;
+      border-radius: 2px;
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__text {
+    position: relative;
+    z-index: 1;
+    padding: 11px 4px 11px 16px;
+    border: none;
+    border-radius: 16px 0 0 16px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__close {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    padding: 0 12px 0 8px;
+    border: none;
+    border-radius: 0 16px 16px 0;
+    background: transparent;
+    color: $gold;
+    opacity: 0.7;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__text:focus-visible,
+  &__close:focus-visible {
+    outline: 2px solid $gold;
+    outline-offset: 2px;
+  }
+}
+
 .chat-badge {
   position: absolute;
   top: -3px;
@@ -186,6 +273,149 @@ $offset-mobile: 131px;   // 75 + 44 + 12, above the bottom nav (60 px)
   &__time {
     font-size: 0.68rem;
     color: $text-muted;
+  }
+
+  // SR-220: picture / product card — a fixed width, never wider than the window
+  &--media {
+    width: 82%;
+  }
+
+  &__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+  }
+
+  &--shop &__link {
+    color: $gold-dark;
+  }
+}
+
+// staff picture: space reserved by aspect-ratio before it loads; a broken one keeps the same box (KB #4757)
+.chat-img {
+  width: 100%;
+  min-height: 80px;
+  max-height: 260px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: $bg-cream;
+
+  &__open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: zoom-in;
+
+    &:focus-visible {
+      outline: 2px solid $gold;
+      outline-offset: -2px;
+    }
+  }
+
+  &__pic {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &__failed,
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 80px;
+    padding: 8px;
+    font-size: 0.72rem;
+    color: $text-muted;
+    text-align: center;
+  }
+
+  &__loading {
+    background: linear-gradient(90deg, rgba($gold, 0.06), rgba($gold, 0.16), rgba($gold, 0.06));
+    background-size: 200% 100%;
+    animation: chatShimmer 1.2s linear infinite;
+  }
+}
+
+// "you are asking about…" above the input
+.chat-draft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__label {
+    font-family: $font-ui;
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+
+  &__remove {
+    display: flex;
+    padding: 2px;
+    border: none;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+
+    &:hover {
+      color: $text-dark;
+    }
+  }
+}
+
+// large picture over the window (above the header too; the cookie banner, 9999, stays on top)
+.chat-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px 16px;
+  background: rgba(0, 0, 0, 0.82);
+  cursor: zoom-out;
+
+  &__pic {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    cursor: default;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    padding: 6px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $gold;
+    }
   }
 }
 
@@ -377,6 +607,7 @@ $offset-mobile: 131px;   // 75 + 44 + 12, above the bottom nav (60 px)
 
 @media (max-width: 1024px) {
   .chat-launcher,
+  .chat-hint,
   .chat-window {
     bottom: $offset-tablet;
   }
@@ -395,6 +626,21 @@ $offset-mobile: 131px;   // 75 + 44 + 12, above the bottom nav (60 px)
     height: $launcher-mobile;
   }
 
+  .chat-hint {
+    right: 18px + $launcher-mobile + 10px;
+    bottom: $offset-mobile;
+    height: $launcher-mobile;
+
+    &__bubble {
+      // keep 16 px to the left edge of a 375 px screen
+      max-width: calc(100vw - 18px - #{$launcher-mobile} - 10px - 16px);
+    }
+
+    &__text {
+      font-size: 0.85rem;
+    }
+  }
+
   .chat-window {
     left: 8px;
     right: 8px;
@@ -402,6 +648,11 @@ $offset-mobile: 131px;   // 75 + 44 + 12, above the bottom nav (60 px)
     width: auto;
     height: min(520px, calc(100dvh - #{$offset-mobile} - 76px));
   }
+}
+
+@keyframes chatShimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
 }
 
 @keyframes chatSlideUp {

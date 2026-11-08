@@ -7,6 +7,9 @@
 }
 <app-added-to-cart/>
 <app-quick-size-picker/>
+@defer (when holdRequested()) {
+  <app-store-hold-dialog/>
+}
 
 <div class="md:hidden">
   <mobile-menu/>

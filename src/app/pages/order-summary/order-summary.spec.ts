@@ -10,6 +10,8 @@ import {GoogleAnalytics} from '../../@core/services/google-analytics';
 import {OrderReview} from '../../entities/order-review';
 import {PendingPayment} from '../../shared/components/cart/services/pending-payment';
 import {CartUi} from '../../shared/components/cart/services/cart';
+import {SiteTracker} from '../../@core/api/site-tracker';
+import {TranslocateHttpLoader} from '../../@core/configs/transloco-config';
 
 describe('OrderSummary purchase tracking', () => {
   const order = (status: string) => ({orderNumber: '1', status, items: [], customer: {}, shippingAddress: {}} as unknown as OrderReview);
@@ -88,5 +90,63 @@ describe('OrderSummary clears the cart after online payment (real PendingPayment
     TestBed.createComponent(OrderSummary).detectChanges();
     expect(clearCart).toHaveBeenCalledTimes(1);
     expect(localStorage.getItem('pendingPayment')).toBeNull();
+  });
+});
+
+describe('OrderSummary promotions (SR-229)', () => {
+  const promo = {id: 7, type: 'NTH_PERCENT', percent: 50, nth: 2, buy: null, free: null, onlineOnly: true};
+  const review = (withPromo: boolean): OrderReview => ({
+    orderNumber: '00012', status: 'PENDING', customer: {firstName: 'Ion', lastName: 'Pop'}, shippingAddress: {},
+    shippingCost: 0, comment: '',
+    items: [
+      {product: {id: '12', name: 'Robe'}, quantity: 2, amount: 100,
+        ...(withPromo ? {lineTotal: 150, promotionSavings: 50, promotion: promo} : {})},
+      {product: {id: '13', name: 'Slip'}, quantity: 1, amount: 80,
+        ...(withPromo ? {lineTotal: 80, promotionSavings: 0, promotion: null} : {})},
+    ],
+    subtotal: withPromo ? 230 : 280,
+    totalAmountOrder: withPromo ? 230 : 280,
+    ...(withPromo ? {promotionSavings: 50} : {}),
+  } as unknown as OrderReview);
+
+  function render(order: OrderReview): HTMLElement {
+    TestBed.configureTestingModule({
+      imports: [OrderSummary],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}, loader: TranslocateHttpLoader}),
+        {provide: PLATFORM_ID, useValue: 'browser'},
+        {provide: ActivatedRoute, useValue: {snapshot: {paramMap: {get: () => 'uuid-1'}}}},
+        {provide: PurchaseService, useValue: {getOrderDetails: () => of(order)}},
+        {provide: Language, useValue: {currentLanguage: signal('ru')}},
+        {provide: GoogleAnalytics, useValue: {trackPurchase: () => undefined}},
+        {provide: PendingPayment, useValue: {settle: () => undefined}},
+        {provide: SiteTracker, useValue: {orderLink: () => undefined}},
+      ],
+    });
+    const fixture = TestBed.createComponent(OrderSummary);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  const totals = (el: HTMLElement) => Array.from(el.querySelectorAll('.order-totals .total-row'))
+    .map(r => Array.from(r.children).map(c => c.textContent!.replace(/\s+/g, ' ').trim()).join(' | '));
+
+  it('discount row from promotionSavings, subtotal before it, label and line total on the promo line', () => {
+    const el = render(review(true));
+    expect(totals(el)).toEqual(['В корзине | MDL 280', 'Скидка по акции | −MDL 50', 'Доставка | Бесплатно', 'Всего к оплате | MDL 230']);
+    const [promoItem, plainItem] = Array.from(el.querySelectorAll('.order-item'));
+    expect(promoItem.querySelector('.item-old-price')!.textContent!.trim()).toBe('MDL 200');
+    expect(promoItem.querySelector('.item-promo-price')!.textContent).toContain('MDL 150');
+    expect(promoItem.querySelector('.item-promo-label')!.textContent!.trim()).toBe('2-й товар −50%');
+    expect(plainItem.querySelector('.item-promo-price')).toBeNull();
+    expect(plainItem.querySelector('.item-price')!.textContent!.trim()).toBe('MDL 80');
+  });
+
+  it('without promotions (old webstore or none): page as before', () => {
+    const el = render(review(false));
+    expect(totals(el)).toEqual(['В корзине | MDL 280', 'Доставка | Бесплатно', 'Всего к оплате | MDL 280']);
+    expect(el.querySelector('.item-promo-price')).toBeNull();
+    expect(Array.from(el.querySelectorAll('.order-item .item-price')).map(e => e.textContent!.trim())).toEqual(['MDL 100', 'MDL 80']);
   });
 });

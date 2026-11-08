@@ -34,6 +34,15 @@
               [oldPrice]="selectedVariant()?.oldPrice ?? product()!.oldPrice"
               size="lg"/>
 
+            @if (promoLabel(); as label) {
+              <div class="promo-row">
+                <span class="promo-badge">{{ label.key | transloco: label.params }}</span>
+                @if (promotion()?.onlineOnly) {
+                  <span class="promo-online-only">{{ 'promo.onlineOnly' | transloco }}</span>
+                }
+              </div>
+            }
+
             @if (isDiscontinued()) {
               <div class="stock-warning stock-discontinued">
                 <i class="ri-forbid-2-fill"></i>
@@ -124,6 +133,14 @@
                 <span>{{ 'Add to Cart' | transloco }}</span>
               </button>
             }
+
+            @if (canHoldInStore()) {
+              <button type="button" class="btn-secondary btn-store-hold" (click)="holdInStore()">
+                <i class="ri-store-2-line"></i>
+                {{ 'storeHold.button' | transloco }}
+              </button>
+            }
+            <app-ask-in-chat [product]="product()"/>
 
             <div class="secondary-actions">
               <button class="btn-secondary btn-wishlist" [class.active]="isFavorite()" (click)="toggleWishlist()" srTrack="FAVORITE">
