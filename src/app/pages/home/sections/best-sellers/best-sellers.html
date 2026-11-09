@@ -13,7 +13,11 @@
           [class.hero]="$first"
           [routerLink]="productUrl(product)"
         >
+          @let promo = promos().get(product);
           <div class="img-container">
+            @if (promo) {
+              <promo-badge [label]="promo.label"/>
+            }
             <img
               [src]="getProductImage(product)"
               [alt]="product | localizedName"
@@ -37,6 +41,9 @@
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product | localizedName }}</span>
             <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
+            @if (promo?.onlineOnly) {
+              <span class="promo-online-only">{{ 'promo.onlineOnly' | transloco }}</span>
+            }
           </div>
         </a>
       }

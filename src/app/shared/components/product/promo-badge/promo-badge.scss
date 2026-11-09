@@ -1,0 +1,29 @@
+// Position (absolute, corner, z-index) is set by the card; the host never takes clicks or hover from the card link.
+:host {
+  display: block;
+  max-width: calc(100% - 20px);
+  pointer-events: none;
+}
+
+.badge {
+  display: block;
+  overflow: hidden;
+  padding: 8px 14px;
+  background: var(--text-black, #1a1a1a);
+  color: var(--gold, #b8956c);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
