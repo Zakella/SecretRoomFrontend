@@ -37,7 +37,11 @@
               [class.active]="i === currentIndex"
               [routerLink]="productUrl(item)"
             >
+              @let promo = promos().get(item);
               <div class="image-wrapper">
+                @if (promo) {
+                  <promo-badge [label]="promo.label"/>
+                }
                 <div class="img-container">
                   <img
                     [src]="getProductImage(item)"
@@ -64,6 +68,9 @@
                 <span class="brand">{{ item.brandAlias }}</span>
                 <h3 class="name">{{ item | localizedName }}</h3>
                 <product-price [price]="item.price" [oldPrice]="item.oldPrice"/>
+                @if (promo?.onlineOnly) {
+                  <span class="promo-online-only">{{ 'promo.onlineOnly' | transloco }}</span>
+                }
               </div>
             </a>
           }
