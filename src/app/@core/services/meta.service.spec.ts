@@ -192,3 +192,60 @@ describe('MetaService: canonical и hreflang карточки товара', () 
     expect(first['alternates']).toBe(3);
   });
 });
+
+/**
+ * SR-246: JSON-LD уходит в SSR-HTML текстом <script> как есть. Название товара с `</script>` не должно закрывать тег:
+ * <, >, & сериализуются как \u003c, \u003e, \u0026 — JSON тот же, значения полей не меняются.
+ */
+describe('MetaService: экранирование JSON-LD (SR-246)', () => {
+  const EVIL = '</script><script>alert(1)</script>';
+  let service: MetaService;
+  let doc: Document;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [{provide: Router, useValue: {url: '/ro/product/9/x', events: new Subject()}}],
+    });
+    service = TestBed.inject(MetaService);
+    doc = TestBed.inject(DOCUMENT);
+  });
+
+  afterEach(() => doc.querySelectorAll('script[data-schema="product"], script[data-schema="sr246"]').forEach(e => e.remove()));
+
+  const product = () => ({
+    id: '9', appId: '9', name: `Bra ${EVIL}`, nameRo: `Bra ${EVIL}`, nameRu: `Бра ${EVIL}`,
+    brandAlias: 'Bath & Body Works', price: 100, imageURL: 'img/9.jpg', unitsInStock: 3, inStock: true,
+    description: `Desc ${EVIL}`, descriptionRo: `Desc ${EVIL}`, descriptionRu: `Desc ${EVIL}`,
+  });
+
+  it('текст скрипта без <, > и & — `</script>` не закрывает тег', () => {
+    service.setProductMeta(product(), 'ro', new Slugify());
+    const text = doc.querySelector('script[data-schema="product"]')!.textContent!;
+    expect(text).not.toMatch(/[<>&]/);
+    expect(text).toContain('\\u003c/script\\u003e');
+  });
+
+  it('JSON валиден и значения полей не изменились', () => {
+    service.setProductMeta(product(), 'ro', new Slugify());
+    const ld = JSON.parse(doc.querySelector('script[data-schema="product"]')!.textContent!);
+    expect(ld.name).toBe(`Bra ${EVIL}`);
+    expect(ld.brand.name).toBe('Bath & Body Works');
+  });
+
+  it('HTML страницы после сериализации: один JSON-LD, лишних <script> нет, alert не вызывается', () => {
+    const alertSpy = spyOn(window, 'alert');
+    service.setJsonLd({'@type': 'Product', name: EVIL, description: '<b>a & b</b>'}, 'sr246');
+    const html = `<head>${doc.querySelector('script[data-schema="sr246"]')!.outerHTML}</head>`;
+    const parsed = new DOMParser().parseFromString(html, 'text/html');
+    const scripts = parsed.querySelectorAll('script');
+    expect(scripts.length).toBe(1);
+    expect(JSON.parse(scripts[0].textContent!)).toEqual({'@type': 'Product', name: EVIL, description: '<b>a & b</b>'});
+    expect(alertSpy).not.toHaveBeenCalled();
+  });
+
+  it('обычная разметка без спецсимволов — прежний JSON.stringify', () => {
+    const data = {'@context': 'https://schema.org', '@type': 'Product', name: 'Bombshell', offers: {price: 100}};
+    service.setJsonLd(data, 'sr246');
+    expect(doc.querySelector('script[data-schema="sr246"]')!.textContent).toBe(JSON.stringify(data));
+  });
+});

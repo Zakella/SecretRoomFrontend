@@ -413,7 +413,10 @@ export class MetaService {
       script.setAttribute('data-schema', schemaId);
       this.document.head.appendChild(script);
     }
-    script.textContent = JSON.stringify(data);
+    // SR-246: SSR кладёт текст <script> в HTML как есть — `</script>` в названии товара закрыл бы тег.
+    // \u003c/\u003e/\u0026 — валидный JSON, парсится в те же символы, структура и значения полей не меняются.
+    script.textContent = JSON.stringify(data)
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
   }
 
   removeJsonLd(schemaId: string) {
