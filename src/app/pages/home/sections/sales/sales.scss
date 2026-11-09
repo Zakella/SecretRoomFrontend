@@ -238,6 +238,24 @@
     box-shadow: 0 2px 8px rgba(196, 30, 58, 0.3);
   }
 
+  // SR-240: promotion badge takes the place of .discount-badge
+  promo-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    z-index: 10;
+  }
+
+  // SR-240: in the fan the right corner of a card left of the centre lies under its neighbour —
+  // the label goes to the left corner there (first card of 2–5, second card of 4–5)
+  @media (min-width: 769px) {
+    &:first-child:not(:only-child) promo-badge,
+    &:nth-child(2):nth-last-child(n+3) promo-badge {
+      right: auto;
+      left: -8px;
+    }
+  }
+
   .card-image {
     width: 100%;
     height: 320px;
@@ -304,6 +322,15 @@
     product-price {
       display: flex;
       justify-content: center;
+    }
+
+    // SR-240: the promotion works only on the site (same as the catalog card)
+    .promo-online-only {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted, #8c8279);
     }
   }
 }
@@ -399,7 +426,8 @@
       height: 300px;
     }
 
-    .discount-badge {
+    .discount-badge,
+    promo-badge {
       top: 16px; // Inside the card padding
       right: 16px; // Inside the card padding
       z-index: 20;

@@ -12,7 +12,13 @@
           class="sale-card"
           [routerLink]="productUrl(product)"
         >
-          <div class="discount-badge">-{{ getDiscountPercent(product) }}%</div>
+          @let promo = promos().get(product);
+          <!-- one badge at a time: the promotion label replaces the old-price discount -->
+          @if (promo) {
+            <promo-badge [label]="promo.label"/>
+          } @else {
+            <div class="discount-badge">-{{ getDiscountPercent(product) }}%</div>
+          }
           <div class="card-image">
             <img
               [src]="getProductImage(product)"
@@ -37,6 +43,9 @@
             <span class="brand">{{ product.brandAlias }}</span>
             <span class="name">{{ product | localizedName }}</span>
             <product-price [price]="product.price" [oldPrice]="product.oldPrice"/>
+            @if (promo?.onlineOnly) {
+              <span class="promo-online-only">{{ 'promo.onlineOnly' | transloco }}</span>
+            }
           </div>
         </a>
       }
