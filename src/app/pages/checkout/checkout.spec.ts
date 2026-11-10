@@ -762,3 +762,219 @@ describe('Checkout promotions (SR-229)', () => {
     expect(totals()).toEqual(['В корзине 640 MDL', 'Скидка по акции −160 MDL', 'Доставка 50 MDL', 'Всего к оплате 530 MDL']);
   });
 });
+
+describe('Checkout PRICE_CHANGED (SR-245)', () => {
+  let fixture: ComponentFixture<Checkout>;
+  let comp: Checkout;
+  let items$: BehaviorSubject<CartItem[]>;
+  let totalAmount$: BehaviorSubject<number>;
+  let placeOrder: jasmine.Spy;
+  let updatePrices: jasmine.Spy;
+  let openCart: jasmine.Spy;
+  let clearCart: jasmine.Spy;
+  let navigate: jasmine.Spy;
+  let redirect: jasmine.Spy;
+  const el = () => fixture.nativeElement as HTMLElement;
+
+  interface Change {productId: number; variantAppId: number | null; newPrice: number}
+  const priceChanged = (totalAmountOrder: number, shippingCost = 0, details: object[] = [
+    {productId: 101, variantAppId: 9, oldPrice: 280, newPrice: 300},
+  ]) => new HttpErrorResponse({
+    status: 409, statusText: 'Conflict',
+    error: {
+      error: 'PRICE_CHANGED', message: 'SERVER TEXT', details,
+      totalAmount: totalAmountOrder - shippingCost, shippingCost, totalAmountOrder,
+    },
+  });
+  const ok = () => of({ok: true, waitingForPayment: false, orderTrackingNumber: 'tn-9'});
+
+  /** Each placeOrder call takes the next response. */
+  async function setup(...responses: (() => unknown)[]) {
+    items$ = new BehaviorSubject<CartItem[]>([
+      new CartItem({id: '101', name: 'Robe', price: 280, imageURL: 'img/101.jpg'} as Product, 2, undefined, 9),
+    ]);
+    totalAmount$ = new BehaviorSubject<number>(560);
+    placeOrder = jasmine.createSpy('placeOrder').and.callFake(() => responses.shift()!());
+    // Like CartUi.updatePrices: new unit price, recomputed totals, a new cart emission.
+    updatePrices = jasmine.createSpy('updatePrices').and.callFake((changes: Change[]) => {
+      const updated = items$.value.map(item => {
+        const c = changes.find(ch => String(ch.productId) === String(item.product.id)
+          && (ch.variantAppId ?? null) === (item.variantAppId ?? null));
+        return c ? {...item, product: {...item.product, price: c.newPrice}, amount: item.quantity * c.newPrice} : item;
+      });
+      items$.next(updated);
+      totalAmount$.next(updated.reduce((s, i) => s + i.quantity * (i.product.price ?? 0), 0));
+      return changes.length;
+    });
+    openCart = jasmine.createSpy('open');
+    clearCart = jasmine.createSpy('clearCart');
+    await TestBed.configureTestingModule({
+      imports: [Checkout],
+      providers: [
+        provideRouter([]),
+        provideTransloco({config: {availableLangs: ['ru'], defaultLang: 'ru', prodMode: true}, loader: TranslocateHttpLoader}),
+        MessageService,
+        {provide: PLATFORM_ID, useValue: 'browser'},
+        {provide: CartUi, useValue: {
+          cartItems: items$,
+          totalAmount: totalAmount$,
+          totalQuantity: new BehaviorSubject<number>(2),
+          cartModified: new BehaviorSubject<boolean>(false),
+          loadCartItemsFromStorage: () => items$.value,
+          computeCartTotals: noop,
+          deleteItemFromCart: noop,
+          getMaxStock: () => 10,
+          recalculateCartItem: noop,
+          clearCart,
+          updatePrices,
+          open: openCart,
+        }},
+        {provide: Language, useValue: {currentLanguage: signal('ru'), setLanguage: noop}},
+        {provide: Shipping, useValue: {getShippingOptions: () => of([])}},
+        {provide: PurchaseService, useValue: {placeOrder}},
+        {provide: ProductService, useValue: {getProductById: (id: string) => of({id} as Product)}},
+        {provide: GoogleAnalytics, useValue: {send: noop, trackBeginCheckout: noop}},
+        {provide: PendingPayment, useValue: pendingPaymentStub()},
+        {provide: CartPromo, useValue: cartPromoStub()},
+        {provide: SiteEvents, useValue: {reportOrderCreateFailure: noop}},
+      ],
+    }).compileComponents();
+    navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    fixture = TestBed.createComponent(Checkout);
+    comp = fixture.componentInstance;
+    redirect = spyOn(comp, 'redirectTo');
+    fixture.detectChanges();
+    comp.form.patchValue({
+      email: 'a@b.md', name: 'Ion', lastname: 'Pop', address: 'Str 1', city: 'Chisinau', zip: '2001',
+      phone: '069123456', selectedShipping: 1, payment: 'CashOnDelivery', iAgree: true
+    });
+    comp.selectedPayment = 'CashOnDelivery' as never;
+    comp.goTo('payment');
+    comp.step = 'payment';
+  }
+
+  const banner = () => {
+    fixture.detectChanges();
+    return el().querySelector('.price-changed');
+  };
+
+  it('409 PRICE_CHANGED: banner with the new sum, cart repriced, no order, no redirect', async () => {
+    await setup(() => throwError(() => priceChanged(600)));
+    comp.onSubmit();
+
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+    expect(comp.priceChanged()?.totalAmountOrder).toBe(600);
+    expect(updatePrices).toHaveBeenCalledOnceWith([{productId: 101, variantAppId: 9, newPrice: 300}]);
+    expect(items$.value[0].product.price).toBe(300);
+    expect(comp.grandTotal).toBe(600);
+    expect(comp.orderError()).toBeNull();
+    expect(comp.isSubmitting()).toBeFalse();
+    expect(comp.canSubmit()).toBeFalse();
+    expect(clearCart).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(redirect).not.toHaveBeenCalled();
+
+    const b = banner()!;
+    expect(b).not.toBeNull();
+    expect(b.querySelector('.price-changed-title')!.textContent!.trim()).toBe('Цены обновились');
+    expect(b.textContent).toContain('600 MDL');
+    expect(b.textContent).not.toContain('SERVER TEXT');
+    expect(b.querySelector('.btn-confirm-price')!.textContent!.trim()).toBe('Подтвердить заказ');
+    expect(b.querySelector('.btn-back-to-cart')!.textContent!.trim()).toBe('Вернуться в корзину');
+    // The summary keeps the photos.
+    expect(el().querySelector<HTMLImageElement>('.cart-item .item-image img')!.getAttribute('src')).toBe('img/101.jpg');
+  });
+
+  it('"Confirm" re-sends the order with the server sum from the 409, then the order is placed', async () => {
+    // Delivery 10 on the server: the confirmed sum is the server one even if the screen shows another.
+    await setup(() => throwError(() => priceChanged(610, 10)), ok);
+    comp.onSubmit();
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+
+    banner()!.querySelector<HTMLButtonElement>('.btn-confirm-price')!.click();
+
+    expect(placeOrder).toHaveBeenCalledTimes(2);
+    const order = placeOrder.calls.mostRecent().args[0].order;
+    expect(order.totalAmountOrder).toBe(610);
+    expect(order.totalAmount).toBe(600);
+    expect(order.shippingCost).toBe(10);
+    expect(placeOrder.calls.mostRecent().args[0].orderItems[0].amount).toBe(600);
+    expect(comp.priceChanged()).toBeNull();
+    expect(clearCart).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith(['/', 'ru', 'order-success', 'tn-9']);
+  });
+
+  it('another 409 PRICE_CHANGED on confirm shows the newer sum and waits for a click again', async () => {
+    await setup(
+      () => throwError(() => priceChanged(600)),
+      () => throwError(() => priceChanged(650, 0, [{productId: 101, variantAppId: 9, oldPrice: 300, newPrice: 325}])),
+    );
+    comp.onSubmit();
+    comp.confirmPriceChange();
+
+    expect(placeOrder).toHaveBeenCalledTimes(2);
+    expect(placeOrder.calls.mostRecent().args[0].order.totalAmountOrder).toBe(600);
+    expect(comp.priceChanged()?.totalAmountOrder).toBe(650);
+    expect(items$.value[0].product.price).toBe(325);
+    expect(banner()!.textContent).toContain('650 MDL');
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('"Back to cart" opens the cart drawer; nothing is sent', async () => {
+    await setup(() => throwError(() => priceChanged(600)));
+    comp.onSubmit();
+    banner()!.querySelector<HTMLButtonElement>('.btn-back-to-cart')!.click();
+    expect(openCart).toHaveBeenCalledTimes(1);
+    expect(placeOrder).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismissing the banner or editing the cart drops the PRICE_CHANGED state', async () => {
+    await setup(() => throwError(() => priceChanged(600)), () => throwError(() => priceChanged(600)));
+    comp.onSubmit();
+    comp.dismissError();
+    expect(comp.priceChanged()).toBeNull();
+    expect(banner()).toBeNull();
+    expect(comp.canSubmit()).toBeTrue();
+
+    comp.onSubmit();
+    expect(comp.priceChanged()).not.toBeNull();
+    const item = items$.value[0];
+    item.quantity = 1;
+    comp.updateCartItemQuantity(item, 0);
+    expect(comp.priceChanged()).toBeNull();
+  });
+
+  it('a cart change made elsewhere (the drawer) drops the state too; a repricing alone does not', async () => {
+    await setup(() => throwError(() => priceChanged(600)));
+    comp.onSubmit();
+    items$.next([...items$.value]);
+    expect(comp.priceChanged()).not.toBeNull();
+    items$.next([{...items$.value[0], quantity: 3}]);
+    expect(comp.priceChanged()).toBeNull();
+  });
+
+  it('confirm does nothing without a PRICE_CHANGED state', async () => {
+    await setup(ok);
+    comp.confirmPriceChange();
+    expect(placeOrder).not.toHaveBeenCalled();
+  });
+
+  it('OUT_OF_STOCK keeps its own message; no PRICE_CHANGED banner', async () => {
+    await setup(() => throwError(() => new HttpErrorResponse({
+      status: 409, statusText: 'Conflict', error: {error: 'OUT_OF_STOCK', message: 'x', details: [{productName: 'Robe'}]},
+    })));
+    comp.onSubmit();
+    expect(comp.priceChanged()).toBeNull();
+    expect(updatePrices).not.toHaveBeenCalled();
+    expect(comp.orderError()).toContain('Robe');
+    expect(banner()).toBeNull();
+  });
+
+  it('up-to-date cart: the order goes through with the shown total, no banner', async () => {
+    await setup(ok);
+    comp.onSubmit();
+    expect(placeOrder.calls.mostRecent().args[0].order.totalAmountOrder).toBe(560);
+    expect(comp.priceChanged()).toBeNull();
+    expect(navigate).toHaveBeenCalledWith(['/', 'ru', 'order-success', 'tn-9']);
+  });
+});

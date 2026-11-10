@@ -336,6 +336,17 @@
 @media (max-width: 600px) { .checkout-page { padding: 180px 15px 40px; } .steps { flex-wrap: wrap; .step-divider { display: none; } } .form-row { flex-direction: column; gap: 0; } .step-navigation { flex-direction: column; .btn-back { order: 2; } .btn-continue, .btn-submit { width: 100%; justify-content: center; margin-left: 0; } } }
 
 .cart-item--unavailable { opacity: .65; outline: 1px solid var(--danger-outline); outline-offset: -1px; }
+.price-changed { align-items: flex-start;
+  .price-changed-body { flex: 1; display: flex; flex-direction: column; gap: .4rem; }
+  .price-changed-title { font-size: .95rem; font-weight: 600; color: var(--danger); }
+  .price-changed-text { margin: 0; font-size: .9rem; color: var(--danger); }
+  .price-changed-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .35rem; }
+  .btn-confirm-price { padding: .55rem 1.1rem; font: inherit; font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; background: var(--text-black); color: var(--gold); border: none; border-radius: 4px; cursor: pointer;
+    &:hover:not(:disabled) { background: var(--black); color: var(--gold-light); }
+    &:disabled { opacity: .6; cursor: default; }
+  }
+  .btn-back-to-cart { padding: .55rem 1.1rem; font: inherit; font-size: .8rem; font-weight: 600; background: none; color: var(--danger); border: 1px solid currentColor; border-radius: 4px; cursor: pointer; }
+}
 .btn-remove-unavailable { margin-left: .75rem; background: none; border: 1px solid currentColor; border-radius: 4px; padding: .25rem .6rem; color: inherit; cursor: pointer; font: inherit; }
 
 .shipping-options, .payment-options { &:focus { outline: none; } }

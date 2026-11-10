@@ -339,6 +339,29 @@
               </div>
             }
 
+            @if (priceChanged(); as change) {
+              <div class="error-banner order-error price-changed" role="alert">
+                <i class="ri-error-warning-line"></i>
+                <div class="price-changed-body">
+                  <strong class="price-changed-title">{{ 'checkout.priceChanged.title' | transloco }}</strong>
+                  <p class="price-changed-text">
+                    {{ 'checkout.priceChanged.text' | transloco: {amount: change.totalAmountOrder} }}
+                  </p>
+                  <div class="price-changed-actions">
+                    <button type="button" class="btn-confirm-price" [disabled]="isSubmitting()" (click)="confirmPriceChange()">
+                      {{ 'checkout.priceChanged.confirm' | transloco }}
+                    </button>
+                    <button type="button" class="btn-back-to-cart" (click)="openCart()">
+                      {{ 'checkout.priceChanged.backToCart' | transloco }}
+                    </button>
+                  </div>
+                </div>
+                <button type="button" class="btn-dismiss" (click)="dismissError()">
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+            }
+
             <div class="step-navigation">
               <button type="button" class="btn-back" (click)="goTo('shipping')">
                 <span class="btn-arrow">←</span>
