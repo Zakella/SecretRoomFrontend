@@ -8,15 +8,17 @@ import {Language} from '../../@core/services/language';
 export class LocalizedNamePipe implements PipeTransform {
   private langService = inject(Language);
 
-  transform(item: any, field: string = 'name'): string {
-    if (!item) return '';
+  transform(item: unknown, field: string = 'name'): string {
+    if (!item || typeof item !== 'object') return '';
     const lang = this.langService.currentLanguage();
     const roKey = field + 'Ro';
     const ruKey = field + 'Ru';
     let value: string;
-    if (lang === 'ro' && item[roKey]) value = item[roKey];
-    else if (lang === 'ru' && item[ruKey]) value = item[ruKey];
-    else value = item[field] || '';
+    const fields = item as Record<string, unknown>;
+    const str = (key: string): string => (typeof fields[key] === 'string' ? fields[key] as string : '');
+    if (lang === 'ro' && str(roKey)) value = str(roKey);
+    else if (lang === 'ru' && str(ruKey)) value = str(ruKey);
+    else value = str(field);
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
 }

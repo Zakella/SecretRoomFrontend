@@ -4,6 +4,7 @@ import {TranslocoPipe} from '@ngneat/transloco';
 import {Router} from '@angular/router';
 import {Language} from '../../../../@core/services/language';
 import {CategoryService} from '../../../../@core/api/category';
+import {CategoryPreview} from '../../../../entities/category';
 import {Slugify} from '../../../../@core/services/slugify';
 
 @Component({
@@ -24,11 +25,11 @@ export class Categories implements OnInit {
   private isBrowser = isPlatformBrowser(this.platformId);
 
   currentLanguage = this.languageService.currentLanguage;
-  private rawCategories = signal<any[]>([]);
+  private rawCategories = signal<CategoryPreview[]>([]);
 
   // Filter out categories with no products
   categories = computed(() =>
-    this.rawCategories().filter(c => c.products?.length > 0)
+    this.rawCategories().filter(c => (c.products?.length ?? 0) > 0)
   );
 
   currentIndex = 0;
@@ -75,7 +76,7 @@ export class Categories implements OnInit {
     }
   }
 
-  goToCategory(category: any) {
+  goToCategory(category: CategoryPreview) {
     const name = (this.currentLanguage() === 'ro' ? category.nameRo : category.nameRu) || category.name || '';
     const slug = this.slugify.transform(name);
     const identifier = slug || category.categoryId;
@@ -86,8 +87,8 @@ export class Categories implements OnInit {
     this.router.navigate(['/', this.currentLanguage(), 'catalog', tag]);
   }
 
-  getCollageImages(category: any): string[] {
+  getCollageImages(category: CategoryPreview): string[] {
     if (!category.products || category.products.length === 0) return [];
-    return category.products.map((p: any) => p.imageURL);
+    return category.products.map((p) => p.imageURL);
   }
 }

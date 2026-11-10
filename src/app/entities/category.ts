@@ -25,3 +25,16 @@ export interface Brand{
   brand: string;
   brandAlias: string;
 }
+
+/** Home-page category slider item (`/parents/product-preview`). */
+export interface CategoryPreviewProduct {
+  imageURL: string;
+}
+
+export interface CategoryPreview {
+  categoryId: number;
+  name?: string;
+  nameRu?: string;
+  nameRo?: string;
+  products?: CategoryPreviewProduct[];
+}

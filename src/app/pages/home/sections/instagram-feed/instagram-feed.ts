@@ -22,7 +22,7 @@ export class InstagramFeed implements OnInit, OnDestroy {
   currentIndex = signal(0);
   private platformId = inject(PLATFORM_ID);
   isMuted = signal<boolean>(false);
-  private autoPlayTimer?: any;
+  private autoPlayTimer?: ReturnType<typeof setTimeout>;
   private readonly IMAGE_DURATION = 5000;
   private langService = inject(Language);
   activeLang = this.langService.currentLanguage;

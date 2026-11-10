@@ -477,16 +477,6 @@
     "annSummers": "Brand britanic de lenjerie: sutiene, chiloți și seturi din dantelă cu o croială îndrăzneață.",
     "pink": "Linia tânără a Victoria's Secret: lenjerie, haine pentru casă și relaxare, arome pentru corp."
   },
-  "reviews": {
-    "ofReviews": "din {{count}} recenzii",
-    "excellent": "Excelent",
-    "good": "Bun",
-    "average": "Mediu",
-    "belowAvg": "Sub medie",
-    "poor": "Slab",
-    "placeholder": "Scrieți recenzia dvs...",
-    "submit": "Adaugă recenzie"
-  },
   "brandsPage": {
     "title": "Brandurile Noastre",
     "description": "Am adunat cele mai iubite branduri din lume într-un singur loc."
