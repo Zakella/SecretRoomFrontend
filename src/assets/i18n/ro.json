@@ -263,6 +263,12 @@
     "outOfStockGeneric": "Unele produse din coș nu mai sunt disponibile în stoc.",
     "productUnavailable": "Produsul „{{name}}” nu mai este disponibil, ștergeți-l din coș",
     "removeUnavailable": "Ștergeți produsele indisponibile din coș",
+    "priceChanged": {
+      "title": "Prețurile s-au actualizat",
+      "text": "Cât timp plasați comanda, prețurile unor produse s-au modificat. Noua sumă de plată: {{amount}} MDL.",
+      "confirm": "Confirmă comanda",
+      "backToCart": "Înapoi la coș"
+    },
     "fields": {
       "email": "Email",
       "phone": "Telefon",

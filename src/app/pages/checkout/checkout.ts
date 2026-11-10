@@ -15,7 +15,7 @@ import {
 import {isPlatformBrowser, NgTemplateOutlet} from '@angular/common';
 import {FadeUp} from '../../@core/directives/fade-up';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CartUi} from '../../shared/components/cart/services/cart';
+import {CartPriceChange, CartUi} from '../../shared/components/cart/services/cart';
 import {CartItem} from '../../entities/cart-item';
 import {forkJoin, of, Subject} from 'rxjs';
 import {catchError, map, takeUntil} from 'rxjs/operators';
@@ -55,6 +55,37 @@ export interface UnavailableProduct {
   productId?: number | string | null;
   variantAppId?: number | null;
   productName?: string;
+}
+
+/**
+ * SR-245: 409 PRICE_CHANGED — the cart was stale, the server total differs. The buyer confirms `totalAmountOrder`
+ * (the server sum) explicitly; `cartKey` is the cart (product:variant:qty) it was computed for.
+ */
+export interface PriceChange {
+  totalAmount: number;
+  shippingCost: number;
+  totalAmountOrder: number;
+  details: CartPriceChange[];
+  cartKey: string;
+}
+
+/** Product, variant and quantity of each line: a repricing keeps it, a cart edit changes it. */
+function cartKeyOf(items: CartItem[]): string {
+  return items.map(i => `${i.product?.id}:${i.variantAppId ?? ''}:${i.quantity}`).join('|');
+}
+
+/** Body of 409 PRICE_CHANGED: the server totals and the lines whose unit price changed. */
+interface PriceChangedBody {
+  error: 'PRICE_CHANGED';
+  totalAmount?: number;
+  shippingCost?: number;
+  totalAmountOrder: number;
+  details?: {productId?: number | string | null; variantAppId?: number | null; oldPrice?: number; newPrice?: number}[];
+}
+
+function isPriceChangedBody(body: unknown): body is PriceChangedBody {
+  const b = body as Partial<PriceChangedBody> | null | undefined;
+  return b?.error === 'PRICE_CHANGED' && typeof b.totalAmountOrder === 'number';
 }
 
 type Step = 'information' | 'shipping' | 'payment';
@@ -135,6 +166,8 @@ export class Checkout implements OnInit, OnDestroy {
   orderError = signal<string | null>(null);
   shippingError = signal<string | null>(null);
   unavailable = signal<UnavailableProduct[]>([]);
+  /** SR-245: set while the buyer has to confirm the new server sum (409 PRICE_CHANGED). */
+  priceChanged = signal<PriceChange | null>(null);
 
   private fb = inject(FormBuilder);
   private meta = inject(Meta);
@@ -295,6 +328,9 @@ export class Checkout implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
         this.cartItems = items;
+        // The cart was edited (e.g. in the drawer) after the 409: the confirmed sum no longer applies.
+        const change = this.priceChanged();
+        if (change && change.cartKey !== cartKeyOf(items)) this.priceChanged.set(null);
         this.cdr.markForCheck();
       });
 
@@ -434,12 +470,14 @@ export class Checkout implements OnInit, OnDestroy {
   }
 
   updateCartItemQuantity(item: CartItem, index: number): void {
+    this.priceChanged.set(null);
     this.cartService.recalculateCartItem(item, index);
     this.updateShippingCost();
     this.cdr.detectChanges();
   }
 
   removeCartItem(index: number): void {
+    this.priceChanged.set(null);
     this.cartService.deleteItemFromCart(index);
     this.updateShippingCost();
     this.cdr.detectChanges();
@@ -453,7 +491,12 @@ export class Checkout implements OnInit, OnDestroy {
     return !!(field && field.invalid && field.touched);
   }
 
+  /** While a new server sum waits for confirmation, the order goes only through the banner's "Confirm order". */
   canSubmit(): boolean {
+    return this.canPlaceOrder() && !this.priceChanged();
+  }
+
+  private canPlaceOrder(): boolean {
     return this.form.valid && !this.isSubmitting() && this.cartItems.length > 0 && !this.hasUnavailableItems();
   }
 
@@ -561,7 +604,23 @@ export class Checkout implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
+    this.placeOrder(null);
+  }
 
+  /** SR-245: the buyer agreed to the new server sum — the order is sent again with exactly that sum. */
+  confirmPriceChange(): void {
+    const change = this.priceChanged();
+    if (!change || !this.canPlaceOrder()) return;
+    this.placeOrder(change);
+  }
+
+  /** "Back to cart" from the PRICE_CHANGED banner: the cart drawer, as the header cart icon opens it. */
+  openCart(): void {
+    this.cartService.open();
+  }
+
+  /** `confirmed` — the sum from 409 PRICE_CHANGED the buyer agreed to; null — the totals on screen. */
+  private placeOrder(confirmed: PriceChange | null): void {
     this.isSubmitting.set(true);
 
     const formValue = this.form.getRawValue();
@@ -584,10 +643,10 @@ export class Checkout implements OnInit, OnDestroy {
         id: null,
         placementDate: new Date(),
         shippingOption: this.selectedShippingOption!,
-        shippingCost: this.shippingCost,
+        shippingCost: confirmed?.shippingCost ?? this.shippingCost,
         totalQuantity: this.totalQuantity,
-        totalAmount: this.payableTotal,
-        totalAmountOrder: this.grandTotal
+        totalAmount: confirmed?.totalAmount ?? this.payableTotal,
+        totalAmountOrder: confirmed?.totalAmountOrder ?? this.grandTotal
       },
       orderItems: this.cartItems.map(item => ({
         product: item.product,
@@ -602,6 +661,7 @@ export class Checkout implements OnInit, OnDestroy {
     };
 
     this.orderError.set(null);
+    this.priceChanged.set(null);
     this.tracker.checkoutSubmit({phone: formValue.phone, firstName: formValue.name, lastName: formValue.lastname, amount: purchase.order.totalAmountOrder, paymentMethod: purchase.payment});
 
     this.purchaseService.placeOrder(purchase)
@@ -639,7 +699,9 @@ export class Checkout implements OnInit, OnDestroy {
 
           const errorMessage = error.error?.message || '';
 
-          if (error.status === 409 && error.error?.error === 'OUT_OF_STOCK') {
+          if (error.status === 409 && isPriceChangedBody(error.error)) {
+            this.applyPriceChange(error.error);
+          } else if (error.status === 409 && error.error?.error === 'OUT_OF_STOCK') {
             const details = error.error?.details;
             if (details?.length) {
               const names = details.map((d: any) => d.productName).join(', ');
@@ -669,6 +731,22 @@ export class Checkout implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  /**
+   * SR-245: reprices the stale cart lines (the summary and /cart/calculate recompute from them) and asks the buyer to
+   * confirm the server sum. The server message is not shown — the banner has its own translated text.
+   */
+  private applyPriceChange(body: PriceChangedBody): void {
+    const details: CartPriceChange[] = (Array.isArray(body.details) ? body.details : [])
+      .filter(d => d?.productId != null && typeof d.newPrice === 'number')
+      .map(d => ({productId: d.productId!, variantAppId: d.variantAppId ?? null, newPrice: d.newPrice!}));
+    if (details.length) this.cartService.updatePrices(details);
+    const totalAmountOrder: number = body.totalAmountOrder;
+    const shippingCost = typeof body.shippingCost === 'number' ? body.shippingCost : 0;
+    const totalAmount = typeof body.totalAmount === 'number' ? body.totalAmount : totalAmountOrder - shippingCost;
+    this.priceChanged.set({totalAmount, shippingCost, totalAmountOrder, details, cartKey: cartKeyOf(this.cartItems)});
+    this.updateShippingCost();
   }
 
   /**
@@ -733,6 +811,7 @@ export class Checkout implements OnInit, OnDestroy {
   dismissError(): void {
     this.orderError.set(null);
     this.unavailable.set([]);
+    this.priceChanged.set(null);
   }
 
   retryLoadShipping(): void {

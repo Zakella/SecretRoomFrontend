@@ -4,6 +4,13 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {AddedToCart} from './added-to-cart';
 import {SiteTracker} from '../../../../@core/api/site-tracker';
 
+/** New unit price of a cart line, from a 409 PRICE_CHANGED response (productId — the product appId). */
+export interface CartPriceChange {
+  productId: number | string;
+  variantAppId?: number | null;
+  newPrice: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -168,6 +175,27 @@ export class CartUi {
     this.cartModified.next(true);
   }
 
+
+  /**
+   * SR-245: the server answered 409 PRICE_CHANGED — the cart carries stale unit prices. Sets the new price of each
+   * matching line (product + variant; no variant matches only a line without one), recomputes totals and saves the
+   * cart. Returns how many lines changed; 0 — the cart is not touched.
+   */
+  updatePrices(changes: CartPriceChange[]): number {
+    let changed = 0;
+    const updated = this.cartItems.value.map(item => {
+      const change = changes.find(c =>
+        String(c.productId) === String(item.product?.id) && (c.variantAppId ?? null) === (item.variantAppId ?? null));
+      if (!change || typeof change.newPrice !== 'number') return item;
+      changed++;
+      return {...item, product: {...item.product, price: change.newPrice}};
+    });
+    if (changed === 0) return 0;
+    this.cartItems.next(updated);
+    this.computeCartTotals();
+    this.saveCartItemsToStorage();
+    return changed;
+  }
 
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
