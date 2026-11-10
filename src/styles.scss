@@ -114,3 +114,8 @@ body:after, body:before {
   font-display: swap;
 }
 
+
+// Палитра корзины, checkout и карточки товара (SR-266): объявлена в styles/_variables.scss
+:root {
+  @include shop-tokens;
+}
