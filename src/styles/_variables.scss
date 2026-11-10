@@ -45,6 +45,55 @@ $error-red: #e57373;        // Цвет ошибки
 $success-green: #27ae60;    // Цвет успеха
 
 // ═══════════════════════════════════════════════════════════════════════════
+// 🛍️ SHOP PALETTE — корзина, оформление заказа, карточка товара (SR-266)
+// Значения 1:1 из бывших литералов экранов; близкие оттенки НЕ склеены
+// (кандидаты на объединение — решение владельца, см. PR SR-266).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Бронзовый акцент (кнопки-градиенты, шаги checkout, рамки, ссылки корзины)
+$accent-bronze: #b5855f;
+$accent-bronze-light: #d4a574;   // вторая точка бронзовых градиентов
+$accent-bronze-dark: #8a6545;    // текст на бронзовом фоне (checkout)
+$link-underline: #d4a373;        // подчёркивание «продолжить покупки» при hover
+
+// Текст
+$text-heading: #2d2a26;          // заголовки и названия товаров
+$text-brown: #4b3e2b;            // цены, подписи, основной текст корзины/checkout
+$text-secondary: #8a7a6b;        // вторичный текст (размер, количество, подсказки)
+$text-placeholder: #b5a99a;      // плейсхолдеры полей checkout
+
+// Фоны
+$bg-ivory: #fefcf8;              // светлый фон панели корзины / страницы checkout
+$bg-selected: #fffaf7;           // выбранный способ доставки/оплаты
+$bg-peach: #fef8f5;              // подсказка о бесплатной доставке (начало градиента)
+$bg-peach-deep: #fff5f0;         // подсказка о бесплатной доставке (конец градиента)
+$bg-sand: #f8f4f0;               // шапка корзины (начало градиента)
+$bg-sand-light: #faf7f5;         // шапка корзины (конец градиента), подложки
+$bg-linen: #f8f5f2;              // блок итогов checkout
+$bg-disabled: #f5f0eb;           // неактивные поля и кнопки количества
+
+// Ошибки и недоступность
+$danger: #c9544d;                // ошибки полей checkout
+$danger-outline: #d9534f;        // рамка недоступного товара в checkout
+$danger-text: #8f3b35;           // текст подсказки при блокировке отправки
+$danger-bg: #fdf3f2;             // фон подсказки при блокировке отправки
+$danger-bg-light: #fff8f7;       // фон поля с ошибкой
+$danger-bg-soft: #fff5f5;        // фон блока ошибки оформления
+
+// Успех
+$success: #5a9e5a;               // «бесплатная доставка»
+$success-bg: #e8f5e9;            // фон плашки бесплатной доставки (начало)
+$success-bg-light: #f1f8e9;      // фон плашки бесплатной доставки (конец)
+
+// Нейтральные
+$white: #ffffff;                 // белый текст/иконки на тёмном и бронзовом
+$black: #000000;                 // чистый чёрный (hover кнопок, артикул)
+$gray-slate: #6c757d;            // «нет в наличии» (карточка товара)
+$gray-light: #cccccc;            // текст кнопки «нет в наличии»
+$gray: #999999;                  // текст кнопки «снят с продажи»
+$gray-mid: #888888;              // «продолжить покупки» в корзине
+
+// ═══════════════════════════════════════════════════════════════════════════
 // 🌟 SHADOWS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -113,6 +162,59 @@ $breakpoint-sm: 768px;
 $breakpoint-md: 1024px;
 $breakpoint-lg: 1200px;
 $breakpoint-xl: 1400px;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🛍️ SHOP PALETTE — CSS custom properties (SR-266)
+// Подключаются ОДИН раз в глобальных стилях (styles.scss: `:root { @include shop-tokens; }`),
+// а не в общем :root ниже: тот :root копируется в CSS каждого компонента,
+// который делает @use этого файла (в том числе чата).
+// ═══════════════════════════════════════════════════════════════════════════
+
+@mixin shop-tokens {
+  // корзина, checkout, карточка товара
+  --accent-bronze: #{$accent-bronze};
+  --accent-bronze-light: #{$accent-bronze-light};
+  --accent-bronze-dark: #{$accent-bronze-dark};
+  --link-underline: #{$link-underline};
+  --text-heading: #{$text-heading};
+  --text-brown: #{$text-brown};
+  --text-secondary: #{$text-secondary};
+  --text-placeholder: #{$text-placeholder};
+  --bg-ivory: #{$bg-ivory};
+  --bg-selected: #{$bg-selected};
+  --bg-peach: #{$bg-peach};
+  --bg-peach-deep: #{$bg-peach-deep};
+  --bg-sand: #{$bg-sand};
+  --bg-sand-light: #{$bg-sand-light};
+  --bg-linen: #{$bg-linen};
+  --bg-disabled: #{$bg-disabled};
+  --danger: #{$danger};
+  --danger-outline: #{$danger-outline};
+  --danger-text: #{$danger-text};
+  --danger-bg: #{$danger-bg};
+  --danger-bg-light: #{$danger-bg-light};
+  --danger-bg-soft: #{$danger-bg-soft};
+  --success: #{$success};
+  --success-bg: #{$success-bg};
+  --success-bg-light: #{$success-bg-light};
+  --white: #{$white};
+  --black: #{$black};
+  --gray-slate: #{$gray-slate};
+  --gray-light: #{$gray-light};
+  --gray: #{$gray};
+  --gray-mid: #{$gray-mid};
+
+  // Каналы цвета для полупрозрачных оттенков: rgba(var(--x-rgb), α) —
+  // тот же цвет, что был литералом rgba(r, g, b, α)
+  --accent-bronze-rgb: 181, 133, 95;
+  --gold-rgb: 184, 149, 108;
+  --text-dark-rgb: 44, 36, 33;
+  --danger-rgb: 201, 84, 77;
+  --success-rgb: 90, 158, 90;
+  --gray-slate-rgb: 108, 117, 125;
+  --black-rgb: 0, 0, 0;
+  --white-rgb: 255, 255, 255;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 🎯 CSS CUSTOM PROPERTIES (для использования в компонентах)
