@@ -2,9 +2,13 @@ import {inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {FormBuilder, Validators} from '@angular/forms';
 import {Authentication} from '../../../@core/auth/authentication';
+import {User} from '../../../@core/api/user';
 import {Router} from '@angular/router';
 import {nameValidator, passwordValidator} from '../../../@core/validators/validators';
 import {GoogleAnalytics} from '../../../@core/services/google-analytics';
+
+/** Value of the registration form (email, password, first and last name). */
+export type RegistrationPayload = Partial<{ email: string | null; password: string | null; firstName: string | null; lastName: string | null }>;
 
 @Injectable({
   providedIn: 'root'
@@ -23,9 +27,9 @@ export class RegistrationService {
     lastName: ["", nameValidator],
   });
 
-  onSubmit(user: any): void {
+  onSubmit(user: RegistrationPayload): void {
     if (this.registrationForm.valid) {
-      this.authenticationService.registration(user).subscribe(
+      this.authenticationService.registration(user as unknown as User).subscribe(
         {
           next: authResponse => {
             if (isPlatformBrowser(this.platformId)) {

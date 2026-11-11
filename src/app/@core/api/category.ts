@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable, of, tap, shareReplay} from 'rxjs';
-import {Category} from '../../entities/category';
+import {Category, CategoryPreview} from '../../entities/category';
 import {FilterGroup} from '../../entities/filter-group';
 import {environment} from '../../../environments/environment';
 import {GetResponse} from '../../entities/get-response';
@@ -44,8 +44,8 @@ export class CategoryService {
     return this.categories$;
   }
 
-  getCategoriesWithPreview(): Observable<any[]> {
-    return this.http.get<any[]>(this.previewUrl);
+  getCategoriesWithPreview(): Observable<CategoryPreview[]> {
+    return this.http.get<CategoryPreview[]>(this.previewUrl);
   }
 
   getProductsByGroupId(categoryId: string | null, thePage: number, thePageSize: number, brand?: string, filters?: string): Observable<GetResponse> {

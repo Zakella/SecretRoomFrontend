@@ -1169,3 +1169,77 @@ describe('server.ts — SR-198: open redirect', () => {
     }
   });
 });
+
+describe('server.ts — SR-246: заголовки безопасности и no-store', () => {
+  sr96Server();
+
+  /** Ответ findProduct для теста JSON-LD; null — базовая заглушка. */
+  let findProduct = null;
+  let stubFetch = null;
+  before(() => {
+    stubFetch = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+      if (findProduct && String(input).includes('products/findProduct/')) return findProduct();
+      return stubFetch(input, init);
+    };
+  });
+  after(() => {
+    globalThis.fetch = stubFetch;
+  });
+
+  function assertSecurityHeaders(res, path) {
+    assert.equal(res.headers.get('x-powered-by'), null, `${path}: x-powered-by`);
+    assert.equal(res.headers.get('strict-transport-security'), 'max-age=31536000', `${path}: HSTS`);
+    assert.equal(res.headers.get('x-content-type-options'), 'nosniff', `${path}: nosniff`);
+    assert.equal(res.headers.get('referrer-policy'), 'strict-origin-when-cross-origin', `${path}: Referrer-Policy`);
+    const csp = res.headers.get('content-security-policy-report-only');
+    assert.ok(csp && csp.includes("default-src 'self'"), `${path}: CSP-Report-Only`);
+    assert.equal(res.headers.get('content-security-policy'), null, `${path}: CSP не в enforce-режиме`);
+  }
+
+  for (const path of ['/ro', '/ro/contacts', '/robots.txt', '/sitemap.xml', '/ro/catalog/sutiene/', '/favicon.ico']) {
+    it(`${path}: HSTS, nosniff, Referrer-Policy, CSP-Report-Only; x-powered-by нет`, async () => {
+      assertSecurityHeaders(await get(path), path);
+    });
+  }
+
+  it('HSTS без includeSubDomains и preload', async () => {
+    const hsts = (await get('/ro')).headers.get('strict-transport-security');
+    assert.doesNotMatch(hsts, /includeSubDomains|preload/i);
+  });
+
+  for (const path of ['/ro/order/AbC123', '/ru/order-success/AbC123', '/ro/cabinet', '/ru/cabinet']) {
+    it(`${path} → Cache-Control: no-store`, async () => {
+      const res = await get(path);
+      assert.equal(res.headers.get('cache-control'), 'no-store');
+      assertSecurityHeaders(res, path);
+    });
+  }
+
+  for (const path of ['/ro', '/ro/contacts', '/ro/checkout', '/ro/orders-faq']) {
+    it(`${path}: Cache-Control не no-store (кэширование публичных страниц не тронуто)`, async () => {
+      assert.notEqual((await get(path)).headers.get('cache-control'), 'no-store');
+    });
+  }
+
+  it('название товара с </script> в JSON-LD: тег не закрывается, лишних <script> нет, JSON валиден', async () => {
+    const evil = '</script><script>alert(1)</script>';
+    findProduct = () => json({
+      id: '12', appId: 12, name: `Bombshell ${evil}`, nameRo: `Bombshell ${evil}`, nameRu: `Bombshell ${evil}`,
+      brandAlias: 'Bath & Body Works', price: 100, imageURL: 'https://cdn.test/12.jpg', unitsInStock: 3, inStock: true,
+      description: 'd', descriptionRo: 'd', descriptionRu: 'd',
+    });
+    try {
+      const {res, body} = await getText('/ro/product/12/bombshell-eau-de-parfum');
+      assert.equal(res.status, 200);
+      assert.ok(!body.includes('<script>alert(1)'), 'внедрённый <script> попал в HTML');
+      const blocks = [...body.matchAll(/<script type="application\/ld\+json" data-schema="product">([\s\S]*?)<\/script>/g)];
+      assert.equal(blocks.length, 1, 'JSON-LD товара не найден или разорван');
+      const ld = JSON.parse(blocks[0][1]);
+      assert.equal(ld.name, `Bombshell ${evil}`);
+      assert.equal(ld.brand.name, 'Bath & Body Works');
+    } finally {
+      findProduct = null;
+    }
+  });
+});

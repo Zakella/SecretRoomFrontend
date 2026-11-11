@@ -13,6 +13,46 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
+ * SR-246: заголовки безопасности на каждый ответ (страницы, статика, редиректы, sitemap).
+ * HSTS — без includeSubDomains и preload (поддомены и preload-список — только по решению владельца).
+ * CSP — ТОЛЬКО Report-Only: браузер пишет нарушения в консоль и ничего не блокирует (GA4/Ads, оплата MAIB,
+ * картинки, шрифты, inline-скрипты Angular работают как раньше). Отчёты никуда не отправляются (без report-uri).
+ */
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.google-analytics.com"
+    + ' https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com',
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
+  "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net",
+  "img-src 'self' data: blob: https:",
+  "connect-src 'self' https://api.secretroom.md https://api-sr.solterprise.com https://*.google-analytics.com"
+    + ' https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net'
+    + ' https://www.google.com https://www.googleadservices.com',
+  'frame-src https://www.google.com https://www.googletagmanager.com https://td.doubleclick.net',
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'self'",
+].join('; ');
+
+app.disable('x-powered-by');
+
+app.use((_req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
+  next();
+});
+
+/** SR-246: заказ, «спасибо за заказ» и кабинет — личные данные покупателя, ни CDN, ни браузер их не кэшируют. */
+const PRIVATE_PAGE = /^\/(?:ro|ru)\/(?:order|order-success|cabinet)(?:\/|$)/i;
+
+app.use((req, res, next) => {
+  if (PRIVATE_PAGE.test(req.path)) res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
+/**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.
  *

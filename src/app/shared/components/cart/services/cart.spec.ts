@@ -106,6 +106,46 @@ describe('CartUi', () => {
     });
   });
 
+  describe('updatePrices (SR-245, 409 PRICE_CHANGED)', () => {
+    const variantItem = (id: string, price: number, qty: number, variantAppId?: number) =>
+      new CartItem(makeProduct({id, price}), qty, undefined, variantAppId);
+
+    it('sets the new unit price of the matching product + variant, recomputes totals and saves the cart', () => {
+      cart.addToCart(variantItem('101', 280, 2, 9));
+      cart.addToCart(variantItem('101', 280, 1, 10));
+      cart.addToCart(variantItem('5', 40, 1));
+      const emitted: number[] = [];
+      cart.cartItems.subscribe(() => emitted.push(1));
+
+      const changed = cart.updatePrices([{productId: 101, variantAppId: 9, newPrice: 300}]);
+
+      expect(changed).toBe(1);
+      const [a, b, c] = cart.cartItems.value;
+      expect(a.product.price).toBe(300);
+      expect(a.amount).toBe(600);
+      expect(b.product.price).toBe(280);
+      expect(c.product.price).toBe(40);
+      expect(cart.totalAmount.value).toBe(600 + 280 + 40);
+      expect(emitted.length).toBe(2);
+      const saved = JSON.parse(localStorage.getItem('cartItems')!);
+      expect(saved[0].product.price).toBe(300);
+    });
+
+    it('a detail without variant matches only the item without variant', () => {
+      cart.addToCart(variantItem('5', 40, 1));
+      cart.addToCart(variantItem('5', 40, 1, 3));
+      expect(cart.updatePrices([{productId: 5, variantAppId: null, newPrice: 50}])).toBe(1);
+      expect(cart.cartItems.value.map(i => i.product.price)).toEqual([50, 40]);
+    });
+
+    it('nothing matches — the cart is not touched', () => {
+      cart.addToCart(variantItem('5', 40, 1));
+      const before = cart.cartItems.value;
+      expect(cart.updatePrices([{productId: 7, variantAppId: null, newPrice: 50}])).toBe(0);
+      expect(cart.cartItems.value).toBe(before);
+    });
+  });
+
   describe('clearCart', () => {
     it('should empty the cart', () => {
       cart.addToCart(makeCartItem());
